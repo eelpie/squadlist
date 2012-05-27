@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Member {
 	
-	private String id, firstName, lastName, gender, dateOfBirth;
+	private String id, firstName, lastName, gender, dateOfBirth, emailAddress, contactNumber, registrationNumber;
+	private int weight;
 	private List<String> squads;
-	
 	public String getId() {
 		return id;
 	}
@@ -37,6 +37,30 @@ public class Member {
 	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getContactNumber() {
+		return contactNumber;
+	}
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+	public String getRegistrationNumber() {
+		return registrationNumber;
+	}
+	public void setRegistrationNumber(String registrationNumber) {
+		this.registrationNumber = registrationNumber;
+	}
+	public int getWeight() {
+		return weight;
+	}
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
 	public List<String> getSquads() {
 		return squads;
 	}
@@ -48,7 +72,10 @@ public class Member {
 	public String toString() {
 		return "Member [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", gender=" + gender + ", dateOfBirth="
-				+ dateOfBirth + ", squads=" + squads + "]";
+				+ dateOfBirth + ", emailAddress=" + emailAddress
+				+ ", contactNumber=" + contactNumber + ", registrationNumber="
+				+ registrationNumber + ", weight=" + weight + ", squads="
+				+ squads + "]";
 	}
-		
+	
 }

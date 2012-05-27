@@ -1,4 +1,4 @@
-<h2>Squad Outings</h2>
+<h2>$squad.name outings</h2>
 
 <p>Logged in as: $loggedInUser</p>
 
