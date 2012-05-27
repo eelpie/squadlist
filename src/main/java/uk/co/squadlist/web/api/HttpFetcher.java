@@ -34,12 +34,6 @@ public class HttpFetcher {
 
 	private static final int HTTP_TIMEOUT = 5000;
 
-	private HttpClient httpClient;
-	
-	public HttpFetcher() {
-		this.httpClient = setupHttpClient();
-	}
-
 	public String fetchContent(String url, String charEncoding) throws HttpFetchException {
 		InputStream inputStream = httpFetch(url);
 		try {
@@ -59,7 +53,8 @@ public class HttpFetcher {
 			HttpResponse execute = executeRequest(get);
 			final int statusCode = execute.getStatusLine().getStatusCode();
 			if (statusCode == HttpStatus.SC_OK) {
-				return execute.getEntity().getContent();
+				InputStream content = execute.getEntity().getContent();
+				return content;
 			}		
 			throw new HttpFetchException();
 			
@@ -71,7 +66,7 @@ public class HttpFetcher {
 	}
 	
 	private HttpResponse executeRequest(HttpRequestBase request) throws IOException, ClientProtocolException {
-		return httpClient.execute(request);
+		return setupHttpClient().execute(request);	// TODO migrate to pool
 	}
 	
 	private HttpClient setupHttpClient() {

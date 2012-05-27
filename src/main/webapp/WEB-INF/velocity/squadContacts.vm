@@ -1,0 +1,9 @@
+<h2>Squad contacts</h2>
+
+<p>Logged in as: $loggedInUser</p>
+
+<hr>
+#foreach( $member in $members )
+    <p>$member<p>
+#end
+<hr>

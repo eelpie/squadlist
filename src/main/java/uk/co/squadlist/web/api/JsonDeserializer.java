@@ -21,14 +21,18 @@ public class JsonDeserializer {
 		mapper = new ObjectMapper();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Outing> deserializeListOfOutings(String json) throws JsonParseException, JsonMappingException, IOException {
-		@SuppressWarnings("unchecked")
-		List<Outing> outings = (List<Outing>) mapper.readValue(json, Collection.class);
-		return outings;
+		return (List<Outing>) mapper.readValue(json, Collection.class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Member> deserializeListOfMembers(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (List<Member>) mapper.readValue(json, Collection.class);
 	}
 	
 	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Member.class);
 	}
-
+	
 }
