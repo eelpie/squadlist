@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.services.LoggedInUserService;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 
 @Controller
 public class MyOutingsController {

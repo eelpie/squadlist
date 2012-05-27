@@ -1,0 +1,16 @@
+<h2>$squad.name entry details</h2>
+
+<p>Logged in as: $loggedInUser</p>
+
+<hr>
+<table>
+#foreach( $member in $members )
+	<tr>
+		<td>#parse('includes/member.vm')</td>
+		<td>$member.weight</td>
+		<td>$member.registrationNumber</td>
+	</tr>
+#end
+</tr>
+</table>
+<hr>
