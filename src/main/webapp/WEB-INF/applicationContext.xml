@@ -14,15 +14,14 @@
        	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
 	<context:annotation-config />
-
+	<context:component-scan base-package="uk.co.squadlist" />
+	
 	<security:http auto-config="true">
 		<security:intercept-url pattern="/**" access="ROLE_USER" />
 	</security:http>
 
 	<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider ref="mockAuthenticationProvider" />
+		<security:authentication-provider ref="authenticationProvider" />
 	</security:authentication-manager>
-
-	<bean id="mockAuthenticationProvider" class="uk.co.squadlist.web.auth.MockAuthenticationProvider" />		
 	
 </beans>

@@ -3,10 +3,21 @@ package uk.co.squadlist.web.api;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.model.Availability;
@@ -14,10 +25,13 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
 
-@Component
+@Service("squadlistApi")
 public class SquadlistApi {
+
+	private static Logger log = Logger.getLogger(SquadlistApi.class);
 	
 	private static final String API_URL = "http://localhost:8080/squadlist-api-0.0.1-SNAPSHOT";
+	
 	private HttpFetcher httpFetcher;
 	private JsonDeserializer jsonDeserializer;
 	
@@ -25,6 +39,15 @@ public class SquadlistApi {
 	public SquadlistApi(HttpFetcher httpFetcher, JsonDeserializer jsonDeserializer) {
 		this.httpFetcher = httpFetcher;
 		this.jsonDeserializer = jsonDeserializer;
+	}
+	
+	public boolean auth(String username, String password) throws ClientProtocolException, IOException, AuthenticationException {
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(API_URL + "/auth?username=" + username + "&password=" + password); 	// TODO should be a post
+		HttpResponse execute = client.execute(get);				
+		final int statusCode = execute.getStatusLine().getStatusCode();
+		log.info("Auth attempt status code was: " + statusCode);
+		return statusCode == HttpStatus.SC_OK;
 	}
 	
 	public List<Outing> getOutingsFor(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
