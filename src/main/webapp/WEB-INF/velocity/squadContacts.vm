@@ -4,6 +4,6 @@
 
 <hr>
 #foreach( $member in $members )
-    <p>$member<p>
+   	#parse('includes/member.vm')
 #end
 <hr>

@@ -1,9 +1,9 @@
-<h2>Squad contacts</h2>
+<h2>Squad Outings</h2>
 
 <p>Logged in as: $loggedInUser</p>
 
 <hr>
 #foreach( $outing in $outings )
-    <p>$outing<p>
+	#parse('includes/outing.vm')
 #end
 <hr>

@@ -34,5 +34,9 @@ public class JsonDeserializer {
 	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Member.class);
 	}
+
+	public Outing deserializeOuting(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, Outing.class);
+	}
 	
 }

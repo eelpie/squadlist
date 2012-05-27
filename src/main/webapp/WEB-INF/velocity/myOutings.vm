@@ -4,6 +4,6 @@
 
 <hr>
 #foreach( $outing in $outings )
-    <p>$outing<p>
+	#parse('includes/outing.vm')
 #end
 <hr>

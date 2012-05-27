@@ -1,0 +1,1 @@
+<p><a href="/squadlist-0.0.1-SNAPSHOT/member/$member.id">$member.firstName $member.lastName</a></p>
