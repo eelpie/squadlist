@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
+import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.Squad;
 
 @Component
 public class SquadlistApi {
@@ -35,11 +37,21 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfOutings(json);	
 	}
 	
+	public List<Availability> getOutingAvailability(int outingId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getOutingAvailabilityUrl(outingId), "UTF-8");
+		return jsonDeserializer.deserializeListOfAvailability(json);	
+	}
+	
 	public Member getMemberDetails(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getMemberDetailsUrl(memberId), "UTF-8");
 		return jsonDeserializer.deserializeMemberDetails(json);	
 	}
 	
+	public Squad getSquad(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getSquadUrl(squadId), "UTF-8");
+		return jsonDeserializer.deserializeSquad(json);	
+	}
+		
 	public Outing getOuting(String outingId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getOutingUrl(outingId), "UTF-8");
 		return jsonDeserializer.deserializeOuting(json);	
@@ -68,6 +80,10 @@ public class SquadlistApi {
 	
 	private String getOutingUrl(String outingId) {
 		return API_URL + "/outings/" + outingId;
+	}
+	
+	private String getOutingAvailabilityUrl(int outingId) {
+		return getOutingUrl(Integer.toString(outingId)) + "/availability";
 	}
 	
 	private String getMembersOutingsUrl(String memberId) {

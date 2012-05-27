@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 
@@ -20,6 +21,16 @@ public class JsonDeserializerTest {
 		List<Outing> outings = deserializer.deserializeListOfOutings(json);
 		
 		assertEquals(51, outings.size());
+	}
+	
+	@Test
+	public void canDeserializeListOfAvailability() throws Exception {
+		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("availability.json"));
+		
+		JsonDeserializer deserializer = new JsonDeserializer();
+		List<Availability> availability = deserializer.deserializeListOfAvailability(json);
+		
+		assertEquals(21, availability.size());
 	}
 	
 	@Test

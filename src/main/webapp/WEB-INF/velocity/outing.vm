@@ -1,0 +1,11 @@
+<h2>Outing: $squad.name - $outing.date</h2>
+
+<p>Logged in as: $loggedInUser</p>
+
+<hr>
+#foreach( $member in $members )
+   	#parse('includes/member.vm')
+#end
+<hr>
+$availability
+<hr>
