@@ -3,6 +3,8 @@
 <p>Logged in as: $loggedInUser</p>
 
 <hr>
-$outings
+#foreach( $outing in $outings )
+    <p>$outing<p>
+#end
 <hr>
 
