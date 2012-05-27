@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 
 @Component
@@ -24,6 +25,10 @@ public class JsonDeserializer {
 		@SuppressWarnings("unchecked")
 		List<Outing> outings = (List<Outing>) mapper.readValue(json, Collection.class);
 		return outings;
+	}
+	
+	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, Member.class);
 	}
 
 }

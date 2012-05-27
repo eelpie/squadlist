@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 
 @Component
@@ -24,13 +25,22 @@ public class SquadlistApi {
 		this.jsonDeserializer = jsonDeserializer;
 	}
 	
-	public List<Outing> getOutingsFor(String loggedInUser) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.fetchContent(getMembersOutingsUrl(loggedInUser), "UTF-8");
+	public List<Outing> getOutingsFor(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getMembersOutingsUrl(memberId), "UTF-8");
 		return jsonDeserializer.deserializeListOfOutings(json);	
 	}
 	
-	private String getMembersOutingsUrl(String loggedInUser) {
-		return API_URL + "/members/" + loggedInUser + "/outings";
+	public Member getMemberDetails(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getMemberDetailsUrl(memberId), "UTF-8");
+		return jsonDeserializer.deserializeMemberDetails(json);	
+	}
+	
+	private String getMemberDetailsUrl(String memberId) {
+		return API_URL + "/members/" + memberId;
+	}
+	
+	private String getMembersOutingsUrl(String memberId) {
+		return getMemberDetailsUrl(memberId) + "/outings";
 	}
 	
 }
