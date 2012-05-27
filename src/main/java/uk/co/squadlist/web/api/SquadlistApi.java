@@ -30,6 +30,11 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfOutings(json);	
 	}
 	
+	public List<Outing> getSquadOutings(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getSquadOutingsUrl(squadId), "UTF-8");
+		return jsonDeserializer.deserializeListOfOutings(json);	
+	}
+	
 	public Member getMemberDetails(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getMemberDetailsUrl(memberId), "UTF-8");
 		return jsonDeserializer.deserializeMemberDetails(json);	
@@ -40,8 +45,16 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfMembers(json);	
 	}
 	
+	private String getSquadUrl(String squadId) {
+		return API_URL + "/squads/" + squadId;
+	}
+	
 	private String getSquadMembersUrl(String squadId) {
-		return API_URL + "/squads/" + squadId + "/members";
+		return getSquadUrl(squadId) + "/members";
+	}
+	
+	private String getSquadOutingsUrl(String squadId) {
+		return getSquadUrl(squadId) + "/outings";
 	}
 
 	private String getMemberDetailsUrl(String memberId) {

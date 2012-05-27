@@ -25,4 +25,11 @@ public class SquadsController {
     	return mv;
     }
 	
+	@RequestMapping("/squad/{id}/outings")
+    public ModelAndView outings(@PathVariable String id) throws Exception {
+    	ModelAndView mv = new ModelAndView("squadOutings");
+    	mv.addObject("outings", api.getSquadOutings(id));
+    	return mv;
+    }
+	
 }
