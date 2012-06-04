@@ -7,6 +7,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.model.Availability;
@@ -26,22 +27,27 @@ public class JsonDeserializer {
 	
 	@SuppressWarnings("unchecked")
 	public List<Outing> deserializeListOfOutings(String json) throws JsonParseException, JsonMappingException, IOException {
-		return (List<Outing>) mapper.readValue(json, Collection.class);
+		return (List<Outing>) mapper.readValue(json, new TypeReference<Collection<Outing>>() {});
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<OutingAvailability> deserializeListOfOutingAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
-		return (List<OutingAvailability>) mapper.readValue(json, Collection.class);
+		return (List<OutingAvailability>) mapper.readValue(json, new TypeReference<Collection<OutingAvailability>>() {});
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Member> deserializeListOfMembers(String json) throws JsonParseException, JsonMappingException, IOException {
-		return (List<Member>) mapper.readValue(json, Collection.class);
+		return (List<Member>) mapper.readValue(json,new TypeReference<Collection<Member>>() {});
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Availability> deserializeListOfAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
-		return (List<Availability>) mapper.readValue(json, Collection.class);
+		return (List<Availability>) mapper.readValue(json, new TypeReference<Collection<Availability>>() {});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Squad> deserializeListOfSquads(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (List<Squad>) mapper.readValue(json, new TypeReference<Collection<Squad>>() {});
 	}
 	
 	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {

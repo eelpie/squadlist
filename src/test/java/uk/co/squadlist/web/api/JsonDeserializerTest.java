@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -20,7 +21,10 @@ public class JsonDeserializerTest {
 		JsonDeserializer deserializer = new JsonDeserializer();
 		List<Outing> outings = deserializer.deserializeListOfOutings(json);
 		
-		assertEquals(51, outings.size());
+		assertEquals(51, outings.size());		
+		for (Outing outing : outings) {
+			assertTrue(outing instanceof Outing);
+		}
 	}
 	
 	@Test
