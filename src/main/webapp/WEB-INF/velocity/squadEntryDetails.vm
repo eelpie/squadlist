@@ -3,6 +3,9 @@
 <p>Logged in as: $loggedInUser</p>
 
 <hr>
+#parse('includes/nav.vm')
+<hr>
+
 <table>
 #foreach( $member in $members )
 	<tr>

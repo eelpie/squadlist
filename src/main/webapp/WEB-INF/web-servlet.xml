@@ -42,7 +42,12 @@
 		<property name="suffix" value=".vm" />
 		<property name="contentType">
 			<value>text/html;charset=UTF-8</value>
-		</property>
+		</property>		
+		<property name="attributesMap">
+			<map>
+				<entry key="urlBuilder" value-ref="urlBuilder" />
+			</map>
+		</property> 		
 	</bean>
 				  	  	          	
 </beans>

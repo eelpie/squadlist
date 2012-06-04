@@ -1,8 +1,9 @@
 <h2>$squad.name - $outing.date</h2>
 
-<p>Logged in as: $loggedInUser</p>
-
 <hr>
+#parse('includes/nav.vm')
+<hr>
+
 #foreach( $member in $members )
    	#parse('includes/member.vm')
 	#if($availability.get(${member.id}))

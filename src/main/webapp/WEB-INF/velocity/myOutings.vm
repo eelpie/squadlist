@@ -1,8 +1,11 @@
+<p align="right">Logged in as: $loggedInUser</p>
+
 <h2>My Outings</h2>
 
-<p>Logged in as: $loggedInUser</p>
-
 <hr>
+#parse('includes/nav.vm')
+<hr>
+
 #foreach( $outing in $outings )
 	#parse('includes/outing.vm')
 	
