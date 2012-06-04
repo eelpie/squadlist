@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 @Component
@@ -26,6 +27,11 @@ public class JsonDeserializer {
 	@SuppressWarnings("unchecked")
 	public List<Outing> deserializeListOfOutings(String json) throws JsonParseException, JsonMappingException, IOException {
 		return (List<Outing>) mapper.readValue(json, Collection.class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<OutingAvailability> deserializeListOfOutingAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (List<OutingAvailability>) mapper.readValue(json, Collection.class);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -3,7 +3,14 @@
 <p>Logged in as: $loggedInUser</p>
 
 <hr>
-#foreach( $outing in $outings )
+#foreach( $outingAvailability in $outings )
+	#set($outing = $outingAvailability.outing)
 	#parse('includes/outing.vm')
+	
+	#if ($outingAvailability.availability) 
+		$outingAvailability.availability
+	#else
+		TBA
+	#end
 #end
 <hr>

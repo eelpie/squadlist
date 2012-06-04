@@ -25,7 +25,7 @@ public class MyOutingsController {
     	ModelAndView mv = new ModelAndView("myOutings");
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
-    	mv.addObject("outings", api.getOutingsFor(loggedInUser));
+    	mv.addObject("outings", api.getAvailabilityFor(loggedInUser));
     	return mv;
     }
 	

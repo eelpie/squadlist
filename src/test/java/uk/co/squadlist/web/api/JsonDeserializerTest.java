@@ -7,9 +7,9 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingAvailability;
 
 public class JsonDeserializerTest {
 
@@ -24,13 +24,13 @@ public class JsonDeserializerTest {
 	}
 	
 	@Test
-	public void canDeserializeListOfAvailability() throws Exception {
+	public void canDeserializeListOfMembersAvailability() throws Exception {
 		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("availability.json"));
 		
 		JsonDeserializer deserializer = new JsonDeserializer();
-		List<Availability> availability = deserializer.deserializeListOfAvailability(json);
+		List<OutingAvailability> availability = deserializer.deserializeListOfOutingAvailability(json);
 		
-		assertEquals(21, availability.size());
+		assertEquals(106, availability.size());	
 	}
 	
 	@Test

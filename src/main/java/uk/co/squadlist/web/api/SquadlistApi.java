@@ -3,15 +3,12 @@ package uk.co.squadlist.web.api;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthenticationException;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
@@ -23,6 +20,7 @@ import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 @Service("squadlistApi")
@@ -50,9 +48,9 @@ public class SquadlistApi {
 		return statusCode == HttpStatus.SC_OK;
 	}
 	
-	public List<Outing> getOutingsFor(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.fetchContent(getMembersOutingsUrl(memberId), "UTF-8");
-		return jsonDeserializer.deserializeListOfOutings(json);	
+	public List<OutingAvailability> getAvailabilityFor(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getMembersAvailabilityUrl(memberId), "UTF-8");
+		return jsonDeserializer.deserializeListOfOutingAvailability(json);	
 	}
 	
 	public List<Outing> getSquadOutings(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
@@ -99,6 +97,10 @@ public class SquadlistApi {
 
 	private String getMemberDetailsUrl(String memberId) {
 		return API_URL + "/members/" + memberId;
+	}
+	
+	private String getMembersAvailabilityUrl(String memberId) {
+		return getMemberDetailsUrl(memberId) + "/availability";
 	}
 	
 	private String getOutingUrl(String outingId) {
