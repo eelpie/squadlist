@@ -53,7 +53,12 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfOutingAvailability(json);	
 	}
 	
-	public List<Outing> getSquadOutings(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+	public List<Squad> getSquads() throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
+		final String json = httpFetcher.fetchContent(getSquadsUrl(), "UTF-8");
+		return jsonDeserializer.deserializeListOfSquads(json);
+	}
+	
+	public List<Outing> getSquadOutings(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getSquadOutingsUrl(squadId), "UTF-8");
 		return jsonDeserializer.deserializeListOfOutings(json);	
 	}
@@ -68,7 +73,7 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeMemberDetails(json);	
 	}
 	
-	public Squad getSquad(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+	public Squad getSquad(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getSquadUrl(squadId), "UTF-8");
 		return jsonDeserializer.deserializeSquad(json);	
 	}
@@ -78,20 +83,24 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeOuting(json);	
 	}
 	
-	public List<Member> getSquadMembers(String squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+	public List<Member> getSquadMembers(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getSquadMembersUrl(squadId), "UTF-8");
 		return jsonDeserializer.deserializeListOfMembers(json);	
 	}
 	
-	private String getSquadUrl(String squadId) {
-		return API_URL + "/squads/" + squadId;
+	private String getSquadsUrl() {
+		return API_URL + "/squads";
 	}
 	
-	private String getSquadMembersUrl(String squadId) {
+	private String getSquadUrl(int squadId) {
+		return getSquadsUrl() + "/" + squadId;
+	}
+	
+	private String getSquadMembersUrl(int squadId) {
 		return getSquadUrl(squadId) + "/members";
 	}
 	
-	private String getSquadOutingsUrl(String squadId) {
+	private String getSquadOutingsUrl(int squadId) {
 		return getSquadUrl(squadId) + "/outings";
 	}
 

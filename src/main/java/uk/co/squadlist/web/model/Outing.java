@@ -1,22 +1,25 @@
 package uk.co.squadlist.web.model;
 
 public class Outing {
-
+	
 	private int id;
-	private String squad;
+	private int squad;
 	private String date;
 	private String notes;
 	
+	public Outing() {
+	}
+
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getSquad() {
+	public int getSquad() {
 		return squad;
 	}
-	public void setSquad(String squad) {
+	public void setSquad(int squad) {
 		this.squad = squad;
 	}
 	public String getDate() {

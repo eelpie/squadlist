@@ -19,7 +19,7 @@ public class SquadsController {
 	}
 	
 	@RequestMapping("/squad/{id}/contacts")
-    public ModelAndView contacts(@PathVariable String id) throws Exception {
+    public ModelAndView contacts(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
@@ -27,7 +27,7 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/entrydetails")
-    public ModelAndView etnrydetails(@PathVariable String id) throws Exception {
+    public ModelAndView entrydetails(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
@@ -35,7 +35,7 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/outings")
-    public ModelAndView outings(@PathVariable String id) throws Exception {
+    public ModelAndView outings(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadOutings");
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("outings", api.getSquadOutings(id));
