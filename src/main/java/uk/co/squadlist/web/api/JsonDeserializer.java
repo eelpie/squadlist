@@ -3,6 +3,7 @@ package uk.co.squadlist.web.api;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -33,6 +34,11 @@ public class JsonDeserializer {
 	@SuppressWarnings("unchecked")
 	public List<OutingAvailability> deserializeListOfOutingAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
 		return (List<OutingAvailability>) mapper.readValue(json, new TypeReference<Collection<OutingAvailability>>() {});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, String> deserializeListOfOutingAvailabilityMap(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (Map<String, String>) mapper.readValue(json, new TypeReference<Map<String, String>>() {});
 	}
 	
 	@SuppressWarnings("unchecked")

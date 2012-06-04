@@ -1,4 +1,4 @@
-package uk.co.squadlist.web.model;
+package uk.co.squadlist.web.model.display;
 
 public class DisplayOutingAvailability {
 	

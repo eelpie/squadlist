@@ -26,6 +26,7 @@ public class OutingsController {
     public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
     	final Outing outing = api.getOuting(id);
+    	
 		mv.addObject("outing", outing);
 		mv.addObject("squad", api.getSquad(outing.getSquad()));
     	mv.addObject("members", api.getSquadMembers(outing.getSquad()));

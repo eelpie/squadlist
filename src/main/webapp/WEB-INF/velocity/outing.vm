@@ -5,7 +5,10 @@
 <hr>
 #foreach( $member in $members )
    	#parse('includes/member.vm')
+	#if($availability.get(${member.id}))
+		$availability.get(${member.id})
+	#else 
+		TBA
+	#end
 #end
-<hr>
-$availability
 <hr>

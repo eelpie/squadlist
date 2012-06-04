@@ -1,7 +1,9 @@
 package uk.co.squadlist.web.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -58,14 +60,22 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfSquads(json);
 	}
 	
+	public Map<Integer, Squad> getSquadsMap() throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
+		Map<Integer, Squad> map = new HashMap<Integer, Squad>();
+		for(Squad squad : getSquads()) {
+			map.put(squad.getId(), squad);
+		}
+		return map;
+	}
+	
 	public List<Outing> getSquadOutings(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getSquadOutingsUrl(squadId), "UTF-8");
 		return jsonDeserializer.deserializeListOfOutings(json);	
 	}
 	
-	public List<Availability> getOutingAvailability(int outingId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+	public Map<String, String> getOutingAvailability(int outingId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.fetchContent(getOutingAvailabilityUrl(outingId), "UTF-8");
-		return jsonDeserializer.deserializeListOfAvailability(json);	
+		return jsonDeserializer.deserializeListOfOutingAvailabilityMap(json);	
 	}
 	
 	public Member getMemberDetails(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {

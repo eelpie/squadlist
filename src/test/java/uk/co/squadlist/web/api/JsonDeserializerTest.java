@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -34,7 +35,17 @@ public class JsonDeserializerTest {
 		JsonDeserializer deserializer = new JsonDeserializer();
 		List<OutingAvailability> availability = deserializer.deserializeListOfOutingAvailability(json);
 		
-		assertEquals(106, availability.size());	
+		assertEquals(106, availability.size());
+	}
+	
+	@Test
+	public void canDeserializeOutingAvailabilityMap() throws Exception {
+		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("outingAvailability.json"));
+		
+		JsonDeserializer deserializer = new JsonDeserializer();
+		Map<String, String> availability = deserializer.deserializeListOfOutingAvailabilityMap(json);
+		
+		assertEquals("Available", availability.get("KELLEYJ"));
 	}
 	
 	@Test
