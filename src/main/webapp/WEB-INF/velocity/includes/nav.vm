@@ -1,3 +1,4 @@
+<div align="right">Logged in as: $loggedInUserService.loggedInUser</div>
 <ul>
 	<li><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
 	<li><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>

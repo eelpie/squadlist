@@ -46,6 +46,7 @@
 		<property name="attributesMap">
 			<map>
 				<entry key="urlBuilder" value-ref="urlBuilder" />
+				<entry key="loggedInUserService" value-ref="loggedInUserService" />				
 			</map>
 		</property> 		
 	</bean>

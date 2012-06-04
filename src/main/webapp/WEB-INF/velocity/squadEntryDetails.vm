@@ -1,7 +1,5 @@
 <h2>$squad.name entry details</h2>
 
-<p>Logged in as: $loggedInUser</p>
-
 <hr>
 #parse('includes/nav.vm')
 <hr>
