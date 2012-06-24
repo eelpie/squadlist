@@ -1,4 +1,4 @@
-<h2>My Outings</h2>
+<h2>My outings</h2>
 
 <hr>
 #parse('includes/nav.vm')

@@ -34,7 +34,7 @@ public class SquadsController {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
-    	mv.addObject("outings", api.getSquadOutings(id));
+    	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(id)));
     	return mv;
     }
 	

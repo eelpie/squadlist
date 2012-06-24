@@ -1,4 +1,4 @@
-<h2>$squad.name - $outing.date</h2>
+<h2>$squad.name outing - $outing.date</h2>
 
 <hr>
 #parse('includes/nav.vm')
