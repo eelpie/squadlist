@@ -56,6 +56,10 @@ public class JsonDeserializer {
 		return (List<Squad>) mapper.readValue(json, new TypeReference<Collection<Squad>>() {});
 	}
 	
+	public List<String> deserializeListOfStrings(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, new TypeReference<Collection<String>>() {});
+	}
+	
 	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Member.class);
 	}

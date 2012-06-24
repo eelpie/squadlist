@@ -2,15 +2,28 @@
 
 <hr>
 #parse('includes/nav.vm')
-<hr>
 
-#foreach( $outing in $outings )
-	#parse('includes/outing.vm')
+<form>
+#foreach($outing in $outings)
+	<hr>
+	#parse('includes/outing.vm')	
+		
+	<select>
+		<option value="">TBA</option>		
+		#foreach($option in $availabilityOptions)
+			#set($selected = '')
+			#if ($outing.availability == $option) 
+				#set($selected = 'SELECTED')
+			#end
+			<option value="$option" $selected>$option</option>	
+		#end
+	</select>
 	
-	#if ($outingAvailability.availability) 
-		$outingAvailability.availability
+	#if ($outing.availability) 
+		$outing.availability
 	#else
 		TBA
 	#end
 #end
+</form>
 <hr>

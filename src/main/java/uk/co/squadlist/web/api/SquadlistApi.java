@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
-import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -98,6 +97,11 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfMembers(json);	
 	}
 	
+	public List<String> getAvailabilityOptions() throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.fetchContent(getAvailabilityOptionsUrl(), "UTF-8");
+		return jsonDeserializer.deserializeListOfStrings(json);	
+	}
+	
 	private String getSquadsUrl() {
 		return API_URL + "/squads";
 	}
@@ -130,8 +134,8 @@ public class SquadlistApi {
 		return getOutingUrl(Integer.toString(outingId)) + "/availability";
 	}
 	
-	private String getMembersOutingsUrl(String memberId) {
-		return getMemberDetailsUrl(memberId) + "/outings";
+	private String getAvailabilityOptionsUrl() {
+		return API_URL + "/availability/options";
 	}
 	
 }

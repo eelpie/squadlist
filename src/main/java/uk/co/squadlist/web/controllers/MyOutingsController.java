@@ -37,6 +37,7 @@ public class MyOutingsController {
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
     	mv.addObject("outings", makeDisplayObjectsFor(api.getAvailabilityFor(loggedInUser)));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	return mv;
     }
 	
