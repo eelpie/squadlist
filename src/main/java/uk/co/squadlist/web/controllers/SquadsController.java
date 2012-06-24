@@ -29,6 +29,15 @@ public class SquadsController {
 		this.api = api;
 	}
 	
+	@RequestMapping("/squad/{id}/availability")
+    public ModelAndView availability(@PathVariable int id) throws Exception {
+    	ModelAndView mv = new ModelAndView("squadAvailability");
+		mv.addObject("squad", api.getSquad(id));
+    	mv.addObject("members", api.getSquadMembers(id));
+    	mv.addObject("outings", api.getSquadOutings(id));
+    	return mv;
+    }
+	
 	@RequestMapping("/squad/{id}/contacts")
     public ModelAndView contacts(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");

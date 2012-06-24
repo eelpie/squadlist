@@ -1,1 +1,3 @@
-<p>$outing.squadName - <a href="/squadlist-0.0.1-SNAPSHOT/outings/$outing.id">$outing.date</a></p>
+<p>
+#if($outing.squadName) $outing.squadName - #end
+<a href="/squadlist-0.0.1-SNAPSHOT/outings/$outing.id">$outing.date</a></p>

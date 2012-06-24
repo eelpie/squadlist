@@ -1,0 +1,25 @@
+<h2>$squad.name availability</h2>
+
+<hr>
+#parse('includes/nav.vm')
+<hr>
+
+<table>
+<tr>
+	<td></td>
+	#foreach($outing in $outings) 
+		<td>#parse('includes/outing.vm')</td>
+	#end
+</tr>
+
+#foreach( $member in $members )
+	<tr>
+		<td>#parse('includes/member.vm')</td>
+		#foreach($outing in $outings) 
+		<td>-</td>
+		#end
+	</tr>
+#end
+</tr>
+</table>
+<hr>
