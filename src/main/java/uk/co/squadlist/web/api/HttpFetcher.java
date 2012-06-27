@@ -25,16 +25,20 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
 
 @Component
 public class HttpFetcher {
+	
+	private static Logger log = Logger.getLogger(HttpFetcher.class);
 
 	private static final int HTTP_TIMEOUT = 5000;
 
 	public String fetchContent(String url, String charEncoding) throws HttpFetchException {
+		log.info("Fetching: " + url);
 		InputStream inputStream = httpFetch(url);
 		try {
 			return readResponseBody(charEncoding, inputStream);
@@ -46,7 +50,7 @@ public class HttpFetcher {
 	}
 	
 	private InputStream httpFetch(String uri) throws HttpFetchException {
-		try {
+		try {			
 			HttpGet get = new HttpGet(uri);
 			get.addHeader(new BasicHeader("Accept-Encoding", "gzip"));
 			

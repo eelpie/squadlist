@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
@@ -28,11 +29,12 @@ import uk.co.squadlist.web.model.Squad;
 public class SquadlistApi {
 
 	private static Logger log = Logger.getLogger(SquadlistApi.class);
-	
-	private static final String API_URL = "http://localhost:8080/squadlist-api-0.0.1-SNAPSHOT";
-	
+		
 	private HttpFetcher httpFetcher;
 	private JsonDeserializer jsonDeserializer;
+	
+	@Value("#{squadlist['apiUrl']}")
+	private String apiUrl;
 	
 	@Autowired
 	public SquadlistApi(HttpFetcher httpFetcher, JsonDeserializer jsonDeserializer) {
@@ -42,7 +44,7 @@ public class SquadlistApi {
 	
 	public boolean auth(String username, String password) throws ClientProtocolException, IOException, AuthenticationException {
 		HttpClient client = new DefaultHttpClient();
-		HttpGet get = new HttpGet(API_URL + "/auth?username=" + username + "&password=" + password); 	// TODO should be a post
+		HttpGet get = new HttpGet(apiUrl + "/auth?username=" + username + "&password=" + password); 	// TODO should be a post
 		HttpResponse execute = client.execute(get);				
 		final int statusCode = execute.getStatusLine().getStatusCode();
 		log.info("Auth attempt status code was: " + statusCode);
@@ -103,7 +105,7 @@ public class SquadlistApi {
 	}
 	
 	private String getSquadsUrl() {
-		return API_URL + "/squads";
+		return apiUrl + "/squads";
 	}
 	
 	private String getSquadUrl(int squadId) {
@@ -119,7 +121,7 @@ public class SquadlistApi {
 	}
 
 	private String getMemberDetailsUrl(String memberId) {
-		return API_URL + "/members/" + memberId;
+		return apiUrl + "/members/" + memberId;
 	}
 	
 	private String getMembersAvailabilityUrl(String memberId) {
@@ -127,7 +129,7 @@ public class SquadlistApi {
 	}
 	
 	private String getOutingUrl(String outingId) {
-		return API_URL + "/outings/" + outingId;
+		return apiUrl + "/outings/" + outingId;
 	}
 	
 	private String getOutingAvailabilityUrl(int outingId) {
@@ -135,7 +137,7 @@ public class SquadlistApi {
 	}
 	
 	private String getAvailabilityOptionsUrl() {
-		return API_URL + "/availability/options";
+		return apiUrl + "/availability/options";
 	}
 	
 }
