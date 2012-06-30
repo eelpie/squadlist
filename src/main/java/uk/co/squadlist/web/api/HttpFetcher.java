@@ -16,9 +16,9 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -37,9 +37,19 @@ public class HttpFetcher {
 
 	private static final int HTTP_TIMEOUT = 5000;
 
-	public String fetchContent(String url, String charEncoding) throws HttpFetchException {
-		log.info("Fetching: " + url);
-		InputStream inputStream = httpFetch(url);
+	public String get(String url, String charEncoding) throws HttpFetchException {
+		log.info("Making GET request to: " + url);
+		HttpGet request = new HttpGet(url);
+		return requestAndReadRepsponse(charEncoding, request);
+	}
+
+	public String post(HttpPost post, String charEncoding) throws HttpFetchException {	// TODO Don't export http post
+		log.info("Making POST request to: " + post.getURI());
+		return requestAndReadRepsponse(charEncoding, post);
+	}
+	
+	private String requestAndReadRepsponse(String charEncoding, HttpRequestBase request) throws HttpFetchException {
+		InputStream inputStream = httpFetch(request);
 		try {
 			return readResponseBody(charEncoding, inputStream);
 		} catch (UnsupportedEncodingException e) {
@@ -49,12 +59,10 @@ public class HttpFetcher {
 		}
 	}
 	
-	private InputStream httpFetch(String uri) throws HttpFetchException {
+	private InputStream httpFetch(HttpRequestBase request) throws HttpFetchException {
 		try {			
-			HttpGet get = new HttpGet(uri);
-			get.addHeader(new BasicHeader("Accept-Encoding", "gzip"));
-			
-			HttpResponse execute = executeRequest(get);
+			request.addHeader(new BasicHeader("Accept-Encoding", "gzip"));			
+			HttpResponse execute = setupHttpClient().execute(request);
 			final int statusCode = execute.getStatusLine().getStatusCode();
 			if (statusCode == HttpStatus.SC_OK) {
 				InputStream content = execute.getEntity().getContent();
@@ -67,10 +75,6 @@ public class HttpFetcher {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	private HttpResponse executeRequest(HttpRequestBase request) throws IOException, ClientProtocolException {
-		return setupHttpClient().execute(request);	// TODO migrate to pool
 	}
 	
 	private HttpClient setupHttpClient() {
@@ -137,5 +141,5 @@ public class HttpFetcher {
 			return this.wrappedEntity.getContentLength();
 		}
 	}
-
+	
 }
