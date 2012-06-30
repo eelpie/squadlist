@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
+import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Outing;
 
 @Controller
@@ -39,19 +42,15 @@ public class OutingsController {
     	return mv;
     }
 	
-	@RequestMapping(value="/outings/{id}/availability", method=RequestMethod.POST)
-    public ModelAndView updateAvailability(@PathVariable int outingId, 
-    		  @RequestParam(value="member", required=true) String memberId, 
-    		  @RequestParam(value="availability", required=true) String availability) throws Exception {
-    	ModelAndView mv = new ModelAndView("outing");
+	@RequestMapping(value="/availability/ajax", method=RequestMethod.POST)
+    public ModelAndView updateAvailability(
+    		@RequestParam(value="outing", required=true) int outingId,
+    		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(outingId);
     	
-    	api.setAvailability(memberId, outingId, availability);
-    	
-		mv.addObject("outing", outing);
-		mv.addObject("squad", api.getSquad(outing.getSquad()));
-    	mv.addObject("members", api.getSquadMembers(outing.getSquad()));
-    	mv.addObject("availability", api.getOutingAvailability(outing.getId()));
+    	List<Availability> result = api.setAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
+    	ModelAndView mv = new ModelAndView("outing");
+		mv.addObject("data", "ok");
     	return mv;
     }
 	
