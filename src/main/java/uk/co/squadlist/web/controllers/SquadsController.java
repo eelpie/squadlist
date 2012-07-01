@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,17 @@ public class SquadsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
-    	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(id)));
+
+    	Map<String, String> availability = new HashMap<String, String>();
+    	final List<Outing> outings = api.getSquadOutings(id);
+		mv.addObject("outings", makeDisplayObjectsFor(outings));    	
+    	for (Outing outing : outings) {
+			Map<String, String> outingAvailability = api.getOutingAvailability(outing.getId());
+			for (String member : outingAvailability.keySet()) {
+				availability.put(outing.getId() + "-" + member, outingAvailability.get(member));				
+			}
+		}
+    	mv.addObject("availability", availability);
     	return mv;
     }
 	

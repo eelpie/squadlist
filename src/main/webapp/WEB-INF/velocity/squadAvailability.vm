@@ -16,7 +16,8 @@
 	<tr>
 		<td>#parse('includes/member.vm')</td>
 		#foreach($outing in $outings) 
-		<td>-</td>
+			#set($key = "${outing.id}-$member.id")
+			<td>$!availability.get($key)</td>
 		#end
 	</tr>
 #end
