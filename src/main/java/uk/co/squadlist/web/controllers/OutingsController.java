@@ -1,7 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,8 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
-import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingAvailability;
 
 @Controller
 public class OutingsController {
@@ -48,9 +46,9 @@ public class OutingsController {
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(outingId);
     	
-    	List<Availability> result = api.setAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
+    	OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
     	ModelAndView mv = new ModelAndView("outing");
-		mv.addObject("data", "ok");
+		mv.addObject("data", result);
     	return mv;
     }
 	

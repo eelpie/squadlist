@@ -67,7 +67,9 @@ public class HttpFetcher {
 			if (statusCode == HttpStatus.SC_OK) {
 				InputStream content = execute.getEntity().getContent();
 				return content;
-			}		
+			}
+			
+			log.warn("Non 200 response (" + statusCode + ") for " + request.getMethod() + " request to: " + request.getURI());
 			throw new HttpFetchException();
 			
 		} catch (IllegalStateException e) {

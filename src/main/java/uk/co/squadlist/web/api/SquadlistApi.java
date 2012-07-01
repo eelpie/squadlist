@@ -1,18 +1,22 @@
 package uk.co.squadlist.web.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -22,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
-import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -45,6 +48,10 @@ public class SquadlistApi {
 	public SquadlistApi(HttpFetcher httpFetcher, JsonDeserializer jsonDeserializer) {
 		this.httpFetcher = httpFetcher;
 		this.jsonDeserializer = jsonDeserializer;
+	}
+	
+	public void setApiUrl(String apiUrl) {
+		this.apiUrl = apiUrl;
 	}
 	
 	public boolean auth(String username, String password) throws ClientProtocolException, IOException, AuthenticationException {
@@ -113,11 +120,15 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfStrings(json);	
 	}
 	
-	public List<Availability> setAvailability(String memberId, int outingId, String availability) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
+	public OutingAvailability setOutingAvailability(String memberId, int outingId, String availability) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
 		HttpPost post = new HttpPost(getOutingAvailabilityUrl(outingId));
-		post.getParams().setParameter("member", memberId);
-		post.getParams().setParameter("availability", availability);
-		return jsonDeserializer.deserializeListOfAvailability(httpFetcher.post(post, UTF_8));		
+		
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		nameValuePairs.add(new BasicNameValuePair("member", memberId));
+		nameValuePairs.add(new BasicNameValuePair("availability", availability));
+		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		
+		return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post, UTF_8));		
 	}
 	
 	private String getSquadsUrl() {

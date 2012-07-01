@@ -51,6 +51,10 @@ public class JsonDeserializer {
 		return (List<Availability>) mapper.readValue(json, new TypeReference<Collection<Availability>>() {});
 	}
 	
+	public OutingAvailability deserializeOutingAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, OutingAvailability.class);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Squad> deserializeListOfSquads(String json) throws JsonParseException, JsonMappingException, IOException {
 		return (List<Squad>) mapper.readValue(json, new TypeReference<Collection<Squad>>() {});
@@ -63,7 +67,7 @@ public class JsonDeserializer {
 	public Member deserializeMemberDetails(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Member.class);
 	}
-
+	
 	public Outing deserializeOuting(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Outing.class);
 	}
