@@ -32,7 +32,7 @@
 	$('.availabilityDropdown').change(function() {
     	outingId = $(this).attr('id');
     	newAvailability = $(this).val();
-    	$.post("http://localhost:8080/squadlist-0.0.1-SNAPSHOT/availability/ajax", { outing: outingId, availability: newAvailability },
+    	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
 			$("#currentAvailability" + outingId).html(newAvailability);
 		});
