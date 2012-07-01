@@ -1,4 +1,4 @@
-package uk.co.squadlist.api.views;
+package uk.co.squadlist.web.views;
 
 import java.io.IOException;
 

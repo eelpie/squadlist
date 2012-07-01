@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -23,15 +24,18 @@ import uk.co.squadlist.web.model.display.DisplayOuting;
 public class SquadsController {
 	
 	private SquadlistApi api;
+	private LoggedInUserService loggedInUserService;
 	
 	@Autowired
-	public SquadsController(SquadlistApi api) {
+	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService) {
 		this.api = api;
+		this.loggedInUserService = loggedInUserService;
 	}
 	
 	@RequestMapping("/squad/{id}/availability")
     public ModelAndView availability(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
     	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(id)));
@@ -41,6 +45,8 @@ public class SquadsController {
 	@RequestMapping("/squad/{id}/contacts")
     public ModelAndView contacts(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
     	return mv;
@@ -49,6 +55,8 @@ public class SquadsController {
 	@RequestMapping("/squad/{id}/entrydetails")
     public ModelAndView entrydetails(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
     	return mv;
@@ -57,6 +65,8 @@ public class SquadsController {
 	@RequestMapping("/squad/{id}/outings")
     public ModelAndView outings(@PathVariable int id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadOutings");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(id)));
     	return mv;

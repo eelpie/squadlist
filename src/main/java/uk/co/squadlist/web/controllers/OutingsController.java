@@ -36,6 +36,7 @@ public class OutingsController {
     	final Outing outing = api.getOuting(id);
     	    	
 		mv.addObject("outing", outing);
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
 		mv.addObject("squad", api.getSquad(outing.getSquad()));
     	mv.addObject("members", api.getSquadMembers(outing.getSquad()));
     	mv.addObject("availability", api.getOutingAvailability(outing.getId()));
