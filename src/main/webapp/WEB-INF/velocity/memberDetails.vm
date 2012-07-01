@@ -5,14 +5,14 @@
 <hr>
 
 <p>$member.firstName $member.lastName</p>
-<p>$member.gender</p>
-<p>$member.dateOfBirth</p>
+<p>$!member.gender</p>
+<p>$!member.dateOfBirth</p>
 
-<p>Email address: $member.emailAddress</p>
-<p>Contact number: $member.contactNumber</p>
+<p>Email address: $!member.emailAddress</p>
+<p>Contact number: $!member.contactNumber</p>
 
-<p>Weight: $member.weight</p>
-<p>RegistrationNumber: $member.registrationNumber</p>
+<p>Weight: $!member.weight</p>
+<p>RegistrationNumber: $!member.registrationNumber</p>
 
 Squads:
 <ul>
