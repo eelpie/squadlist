@@ -1,3 +1,5 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
 <h2>My outings</h2>
 
 <hr>
@@ -8,7 +10,7 @@
 	<hr>
 	#parse('includes/outing.vm')	
 		
-	<select>
+	<select class="availabilityDropdown" id="${outing.id}">
 		<option value="">TBA</option>		
 		#foreach($option in $availabilityOptions)
 			#set($selected = '')
@@ -19,11 +21,20 @@
 		#end
 	</select>
 	
-	#if ($outing.availability) 
-		$outing.availability
-	#else
-		TBA
-	#end
+	<span id="currentAvailability${outing.id}">
+		#if ($outing.availability) $outing.availability #else TBA #end
+	</span>
 #end
 </form>
 <hr>
+
+<script>
+	$('.availabilityDropdown').change(function() {
+    	outingId = $(this).attr('id');
+    	newAvailability = $(this).val();
+    	$.post("http://localhost:8080/squadlist-0.0.1-SNAPSHOT/availability/ajax", { outing: outingId, availability: newAvailability },
+    	function(data) {
+			$("#currentAvailability" + outingId).html(newAvailability);
+		});
+  	});
+</script>

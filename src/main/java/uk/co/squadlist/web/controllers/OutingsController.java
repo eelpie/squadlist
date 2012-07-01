@@ -15,6 +15,8 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.views.JsonSerializer;
+import uk.co.squadlist.web.views.JsonView;
 
 @Controller
 public class OutingsController {
@@ -47,7 +49,7 @@ public class OutingsController {
     	final Outing outing = api.getOuting(outingId);
     	
     	OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
-    	ModelAndView mv = new ModelAndView("outing");
+    	ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
     	return mv;
     }
