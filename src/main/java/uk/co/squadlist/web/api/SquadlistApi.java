@@ -29,6 +29,7 @@ import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 @Service("squadlistApi")
@@ -115,6 +116,11 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfMembers(json);	
 	}
 	
+	public List<OutingWithSquadAvailability> getSquadAvailability(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.get(getSquadAvailabilityUrl(squadId), UTF_8);
+		return jsonDeserializer.deserializeSquadAvailability(json);	
+	}
+
 	public List<String> getAvailabilityOptions() throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		final String json = httpFetcher.get(getAvailabilityOptionsUrl(), UTF_8);
 		return jsonDeserializer.deserializeListOfStrings(json);	
@@ -137,6 +143,10 @@ public class SquadlistApi {
 	
 	private String getSquadUrl(int squadId) {
 		return getSquadsUrl() + "/" + squadId;
+	}
+	
+	private String getSquadAvailabilityUrl(int squadId) {
+		return getSquadUrl(squadId) + "/availability";
 	}
 	
 	private String getSquadMembersUrl(int squadId) {

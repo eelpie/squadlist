@@ -12,6 +12,7 @@ import org.junit.Test;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 
 public class JsonDeserializerTest {
 
@@ -46,6 +47,18 @@ public class JsonDeserializerTest {
 		Map<String, String> availability = deserializer.deserializeListOfOutingAvailabilityMap(json);
 		
 		assertEquals("Available", availability.get("KELLEYJ"));
+	}
+	
+	@Test
+	public void canDeserializeSquadAvailability() throws Exception {
+		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("squadAvailability.json"));
+		JsonDeserializer deserializer = new JsonDeserializer();
+		
+		List<OutingWithSquadAvailability> availability = deserializer.deserializeSquadAvailability(json);
+		
+		final OutingWithSquadAvailability outingWithSquadAvailability = availability.get(15);
+		assertEquals(526, outingWithSquadAvailability.getOuting().getId());
+		assertEquals("Business Trip", outingWithSquadAvailability.getAvailability().get("SKYLERB"));
 	}
 	
 	@Test

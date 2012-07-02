@@ -15,6 +15,7 @@ import uk.co.squadlist.web.model.Availability;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 @Component
@@ -74,6 +75,11 @@ public class JsonDeserializer {
 
 	public Squad deserializeSquad(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Squad.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<OutingWithSquadAvailability> deserializeSquadAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (List<OutingWithSquadAvailability>) mapper.readValue(json, new TypeReference<Collection<OutingWithSquadAvailability>>() {});
 	}
 	
 }

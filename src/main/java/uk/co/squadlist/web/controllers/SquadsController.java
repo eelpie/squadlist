@@ -18,6 +18,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOuting;
 
@@ -39,17 +40,20 @@ public class SquadsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
+    	
+    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(id);
 
-    	Map<String, String> availability = new HashMap<String, String>();
-    	final List<Outing> outings = api.getSquadOutings(id);
-		mv.addObject("outings", makeDisplayObjectsFor(outings));    	
-    	for (Outing outing : outings) {
-			Map<String, String> outingAvailability = api.getOutingAvailability(outing.getId());
+    	List<Outing> outings = new ArrayList<Outing>();
+    	Map<String, String> allAvailability = new HashMap<String, String>();
+    	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
+    		outings.add(outingWithSquadAvailability.getOuting());
+			final Map<String, String> outingAvailability = outingWithSquadAvailability.getAvailability();
 			for (String member : outingAvailability.keySet()) {
-				availability.put(outing.getId() + "-" + member, outingAvailability.get(member));				
+				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
 			}
 		}
-    	mv.addObject("availability", availability);
+    	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
+    	mv.addObject("availability", allAvailability);
     	return mv;
     }
 	
