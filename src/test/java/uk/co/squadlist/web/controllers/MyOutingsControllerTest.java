@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,18 +29,20 @@ public class MyOutingsControllerTest {
 	@Mock private List<OutingAvailability> membersAvailability;
 	@Mock private List<DisplayOutingAvailability> membersAvailabilityDisplayObjects;
 
+	private MyOutingsController controller;
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		controller = new MyOutingsController(loggedInUserService, api, displayObjectFactory);
 	}
 	
 	@Test
-	public void myOutingsShouldShowOutings() throws Exception {
+	public void myOutingsShouldShowOutingsForTodayAndTheFuture() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(MEMBER)).thenReturn(membersAvailability);
+		when(api.getAvailabilityFor(MEMBER, DateTime.now().minusDays(1).toDateMidnight().toDate())).thenReturn(membersAvailability);
 		when(displayObjectFactory.makeDisplayObjectsFor(membersAvailability)).thenReturn(membersAvailabilityDisplayObjects);
 
-		MyOutingsController controller = new MyOutingsController(loggedInUserService, api, displayObjectFactory);
 						
 		ModelAndView mv = controller.outings();
 		

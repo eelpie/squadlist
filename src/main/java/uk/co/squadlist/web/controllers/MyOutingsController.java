@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +30,9 @@ public class MyOutingsController {
     	ModelAndView mv = new ModelAndView("myOutings");
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
-    	mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api.getAvailabilityFor(loggedInUser)));
+    	
+		final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
+		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api.getAvailabilityFor(loggedInUser, midnightYesterday.toDate())));
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	return mv;
     }

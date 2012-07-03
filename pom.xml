@@ -106,6 +106,12 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.4</version>
 		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.1</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
