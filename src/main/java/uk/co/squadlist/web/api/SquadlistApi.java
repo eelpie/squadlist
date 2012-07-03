@@ -112,8 +112,8 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeListOfMembers(json);	
 	}
 	
-	public List<OutingWithSquadAvailability> getSquadAvailability(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(squadId), UTF_8);
+	public List<OutingWithSquadAvailability> getSquadAvailability(int squadId, Date fromDate) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+		final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(squadId, fromDate), UTF_8);
 		return jsonDeserializer.deserializeSquadAvailability(json);	
 	}
 

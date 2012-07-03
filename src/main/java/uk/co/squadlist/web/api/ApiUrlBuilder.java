@@ -26,10 +26,14 @@ public class ApiUrlBuilder {
 	
 	public String getMembersAvailabilityUrl(String memberId, Date fromDate) {
 		final StringBuilder url = new StringBuilder(getMemberDetailsUrl(memberId) + "/availability");
+		appendFromDate(fromDate, url);
+		return url.toString();		
+	}
+
+	private void appendFromDate(Date fromDate, final StringBuilder url) {
 		if (fromDate != null) {
 			url.append("?fromDate=" + dateHourMinute.print(new DateTime(fromDate)));
 		}
-		return url.toString();		
 	}
 	
 	public String getSquadsUrl() {
@@ -40,8 +44,10 @@ public class ApiUrlBuilder {
 		return getSquadsUrl() + "/" + squadId;
 	}
 	
-	public String getSquadAvailabilityUrl(int squadId) {
-		return getSquadUrl(squadId) + "/availability";
+	public String getSquadAvailabilityUrl(int squadId, Date fromDate) {
+		final StringBuilder url = new StringBuilder(getSquadUrl(squadId) + "/availability");
+		appendFromDate(fromDate, url);
+		return url.toString();
 	}
 	
 	public String getSquadMembersUrl(int squadId) {

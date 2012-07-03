@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +43,8 @@ public class SquadsController {
 		mv.addObject("squad", api.getSquad(id));
     	mv.addObject("members", api.getSquadMembers(id));
     	
-    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(id);
+    	final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
+		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(id, midnightYesterday.toDate());
 
     	List<Outing> outings = new ArrayList<Outing>();
     	Map<String, String> allAvailability = new HashMap<String, String>();
