@@ -6,7 +6,7 @@ public class Member {
 	
 	private String id, firstName, lastName, gender, dateOfBirth, emailAddress, contactNumber, registrationNumber;
 	private int weight;
-	private List<String> squads;
+	private List<Squad> squads;
 	public String getId() {
 		return id;
 	}
@@ -61,10 +61,10 @@ public class Member {
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}
-	public List<String> getSquads() {
+	public List<Squad> getSquads() {
 		return squads;
 	}
-	public void setSquads(List<String> squads) {
+	public void setSquads(List<Squad> squads) {
 		this.squads = squads;
 	}
 	

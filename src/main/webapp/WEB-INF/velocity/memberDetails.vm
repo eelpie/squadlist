@@ -17,7 +17,7 @@
 Squads:
 <ul>
 #foreach($squad in $member.squads)
- 	<li>$squad</li>
+ 	<li>$squad.name</li>
 #end
 </ul>
 <hr>

@@ -68,7 +68,9 @@ public class JsonDeserializerTest {
 		
 		final Member member = deserializer.deserializeMemberDetails(json);
 		
-		assertEquals("ISADOREA", member.getId());
+		assertEquals("LILIANB", member.getId());
+		assertEquals(1, member.getSquads().size());
+		assertEquals("Men's Senior Squad", member.getSquads().get(0).getName());
 	}
 
 }
