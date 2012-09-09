@@ -21,7 +21,6 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOuting;
 
 @Controller
@@ -92,11 +91,9 @@ public class SquadsController {
 
 	private List<DisplayOuting> makeDisplayObjectsFor(List<Outing> outings) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
 		List<DisplayOuting> displayOutings = new ArrayList<DisplayOuting>();
-		final Map<Integer, Squad> squadsMap = api.getSquadsMap();
 		for (Outing outing : outings) {
-			displayOutings.add(new DisplayOuting(outing.getId(), 
-					outing.getSquad(), 
-					squadsMap.get(outing.getSquad()).getName(), 
+			displayOutings.add(new DisplayOuting(outing.getId(),
+					outing.getSquad(),
 					outing.getDate()));
 		}
 		return displayOutings;

@@ -20,8 +20,7 @@ public class OutingAvailability {
 	
 	@Override
 	public String toString() {
-		return "OutingAvailability [outing=" + outing + ", availability="
-				+ availability + "]";
+		return "OutingAvailability [outing=" + outing + ", availability=" + availability + "]";
 	}
 
 }

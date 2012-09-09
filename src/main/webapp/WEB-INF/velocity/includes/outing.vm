@@ -1,1 +1,1 @@
-<p>$outing.squadName - <a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$outing.date</a></p>
+<p>$outing.squad.name - <a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$outing.date</a></p>

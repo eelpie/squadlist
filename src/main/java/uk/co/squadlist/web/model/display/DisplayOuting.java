@@ -1,14 +1,18 @@
 package uk.co.squadlist.web.model.display;
 
+import java.util.Date;
+
+import uk.co.squadlist.web.model.Squad;
+
 public class DisplayOuting {
 
-	private final int id, squad;
-	private final String squadName, date;
+	private final int id;
+	private final Squad squad;
+	private final Date date;
 
-	public DisplayOuting(int id, int squad, String squadName, String date) {
+	public DisplayOuting(int id, Squad squad, Date date) {
 		this.id = id;
 		this.squad = squad;
-		this.squadName = squadName;
 		this.date = date;
 	}
 
@@ -16,15 +20,11 @@ public class DisplayOuting {
 		return id;
 	}
 
-	public int getSquad() {
+	public Squad getSquad() {
 		return squad;
 	}
-
-	public String getSquadName() {
-		return squadName;
-	}
-
-	public String getDate() {
+	
+	public Date getDate() {
 		return date;
 	}
 	

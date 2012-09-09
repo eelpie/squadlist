@@ -23,10 +23,15 @@ public class JsonDeserializerTest {
 		JsonDeserializer deserializer = new JsonDeserializer();
 		List<Outing> outings = deserializer.deserializeListOfOutings(json);
 		
-		assertEquals(51, outings.size());		
+		assertEquals(106, outings.size());		
 		for (Outing outing : outings) {
 			assertTrue(outing instanceof Outing);
 		}
+		
+		final Outing firstOuting = outings.get(0);
+		assertEquals(241, firstOuting.getId());
+		assertEquals("Fri Mar 16 08:00:00 GMT 2012", firstOuting.getDate().toString());
+		assertEquals("Men's Senior Squad", firstOuting.getSquad().getName());
 	}
 	
 	@Test
@@ -54,11 +59,12 @@ public class JsonDeserializerTest {
 		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("squadAvailability.json"));
 		JsonDeserializer deserializer = new JsonDeserializer();
 		
-		List<OutingWithSquadAvailability> availability = deserializer.deserializeSquadAvailability(json);
+		final List<OutingWithSquadAvailability> availability = deserializer.deserializeSquadAvailability(json);
 		
-		final OutingWithSquadAvailability outingWithSquadAvailability = availability.get(15);
-		assertEquals(526, outingWithSquadAvailability.getOuting().getId());
-		assertEquals("Business Trip", outingWithSquadAvailability.getAvailability().get("SKYLERB"));
+		final OutingWithSquadAvailability outingWithSquadAvailability = availability.get(0);
+		assertEquals(241, outingWithSquadAvailability.getOuting().getId());
+		assertEquals("Fri Mar 16 08:00:00 GMT 2012", outingWithSquadAvailability.getOuting().getDate().toString());		
+		assertEquals("Injury", outingWithSquadAvailability.getAvailability().get("TEMPLEB"));
 	}
 	
 	@Test

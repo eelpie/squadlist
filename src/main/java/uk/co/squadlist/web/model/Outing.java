@@ -1,10 +1,12 @@
 package uk.co.squadlist.web.model;
 
+import java.util.Date;
+
 public class Outing {
 	
 	private int id;
-	private int squad;
-	private String date;
+	private Squad squad;
+	private Date date;
 	private String notes;
 	
 	public Outing() {
@@ -16,16 +18,16 @@ public class Outing {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getSquad() {
+	public Squad getSquad() {
 		return squad;
 	}
-	public void setSquad(int squad) {
+	public void setSquad(Squad squad) {
 		this.squad = squad;
 	}
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	public String getNotes() {
