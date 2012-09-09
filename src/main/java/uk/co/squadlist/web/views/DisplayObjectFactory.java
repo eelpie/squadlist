@@ -10,8 +10,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.exceptions.HttpFetchException;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOutingAvailability;
