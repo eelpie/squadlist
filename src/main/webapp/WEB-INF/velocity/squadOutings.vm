@@ -1,8 +1,8 @@
-<h2>$squad.name outings</h2>
+#parse('includes/head.vm')
 
-<hr>
+<h3>$squad.name outings</h3>
+
 #parse('includes/nav.vm')
-<hr>
 
 #foreach( $outing in $outings )
 	#parse('includes/outing.vm')

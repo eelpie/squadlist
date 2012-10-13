@@ -1,16 +1,23 @@
-<h2>$squad.name entry details</h2>
+#parse('includes/head.vm')
 
-<hr>
+<h3>$squad.name entry details</h3>
+
 #parse('includes/nav.vm')
-<hr>
 
 <table>
 #foreach( $member in $members )
-	<tr>
-		<td>#parse('includes/member.vm')</td>
-		<td>$member.weight</td>
-		<td>$member.registrationNumber</td>
-	</tr>
+
+	<div class="row">
+    	<div class="span2 offset1">
+    		#parse('includes/member.vm')
+    	</div>
+    	<div  class="span2">
+    		$!member.registrationNumber
+    	</div>
+    	<div  class="span2">
+    		$!member.weight
+    	</div>
+    </div>
 #end
 </tr>
 </table>

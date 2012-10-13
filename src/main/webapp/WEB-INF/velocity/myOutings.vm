@@ -1,32 +1,36 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+#parse('includes/head.vm')
 
-<h2>My outings</h2>
+<h3>My outings</h3>
 
-<hr>
 #parse('includes/nav.vm')
 
 <form>
 #foreach($outing in $outings)
-	<hr>
-	#parse('includes/outing.vm')	
+
+    <div class="row">
+    	<div class="span4 offset1">
+			#parse('includes/outing.vm')	
+    	</div>
 		
-	<select class="availabilityDropdown" id="${outing.id}">
-		<option value="">TBA</option>		
-		#foreach($option in $availabilityOptions)
-			#set($selected = '')
-			#if ($outing.availability == $option) 
-				#set($selected = 'SELECTED')
-			#end
-			<option value="$option" $selected>$option</option>	
-		#end
-	</select>
-	
-	<span id="currentAvailability${outing.id}">
-		#if ($outing.availability) $outing.availability #else TBA #end
-	</span>
+		<div class="span6">	
+			<select class="availabilityDropdown" id="${outing.id}">
+				<option value="">TBA</option>		
+				#foreach($option in $availabilityOptions)
+					#set($selected = '')
+					#if ($outing.availability == $option) 
+						#set($selected = 'SELECTED')
+					#end
+					<option value="$option" $selected>$option</option>	
+				#end
+			</select>
+			
+			<span id="currentAvailability${outing.id}">
+				#if ($outing.availability) $outing.availability #else TBA #end
+			</span>
+		</div>
+    </div>
 #end
 </form>
-<hr>
 
 <script>
 	$('.availabilityDropdown').change(function() {

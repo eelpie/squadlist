@@ -1,15 +1,22 @@
-<h2>$squad.name outing - $outing.date</h2>
+#parse('includes/head.vm')
 
-<hr>
+<h3>$squad.name outing - $outing.date</h3>
+
 #parse('includes/nav.vm')
-<hr>
 
 #foreach( $member in $members )
-   	#parse('includes/member.vm')
-	#if($availability.get(${member.id}))
-		$availability.get(${member.id})
-	#else 
-		TBA
-	#end
+
+	<div class="row">
+    	<div class="span2 offset1">
+   			#parse('includes/member.vm')
+   		</div>
+   		<div class="span4">   		
+			#if($availability.get(${member.id}))
+				$availability.get(${member.id})
+			#else 
+				TBA
+			#end
+		</div>
+	</div>
 #end
 <hr>

@@ -1,8 +1,8 @@
-<h2>Member details: $member.id</h2>
+#parse('includes/head.vm')
 
-<hr>
+<h3>Member details: $member.firstName $member.lastName</h3>
+
 #parse('includes/nav.vm')
-<hr>
 
 <p>$member.firstName $member.lastName</p>
 <p>$!member.gender</p>
