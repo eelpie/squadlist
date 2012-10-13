@@ -1,6 +1,6 @@
 #parse('includes/head.vm')
 
-<h3>$squad.name outing - $outing.date</h3>
+<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
 
 #parse('includes/nav.vm')
 

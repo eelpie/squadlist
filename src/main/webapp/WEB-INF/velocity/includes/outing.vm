@@ -1,1 +1,4 @@
-<p>$outing.squad.name - <a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$outing.date</a></p>
+<p>
+<a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$dateFormatter.dayMonthYearTime($outing.date)</a><br/>
+$outing.squad.name
+</p>

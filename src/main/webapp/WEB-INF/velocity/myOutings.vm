@@ -8,11 +8,11 @@
 #foreach($outing in $outings)
 
     <div class="row">
-    	<div class="span4 offset1">
+    	<div class="span3 offset1">
 			#parse('includes/outing.vm')	
     	</div>
 		
-		<div class="span6">	
+		<div class="span3">	
 			<select class="availabilityDropdown" id="${outing.id}">
 				<option value="">TBA</option>		
 				#foreach($option in $availabilityOptions)
@@ -23,7 +23,8 @@
 					<option value="$option" $selected>$option</option>	
 				#end
 			</select>
-			
+		</div>
+		<div class="span3">			
 			<span id="currentAvailability${outing.id}">
 				#if ($outing.availability) $outing.availability #else TBA #end
 			</span>
