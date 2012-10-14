@@ -25,9 +25,15 @@
 			</select>
 		</div>
 		<div class="span3">			
-			<span id="currentAvailability${outing.id}">
-				#if ($outing.availability) $outing.availability #else TBA #end
-			</span>
+			#if ($outing.availability) 
+				<span id="currentAvailability${outing.id}" class="label label-info">
+					$outing.availability 
+				</span>				
+			#else
+ 				<span id="currentAvailability${outing.id}">
+ 					TBA
+ 				</span>
+			#end
 		</div>
     </div>
 #end
