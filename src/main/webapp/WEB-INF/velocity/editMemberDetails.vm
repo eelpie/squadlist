@@ -1,0 +1,37 @@
+#parse('includes/head.vm')
+
+<h3>$member.firstName $member.lastName / Edit details</h3>
+
+#parse('includes/nav.vm')
+
+<div class="row">
+	<div class="span9 offset1">		
+		<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">		
+			#springBind("member.firstName")
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">First name</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="${status.value}">
+				</div>
+			</div>
+			
+			#springBind("member.lastName")			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Last name</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="${status.value}">
+				</div>
+			</div>
+				
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Save details</button>
+					<a href="$urlBuilder.memberUrl($member)"><button class="btn btn-primary" type="button">Cancel</button></a>					
+				</div>
+			</div>
+		</form>
+				
+	</div>
+</div>
+
+<hr>

@@ -1,23 +1,34 @@
 #parse('includes/head.vm')
 
-<h3>Member details: $member.firstName $member.lastName</h3>
+<h3>$member.firstName $member.lastName</h3>
 
 #parse('includes/nav.vm')
 
-<p>$member.firstName $member.lastName</p>
-<p>$!member.gender</p>
-<p>$!member.dateOfBirth</p>
+<div class="row">
+	<div class="span3 offset1">
 
-<p>Email address: $!member.emailAddress</p>
-<p>Contact number: $!member.contactNumber</p>
+	<p>$member.firstName $member.lastName</p>
+	<p>$!member.gender</p>
+	<p>$!member.dateOfBirth</p>
 
-<p>Weight: $!member.weight</p>
-<p>RegistrationNumber: $!member.registrationNumber</p>
+	<p>Email address: $!member.emailAddress</p>
+	<p>Contact number: $!member.contactNumber</p>
 
-Squads:
-<ul>
-#foreach($squad in $member.squads)
- 	<li>$squad.name</li>
-#end
-</ul>
+	<p>Weight: $!member.weight</p>
+	<p>RegistrationNumber: $!member.registrationNumber</p>
+
+	Squads:
+	<ul>
+	#foreach($squad in $member.squads)
+	 	<li>$squad.name</li>
+	#end
+	</ul>
+	
+	<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
+	
+	</div>
+</div>
+
+
+
 <hr>

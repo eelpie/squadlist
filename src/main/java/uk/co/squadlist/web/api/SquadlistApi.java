@@ -130,5 +130,9 @@ public class SquadlistApi {
 		
 		return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post));		
 	}
+
+	public void updateMemberDetails(Member member) {
+		// TODO implement
+	}
 	
 }
