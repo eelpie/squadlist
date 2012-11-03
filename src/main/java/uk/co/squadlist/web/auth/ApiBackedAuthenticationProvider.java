@@ -1,10 +1,8 @@
 package uk.co.squadlist.web.auth;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,7 +26,6 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     
     @Autowired
     public ApiBackedAuthenticationProvider(SquadlistApi api) {
-    	super();
 		this.api = api;
 	}
 
@@ -37,26 +34,17 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     }
 
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException {    	
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
     	final String password = authToken.getCredentials().toString();
-    	try {
-    		log.info("Attempting to auth user: " + username);
-			if (api.auth(username, password)) {
-				log.info("Auth successful for user: " + username);
-				Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
-				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-				return new org.springframework.security.core.userdetails.User(username, password, authorities);    		
-			}
-			log.info("Auth attempt unsuccessful for user: " + username);
-			
-		} catch (org.apache.http.auth.AuthenticationException e) {
-			log.error(e);
-		} catch (ClientProtocolException e) {
-			log.error(e);
-		} catch (IOException e) {
-			log.error(e);
+    	log.info("Attempting to auth user: " + username);
+		if (api.auth(username, password)) {
+			log.info("Auth successful for user: " + username);
+			Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+			return new org.springframework.security.core.userdetails.User(username, password, authorities);    		
 		}
-    	
+		
+		log.info("Auth attempt unsuccessful for user: " + username);		
     	throw new BadCredentialsException(INVALID_USERNAME_OR_PASSWORD);	 
     }
 

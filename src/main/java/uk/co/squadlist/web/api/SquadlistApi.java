@@ -9,8 +9,6 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthenticationException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -49,98 +47,181 @@ public class SquadlistApi {
 		this.jsonDeserializer = jsonDeserializer;
 	}
 	
-	public boolean auth(String username, String password) throws ClientProtocolException, IOException, AuthenticationException {
-		HttpClient client = new DefaultHttpClient();
-		HttpGet get = new HttpGet(urlBuilder.getAuthUrlFor(username, password)); 	// TODO should be a post
-		HttpResponse execute = client.execute(get);				
-		final int statusCode = execute.getStatusLine().getStatusCode();
-		log.info("Auth attempt status code was: " + statusCode);
-		return statusCode == HttpStatus.SC_OK;
-	}
-	
-	public List<OutingAvailability> getAvailabilityFor(String memberId, Date date) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		log.info("getAvailabilityFor: " + memberId + ", " + date);
-		final String json = httpFetcher.get(urlBuilder.getMembersAvailabilityUrl(memberId, date));
-		return jsonDeserializer.deserializeListOfOutingAvailability(json);
-	}
-	
-	public List<Squad> getSquads() throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		final String json = httpFetcher.get(urlBuilder.getSquadsUrl());
-		return jsonDeserializer.deserializeListOfSquads(json);
-	}
-	
-	public Map<Integer, Squad> getSquadsMap() throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		Map<Integer, Squad> map = new HashMap<Integer, Squad>();
-		for(Squad squad : getSquads()) {
-			map.put(squad.getId(), squad);
+	public boolean auth(String username, String password) {
+		try {
+			final HttpClient client = new DefaultHttpClient();
+			final HttpGet get = new HttpGet(urlBuilder.getAuthUrlFor(username, password)); 	// TODO should be a post
+			final HttpResponse execute = client.execute(get);
+			
+			final int statusCode = execute.getStatusLine().getStatusCode();
+			log.info("Auth attempt status code was: " + statusCode);
+			return statusCode == HttpStatus.SC_OK;
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
 		}
-		return map;
 	}
 	
-	public List<Outing> getSquadOutings(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getSquadOutingsUrl(squadId));
-		return jsonDeserializer.deserializeListOfOutings(json);	
+	public List<OutingAvailability> getAvailabilityFor(String memberId, Date date) {
+		try {
+			log.info("getAvailabilityFor: " + memberId + ", " + date);
+			final String json = httpFetcher.get(urlBuilder.getMembersAvailabilityUrl(memberId, date));
+			return jsonDeserializer.deserializeListOfOutingAvailability(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public Map<String, String> getOutingAvailability(int outingId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getOutingAvailabilityUrl(outingId));
-		return jsonDeserializer.deserializeListOfOutingAvailabilityMap(json);	
+	public List<Squad> getSquads() {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getSquadsUrl());		
+			return jsonDeserializer.deserializeListOfSquads(json);
+		
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public Member getMemberDetails(String memberId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getMemberDetailsUrl(memberId));
-		return jsonDeserializer.deserializeMemberDetails(json);	
+	public Map<Integer, Squad> getSquadsMap() {
+		try {
+			final Map<Integer, Squad> map = new HashMap<Integer, Squad>();
+			for(Squad squad : getSquads()) {
+				map.put(squad.getId(), squad);
+			}
+			return map;
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public Squad getSquad(int squadId) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getSquadUrl(squadId));
-		return jsonDeserializer.deserializeSquad(json);	
+	public List<Outing> getSquadOutings(int squadId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getSquadOutingsUrl(squadId));
+			return jsonDeserializer.deserializeListOfOutings(json);
+		
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}			
+	}
+	
+	public Map<String, String> getOutingAvailability(int outingId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getOutingAvailabilityUrl(outingId));
+			return jsonDeserializer.deserializeListOfOutingAvailabilityMap(json);
+
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Member getMemberDetails(String memberId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getMemberDetailsUrl(memberId));
+			return jsonDeserializer.deserializeMemberDetails(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Squad getSquad(int squadId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getSquadUrl(squadId));
+			return jsonDeserializer.deserializeSquad(json);
+
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 		
-	public Outing getOuting(int outingId) throws HttpFetchException, UnknownOutingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getOutingUrl(outingId));
-		final Outing outing = jsonDeserializer.deserializeOuting(json);
-		if (outing == null) {
-			throw new UnknownOutingException();
+	public Outing getOuting(int outingId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getOutingUrl(outingId));
+			final Outing outing = jsonDeserializer.deserializeOuting(json);
+			if (outing == null) {
+				throw new UnknownOutingException();
+			}
+			return outing;	
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
 		}
-		return outing;	
 	}
 	
-	public List<Member> getSquadMembers(int squadId) throws HttpFetchException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getSquadMembersUrl(squadId));
-		return jsonDeserializer.deserializeListOfMembers(json);	
+	public List<Member> getSquadMembers(int squadId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getSquadMembersUrl(squadId));
+			return jsonDeserializer.deserializeListOfMembers(json);
+
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public List<OutingWithSquadAvailability> getSquadAvailability(int squadId, Date fromDate) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(squadId, fromDate));
-		return jsonDeserializer.deserializeSquadAvailability(json);	
+	public List<OutingWithSquadAvailability> getSquadAvailability(int squadId, Date fromDate) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(squadId, fromDate));
+			return jsonDeserializer.deserializeSquadAvailability(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	public List<String> getAvailabilityOptions() throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
-		final String json = httpFetcher.get(urlBuilder.getAvailabilityOptionsUrl());
-		return jsonDeserializer.deserializeListOfStrings(json);	
+		try {
+			final String json = httpFetcher.get(urlBuilder.getAvailabilityOptionsUrl());
+			return jsonDeserializer.deserializeListOfStrings(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public OutingAvailability setOutingAvailability(String memberId, int outingId, String availability) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		final HttpPost post = new HttpPost(urlBuilder.getOutingAvailabilityUrl(outingId));
+	public OutingAvailability setOutingAvailability(String memberId, int outingId, String availability) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getOutingAvailabilityUrl(outingId));
 		
-		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
-		nameValuePairs.add(new BasicNameValuePair("member", memberId));
-		nameValuePairs.add(new BasicNameValuePair("availability", availability));
-		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		
-		return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post));		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("member", memberId));
+			nameValuePairs.add(new BasicNameValuePair("availability", availability));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
-
-	public Member updateMemberDetails(Member member) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(member.getId()));
+	
+	public Member updateMemberDetails(Member member) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(member.getId()));
 		
-		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
-		nameValuePairs.add(new BasicNameValuePair("firstName", member.getFirstName()));
-		nameValuePairs.add(new BasicNameValuePair("lastName", member.getLastName()));
-		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		
-		return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("firstName", member.getFirstName()));
+			nameValuePairs.add(new BasicNameValuePair("lastName", member.getLastName()));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
 	}
 	
 }
