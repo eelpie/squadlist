@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,8 @@ import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
+
+import com.google.common.collect.Lists;
 
 @Service("squadlistApi")
 public class SquadlistApi {
@@ -121,9 +122,9 @@ public class SquadlistApi {
 	}
 	
 	public OutingAvailability setOutingAvailability(String memberId, int outingId, String availability) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		HttpPost post = new HttpPost(urlBuilder.getOutingAvailabilityUrl(outingId));
+		final HttpPost post = new HttpPost(urlBuilder.getOutingAvailabilityUrl(outingId));
 		
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
 		nameValuePairs.add(new BasicNameValuePair("member", memberId));
 		nameValuePairs.add(new BasicNameValuePair("availability", availability));
 		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -131,8 +132,15 @@ public class SquadlistApi {
 		return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post));		
 	}
 
-	public void updateMemberDetails(Member member) {
-		// TODO implement
+	public Member updateMemberDetails(Member member) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
+		final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(member.getId()));
+		
+		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+		nameValuePairs.add(new BasicNameValuePair("firstName", member.getFirstName()));
+		nameValuePairs.add(new BasicNameValuePair("lastName", member.getLastName()));
+		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		
+		return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 	}
 	
 }
