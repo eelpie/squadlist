@@ -12,6 +12,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.model.Availability;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -80,6 +81,15 @@ public class JsonDeserializer {
 	@SuppressWarnings("unchecked")
 	public List<OutingWithSquadAvailability> deserializeSquadAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
 		return (List<OutingWithSquadAvailability>) mapper.readValue(json, new TypeReference<Collection<OutingWithSquadAvailability>>() {});
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Instance> deserializeListOfInstances(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (List<Instance>) mapper.readValue(json, new TypeReference<Collection<Instance>>() {});
+	}
+
+	public Instance deserializeInstanceDetails(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, Instance.class);
 	}
 	
 }

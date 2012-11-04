@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -45,6 +46,40 @@ public class SquadlistApi {
 		this.urlBuilder = urlBuilder;
 		this.httpFetcher = httpFetcher;
 		this.jsonDeserializer = jsonDeserializer;
+	}
+	
+	public SquadlistApi(String apiUrl) {
+		this.urlBuilder  = new ApiUrlBuilder(apiUrl);
+		this.httpFetcher = new HttpFetcher();
+		this.jsonDeserializer = new JsonDeserializer();
+	}
+
+	public List<Instance> getInstances() {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getInstancesUrl());
+			return jsonDeserializer.deserializeListOfInstances(json);
+		
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Instance createInstance(String id, String name) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getInstancesUrl());
+		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("id", id));
+			nameValuePairs.add(new BasicNameValuePair("name", name));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			return jsonDeserializer.deserializeInstanceDetails(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
 	
 	public boolean auth(String username, String password) {

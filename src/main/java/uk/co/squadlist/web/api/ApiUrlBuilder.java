@@ -19,8 +19,8 @@ public class ApiUrlBuilder {
 	
 	@Value("#{squadlist['apiUrl']}")
 	private String apiUrl;
-
-	public void setApiUrl(String apiUrl) {
+	
+	public ApiUrlBuilder(String apiUrl) {
 		this.apiUrl = apiUrl;
 	}
 	
@@ -30,10 +30,9 @@ public class ApiUrlBuilder {
 		return url.toString();		
 	}
 
-	private void appendFromDate(Date fromDate, final StringBuilder url) {
-		if (fromDate != null) {
-			url.append("?fromDate=" + dateHourMinute.print(new DateTime(fromDate)));
-		}
+	public String getInstancesUrl() {
+		return apiUrl + "/instances";
+
 	}
 	
 	public String getSquadsUrl() {
@@ -76,6 +75,12 @@ public class ApiUrlBuilder {
 	
 	public String getAuthUrlFor(String username,String password){
 		return apiUrl + "/auth?username=" + urlEncode(username) + "&password=" + urlEncode(password);
+	}
+
+	private void appendFromDate(Date fromDate, final StringBuilder url) {
+		if (fromDate != null) {
+			url.append("?fromDate=" + dateHourMinute.print(new DateTime(fromDate)));
+		}
 	}
 
 	private String urlEncode(String value) {

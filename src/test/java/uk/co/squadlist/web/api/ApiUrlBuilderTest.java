@@ -11,8 +11,7 @@ public class ApiUrlBuilderTest {
 
 	@Test
 	public void canAppendFromDateToMemberAvailabilityUrl() throws Exception {		
-		ApiUrlBuilder urlBuilder = new ApiUrlBuilder();
-		urlBuilder.setApiUrl("http://api.local");
+		ApiUrlBuilder urlBuilder = new ApiUrlBuilder("http://api.local");
 		
 		final String url = urlBuilder.getMembersAvailabilityUrl(MEMBER, new DateTime(2012, 7, 13, 12, 10).toDate());
 		
