@@ -194,6 +194,17 @@ public class SquadlistApi {
 		}
 	}
 	
+	public List<Member> getMembers() {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getMembersUrl());
+			return jsonDeserializer.deserializeListOfMembers(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+	
 	public List<Member> getSquadMembers(int squadId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getSquadMembersUrl(squadId));
@@ -236,6 +247,22 @@ public class SquadlistApi {
 			nameValuePairs.add(new BasicNameValuePair("availability", availability));
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			return jsonDeserializer.deserializeOutingAvailability(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+	
+	public Member createMember(String firstName, String lastName) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getMembersUrl());
+		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("firstName", firstName));
+			nameValuePairs.add(new BasicNameValuePair("lastName", lastName));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 			
 		} catch (Exception e) {
 			log.error(e);

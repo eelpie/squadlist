@@ -56,7 +56,11 @@ public class ApiUrlBuilder {
 	public String getSquadOutingsUrl(int squadId) {
 		return getSquadUrl(squadId) + "/outings";
 	}
-
+	
+	public String getMembersUrl() {
+		return apiUrl + "/members";
+	}
+	
 	public String getMemberDetailsUrl(String memberId) {
 		return apiUrl + "/members/" + memberId;
 	}

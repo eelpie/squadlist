@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Test;
 
 import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.model.Member;
 
 public class SquadlistApiIT {
 
@@ -16,7 +17,14 @@ public class SquadlistApiIT {
 		System.out.println(instances);
 		
 		final Instance instance = api.createInstance("test", "Test instance");
-		System.out.println(instance);		
+		System.out.println(instance);	
+		
+		List<Member> members = api.getMembers();
+		System.out.println(members);
+		
+		api.createMember("John", "Smith");
+		members = api.getMembers();
+		System.out.println(members);
 	}
 	
 }
