@@ -14,6 +14,8 @@ import uk.co.squadlist.web.views.DisplayObjectFactory;
 @Controller
 public class MyOutingsController {
 	
+	private static final String INSTANCE = "demo";
+	
 	private LoggedInUserService loggedInUserService;
 	private SquadlistApi api;
 	private DisplayObjectFactory displayObjectFactory;
@@ -32,8 +34,8 @@ public class MyOutingsController {
 		mv.addObject("loggedInUser", loggedInUser);
     	
 		final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
-		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api.getAvailabilityFor(loggedInUser, midnightYesterday.toDate())));
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api.getAvailabilityFor(INSTANCE, loggedInUser, midnightYesterday.toDate())));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(INSTANCE));
     	return mv;
     }
 	

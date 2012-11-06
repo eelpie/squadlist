@@ -24,8 +24,8 @@ public class ApiUrlBuilder {
 		this.apiUrl = apiUrl;
 	}
 	
-	public String getMembersAvailabilityUrl(String memberId, Date fromDate) {
-		final StringBuilder url = new StringBuilder(getMemberDetailsUrl(memberId) + "/availability");
+	public String getMembersAvailabilityUrl(String instance, String memberId, Date fromDate) {
+		final StringBuilder url = new StringBuilder(getMemberDetailsUrl(instance, memberId) + "/availability");
 		appendFromDate(fromDate, url);
 		return url.toString();		
 	}
@@ -35,50 +35,50 @@ public class ApiUrlBuilder {
 
 	}
 	
-	public String getSquadsUrl() {
-		return apiUrl + "/squads";
+	public String getSquadsUrl(String instance) {
+		return apiUrl + "/" + instance + "/squads";
 	}
 	
-	public String getSquadUrl(int squadId) {
-		return getSquadsUrl() + "/" + squadId;
+	public String getSquadUrl(String instance, int squadId) {
+		return getSquadsUrl(instance) + "/" + squadId;
 	}
 	
-	public String getSquadAvailabilityUrl(int squadId, Date fromDate) {
-		final StringBuilder url = new StringBuilder(getSquadUrl(squadId) + "/availability");
+	public String getSquadAvailabilityUrl(String instance, int squadId, Date fromDate) {
+		final StringBuilder url = new StringBuilder(getSquadUrl(instance, squadId) + "/availability");
 		appendFromDate(fromDate, url);
 		return url.toString();
 	}
 	
-	public String getSquadMembersUrl(int squadId) {
-		return getSquadUrl(squadId) + "/members";
+	public String getSquadMembersUrl(String instance, int squadId) {
+		return getSquadUrl(instance, squadId) + "/members";
 	}
 	
-	public String getSquadOutingsUrl(int squadId) {
-		return getSquadUrl(squadId) + "/outings";
+	public String getSquadOutingsUrl(String instance, int squadId) {
+		return getSquadUrl(instance, squadId) + "/outings";
 	}
 	
-	public String getMembersUrl() {
-		return apiUrl + "/members";
+	public String getMembersUrl(String instance) {
+		return apiUrl + "/" +  urlEncode(instance) + "/members";
 	}
 	
-	public String getMemberDetailsUrl(String memberId) {
-		return apiUrl + "/members/" + memberId;
+	public String getMemberDetailsUrl(String instance, String memberId) {
+		return apiUrl + "/" +  urlEncode(instance) + "/members/" + memberId;
 	}
 		
-	public String getOutingUrl(int outingId) {
-		return apiUrl + "/outings/" + outingId;
+	public String getOutingUrl(String instance, int outingId) {
+		return apiUrl + "/" + urlEncode(instance) + "/outings/" + outingId;
 	}
 	
-	public String getOutingAvailabilityUrl(int outingId) {
-		return getOutingUrl(outingId) + "/availability";
+	public String getOutingAvailabilityUrl(String instance, int outingId) {
+		return getOutingUrl(instance, outingId) + "/availability";
 	}
 	
-	public String getAvailabilityOptionsUrl() {
-		return apiUrl + "/availability/options";
+	public String getAvailabilityOptionsUrl(String instance) {
+		return apiUrl + "/" +  urlEncode(instance) + "/availability/options";
 	}
 	
-	public String getAuthUrlFor(String username,String password){
-		return apiUrl + "/auth?username=" + urlEncode(username) + "&password=" + urlEncode(password);
+	public String getAuthUrlFor(String instance, String username,String password){
+		return apiUrl + "/" + urlEncode(instance) + "/auth?username=" + urlEncode(username) + "&password=" + urlEncode(password);
 	}
 
 	private void appendFromDate(Date fromDate, final StringBuilder url) {

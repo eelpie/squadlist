@@ -19,7 +19,9 @@ import uk.co.squadlist.web.api.SquadlistApi;
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 	
 	private static Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
-	    
+
+	private static final String INSTANCE = "demo";
+	
     private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
     
     private SquadlistApi api;    
@@ -37,7 +39,7 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
     	final String password = authToken.getCredentials().toString();
     	log.info("Attempting to auth user: " + username);
-		if (api.auth(username, password)) {
+		if (api.auth(INSTANCE, username, password)) {
 			log.info("Auth successful for user: " + username);
 			Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
