@@ -91,5 +91,9 @@ public class JsonDeserializer {
 	public Instance deserializeInstanceDetails(String json) throws JsonParseException, JsonMappingException, IOException {
 		return mapper.readValue(json, Instance.class);
 	}
+
+	public Squad deserializeSquadDetails(String json) throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(json, Squad.class);
+	}
 	
 }

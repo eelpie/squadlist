@@ -270,6 +270,22 @@ public class SquadlistApi {
 		}		
 	}
 	
+	public Squad createSquad(String instance, String name) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getSquadsUrl(instance));
+		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("name", name));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			return jsonDeserializer.deserializeSquadDetails(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
+		
+	}
+	
 	public Member updateMemberDetails(String instance, Member member) {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(instance, member.getId()));
