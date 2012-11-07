@@ -39,21 +39,21 @@ public class ApiUrlBuilder {
 		return apiUrl + "/" + instance + "/squads";
 	}
 	
-	public String getSquadUrl(String instance, int squadId) {
+	public String getSquadUrl(String instance, String squadId) {
 		return getSquadsUrl(instance) + "/" + squadId;
 	}
 	
-	public String getSquadAvailabilityUrl(String instance, int squadId, Date fromDate) {
+	public String getSquadAvailabilityUrl(String instance, String squadId, Date fromDate) {
 		final StringBuilder url = new StringBuilder(getSquadUrl(instance, squadId) + "/availability");
 		appendFromDate(fromDate, url);
 		return url.toString();
 	}
 	
-	public String getSquadMembersUrl(String instance, int squadId) {
+	public String getSquadMembersUrl(String instance, String squadId) {
 		return getSquadUrl(instance, squadId) + "/members";
 	}
 	
-	public String getSquadOutingsUrl(String instance, int squadId) {
+	public String getSquadOutingsUrl(String instance, String squadId) {
 		return getSquadUrl(instance, squadId) + "/outings";
 	}
 	
@@ -64,9 +64,13 @@ public class ApiUrlBuilder {
 	public String getMemberDetailsUrl(String instance, String memberId) {
 		return apiUrl + "/" +  urlEncode(instance) + "/members/" + memberId;
 	}
-		
+	
+	public String getOutingsUrl(String instance) {
+		return apiUrl + "/" + urlEncode(instance) + "/outings";
+	}
+	
 	public String getOutingUrl(String instance, int outingId) {
-		return apiUrl + "/" + urlEncode(instance) + "/outings/" + outingId;
+		return getOutingsUrl(instance) + "/" + outingId;
 	}
 	
 	public String getOutingAvailabilityUrl(String instance, int outingId) {

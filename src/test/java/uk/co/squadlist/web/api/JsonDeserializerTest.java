@@ -35,6 +35,18 @@ public class JsonDeserializerTest {
 	}
 	
 	@Test
+	public void canDeserializeOuting() throws Exception {
+		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("outing.json"));
+		
+		JsonDeserializer deserializer = new JsonDeserializer();
+		final Outing outing = deserializer.deserializeOuting(json);
+		
+		assertEquals(0, outing.getId());
+		assertEquals("Wed Nov 07 22:01:29 GMT 2012", outing.getDate().toString());
+		assertEquals("Novice men", outing.getSquad().getName());
+	}
+	
+	@Test
 	public void canDeserializeListOfMembersAvailability() throws Exception {
 		final String json = IOUtils.toString(this.getClass().getClassLoader().getResource("availability.json"));
 		

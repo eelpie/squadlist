@@ -38,7 +38,7 @@ public class SquadsController {
 	}
 	
 	@RequestMapping("/squad/{id}/availability")
-    public ModelAndView availability(@PathVariable int id) throws Exception {
+    public ModelAndView availability(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", api.getSquad(INSTANCE, id));
@@ -62,7 +62,7 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/contacts")
-    public ModelAndView contacts(@PathVariable int id) throws Exception {
+    public ModelAndView contacts(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
@@ -72,7 +72,7 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/entrydetails")
-    public ModelAndView entrydetails(@PathVariable int id) throws Exception {
+    public ModelAndView entrydetails(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
@@ -82,7 +82,7 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/outings")
-    public ModelAndView outings(@PathVariable int id) throws Exception {
+    public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadOutings");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 

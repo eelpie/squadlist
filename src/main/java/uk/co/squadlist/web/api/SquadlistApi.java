@@ -121,9 +121,9 @@ public class SquadlistApi {
 		}
 	}
 	
-	public Map<Integer, Squad> getSquadsMap(String instance) {
+	public Map<String, Squad> getSquadsMap(String instance) {
 		try {
-			final Map<Integer, Squad> map = new HashMap<Integer, Squad>();
+			final Map<String, Squad> map = new HashMap<String, Squad>();
 			for(Squad squad : getSquads(instance)) {
 				map.put(squad.getId(), squad);
 			}
@@ -135,7 +135,7 @@ public class SquadlistApi {
 		}
 	}
 	
-	public List<Outing> getSquadOutings(String instance, int squadId) {
+	public List<Outing> getSquadOutings(String instance, String squadId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getSquadOutingsUrl(instance, squadId));
 			return jsonDeserializer.deserializeListOfOutings(json);
@@ -168,7 +168,7 @@ public class SquadlistApi {
 		}
 	}
 	
-	public Squad getSquad(String instance, int squadId) {
+	public Squad getSquad(String instance, String squadId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getSquadUrl(instance, squadId));
 			return jsonDeserializer.deserializeSquad(json);
@@ -178,7 +178,18 @@ public class SquadlistApi {
 			throw new RuntimeException(e);
 		}
 	}
-		
+	
+	public List<Outing> getOutings(String instance) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getOutingsUrl(instance));
+			return jsonDeserializer.deserializeListOfOutings(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public Outing getOuting(String instance, int outingId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getOutingUrl(instance, outingId));
@@ -205,7 +216,7 @@ public class SquadlistApi {
 		}		
 	}
 	
-	public List<Member> getSquadMembers(String instance, int squadId) {
+	public List<Member> getSquadMembers(String instance, String squadId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getSquadMembersUrl(instance, squadId));
 			return jsonDeserializer.deserializeListOfMembers(json);
@@ -216,7 +227,7 @@ public class SquadlistApi {
 		}
 	}
 	
-	public List<OutingWithSquadAvailability> getSquadAvailability(String instance, int squadId, Date fromDate) {
+	public List<OutingWithSquadAvailability> getSquadAvailability(String instance, String squadId, Date fromDate) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(instance, squadId, fromDate));
 			return jsonDeserializer.deserializeSquadAvailability(json);
@@ -254,13 +265,14 @@ public class SquadlistApi {
 		}		
 	}
 	
-	public Member createMember(String instance, String firstName, String lastName) {
+	public Member createMember(String instance, String firstName, String lastName, Squad squad) {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getMembersUrl(instance));
 		
 			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
 			nameValuePairs.add(new BasicNameValuePair("firstName", firstName));
 			nameValuePairs.add(new BasicNameValuePair("lastName", lastName));
+			nameValuePairs.add(new BasicNameValuePair("squad", squad.getId()));
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
 			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 			
@@ -300,6 +312,21 @@ public class SquadlistApi {
 			log.error(e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	public Outing createOuting(String instance, String squad) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getOutingsUrl(instance));
+		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("squad", squad));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			return jsonDeserializer.deserializeOutingDetails(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
 	}
 	
 }
