@@ -20,6 +20,9 @@ public class ApiUrlBuilder {
 	@Value("#{squadlist['apiUrl']}")
 	private String apiUrl;
 	
+	public ApiUrlBuilder() {
+	}
+	
 	public ApiUrlBuilder(String apiUrl) {
 		this.apiUrl = apiUrl;
 	}
@@ -62,7 +65,7 @@ public class ApiUrlBuilder {
 	}
 	
 	public String getMemberDetailsUrl(String instance, String memberId) {
-		return apiUrl + "/" +  urlEncode(instance) + "/members/" + memberId;
+		return apiUrl + "/" +  urlEncode(instance) + "/members/" + urlEncode(memberId);
 	}
 	
 	public String getOutingsUrl(String instance) {

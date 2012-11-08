@@ -2,6 +2,7 @@ package uk.co.squadlist.web.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -47,15 +48,21 @@ public class SquadlistApiIT {
 		System.out.println(members);
 		assertTrue(members.isEmpty());
 		
+		squad = api.getSquad(instanceName, squad.getId());
+		assertNotNull(squad);
+		
 		api.createMember(instanceName, "John", "Smith", squad);
 		members = api.getMembers(instanceName);
 		System.out.println(members);
 		assertEquals(1, members.size());
 		
-		final Member newMember = members.get(0);
+		Member newMember = members.get(0);
 		assertEquals("JOHNSMITH", newMember.getId());
 		assertEquals("John", newMember.getFirstName());
 		assertEquals("Smith", newMember.getLastName());
+		
+		newMember = api.getMemberDetails(instanceName, newMember.getId());
+		assertNotNull(newMember);
 		
 		assertFalse(newMember.getSquads().isEmpty());
 		assertEquals(newMember.getSquads().get(0).getName(), "Novice men");
@@ -78,6 +85,10 @@ public class SquadlistApiIT {
 		
 		outings = api.getOutings(instanceName);
 		assertEquals(2, outings.size());
+		
+		System.out.println("options");
+		List<String> availabilityOptions = api.getAvailabilityOptions(instanceName);
+		System.out.println(availabilityOptions);
 	}
 	
 }
