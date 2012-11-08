@@ -18,6 +18,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -146,7 +148,7 @@ public class SquadlistApi {
 		}			
 	}
 	
-	public Map<String, String> getOutingAvailability(String instance, int outingId) {
+	public Map<String, String> getOutingAvailability(String instance, String outingId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getOutingAvailabilityUrl(instance, outingId));
 			return jsonDeserializer.deserializeListOfOutingAvailabilityMap(json);
@@ -190,7 +192,7 @@ public class SquadlistApi {
 		}
 	}
 	
-	public Outing getOuting(String instance, int outingId) {
+	public Outing getOuting(String instance, String outingId) {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getOutingUrl(instance, outingId));
 			final Outing outing = jsonDeserializer.deserializeOuting(json);
@@ -249,7 +251,7 @@ public class SquadlistApi {
 		}
 	}
 	
-	public OutingAvailability setOutingAvailability(String instance, String memberId, int outingId, String availability) {
+	public OutingAvailability setOutingAvailability(String instance, String memberId, String outingId, String availability) {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getOutingAvailabilityUrl(instance, outingId));
 		
@@ -314,13 +316,14 @@ public class SquadlistApi {
 		}
 	}
 
-	public Outing createOuting(String instance, String squad) {
+	public Outing createOuting(String instance, String squad, LocalDateTime outingDate) {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getOutingsUrl(instance));
 		
 			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
 			nameValuePairs.add(new BasicNameValuePair("squad", squad));
-			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			nameValuePairs.add(new BasicNameValuePair("date", ISODateTimeFormat.dateTimeNoMillis().print(outingDate)));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));			
 			return jsonDeserializer.deserializeOutingDetails(httpFetcher.post(post));
 			
 		} catch (Exception e) {

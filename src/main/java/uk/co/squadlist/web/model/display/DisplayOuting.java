@@ -6,17 +6,17 @@ import uk.co.squadlist.web.model.Squad;
 
 public class DisplayOuting {
 
-	private final int id;
+	private final String id;
 	private final Squad squad;
 	private final Date date;
 
-	public DisplayOuting(int id, Squad squad, Date date) {
+	public DisplayOuting(String id, Squad squad, Date date) {
 		this.id = id;
 		this.squad = squad;
 		this.date = date;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 

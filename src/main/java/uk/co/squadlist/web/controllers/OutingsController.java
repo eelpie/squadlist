@@ -33,7 +33,7 @@ public class OutingsController {
 	}
 	
 	@RequestMapping("/outings/{id}")
-    public ModelAndView outings(@PathVariable int id) throws Exception {
+    public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
     	final Outing outing = api.getOuting(INSTANCE, id);
     	    	
@@ -47,7 +47,7 @@ public class OutingsController {
 	
 	@RequestMapping(value="/availability/ajax", method=RequestMethod.POST)
     public ModelAndView updateAvailability(
-    		@RequestParam(value="outing", required=true) int outingId,
+    		@RequestParam(value="outing", required=true) String outingId,
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(INSTANCE, outingId);
     	

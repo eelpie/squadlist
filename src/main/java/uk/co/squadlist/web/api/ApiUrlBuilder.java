@@ -69,11 +69,11 @@ public class ApiUrlBuilder {
 		return apiUrl + "/" + urlEncode(instance) + "/outings";
 	}
 	
-	public String getOutingUrl(String instance, int outingId) {
-		return getOutingsUrl(instance) + "/" + outingId;
+	public String getOutingUrl(String instance, String outingId) {
+		return getOutingsUrl(instance) + "/" + urlEncode(outingId);
 	}
 	
-	public String getOutingAvailabilityUrl(String instance, int outingId) {
+	public String getOutingAvailabilityUrl(String instance, String outingId) {
 		return getOutingUrl(instance, outingId) + "/availability";
 	}
 	
