@@ -29,7 +29,7 @@ public class JsonDeserializerTest {
 		}
 		
 		final Outing firstOuting = outings.get(0);
-		assertEquals(241, firstOuting.getId());
+		assertEquals("241", firstOuting.getId());
 		assertEquals("Fri Mar 16 08:00:00 GMT 2012", firstOuting.getDate().toString());
 		assertEquals("Men's Senior Squad", firstOuting.getSquad().getName());
 	}
@@ -41,7 +41,7 @@ public class JsonDeserializerTest {
 		JsonDeserializer deserializer = new JsonDeserializer();
 		final Outing outing = deserializer.deserializeOuting(json);
 		
-		assertEquals(0, outing.getId());
+		assertEquals("0", outing.getId());
 		assertEquals("Wed Nov 07 22:01:29 GMT 2012", outing.getDate().toString());
 		assertEquals("Novice men", outing.getSquad().getName());
 	}
@@ -74,7 +74,7 @@ public class JsonDeserializerTest {
 		final List<OutingWithSquadAvailability> availability = deserializer.deserializeSquadAvailability(json);
 		
 		final OutingWithSquadAvailability outingWithSquadAvailability = availability.get(0);
-		assertEquals(241, outingWithSquadAvailability.getOuting().getId());
+		assertEquals("241", outingWithSquadAvailability.getOuting().getId());
 		assertEquals("Fri Mar 16 08:00:00 GMT 2012", outingWithSquadAvailability.getOuting().getDate().toString());		
 		assertEquals("Injury", outingWithSquadAvailability.getAvailability().get("TEMPLEB"));
 	}
