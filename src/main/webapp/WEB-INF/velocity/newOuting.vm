@@ -1,0 +1,18 @@
+#parse('includes/head.vm')
+
+<h3>Adding a new outing</h3>
+
+#parse('includes/nav.vm')
+
+<form action="/outings/new" method="POST">
+
+	<select name="squad">	
+		#foreach($squad in $squads) 
+			<option value="$squad.id">$squad.name</option>
+		#end
+	</select>
+	
+	<input type="submit" value="Add outing" />
+</form>
+
+<hr>

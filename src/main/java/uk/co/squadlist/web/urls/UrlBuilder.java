@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.model.Member;
+import uk.co.squadlist.web.model.Outing;
 
 @Component("urlBuilder")
 public class UrlBuilder {
@@ -17,6 +18,10 @@ public class UrlBuilder {
 	
 	public String memberUrl(Member member) {
 		return applicationUrl("/member/" + member.getId());
+	}
+	
+	public String outingUrl(Outing outing) {
+		return applicationUrl("/outings/" + outing.getId());
 	}
 	
 	public String editMemberUrl(Member member) {

@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,27 +10,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
 
 @Controller
 public class OutingsController {
 	
-	private static final String INSTANCE = "demo";
+	private static final String INSTANCE = "demo2";
 	
 	private LoggedInUserService loggedInUserService;
 	private SquadlistApi api;
+	private UrlBuilder urlBuilder;
 	
 	@Autowired
-	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api) {
+	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
+		this.urlBuilder = urlBuilder;
 	}
 	
 	@RequestMapping("/outings/{id}")
@@ -44,6 +49,20 @@ public class OutingsController {
     	mv.addObject("availability", api.getOutingAvailability(INSTANCE, outing.getId()));
     	return mv;
     }
+	
+	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
+    public ModelAndView newOuting() throws Exception {
+    	ModelAndView mv = new ModelAndView("newOuting");
+    	mv.addObject("squads", api.getSquads(INSTANCE));
+    	return mv;
+	}
+	
+	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
+    public ModelAndView newOutingSubmit(@RequestParam(required=true) String squad) throws Exception {
+    	Outing outing = api.createOuting(INSTANCE, squad, new LocalDateTime());
+		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
+    	return mv;
+	}
 	
 	@RequestMapping(value="/availability/ajax", method=RequestMethod.POST)
     public ModelAndView updateAvailability(
