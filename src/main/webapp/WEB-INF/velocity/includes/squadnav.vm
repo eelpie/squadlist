@@ -1,0 +1,10 @@
+	<ul class="nav nav-list bs-docs-sidenav affix">
+		<li><a href="/">Nothing</a></li>
+		#if($squads && $squads.size() > 0) 
+			#foreach($navSquad on $squads) 
+				<li><a href="/squad/${navSquad.id}/contacts">$navSquad.name</a></li>
+			#end	
+		#end
+   	</ul>
+ 
+

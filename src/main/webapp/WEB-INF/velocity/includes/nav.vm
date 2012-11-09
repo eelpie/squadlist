@@ -1,8 +1,13 @@
 <ul class="nav nav-tabs">
 	<li class="active"><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
 	<li><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
-	<li><a href="$urlBuilder.applicationUrl('/squad/2/contacts')">Squad contacts</a></li>
-	<li><a href="$urlBuilder.applicationUrl('/squad/2/availability')">Squad availability</a></li>
-	<li><a href="$urlBuilder.applicationUrl('/squad/2/entrydetails')">Entry details</a></li>
-	<li><a href="$urlBuilder.applicationUrl('/outing/add')">Add outing</a></li>
+	<li><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Squad availability</a></li>
+	<li><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
+	<li><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
+	<li><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
 </ul>
+
+
+
+    			
+   			

@@ -1,43 +1,52 @@
 #parse('includes/head.vm')
-
-<h3>My outings</h3>
-
 #parse('includes/nav.vm')
 
-<form>
-#foreach($outing in $outings)
+<div class="row">
 
-    <div class="row">
-    	<div class="span3 offset1">
-			#parse('includes/outing.vm')	
-    	</div>
+	<div class="span2 bs-docs-sidebar">
+		#parse('includes/squadnav.vm')
+	</div>
+
+	<div class="span9">
+		<h3>My outings</h3>
 		
-		<div class="span3">	
-			<select class="availabilityDropdown" id="${outing.id}">
-				<option value="">TBA</option>		
-				#foreach($option in $availabilityOptions)
-					#set($selected = '')
-					#if ($outing.availability == $option) 
-						#set($selected = 'SELECTED')
+		<form>
+		#foreach($outing in $outings)
+		
+		    <div class="row">
+		    	<div class="span3 offset1">
+					#parse('includes/outing.vm')	
+		    	</div>
+				
+				<div class="span3">	
+					<select class="availabilityDropdown" id="${outing.id}">
+						<option value="">TBA</option>		
+						#foreach($option in $availabilityOptions)
+							#set($selected = '')
+							#if ($outing.availability == $option) 
+								#set($selected = 'SELECTED')
+							#end
+							<option value="$option" $selected>$option</option>	
+						#end
+					</select>
+				</div>
+				<div class="span3">			
+					#if ($outing.availability) 
+						<span id="currentAvailability${outing.id}" class="label label-info">
+							$outing.availability 
+						</span>				
+					#else
+		 				<span id="currentAvailability${outing.id}">
+		 					TBA
+		 				</span>
 					#end
-					<option value="$option" $selected>$option</option>	
-				#end
-			</select>
-		</div>
-		<div class="span3">			
-			#if ($outing.availability) 
-				<span id="currentAvailability${outing.id}" class="label label-info">
-					$outing.availability 
-				</span>				
-			#else
- 				<span id="currentAvailability${outing.id}">
- 					TBA
- 				</span>
-			#end
-		</div>
-    </div>
-#end
-</form>
+				</div>
+		    </div>
+		#end
+		</form>
+	</div>
+</div>
+</div>
 
 <script>
 	$('.availabilityDropdown').change(function() {

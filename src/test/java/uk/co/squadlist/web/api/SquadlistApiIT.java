@@ -41,9 +41,11 @@ public class SquadlistApiIT {
 		System.out.println(squad);
 		assertEquals("novice-men", squad.getId());
 		assertEquals("Novice men", squad.getName());
-		squads = api.getSquads(instanceName);
 		
-		assertEquals(1, squads.size());
+		api.createSquad(instanceName, "Senior women");
+		
+		squads = api.getSquads(instanceName);
+		assertEquals(2, squads.size());
 		List<Member> members = api.getMembers(instanceName);
 		System.out.println(members);
 		assertTrue(members.isEmpty());

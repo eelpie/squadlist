@@ -1,20 +1,32 @@
 #parse('includes/head.vm')
-
-<h3>$squad.name contacts</h3>
-
 #parse('includes/nav.vm')
-
-#foreach( $member in $members )
-	<div class="row">
-    	<div class="span2 offset1">
-    		#parse('includes/member.vm')
-    	</div>
-    	<div class="span3">
-    		$!member.emailAddress
-    	</div>
-		<div class="span2">
-			$!member.contactNumber
-		</div>
+	
+<div class="row">
+		
+	<div class="span2 bs-docs-sidebar">	
+		#parse('includes/squadnav.vm')
 	</div>
-#end
-<hr>
+		
+	<div class="span9">
+		<h3>$squad.name contacts</h3>
+
+		#foreach( $member in $members )
+			<div class="row">
+		    	<div class="span2 offset1">
+		    		#parse('includes/member.vm')
+		    	</div>
+		    	<div class="span3">
+		    		$!member.emailAddress
+		    	</div>
+				<div class="span2">
+					$!member.contactNumber
+				</div>
+			</div>
+		#end
+
+		<hr>
+	</div>
+	
+
+</div>
+</div>

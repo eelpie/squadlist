@@ -1,24 +1,33 @@
 #parse('includes/head.vm')
-
-<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
-
 #parse('includes/nav.vm')
 
-#foreach( $member in $members )
+<div class="row">
 
-	<div class="row">
-    	<div class="span2 offset1">
-   			#parse('includes/member.vm')
-   		</div>
-   		<div class="span4">   		
-			#if($availability.get(${member.id}))
-				<span class="label label-info">
-					$availability.get(${member.id})
-				</span>
-			#else 
-				TBA
-			#end
-		</div>
+	<div class="span2 bs-docs-sidebar">
+		#parse('includes/squadnav.vm')
 	</div>
-#end
-<hr>
+
+	<div class="span9">
+		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
+		
+		#foreach( $member in $members )
+		
+			<div class="row">
+		    	<div class="span2 offset1">
+		   			#parse('includes/member.vm')
+		   		</div>
+		   		<div class="span4">   		
+					#if($availability.get(${member.id}))
+						<span class="label label-info">
+							$availability.get(${member.id})
+						</span>
+					#else 
+						TBA
+					#end
+				</div>
+			</div>
+		#end
+		<hr>
+	</div>
+</div>
+</div>

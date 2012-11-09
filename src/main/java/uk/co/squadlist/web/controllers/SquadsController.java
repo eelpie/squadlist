@@ -39,6 +39,8 @@ public class SquadsController {
     public ModelAndView availability(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+    	
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
@@ -63,6 +65,7 @@ public class SquadsController {
     public ModelAndView contacts(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
 
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
@@ -73,6 +76,7 @@ public class SquadsController {
     public ModelAndView entrydetails(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
 
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));

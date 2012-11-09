@@ -1,26 +1,36 @@
 #parse('includes/head.vm')
-
-<h3>$squad.name availability</h3>
-
 #parse('includes/nav.vm')
 
-<table>
-<tr>
-	<td></td>
-	#foreach($outing in $outings) 
-		<td>#parse('includes/outing.vm')</td>
-	#end
-</tr>
+<div class="row">
+		
+	<div class="span2 bs-docs-sidebar">
+		#parse('includes/squadnav.vm')
+	</div>
+	
+	<div class="span9">
+		<h3>$squad.name availability</h3>
 
-#foreach( $member in $members )
-	<tr>
-		<td>#parse('includes/member.vm')</td>
-		#foreach($outing in $outings) 
-			#set($key = "${outing.id}-$member.id")
-			<td>$!availability.get($key)</td>
+		<table>
+			<tr>
+			<td></td>
+			#foreach($outing in $outings) 
+			<td>#parse('includes/outing.vm')</td>
+			#end
+		</tr>
+
+		#foreach( $member in $members )
+			<tr>
+				<td>#parse('includes/member.vm')</td>
+				#foreach($outing in $outings) 
+					#set($key = "${outing.id}-$member.id")
+					<td>$!availability.get($key)</td>
+				#end
+			</tr>
 		#end
-	</tr>
-#end
-</tr>
-</table>
-<hr>
+		</tr>
+		</table>
+		<hr>
+
+	</div>
+</div>
+</div>

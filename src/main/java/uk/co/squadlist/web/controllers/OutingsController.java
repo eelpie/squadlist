@@ -51,6 +51,7 @@ public class OutingsController {
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
     	ModelAndView mv = new ModelAndView("newOuting");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
     	return mv;
 	}
