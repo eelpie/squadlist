@@ -37,6 +37,8 @@ import com.google.common.collect.Lists;
 @Service("squadlistApi")
 public class SquadlistApi {
 
+	public static final String INSTANCE = "demo";
+	
 	private static Logger log = Logger.getLogger(SquadlistApi.class);
 		
 	private ApiUrlBuilder urlBuilder;

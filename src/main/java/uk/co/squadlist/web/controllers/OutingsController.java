@@ -24,8 +24,6 @@ import uk.co.squadlist.web.views.JsonView;
 @Controller
 public class OutingsController {
 	
-	private static final String INSTANCE = "demo2";
-	
 	private LoggedInUserService loggedInUserService;
 	private SquadlistApi api;
 	private UrlBuilder urlBuilder;
@@ -40,26 +38,26 @@ public class OutingsController {
 	@RequestMapping("/outings/{id}")
     public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
-    	final Outing outing = api.getOuting(INSTANCE, id);
+    	final Outing outing = api.getOuting(SquadlistApi.INSTANCE, id);
     	    	
 		mv.addObject("outing", outing);
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
 		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("members", api.getSquadMembers(INSTANCE, outing.getSquad().getId()));
-    	mv.addObject("availability", api.getOutingAvailability(INSTANCE, outing.getId()));
+    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, outing.getSquad().getId()));
+    	mv.addObject("availability", api.getOutingAvailability(SquadlistApi.INSTANCE, outing.getId()));
     	return mv;
     }
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
     	ModelAndView mv = new ModelAndView("newOuting");
-    	mv.addObject("squads", api.getSquads(INSTANCE));
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
     	return mv;
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
     public ModelAndView newOutingSubmit(@RequestParam(required=true) String squad) throws Exception {
-    	Outing outing = api.createOuting(INSTANCE, squad, new LocalDateTime());
+    	Outing outing = api.createOuting(SquadlistApi.INSTANCE, squad, new LocalDateTime());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
 	}
@@ -68,9 +66,9 @@ public class OutingsController {
     public ModelAndView updateAvailability(
     		@RequestParam(value="outing", required=true) String outingId,
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
-    	final Outing outing = api.getOuting(INSTANCE, outingId);
+    	final Outing outing = api.getOuting(SquadlistApi.INSTANCE, outingId);
     	
-    	OutingAvailability result = api.setOutingAvailability(INSTANCE, loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
+    	OutingAvailability result = api.setOutingAvailability(SquadlistApi.INSTANCE, loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
     	ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
     	return mv;

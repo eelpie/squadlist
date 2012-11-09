@@ -19,8 +19,6 @@ import uk.co.squadlist.web.urls.UrlBuilder;
 @Controller
 public class MembersController {
 	
-	private static final String INSTANCE = "demo";
-
 	private static Logger log = Logger.getLogger(MembersController.class);
 	
 	private final SquadlistApi api;
@@ -38,7 +36,7 @@ public class MembersController {
     public ModelAndView member(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("memberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", api.getMemberDetails(INSTANCE, id));
+    	mv.addObject("member", api.getMemberDetails(SquadlistApi.INSTANCE, id));
     	return mv;
     }
 	
@@ -46,15 +44,15 @@ public class MembersController {
     public ModelAndView editMember(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("editMemberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", api.getMemberDetails(INSTANCE, id));
+    	mv.addObject("member", api.getMemberDetails(SquadlistApi.INSTANCE, id));
     	return mv;
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMember(@PathVariable String id, @ModelAttribute("member") MemberDetails memberDetails) throws Exception {		
-		final Member member = api.getMemberDetails(INSTANCE, id);
+		final Member member = api.getMemberDetails(SquadlistApi.INSTANCE, id);
 		log.info("Updating member details: " + member.getId());
-		api.updateMemberDetails(INSTANCE, member);		
+		api.updateMemberDetails(SquadlistApi.INSTANCE, member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
 	

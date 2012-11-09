@@ -26,8 +26,6 @@ import uk.co.squadlist.web.model.display.DisplayOuting;
 @Controller
 public class SquadsController {
 	
-	private static final String INSTANCE = "demo";
-	
 	private SquadlistApi api;
 	private LoggedInUserService loggedInUserService;
 	
@@ -41,11 +39,11 @@ public class SquadsController {
     public ModelAndView availability(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("squad", api.getSquad(INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(INSTANCE, id));
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
     	final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
-		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(INSTANCE, id, midnightYesterday.toDate());
+		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, midnightYesterday.toDate());
 
     	List<Outing> outings = new ArrayList<Outing>();
     	Map<String, String> allAvailability = new HashMap<String, String>();
@@ -66,8 +64,8 @@ public class SquadsController {
     	ModelAndView mv = new ModelAndView("squadContacts");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
-		mv.addObject("squad", api.getSquad(INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(INSTANCE, id));
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	return mv;
     }
 	
@@ -76,8 +74,8 @@ public class SquadsController {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
-		mv.addObject("squad", api.getSquad(INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(INSTANCE, id));
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	return mv;
     }
 	
@@ -86,8 +84,8 @@ public class SquadsController {
     	ModelAndView mv = new ModelAndView("squadOutings");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
-		mv.addObject("squad", api.getSquad(INSTANCE, id));
-    	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(INSTANCE, id)));
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+    	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(SquadlistApi.INSTANCE, id)));
     	return mv;
     }
 

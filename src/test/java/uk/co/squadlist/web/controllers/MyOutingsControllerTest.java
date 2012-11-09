@@ -20,7 +20,6 @@ import uk.co.squadlist.web.views.DisplayObjectFactory;
 
 public class MyOutingsControllerTest {
 
-	private static final String INSTANCE = "demo";
 	private static final String MEMBER = "AMEMBER";
 	
 	@Mock private SquadlistApi api;
@@ -41,7 +40,7 @@ public class MyOutingsControllerTest {
 	@Test
 	public void myOutingsShouldShowOutingsForTodayAndTheFuture() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(INSTANCE, MEMBER, DateTime.now().minusDays(1).toDateMidnight().toDate())).thenReturn(membersAvailability);
+		when(api.getAvailabilityFor(SquadlistApi.INSTANCE, MEMBER, DateTime.now().minusDays(1).toDateMidnight().toDate())).thenReturn(membersAvailability);
 		when(displayObjectFactory.makeDisplayObjectsFor(membersAvailability)).thenReturn(membersAvailabilityDisplayObjects);
 
 						
