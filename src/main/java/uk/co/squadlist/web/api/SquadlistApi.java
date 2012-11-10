@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -242,10 +243,10 @@ public class SquadlistApi {
 		}
 	}
 
-	public List<String> getAvailabilityOptions(String instance) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
+	public List<AvailabilityOption> getAvailabilityOptions(String instance) throws HttpFetchException, JsonParseException, JsonMappingException, IOException {
 		try {
 			final String json = httpFetcher.get(urlBuilder.getAvailabilityOptionsUrl(instance));
-			return jsonDeserializer.deserializeListOfStrings(json);
+			return jsonDeserializer.deserializeAvailabilityOptions(json);
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -327,6 +328,21 @@ public class SquadlistApi {
 			nameValuePairs.add(new BasicNameValuePair("date", ISODateTimeFormat.dateTimeNoMillis().print(outingDate)));
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));			
 			return jsonDeserializer.deserializeOutingDetails(httpFetcher.post(post));
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}		
+	}
+
+	public AvailabilityOption createAvailabilityOption(String instance, String label) {
+		try {
+			final HttpPost post = new HttpPost(urlBuilder.getAvailabilityOptionsUrl(instance));
+		
+			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+			nameValuePairs.add(new BasicNameValuePair("label", label));
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));			
+			return jsonDeserializer.deserializeAvailabilityOption(httpFetcher.post(post));
 			
 		} catch (Exception e) {
 			log.error(e);

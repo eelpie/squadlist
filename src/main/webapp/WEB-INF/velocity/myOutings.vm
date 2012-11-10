@@ -14,7 +14,7 @@
 		#foreach($outing in $outings)
 		
 		    <div class="row">
-		    	<div class="span3 offset1">
+		    	<div class="span3">
 					#parse('includes/outing.vm')	
 		    	</div>
 				
@@ -26,7 +26,7 @@
 							#if ($outing.availability == $option) 
 								#set($selected = 'SELECTED')
 							#end
-							<option value="$option" $selected>$option</option>	
+							<option value="$option.label" $selected>$option.label</option>	
 						#end
 					</select>
 				</div>

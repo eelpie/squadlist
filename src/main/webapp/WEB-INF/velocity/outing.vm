@@ -10,10 +10,10 @@
 	<div class="span9">
 		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
 		
-		#foreach( $member in $members )
+		#foreach($member in $members )
 		
 			<div class="row">
-		    	<div class="span2 offset1">
+		    	<div class="span2">
 		   			#parse('includes/member.vm')
 		   		</div>
 		   		<div class="span4">   		

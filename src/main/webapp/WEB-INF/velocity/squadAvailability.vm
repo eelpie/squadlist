@@ -23,7 +23,11 @@
 				<td>#parse('includes/member.vm')</td>
 				#foreach($outing in $outings) 
 					#set($key = "${outing.id}-$member.id")
-					<td>$!availability.get($key)</td>
+					<td>
+						<span class="label label-info">
+							$!availability.get($key)
+						</span>		
+					</td>
 				#end
 			</tr>
 		#end

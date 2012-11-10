@@ -12,6 +12,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -32,6 +33,18 @@ public class SquadlistApiIT {
 		
 		final Instance instance = api.createInstance(instanceName, "Test instance");
 		System.out.println(instance);	
+		
+		List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions(instanceName);
+		System.out.println(availabilityOptions);
+		assertTrue(availabilityOptions.isEmpty());
+		
+		api.createAvailabilityOption(instanceName, "Available");
+		availabilityOptions = api.getAvailabilityOptions(instanceName);
+		System.out.println(availabilityOptions);
+		assertEquals(1, availabilityOptions.size());
+		assertEquals("Available", availabilityOptions.get(0).getLabel());
+		
+		api.createAvailabilityOption(instanceName, "Not available");
 		
 		List<Squad> squads = api.getSquads(instanceName);
 		System.out.println(squads);
@@ -87,10 +100,6 @@ public class SquadlistApiIT {
 		
 		outings = api.getOutings(instanceName);
 		assertEquals(2, outings.size());
-		
-		System.out.println("options");
-		List<String> availabilityOptions = api.getAvailabilityOptions(instanceName);
-		System.out.println(availabilityOptions);
 	}
 	
 }
