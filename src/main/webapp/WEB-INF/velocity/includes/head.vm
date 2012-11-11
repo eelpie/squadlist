@@ -6,3 +6,15 @@
 <body>
 <div align="right">Logged in as: $loggedInUserService.loggedInUser</div>
 <div class="container">
+
+#macro(squadSideNav $action)
+	<ul class="nav nav-list bs-docs-sidenav affix">
+		#if($squads && $squads.size() > 0) 
+			#foreach($navSquad on $squads) 
+				<li><a href="/squad/${navSquad.id}/${action}">$navSquad.name</a></li>
+			#end	
+		#end
+   	</ul>
+#end
+ 
+

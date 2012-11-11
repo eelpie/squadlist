@@ -4,7 +4,7 @@
 <div class="row">
 		
 	<div class="span2 bs-docs-sidebar">
-		#parse('includes/squadnav.vm')
+		#squadSideNav('availability')
 	</div>
 	
 	<div class="span9">

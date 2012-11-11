@@ -4,7 +4,7 @@
 <div class="row">
 		
 	<div class="span2 bs-docs-sidebar">	
-		#parse('includes/squadnav.vm')
+		#squadSideNav('contacts')
 	</div>
 		
 	<div class="span9">
@@ -12,7 +12,7 @@
 
 		#foreach( $member in $members )
 			<div class="row">
-		    	<div class="span2 offset1">
+		    	<div class="span2">
 		    		#parse('includes/member.vm')
 		    	</div>
 		    	<div class="span3">

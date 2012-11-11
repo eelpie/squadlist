@@ -4,17 +4,16 @@
 <div class="row">
 
 	<div class="span2 bs-docs-sidebar">
-		#parse('includes/squadnav.vm')
+		#squadSideNav('entrydetails')
 	</div>
 
 	<div class="span9">
 		<h3>$squad.name entry details</h3>
 		
-		<table>
 		#foreach( $member in $members )
 		
 			<div class="row">
-		    	<div class="span2 offset1">
+		    	<div class="span2">
 		    		#parse('includes/member.vm')
 		    	</div>
 		    	<div  class="span2">
@@ -25,8 +24,7 @@
 		    	</div>
 		    </div>
 		#end
-		</tr>
-		</table>
+		
 	</div>
 </div>
 </div>
