@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 public class SquadlistApiIT {
@@ -110,10 +112,16 @@ public class SquadlistApiIT {
 		Map<String, String> updatedOutingAvailability = api.getOutingAvailability(instanceName, newOuting.getId());
 		assertEquals("Available", updatedOutingAvailability.get(newMember.getId()));
 		
-		List<OutingAvailability> membersAvailability = api.getAvailabilityFor(instanceName, newMember.getId(), new DateTime(newOuting.getDate()).minusDays(1).toDate());		
+		final Date dayBeforeEarliestOuting = new DateTime(newOuting.getDate()).minusDays(1).toDate();
+		List<OutingAvailability> membersAvailability = api.getAvailabilityFor(instanceName, newMember.getId(), dayBeforeEarliestOuting);		
 		final OutingAvailability membersOutingAvailability = membersAvailability.get(0);
 		assertEquals(newOuting.getId(), membersOutingAvailability.getOuting().getId());
 		assertEquals("Available", membersOutingAvailability.getAvailability());
+		
+		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceName, newOuting.getSquad().getId(), dayBeforeEarliestOuting);		
+		final OutingWithSquadAvailability membersAvailabiltyForSquadOuting = squadAvailability.get(0);
+		assertEquals(newOuting.getId(), membersAvailabiltyForSquadOuting.getOuting().getId());
+		assertEquals("Available", membersAvailabiltyForSquadOuting.getAvailability().get(newMember.getId()));
 	}
 	
 }
