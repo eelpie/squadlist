@@ -59,7 +59,7 @@ public class SquadlistApiIT {
 		assertEquals("novice-men", squad.getId());
 		assertEquals("Novice men", squad.getName());
 		
-		api.createSquad(instanceName, "Senior women");
+		final Squad seniorWoman = api.createSquad(instanceName, "Senior women");
 		
 		squads = api.getSquads(instanceName);
 		assertEquals(2, squads.size());
@@ -85,6 +85,10 @@ public class SquadlistApiIT {
 		
 		assertFalse(newMember.getSquads().isEmpty());
 		assertEquals(newMember.getSquads().get(0).getName(), "Novice men");
+		
+		api.createMember(instanceName, "Andy", "Green", squad);
+		api.createMember(instanceName, "Tim", "Brown", squad);
+		api.createMember(instanceName, "Jane", "Smith", seniorWoman);
 		
 		List<Outing> outings = api.getOutings(instanceName);
 		System.out.println(outings);
@@ -122,6 +126,13 @@ public class SquadlistApiIT {
 		final OutingWithSquadAvailability membersAvailabiltyForSquadOuting = squadAvailability.get(0);
 		assertEquals(newOuting.getId(), membersAvailabiltyForSquadOuting.getOuting().getId());
 		assertEquals("Available", membersAvailabiltyForSquadOuting.getAvailability().get(newMember.getId()));
+		
+		
+		newMember.setFirstName("Jim");
+		api.updateMemberDetails(instanceName, newMember);
+		
+		newMember = api.getMemberDetails(instanceName, newMember.getId());
+		assertEquals("Jim", newMember.getFirstName());
 	}
 	
 }
