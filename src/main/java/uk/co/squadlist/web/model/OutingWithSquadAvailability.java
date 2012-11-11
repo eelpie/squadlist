@@ -35,4 +35,10 @@ public class OutingWithSquadAvailability {
 		this.availability = availability;
 	}
 
+	@Override
+	public String toString() {
+		return "OutingWithSquadAvailability [availability=" + availability
+				+ ", outing=" + outing + "]";
+	}
+	
 }

@@ -23,15 +23,15 @@
 						<option value="">TBA</option>		
 						#foreach($option in $availabilityOptions)
 							#set($selected = '')
-							#if ($outing.availability == $option) 
+							#if ($outing.availability == $option.label) 
 								#set($selected = 'SELECTED')
 							#end
 							<option value="$option.label" $selected>$option.label</option>	
 						#end
 					</select>
 				</div>
-				<div class="span3">			
-					#if ($outing.availability) 
+				<div class="span3">										
+					#if ($outing.availability) 						
 						<span id="currentAvailability${outing.id}" class="label label-info">
 							$outing.availability 
 						</span>				
