@@ -33,5 +33,11 @@ public class DisplayOutingAvailability {
 	public String getAvailability() {
 		return availability;
 	}
+
+	@Override
+	public String toString() {
+		return "DisplayOutingAvailability [availability=" + availability
+				+ ", date=" + date + ", id=" + id + ", squad=" + squad + "]";
+	}
 	
 }

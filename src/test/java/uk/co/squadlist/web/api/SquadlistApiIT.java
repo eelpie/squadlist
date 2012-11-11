@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -16,6 +17,7 @@ import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 public class SquadlistApiIT {
@@ -38,7 +40,7 @@ public class SquadlistApiIT {
 		System.out.println(availabilityOptions);
 		assertTrue(availabilityOptions.isEmpty());
 		
-		api.createAvailabilityOption(instanceName, "Available");
+		final AvailabilityOption available = api.createAvailabilityOption(instanceName, "Available");
 		availabilityOptions = api.getAvailabilityOptions(instanceName);
 		System.out.println(availabilityOptions);
 		assertEquals(1, availabilityOptions.size());
@@ -100,6 +102,18 @@ public class SquadlistApiIT {
 		
 		outings = api.getOutings(instanceName);
 		assertEquals(2, outings.size());
+		
+		
+		final OutingAvailability outingAvailability = api.setOutingAvailability(instanceName, newMember.getId(), newOuting.getId(), available.getLabel());
+		assertEquals("Available", outingAvailability.getAvailability());
+		
+		Map<String, String> updatedOutingAvailability = api.getOutingAvailability(instanceName, newOuting.getId());
+		assertEquals("Available", updatedOutingAvailability.get(newMember.getId()));
+		
+		List<OutingAvailability> membersAvailability = api.getAvailabilityFor(instanceName, newMember.getId(), new DateTime(newOuting.getDate()).minusDays(1).toDate());		
+		final OutingAvailability membersOutingAvailability = membersAvailability.get(0);
+		assertEquals(newOuting.getId(), membersOutingAvailability.getOuting().getId());
+		assertEquals("Available", membersOutingAvailability.getAvailability());
 	}
 	
 }
