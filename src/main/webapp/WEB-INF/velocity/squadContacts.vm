@@ -1,6 +1,6 @@
 #parse('includes/head.vm')
-#parse('includes/nav.vm')
-	
+#navTabs('Squad contacts')
+
 <div class="row">
 		
 	<div class="span2 bs-docs-sidebar">	

@@ -7,6 +7,17 @@
 <div align="right">Logged in as: $loggedInUserService.loggedInUser</div>
 <div class="container">
 
+#macro(navTabs $selectedTab) 
+	<ul class="nav nav-tabs">
+		<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
+		<li #if($selectedTab == 'My details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
+		<li #if($selectedTab == 'Squad availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Squad availability</a></li>
+		<li #if($selectedTab == 'Squad contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
+		<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
+		<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
+	</ul>
+#end
+
 #macro(squadSideNav $action)
 	<ul class="nav nav-list bs-docs-sidenav affix">
 		#if($squads && $squads.size() > 0) 

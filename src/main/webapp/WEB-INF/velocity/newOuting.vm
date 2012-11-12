@@ -1,5 +1,5 @@
 #parse('includes/head.vm')
-#parse('includes/nav.vm')
+#navTabs('Add outing')
 
 <div class="row">
 
