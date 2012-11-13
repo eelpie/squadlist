@@ -109,6 +109,8 @@ public class SquadlistApiIT {
 		outings = api.getOutings(instanceName);
 		assertEquals(2, outings.size());
 		
+		final List<Outing> squadOutings = api.getSquadOutings(instanceName, squad.getId());
+		assertEquals(2, squadOutings.size());
 		
 		final OutingAvailability outingAvailability = api.setOutingAvailability(instanceName, newMember.getId(), newOuting.getId(), available.getLabel());
 		assertEquals("Available", outingAvailability.getAvailability());
@@ -126,8 +128,7 @@ public class SquadlistApiIT {
 		final OutingWithSquadAvailability membersAvailabiltyForSquadOuting = squadAvailability.get(0);
 		assertEquals(newOuting.getId(), membersAvailabiltyForSquadOuting.getOuting().getId());
 		assertEquals("Available", membersAvailabiltyForSquadOuting.getAvailability().get(newMember.getId()));
-		
-		
+				
 		newMember.setFirstName("Jim");
 		api.updateMemberDetails(instanceName, newMember);
 		

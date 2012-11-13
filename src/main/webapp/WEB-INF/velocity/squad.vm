@@ -1,0 +1,28 @@
+#parse('includes/head.vm')
+#navTabs('Squad contacts')
+
+<div class="row">
+		
+	<div class="span2 bs-docs-sidebar">	
+		#squadSideNav('contacts')
+	</div>
+		
+	
+	<div class="span4">
+		<h3>$squad.name</h3>	
+
+		<h5>Members</h5>
+		#foreach( $member in $members )
+			#parse('includes/member.vm')			
+		#end
+	</div>
+	
+	<div class="span4">
+		<h5>Outings</h5>	
+		#foreach( $outing in $outings )
+			#parse('includes/outing.vm')
+		#end
+	</div>
+
+</div>
+</div>

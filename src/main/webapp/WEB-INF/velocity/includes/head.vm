@@ -15,6 +15,7 @@
 		<li #if($selectedTab == 'Squad contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
 		<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
 		<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
+		<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>		
 	</ul>
 #end
 

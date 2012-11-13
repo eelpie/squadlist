@@ -35,6 +35,17 @@ public class SquadsController {
 		this.loggedInUserService = loggedInUserService;
 	}
 	
+	@RequestMapping("/squad/{id}")
+    public ModelAndView index(@PathVariable String id) throws Exception {
+		final ModelAndView mv = new ModelAndView("squad");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
+    	mv.addObject("outings", api.getSquadOutings(SquadlistApi.INSTANCE, id));
+    	return mv;
+    }
+		
 	@RequestMapping("/squad/{id}/availability")
     public ModelAndView availability(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
