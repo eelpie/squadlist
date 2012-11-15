@@ -1,0 +1,50 @@
+#parse('includes/head.vm')
+#navTabs('')
+
+<div class="row">
+
+	<div class="span2 bs-docs-sidebar">
+	</div>
+	
+	<div class="span9">
+		<h3>Add new member</h3>
+
+		<form method="POST" action="$urlBuilder.newMemberUrl()" class="form-horizontal">		
+			#springBind("member.firstName")
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">First name</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}">
+				</div>
+			</div>
+			
+			#springBind("member.lastName")			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Last name</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Squad</label>
+				<div class="controls">
+					<select name="squad">	
+					#foreach($squad in $squads) 
+						<option value="$squad.id">$squad.name</option>
+					#end
+					</select>
+				</div>
+			</div>
+				
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Add new member</button>
+					<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
+				</div>
+			</div>
+		</form>
+				
+	</div>
+</div>
+</div>

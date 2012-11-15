@@ -4,6 +4,7 @@ public class MemberDetails {
 	
 	private String firstName;
 	private String lastName;
+	private String squad;
 	
 	public String getFirstName() {
 		return firstName;
@@ -21,10 +22,18 @@ public class MemberDetails {
 		this.lastName = lastName;
 	}
 	
+	public String getSquad() {
+		return squad;
+	}
+
+	public void setSquad(String squad) {
+		this.squad = squad;
+	}
+
 	@Override
 	public String toString() {
 		return "MemberDetails [firstName=" + firstName + ", lastName="
-				+ lastName + "]";
+				+ lastName + ", squad=" + squad + "]";
 	}
 	
 }

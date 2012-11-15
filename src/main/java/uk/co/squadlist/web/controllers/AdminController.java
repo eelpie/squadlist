@@ -15,22 +15,19 @@ public class AdminController {
 		
 	private final SquadlistApi api;
 	private final LoggedInUserService loggedInUserService;
-	private final UrlBuilder urlBuilder;
 	
 	@Autowired
 	public AdminController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
-		this.urlBuilder = urlBuilder;
 	}
 
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
-    	ModelAndView mv = new ModelAndView("admin");
+    	final ModelAndView mv = new ModelAndView("admin");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("members", api.getMembers(SquadlistApi.INSTANCE));
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
-
     	return mv;
     }
 	

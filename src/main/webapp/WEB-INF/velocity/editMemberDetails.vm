@@ -7,7 +7,7 @@
 	</div>
 	
 	<div class="span9">
-		<h3>$member.firstName $member.lastName / Edit details</h3>
+		<h3>$member.firstName $member.lastName</h3>
 
 		<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">		
 			#springBind("member.firstName")

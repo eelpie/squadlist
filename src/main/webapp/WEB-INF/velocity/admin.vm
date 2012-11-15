@@ -15,6 +15,9 @@
 			<li>#parse('includes/member.vm')</li>
 		#end
 		</ul>
+		
+		<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">New member</button></a>
+		
 	</div>
 	
 		<div class="span4">
@@ -25,6 +28,9 @@
 			<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
 		#end
 		</ul>
+		
+		<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">New squad</button></a>
+				
 	</div>
 	
 </div>

@@ -40,6 +40,22 @@ public class MembersController {
     	return mv;
     }
 	
+	@RequestMapping(value="/member/new", method=RequestMethod.GET)
+    public ModelAndView newMember(@ModelAttribute("member") MemberDetails memberDetails) throws Exception {    	
+		ModelAndView mv = new ModelAndView("newMember");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+		return mv;
+    }
+	
+	@RequestMapping(value="/member/new", method=RequestMethod.POST)
+    public ModelAndView newMemberSubmit(@ModelAttribute("member") MemberDetails memberDetails) throws Exception {
+		final Member newMember = api.createMember(SquadlistApi.INSTANCE, memberDetails.getFirstName(), memberDetails.getLastName(), 
+				api.getSquad(SquadlistApi.INSTANCE, memberDetails.getSquad()));
+		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
+		return mv;
+    }
+	
 	@RequestMapping("/member/{id}/edit")
     public ModelAndView editMember(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("editMemberDetails");

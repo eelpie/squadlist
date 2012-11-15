@@ -277,7 +277,7 @@ public class SquadlistApi {
 			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
 			nameValuePairs.add(new BasicNameValuePair("firstName", firstName));
 			nameValuePairs.add(new BasicNameValuePair("lastName", lastName));
-			nameValuePairs.add(new BasicNameValuePair("squad", squad.getId()));
+			nameValuePairs.add(new BasicNameValuePair("squad", squad != null ? squad.getId() : null));
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
 			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 			

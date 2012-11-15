@@ -21,8 +21,20 @@ public class UrlBuilder {
 		return applicationUrl("/member/" + member.getId());
 	}
 	
+	public String newMemberUrl() {
+		return applicationUrl("/member/new");
+	}
+	
 	public String squadUrl(Squad squad) {
 		return applicationUrl("/squad/" + squad.getId());
+	}
+	
+	public String newSquadUrl() {
+		return applicationUrl("/squad/new");
+	}
+	
+	public String adminUrl() {
+		return applicationUrl("/admin");
 	}
 	
 	public String outingUrl(Outing outing) {

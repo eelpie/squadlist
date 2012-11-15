@@ -58,7 +58,7 @@ public class OutingsController {
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
     public ModelAndView newOutingSubmit(@RequestParam(required=true) String squad) throws Exception {
-    	Outing outing = api.createOuting(SquadlistApi.INSTANCE, squad, new LocalDateTime());
+    	final Outing outing = api.createOuting(SquadlistApi.INSTANCE, squad, new LocalDateTime());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
 	}
