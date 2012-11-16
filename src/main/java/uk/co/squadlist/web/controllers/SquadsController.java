@@ -12,27 +12,35 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
+import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOuting;
+import uk.co.squadlist.web.model.forms.SquadDetails;
+import uk.co.squadlist.web.urls.UrlBuilder;
 
 @Controller
 public class SquadsController {
 	
 	private SquadlistApi api;
 	private LoggedInUserService loggedInUserService;
+	private UrlBuilder urlBuilder;
 	
 	@Autowired
-	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService) {
+	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
+		this.urlBuilder = urlBuilder;
 	}
 	
 	@RequestMapping("/squad/{id}")
@@ -44,6 +52,20 @@ public class SquadsController {
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	mv.addObject("outings", api.getSquadOutings(SquadlistApi.INSTANCE, id));
     	return mv;
+    }
+	
+	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
+    public ModelAndView newSquad(@ModelAttribute("squad") SquadDetails squadDetails) throws Exception {    	
+		ModelAndView mv = new ModelAndView("newSquad");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		return mv;
+    }
+	
+	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
+    public ModelAndView newSquadSubmit(@ModelAttribute("member") SquadDetails squadDetails) throws Exception {
+		final Squad newSquad = api.createSquad(SquadlistApi.INSTANCE, squadDetails.getName());
+		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
+		return mv;
     }
 		
 	@RequestMapping("/squad/{id}/availability")

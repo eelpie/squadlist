@@ -1,0 +1,29 @@
+#parse('includes/head.vm')
+#navTabs('')
+
+<div class="row">
+
+	<div class="span2 bs-docs-sidebar">
+	</div>
+	
+	<div class="span9">
+		<h3>Add new squad</h3>
+		<form method="POST" action="$urlBuilder.newSquadUrl()" class="form-horizontal">		
+			#springBind("squad.name")
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Name</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Add new member</button>
+					<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
+				</div>
+			</div>
+		</form>				
+	</div>
+</div>
+</div>
