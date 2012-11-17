@@ -50,10 +50,10 @@
 <script>
 	$('.availabilityDropdown').change(function() {
     	outingId = $(this).attr('id');
-    	newAvailability = $(this).val();
+    	newAvailability = $(this).val();    						
     	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
-			$("#currentAvailability" + outingId).html(newAvailability);
+			$("#currentAvailability" + outingId).text(data.availability);
 		});
   	});
 </script>
