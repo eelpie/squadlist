@@ -8,15 +8,19 @@
 <div class="container">
 
 #macro(navTabs $selectedTab) 
-	<ul class="nav nav-tabs">
-		<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
-		<li #if($selectedTab == 'My details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
-		<li #if($selectedTab == 'Squad availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Squad availability</a></li>
-		<li #if($selectedTab == 'Squad contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
-		<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
-		<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
-		<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>		
-	</ul>
+	<div class="navbar">
+		<div class="navbar-inner">
+	    	<ul class="nav">
+				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">Outings</a></li>
+				<li #if($selectedTab == 'My details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
+				<li #if($selectedTab == 'Squad availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
+				<li #if($selectedTab == 'Squad contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
+				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
+				<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
+				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>		
+			</ul>
+		</div>
+	</div>	
 #end
 
 #macro(squadSideNav $action)
