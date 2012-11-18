@@ -21,6 +21,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
@@ -38,7 +39,8 @@ import com.google.common.collect.Lists;
 @Service("squadlistApi")
 public class SquadlistApi {
 
-	public static final String INSTANCE = "demo";
+	@Value("#{squadlist['instance']}")
+	public static String INSTANCE;
 	
 	private static Logger log = Logger.getLogger(SquadlistApi.class);
 		
