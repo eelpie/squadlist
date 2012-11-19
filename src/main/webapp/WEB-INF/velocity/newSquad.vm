@@ -19,7 +19,7 @@
 			
 			<div class="control-group">
 				<div class="controls">
-					<button type="submit" class="btn">Add new member</button>
+					<button type="submit" class="btn">Add new squad</button>
 					<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
 				</div>
 			</div>
