@@ -10,14 +10,47 @@
 		<h3>Adding a new outing</h3>
 		
 		<form action="/outings/new" method="POST">
-		
-			<select name="squad">	
-				#foreach($squad in $squads) 
-					<option value="$squad.id">$squad.name</option>
-				#end
-			</select>
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Date</label>
+				<div class="controls">				
+					<select name="day">	
+						#foreach($day in $dateHelper.days)
+							<option value="$day">$day
+						#end
+					</select>
+					
+					<select name="month">
+						#foreach($month in $dateHelper.months)
+							<option value="$month">$month
+						#end
+					</select>
+					
+					<select name="year">
+						#foreach($year in $dateHelper.years)
+							<option value="$year">$year
+						#end
+					</select>
+				</div>
+			</div>
+					
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Squad</label>
+				<div class="controls">
+					<select name="squad">	
+						#foreach($squad in $squads) 
+							<option value="$squad.id">$squad.name</option>
+						#end
+					</select>
+				</div>
+			</div>
 			
-			<input type="submit" value="Add outing" />
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Add outing</button>
+					<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
+				</div>
+			</div>
+			
 		</form>
 	</div>
 </div>

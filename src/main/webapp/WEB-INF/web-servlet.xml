@@ -50,6 +50,7 @@
 				<entry key="urlBuilder" value-ref="urlBuilder" />
 				<entry key="loggedInUserService" value-ref="loggedInUserService" />
 				<entry key="dateFormatter" value-ref="dateFormatter" />
+				<entry key="dateHelper" value-ref="dateHelper" />				
 			</map>
 		</property> 		
 	</bean>
