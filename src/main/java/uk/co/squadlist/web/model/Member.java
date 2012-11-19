@@ -2,6 +2,13 @@ package uk.co.squadlist.web.model;
 
 import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import uk.co.squadlist.web.model.forms.MemberDetails;
+
+import com.google.common.collect.Lists;
+
 public class Member {
 	
 	private String id, firstName, lastName, gender, dateOfBirth, emailAddress, contactNumber, registrationNumber;
@@ -68,6 +75,22 @@ public class Member {
 		this.squads = squads;
 	}
 	
+	public List<NameValuePair> toNameValuePairs() {
+		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
+		nameValuePairs.add(new BasicNameValuePair("firstName", this.getFirstName()));
+		nameValuePairs.add(new BasicNameValuePair("lastName", this.getLastName()));
+		nameValuePairs.add(new BasicNameValuePair("emailAddress", this.getEmailAddress()));
+		nameValuePairs.add(new BasicNameValuePair("contactNumber", this.getContactNumber()));
+		return nameValuePairs;
+	}
+	
+	public void updateFrom(MemberDetails memberDetails) {
+		this.setFirstName(memberDetails.getFirstName());
+		this.setLastName(memberDetails.getLastName());
+		this.setEmailAddress(memberDetails.getEmailAddress());
+		this.setContactNumber(memberDetails.getContactNumber());				
+	}
+		
 	@Override
 	public String toString() {
 		return "Member [id=" + id + ", firstName=" + firstName + ", lastName="

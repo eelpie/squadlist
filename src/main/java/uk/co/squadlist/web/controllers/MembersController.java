@@ -67,9 +67,8 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMember(@PathVariable String id, @ModelAttribute("member") MemberDetails memberDetails) throws Exception {		
 		final Member member = api.getMemberDetails(SquadlistApi.INSTANCE, id);
-		log.info("Updating member details: " + member.getId());
-		member.setFirstName(memberDetails.getFirstName());
-		member.setLastName(memberDetails.getLastName());
+		log.info("Updating member details: " + member.getId());		
+		member.updateFrom(memberDetails);
 		
 		api.updateMemberDetails(SquadlistApi.INSTANCE, member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	

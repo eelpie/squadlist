@@ -307,12 +307,8 @@ public class SquadlistApi {
 	
 	public Member updateMemberDetails(String instance, Member member) {
 		try {
-			final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(instance, member.getId()));
-		
-			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
-			nameValuePairs.add(new BasicNameValuePair("firstName", member.getFirstName()));
-			nameValuePairs.add(new BasicNameValuePair("lastName", member.getLastName()));
-			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(instance, member.getId()));		
+			post.setEntity(new UrlEncodedFormEntity(member.toNameValuePairs()));
 			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 			
 		} catch (Exception e) {

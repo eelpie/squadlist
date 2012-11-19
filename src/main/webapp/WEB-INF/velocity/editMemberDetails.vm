@@ -14,7 +14,7 @@
 			<div class="control-group">
 				<label class="control-label" for="${status.expression}">First name</label>
 				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="${status.value}">
+					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}">
 				</div>
 			</div>
 			
@@ -22,10 +22,26 @@
 			<div class="control-group">
 				<label class="control-label" for="${status.expression}">Last name</label>
 				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="${status.value}">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}">
 				</div>
 			</div>
-				
+			
+			#springBind("member.emailAddress")			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Email address</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}">
+				</div>
+			</div>
+			
+			#springBind("member.contactNumber")			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Contact number</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}">
+				</div>
+			</div>
+							
 			<div class="control-group">
 				<div class="controls">
 					<button type="submit" class="btn">Save details</button>
