@@ -15,19 +15,19 @@
 				<div class="controls">				
 					<select name="day">	
 						#foreach($day in $dateHelper.days)
-							<option value="$day">$day
+							<option value="$day" #if($day == $outing.day) SELECTED #end>$day
 						#end
 					</select>
 					
 					<select name="month">
 						#foreach($month in $dateHelper.months)
-							<option value="$month">$month
+							<option value="$month" #if($month == $outing.month) SELECTED #end>$month
 						#end
 					</select>
 					
 					<select name="year">
 						#foreach($year in $dateHelper.years)
-							<option value="$year">$year
+							<option value="$year" #if($year == $outing.year) SELECTED #end>$year
 						#end
 					</select>
 				</div>
@@ -38,13 +38,13 @@
 				<div class="controls">				
 					<select name="hour">	
 						#foreach($hour in $dateHelper.hours)
-							<option value="$hour">$hour
+							<option value="$hour" #if($hour == $outing.hour) SELECTED #end>$hour
 						#end
 					</select>
 					
 					<select name="minute">	
 						#foreach($minute in $dateHelper.minutes)
-							<option value="$minute">$minute
+							<option value="$minute" #if($minute == $outing.minute) SELECTED #end>$minute
 						#end
 					</select>
 					

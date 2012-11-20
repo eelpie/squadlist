@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,6 +56,10 @@ public class OutingsController {
     	ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+    	
+    	final LocalDateTime defaultOutingDateTime = new DateTime(DateTime.now().toDateMidnight()).plusDays(1).plusHours(8).toLocalDateTime();
+    	final OutingDetails defaultOutingDetails = new OutingDetails(defaultOutingDateTime);    	
+		mv.addObject("outing", defaultOutingDetails);
     	return mv;
 	}
 	
