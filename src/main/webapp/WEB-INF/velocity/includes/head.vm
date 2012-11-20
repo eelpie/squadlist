@@ -13,8 +13,8 @@
 	    	<ul class="nav">
 				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">Outings</a></li>
 				<li #if($selectedTab == 'My details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
-				<li #if($selectedTab == 'Squad availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
-				<li #if($selectedTab == 'Squad contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Squad contacts</a></li>
+				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
+				<li #if($selectedTab == 'Squads') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men')">Squads</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>		
@@ -24,7 +24,7 @@
 #end
 
 #macro(squadSideNav $action)
-	<ul class="nav nav-list bs-docs-sidenav affix">
+	<ul class="nav nav-list bs-docs-sidenav">
 		#if($squads && $squads.size() > 0) 
 			#foreach($navSquad on $squads) 
 				<li><a href="/squad/${navSquad.id}/${action}">$navSquad.name</a></li>

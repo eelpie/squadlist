@@ -3,9 +3,8 @@
 
 <div class="row">
 
-	<div class="span2 bs-docs-sidebar">
-	</div>
-
+	#parse('includes/outingsNav.vm')
+	
 	<div class="span9">
 		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
 		

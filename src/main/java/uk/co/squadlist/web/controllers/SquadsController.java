@@ -47,7 +47,7 @@ public class SquadsController {
     public ModelAndView index(@PathVariable String id) throws Exception {
 		final ModelAndView mv = new ModelAndView("squad");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	
+    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	mv.addObject("outings", api.getSquadOutings(SquadlistApi.INSTANCE, id));
