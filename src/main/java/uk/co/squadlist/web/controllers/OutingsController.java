@@ -1,9 +1,9 @@
 package uk.co.squadlist.web.controllers;
 
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +17,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
@@ -57,8 +58,8 @@ public class OutingsController {
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
-    public ModelAndView newOutingSubmit(@RequestParam(required=true) String squad) throws Exception {
-    	final Outing outing = api.createOuting(SquadlistApi.INSTANCE, squad, new LocalDateTime());
+    public ModelAndView newOutingSubmit(@ModelAttribute("outing") OutingDetails outingDetails) throws Exception {		
+    	final Outing outing = api.createOuting(SquadlistApi.INSTANCE, outingDetails.getSquad(), outingDetails.toLocalTime());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
 	}

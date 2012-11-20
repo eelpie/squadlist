@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 public class DateHelper {
 
 	public static List<String> getDays() {
-		List<String> days = Lists.newArrayList();
+		final List<String> days = Lists.newArrayList();
 		for (int i = 1; i <= 31; i++) {
 			days.add(Integer.toString(i));
 		}
@@ -19,7 +19,7 @@ public class DateHelper {
 	}
 	
 	public static List<String> getYears() {
-		List<String> years = Lists.newArrayList();
+		final List<String> years = Lists.newArrayList();
 		final int yearOfEra = DateTime.now().getYearOfEra();
 		for (int i = 0; i < 3; i++) {
 			years.add(Integer.toString(yearOfEra + i));
@@ -28,12 +28,29 @@ public class DateHelper {
 	}
 	
 	public static List<String> getMonths() {
-		List<String> days = Lists.newArrayList();
+		final List<String> days = Lists.newArrayList();
 		for (int i = 1; i <= 12; i++) {
 			DateTime month = new DateTime(1970, i, 1, 0, 0, 0);
-			days.add(month.toString("MMM"));
+			//days.add(month.toString("MMM"));
+			days.add(Integer.toString(i));
 		}
 		return days;
+	}
+	
+	public static List<String> getHours() {
+		final List<String> hours = Lists.newArrayList();
+		for (int i = 1; i <= 12; i = i + 1) {
+			hours.add(Integer.toString(i));
+		}
+		return hours;
+	}
+	
+	public static List<String> getMinutes() {
+		final List<String> minutes = Lists.newArrayList();
+		for (int i = 0; i < 60; i = i + 15) {
+			minutes.add(Integer.toString(i));
+		}
+		return minutes;
 	}
 	
 }
