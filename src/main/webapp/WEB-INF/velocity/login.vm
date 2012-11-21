@@ -1,18 +1,29 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link href="http://im.wellington.gen.nz/static/bootstrap/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+
    <form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST">                                                
         <div class="control-group">
 	        <div class="controls">          
-	        	<input type="text" name="j_username' value=""  placeholder="Username" class="span4">
+	        	<input type="text" name="j_username" value="" placeholder="Username" class="span4">
 	        </div>
         </div>
 
         <div class="control-group">
        		<div class="controls">
-            	<input type="password" name="j_password"  placeholder="Password" class="span4"/>
+            	<input type="password" name="j_password" placeholder="Password" class="span4"/>
          	</div>
         </div>
                 
         <div class="form-actions">
-        	<input type="submit" name="login" value="Log In " class="btn btn-success btn-large" />
+        	<input type="submit" name="login" value="Log In " class="btn" />
         </div>
 	</form>
+
+</body>
+</html>
+
 	
