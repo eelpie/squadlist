@@ -32,7 +32,10 @@ public class MyOutingsController {
 		mv.addObject("loggedInUser", loggedInUser);
     	
 		final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
-		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api.getAvailabilityFor(SquadlistApi.INSTANCE, loggedInUser, midnightYesterday.toDate())));
+		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api
+				.getAvailabilityFor(SquadlistApi.INSTANCE, loggedInUser,
+						midnightYesterday.toDate(), 
+						midnightYesterday.plusWeeks(2).toDate())));
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions(SquadlistApi.INSTANCE));
     	return mv;
     }
