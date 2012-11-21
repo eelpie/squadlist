@@ -38,13 +38,15 @@ public class MyOutingsControllerTest {
 	}
 	
 	@Test
-	public void myOutingsShouldShowOutingsForTodayAndTheFuture() throws Exception {
+	public void myOutingsShouldShowCurrentOutingsForTodayAndTheNextTwoWeeks() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(SquadlistApi.INSTANCE, MEMBER, DateTime.now().minusDays(1).toDateMidnight().toDate())).thenReturn(membersAvailability);
+		when(api.getAvailabilityFor(SquadlistApi.INSTANCE, MEMBER, DateTime
+						.now().minusDays(1).toDateMidnight().toDate(), DateTime
+						.now().minusDays(1).toDateMidnight().plusWeeks(2).toDate()))
+				.thenReturn(membersAvailability);
 		when(displayObjectFactory.makeDisplayObjectsFor(membersAvailability)).thenReturn(membersAvailabilityDisplayObjects);
-
 						
-		ModelAndView mv = controller.outings();
+		final ModelAndView mv = controller.outings();
 		
 		assertEquals(membersAvailabilityDisplayObjects, mv.getModel().get("outings"));		
 	}

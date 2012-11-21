@@ -14,9 +14,9 @@ public class ApiUrlBuilderTest {
 	public void canAppendFromDateToMemberAvailabilityUrl() throws Exception {		
 		ApiUrlBuilder urlBuilder = new ApiUrlBuilder("http://api.local");
 		
-		final String url = urlBuilder.getMembersAvailabilityUrl(INSTANCE, MEMBER, new DateTime(2012, 7, 13, 12, 10).toDate());
+		final String url = urlBuilder.getMembersAvailabilityUrl(INSTANCE, MEMBER, new DateTime(2012, 7, 13, 12, 10).toDate(),  new DateTime(2012, 8, 13, 12, 10).toDate());
 		
-		assertEquals("http://api.local/test/members/SOMEMEMBER/availability?fromDate=2012-07-13T12:10", url);
+		assertEquals("http://api.local/test/members/SOMEMEMBER/availability?fromDate=2012-07-13T12:10&toDate=2012-08-13T12:10", url);
 	}
 	
 }

@@ -78,8 +78,8 @@ public class SquadsController {
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
     	final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
-		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, midnightYesterday.toDate());
-
+		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, midnightYesterday.toDate(), midnightYesterday.plusWeeks(2).toDate());
+		
     	List<Outing> outings = new ArrayList<Outing>();
     	Map<String, String> allAvailability = new HashMap<String, String>();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {

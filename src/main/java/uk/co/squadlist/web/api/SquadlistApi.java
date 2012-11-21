@@ -40,7 +40,7 @@ import com.google.common.collect.Lists;
 public class SquadlistApi {
 
 	@Value("#{squadlist['instance']}")
-	public static String INSTANCE;
+	public static String INSTANCE = "demoinstance";
 	
 	private static Logger log = Logger.getLogger(SquadlistApi.class);
 		
@@ -105,10 +105,10 @@ public class SquadlistApi {
 		}
 	}
 	
-	public List<OutingAvailability> getAvailabilityFor(String instance, String memberId, Date date) {
+	public List<OutingAvailability> getAvailabilityFor(String instance, String memberId, Date fromDate, Date toDate) {
 		try {
-			log.info("getAvailabilityFor: " + memberId + ", " + date);
-			final String json = httpFetcher.get(urlBuilder.getMembersAvailabilityUrl(instance, memberId, date));
+			log.info("getAvailabilityFor: " + memberId + ", " + fromDate);
+			final String json = httpFetcher.get(urlBuilder.getMembersAvailabilityUrl(instance, memberId, fromDate, toDate));
 			return jsonDeserializer.deserializeListOfOutingAvailability(json);
 			
 		} catch (Exception e) {
@@ -234,9 +234,9 @@ public class SquadlistApi {
 		}
 	}
 	
-	public List<OutingWithSquadAvailability> getSquadAvailability(String instance, String squadId, Date fromDate) {
+	public List<OutingWithSquadAvailability> getSquadAvailability(String instance, String squadId, Date fromDate, Date toDate) {
 		try {
-			final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(instance, squadId, fromDate));
+			final String json = httpFetcher.get(urlBuilder.getSquadAvailabilityUrl(instance, squadId, fromDate, toDate));
 			return jsonDeserializer.deserializeSquadAvailability(json);
 			
 		} catch (Exception e) {

@@ -96,13 +96,13 @@ public class SquadlistApiIT {
 		
 		final LocalDateTime outingDate = new LocalDateTime(2012, 11, 5, 8, 0);
 		final Outing newOuting = api.createOuting(instanceName, squad.getId(), outingDate);	
-		assertEquals("novice-men-2012-11-05-08:00", newOuting.getId());
+		assertEquals("novice-men-2012-11-05-0800", newOuting.getId());
 		assertEquals("Novice men", newOuting.getSquad().getName());
 		assertEquals(outingDate.toDateTime(DateTimeZone.forID("Europe/London")), new DateTime(newOuting.getDate()));
 		
 		final LocalDateTime outingDateDuringBST = new LocalDateTime(2012, 6, 5, 8, 0, 0);
 		final Outing newOutingDuringBST = api.createOuting(instanceName, squad.getId(), outingDateDuringBST);
-		assertEquals("novice-men-2012-06-05-08:00", newOutingDuringBST.getId());
+		assertEquals("novice-men-2012-06-05-0800", newOutingDuringBST.getId());
 		assertEquals(outingDateDuringBST.toDateTime(DateTimeZone.forID("Europe/London")), new DateTime(newOutingDuringBST.getDate()));
 		assertEquals("2012-06-05T08:00:00.000+01:00", new DateTime(newOutingDuringBST.getDate()).toString());
 		
@@ -119,12 +119,12 @@ public class SquadlistApiIT {
 		assertEquals("Available", updatedOutingAvailability.get(newMember.getId()));
 		
 		final Date dayBeforeEarliestOuting = new DateTime(newOuting.getDate()).minusDays(1).toDate();
-		List<OutingAvailability> membersAvailability = api.getAvailabilityFor(instanceName, newMember.getId(), dayBeforeEarliestOuting);		
+		List<OutingAvailability> membersAvailability = api.getAvailabilityFor(instanceName, newMember.getId(), dayBeforeEarliestOuting, DateTime.now().toDate());		
 		final OutingAvailability membersOutingAvailability = membersAvailability.get(0);
 		assertEquals(newOuting.getId(), membersOutingAvailability.getOuting().getId());
 		assertEquals("Available", membersOutingAvailability.getAvailability());
 		
-		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceName, newOuting.getSquad().getId(), dayBeforeEarliestOuting);		
+		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceName, newOuting.getSquad().getId(), dayBeforeEarliestOuting, DateTime.now().toDate());		
 		final OutingWithSquadAvailability membersAvailabiltyForSquadOuting = squadAvailability.get(0);
 		assertEquals(newOuting.getId(), membersAvailabiltyForSquadOuting.getOuting().getId());
 		assertEquals("Available", membersAvailabiltyForSquadOuting.getAvailability().get(newMember.getId()));

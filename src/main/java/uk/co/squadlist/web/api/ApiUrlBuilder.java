@@ -27,9 +27,9 @@ public class ApiUrlBuilder {
 		this.apiUrl = apiUrl;
 	}
 	
-	public String getMembersAvailabilityUrl(String instance, String memberId, Date fromDate) {
+	public String getMembersAvailabilityUrl(String instance, String memberId, Date fromDate, Date toDate) {
 		final StringBuilder url = new StringBuilder(getMemberDetailsUrl(instance, memberId) + "/availability");
-		appendFromDate(fromDate, url);
+		appendDates(url, fromDate, toDate);
 		return url.toString();		
 	}
 
@@ -46,9 +46,9 @@ public class ApiUrlBuilder {
 		return getSquadsUrl(instance) + "/" + squadId;
 	}
 	
-	public String getSquadAvailabilityUrl(String instance, String squadId, Date fromDate) {
+	public String getSquadAvailabilityUrl(String instance, String squadId, Date fromDate, Date toDate) {
 		final StringBuilder url = new StringBuilder(getSquadUrl(instance, squadId) + "/availability");
-		appendFromDate(fromDate, url);
+		appendDates(url, fromDate, toDate);
 		return url.toString();
 	}
 	
@@ -88,9 +88,15 @@ public class ApiUrlBuilder {
 		return apiUrl + "/" + urlEncode(instance) + "/auth?username=" + urlEncode(username) + "&password=" + urlEncode(password);
 	}
 
-	private void appendFromDate(Date fromDate, final StringBuilder url) {
+	private void appendDates(final StringBuilder url, Date fromDate, Date toDate) {
+		String joiner = "?";
 		if (fromDate != null) {
-			url.append("?fromDate=" + dateHourMinute.print(new DateTime(fromDate)));
+			url.append(joiner + "fromDate=" + dateHourMinute.print(new DateTime(fromDate)));
+			joiner = "&";
+		}
+		if (toDate != null) {
+			url.append(joiner + "toDate=" + dateHourMinute.print(new DateTime(toDate)));
+			joiner = "&";
 		}
 	}
 
