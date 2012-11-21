@@ -18,11 +18,14 @@
 	<context:annotation-config />
 	<context:component-scan base-package="uk.co.squadlist" />
 	
-	<util:properties id="squadlist" location="classpath:squadlist.properties" />    
-	
+	<util:properties id="squadlist" location="classpath:squadlist.properties" />
+		        
 	<security:http auto-config="true">
+		<security:intercept-url pattern="/login**" access="IS_AUTHENTICATED_ANONYMOUSLY" />	
 		<security:intercept-url pattern="/**" access="ROLE_USER" />
-		<security:logout logout-success-url="/" />
+		
+		<security:form-login default-target-url="/" login-page="/login" authentication-failure-url="/login?errors=true" />                
+		<security:logout logout-success-url="/" />		
 	</security:http>
 	
 	<security:authentication-manager alias="authenticationManager">
