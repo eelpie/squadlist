@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +26,7 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOuting;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.DateHelper;
 
 @Controller
 public class SquadsController {
@@ -50,7 +49,7 @@ public class SquadsController {
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
-    	mv.addObject("outings", api.getSquadOutings(SquadlistApi.INSTANCE, id));
+    	mv.addObject("outings", api.getSquadOutings(SquadlistApi.INSTANCE, id, DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.endOfCurrentOutingPeriod().toDate()));
     	return mv;
     }
 	
@@ -77,9 +76,11 @@ public class SquadsController {
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
-    	final DateMidnight midnightYesterday = DateTime.now().minusDays(1).toDateMidnight();
-		final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, midnightYesterday.toDate(), midnightYesterday.plusWeeks(2).toDate());
-		
+		final List<OutingWithSquadAvailability> squadAvailability = api
+				.getSquadAvailability(SquadlistApi.INSTANCE, id, DateHelper
+						.startOfCurrentOutingPeriod().toDate(), DateHelper
+						.endOfCurrentOutingPeriod().toDate());
+
     	List<Outing> outings = new ArrayList<Outing>();
     	Map<String, String> allAvailability = new HashMap<String, String>();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
@@ -122,7 +123,10 @@ public class SquadsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
-    	mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(SquadlistApi.INSTANCE, id)));
+		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(
+				SquadlistApi.INSTANCE, id, DateHelper
+						.startOfCurrentOutingPeriod().toDate(), DateHelper
+						.endOfCurrentOutingPeriod().toDate())));
     	return mv;
     }
 

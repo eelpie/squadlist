@@ -56,8 +56,10 @@ public class ApiUrlBuilder {
 		return getSquadUrl(instance, squadId) + "/members";
 	}
 	
-	public String getSquadOutingsUrl(String instance, String squadId) {
-		return getSquadUrl(instance, squadId) + "/outings";
+	public String getSquadOutingsUrl(String instance, String squadId, Date fromDate, Date toDate) {
+		final StringBuilder url = new StringBuilder(getSquadUrl(instance, squadId) + "/outings");
+		appendDates(url, fromDate, toDate);
+		return url.toString();
 	}
 	
 	public String getMembersUrl(String instance) {

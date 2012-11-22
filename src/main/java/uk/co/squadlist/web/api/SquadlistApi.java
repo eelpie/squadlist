@@ -142,9 +142,9 @@ public class SquadlistApi {
 		}
 	}
 	
-	public List<Outing> getSquadOutings(String instance, String squadId) {
+	public List<Outing> getSquadOutings(String instance, String squadId, Date fromDate, Date toDate) {
 		try {
-			final String json = httpFetcher.get(urlBuilder.getSquadOutingsUrl(instance, squadId));
+			final String json = httpFetcher.get(urlBuilder.getSquadOutingsUrl(instance, squadId, fromDate, toDate));
 			return jsonDeserializer.deserializeListOfOutings(json);
 		
 		} catch (Exception e) {

@@ -2,7 +2,9 @@ package uk.co.squadlist.web.views;
 
 import java.util.List;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -51,6 +53,22 @@ public class DateHelper {
 			minutes.add(Integer.toString(i));
 		}
 		return minutes;
+	}
+
+	public static LocalDateTime defaultOutingStartDateTime() {
+		return new DateTime(DateTime.now().toDateMidnight()).plusDays(1).plusHours(8).toLocalDateTime();
+	}
+
+	public static DateTime startOfCurrentOutingPeriod() {
+		return midnightYesterday().toDateTime();
+	}
+
+	public static DateTime endOfCurrentOutingPeriod() {
+		return startOfCurrentOutingPeriod().plusWeeks(2);
+	}
+	
+	private static DateMidnight midnightYesterday() {
+		return DateTime.now().minusDays(1).toDateMidnight();
 	}
 	
 }

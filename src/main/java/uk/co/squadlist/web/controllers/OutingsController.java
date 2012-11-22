@@ -21,6 +21,7 @@ import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
 
@@ -57,7 +58,7 @@ public class OutingsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
     	
-    	final LocalDateTime defaultOutingDateTime = new DateTime(DateTime.now().toDateMidnight()).plusDays(1).plusHours(8).toLocalDateTime();
+    	final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
     	final OutingDetails defaultOutingDetails = new OutingDetails(defaultOutingDateTime);    	
 		mv.addObject("outing", defaultOutingDetails);
     	return mv;

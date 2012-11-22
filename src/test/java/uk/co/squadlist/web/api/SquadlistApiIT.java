@@ -109,7 +109,7 @@ public class SquadlistApiIT {
 		outings = api.getOutings(instanceName);
 		assertEquals(2, outings.size());
 		
-		final List<Outing> squadOutings = api.getSquadOutings(instanceName, squad.getId());
+		final List<Outing> squadOutings = api.getSquadOutings(instanceName, squad.getId(), new DateTime(1970, 1, 1, 0, 0).toDate(), new DateTime(2020, 1, 1, 0, 0).toDate());
 		assertEquals(2, squadOutings.size());
 		
 		final OutingAvailability outingAvailability = api.setOutingAvailability(instanceName, newMember.getId(), newOuting.getId(), available.getLabel());
