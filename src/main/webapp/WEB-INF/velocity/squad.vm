@@ -9,17 +9,25 @@
 		
 	<div class="span4">
 		<h3>$squad.name</h3>	
-
 		<h5>Members</h5>
-		#foreach( $member in $members )
-			#parse('includes/member.vm')			
+		#if($members.isEmpty()) 
+			<p>No members are currently assigned to this squad.</p>
+		#else
+			#foreach( $member in $members )
+				#parse('includes/member.vm')			
+			#end
 		#end
 	</div>
 	
 	<div class="span4">
-		<h5>Outings</h5>	
-		#foreach( $outing in $outings )
-			#parse('includes/outing.vm')
+		<h5>Current outings</h5>
+		#if($outings.isEmpty()) 
+			<p>No outings are scheduled for this squad within the next 2 weeks.</p>
+		#else
+			<p>Squad outings for the next 2 weeks.</p>
+			#foreach( $outing in $outings )
+				#parse('includes/outing.vm')
+			#end
 		#end
 	</div>
 
