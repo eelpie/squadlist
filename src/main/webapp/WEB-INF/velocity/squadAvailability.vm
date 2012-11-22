@@ -10,29 +10,30 @@
 	<div class="span9">
 		<h3>$squad.name availability</h3>
 
-		<table>
-			<tr>
-			<td></td>
+		<div class="row">
+			<div class="span2">
+			</div>
 			#foreach($outing in $outings) 
-			<td>#parse('includes/outing.vm')</td>
+				<div class="span1">
+					#parse('includes/outing-small.vm')
+				</div>
 			#end
-		</tr>
+		</div>			
+		
 
 		#foreach( $member in $members )
-			<tr>
-				<td>#parse('includes/member.vm')</td>
-				#foreach($outing in $outings) 
+			<div class="row">				
+				<div class="span2">#parse('includes/member.vm')</div>				
+				#foreach($outing in $outings)
 					#set($key = "${outing.id}-$member.id")
-					<td>
+					<div class="span1">
 						<span class="label label-info">
 							$!availability.get($key)
-						</span>		
-					</td>
+						</span>
+					</div>
 				#end
-			</tr>
-		#end
-		</tr>
-		</table>
+			</div>
+		#end	
 		<hr>
 
 	</div>
