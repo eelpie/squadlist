@@ -34,7 +34,8 @@ public class MyOutingsController {
 				.getAvailabilityFor(SquadlistApi.INSTANCE, loggedInUser,
 						DateHelper.startOfCurrentOutingPeriod().toDate(), 
 						DateHelper.endOfCurrentOutingPeriod().toDate())));
-		
+
+		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUser));
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions(SquadlistApi.INSTANCE));
     	return mv;
     }

@@ -163,6 +163,17 @@ public class SquadlistApi {
 			throw new RuntimeException(e);
 		}	
 	}
+	
+	public Map<String, Integer> getMemberOutingMonths(String instance, String memberId) {
+		try {
+			final String json = httpFetcher.get(urlBuilder.getMemberDetailsUrl(instance, memberId) + "/outings/months");
+			return jsonDeserializer.deserializeOutingsMonthsMap(json);
+			
+		} catch (Exception e) {
+			log.error(e);
+			throw new RuntimeException(e);
+		}	
+	}
 		
 	public Map<String, String> getOutingAvailability(String instance, String outingId) {
 		try {
