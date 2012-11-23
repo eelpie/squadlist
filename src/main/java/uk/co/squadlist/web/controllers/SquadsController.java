@@ -2,18 +2,22 @@ package uk.co.squadlist.web.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -118,16 +122,22 @@ public class SquadsController {
     }
 	
 	@RequestMapping("/squad/{id}/outings")
-    public ModelAndView outings(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("squadOutings");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-
-		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));		
-		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(
-				SquadlistApi.INSTANCE, id, DateHelper
-						.startOfCurrentOutingPeriod().toDate(), DateHelper
-						.endOfCurrentOutingPeriod().toDate())));
-		
+	public ModelAndView outings(@PathVariable String id,
+			@RequestParam(value = "month", required = false) String month) throws Exception {
+    	final Squad squad = api.getSquad(SquadlistApi.INSTANCE, id);
+    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
+    	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+    	
+    	if (month != null) {
+    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
+    		startDate = monthDateTime.toDate();
+    		endDate = monthDateTime.plusMonths(1).toDate();
+    	}
+    	
+    	final ModelAndView mv = new ModelAndView("squadOutings");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());		
+		mv.addObject("squad", squad);
+		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(SquadlistApi.INSTANCE, id, startDate, endDate)));
 		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
     	return mv;
     }

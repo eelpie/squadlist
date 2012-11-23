@@ -62,6 +62,10 @@ public class ApiUrlBuilder {
 		return url.toString();
 	}
 	
+	public String getSquadOutingsMonthsUrl(String instance, String squadId) {
+		return getSquadOutingsUrl(instance, squadId, null, null) + "/months";
+	}
+	
 	public String getMembersUrl(String instance) {
 		return apiUrl + "/" +  urlEncode(instance) + "/members";
 	}
