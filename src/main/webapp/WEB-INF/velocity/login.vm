@@ -10,7 +10,10 @@
 	<div class="span6 offset1">
 		<h2>Squadlist - $instance.name</h2>
 			
-		
+		#if($errors)
+	        <div id="alert" class="alert">Incorrect username or password</div>
+		#end
+			
 	   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">
 	   		            
 	   		<label class="control-label" for="j_username">Username</label>
