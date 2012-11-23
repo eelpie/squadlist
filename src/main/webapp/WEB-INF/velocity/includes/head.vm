@@ -6,6 +6,22 @@
 <body>
 <div class="container">
 
+#macro(outingsNav $action) 
+	#if($outingMonths && !$outingMonths.keySet().isEmpty())
+		<div class="span2 bs-docs-sidebar">
+			<ul class="nav nav-list bs-docs-sidenav">
+				<li><a href="$action">Current</a></li>
+			</ul>
+			<p>		
+			<ul class="nav nav-list bs-docs-sidenav">
+				#foreach($outingMonth in $outingMonths.keySet())
+					<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
+				#end
+			</ul>
+		</div>
+	#end
+#end
+
 #macro(navTabs $selectedTab) 
 	<div class="navbar">
 		<div class="navbar-inner">

@@ -28,6 +28,7 @@
 			#foreach( $outing in $outings )
 				#parse('includes/outing.vm')
 			#end
+			<p><a href="$urlBuilder.squadUrl($squad)/outings">More</a></p>
 		#end
 	</div>
 

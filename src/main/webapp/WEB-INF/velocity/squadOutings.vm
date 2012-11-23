@@ -3,7 +3,7 @@
 
 <div class="row">
 
-	#parse('includes/outingsNav.vm')
+	#outingsNav("/squad/$squad.id/outings")
 
 	<div class="span9">
 		<h3>$squad.name outings</h3>

@@ -2,8 +2,6 @@
 #navTabs('')
 
 <div class="row">
-
-	#parse('includes/outingsNav.vm')
 	
 	<div class="span9">
 		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>

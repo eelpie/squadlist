@@ -3,8 +3,8 @@
 
 <div class="row">
 
-	#parse('includes/outingsNav.vm')
-
+	#outingsNav('/')
+	
 	<div class="span9">
 		<h3>My outings</h3>
 		
