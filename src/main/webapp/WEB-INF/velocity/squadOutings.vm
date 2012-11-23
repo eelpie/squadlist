@@ -1,9 +1,17 @@
 #parse('includes/head.vm')
-#navTabs('')
+#navTabs('Outings')
 
-<h3>$squad.name outings</h3>
+<div class="row">
 
-#foreach( $outing in $outings )
-	#parse('includes/outing.vm')
-#end
-<hr>
+	#parse('includes/outingsNav.vm')
+
+	<div class="span9">
+		<h3>$squad.name outings</h3>
+
+		#foreach( $outing in $outings )
+			#parse('includes/outing.vm')
+		#end
+	<hr>
+	</div>
+</div>
+</div>

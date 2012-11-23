@@ -2,10 +2,14 @@
 	<ul class="nav nav-list bs-docs-sidenav">
 		<li><a href="/">Current</a></li>
 	</ul>
-	<P>
-	
-	<ul class="nav nav-list bs-docs-sidenav">
-		<li><a href="/">Nov 2012</a></li>			
-		<li><a href="/">Dec 2012</a></li>
-	</ul>
+	<p>
+		
+	#if($outingMonths && !$outingMonths.keySet().isEmpty())
+		<ul class="nav nav-list bs-docs-sidenav">
+		#foreach($outingMonth in $outingMonths.keySet())
+			<li><a href="/">$outingMonth</a> ($outingMonths.get($outingMonth))</li>
+		#end
+		</ul>
+	#end
+							
 </div>

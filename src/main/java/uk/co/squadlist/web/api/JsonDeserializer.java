@@ -35,6 +35,11 @@ public class JsonDeserializer {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public Map<String, Integer> deserializeOutingsMonthsMap(String json) throws JsonParseException, JsonMappingException, IOException {
+		return (Map<String, Integer>) mapper.readValue(json, Map.class);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<OutingAvailability> deserializeListOfOutingAvailability(String json) throws JsonParseException, JsonMappingException, IOException {
 		return (List<OutingAvailability>) mapper.readValue(json, new TypeReference<Collection<OutingAvailability>>() {});
 	}

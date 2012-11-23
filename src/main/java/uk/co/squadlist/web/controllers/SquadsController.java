@@ -122,11 +122,13 @@ public class SquadsController {
     	ModelAndView mv = new ModelAndView("squadOutings");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 
-		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
+		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));		
 		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(
 				SquadlistApi.INSTANCE, id, DateHelper
 						.startOfCurrentOutingPeriod().toDate(), DateHelper
 						.endOfCurrentOutingPeriod().toDate())));
+		
+		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
     	return mv;
     }
 
