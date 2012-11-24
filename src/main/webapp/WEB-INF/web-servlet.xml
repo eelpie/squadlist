@@ -22,10 +22,12 @@
         
 	<context:annotation-config />
    	<context:component-scan base-package="uk.co.squadlist" />
- 	
- 	<mvc:annotation-driven />
+ 	        
+ 	<mvc:annotation-driven validator="validator"/> 	
 	<mvc:default-servlet-handler />
 
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	
 	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
 		<property name="velocityProperties">
 			<props>

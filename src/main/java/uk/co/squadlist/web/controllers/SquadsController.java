@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,10 +68,17 @@ public class SquadsController {
     }
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@ModelAttribute("member") SquadDetails squadDetails) throws Exception {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squad") SquadDetails squadDetails, BindingResult result) throws Exception {
+		System.out.println(result);
+		if (result.hasErrors()) {
+			ModelAndView mv = new ModelAndView("newSquad");
+			mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+			return mv;
+		}
+
 		final Squad newSquad = api.createSquad(SquadlistApi.INSTANCE, squadDetails.getName());
 		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
-		return mv;
+		 return mv;
     }
 		
 	@RequestMapping("/squad/{id}/availability")

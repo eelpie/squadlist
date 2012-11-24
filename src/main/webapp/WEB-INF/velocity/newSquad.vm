@@ -14,7 +14,8 @@
 				<label class="control-label" for="${status.expression}">Name</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}">
-				</div>
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end				
+				</div>			
 			</div>
 			
 			<div class="control-group">
