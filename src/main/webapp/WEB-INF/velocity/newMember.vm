@@ -15,6 +15,7 @@
 				<label class="control-label" for="${status.expression}">First name</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end					
 				</div>
 			</div>
 			
@@ -23,8 +24,19 @@
 				<label class="control-label" for="${status.expression}">Last name</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end					
 				</div>
 			</div>
+			
+			#springBind("member.emailAddress")			
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Email address</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end					
+				</div>
+			</div>
+			
 			
 			<div class="control-group">
 				<label class="control-label" for="${status.expression}">Squad</label>
@@ -33,6 +45,7 @@
 					#foreach($squad in $squads) 
 						<option value="$squad.id">$squad.name</option>
 					#end
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end				
 					</select>
 				</div>
 			</div>

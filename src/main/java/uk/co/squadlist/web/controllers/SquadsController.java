@@ -62,23 +62,18 @@ public class SquadsController {
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
     public ModelAndView newSquad(@ModelAttribute("squad") SquadDetails squadDetails) throws Exception {    	
-		ModelAndView mv = new ModelAndView("newSquad");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		return mv;
+		return renderNewSquadForm();
     }
-	
+
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
     public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squad") SquadDetails squadDetails, BindingResult result) throws Exception {
-		System.out.println(result);
 		if (result.hasErrors()) {
-			ModelAndView mv = new ModelAndView("newSquad");
-			mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-			return mv;
+			return renderNewSquadForm();
 		}
-
+		
 		final Squad newSquad = api.createSquad(SquadlistApi.INSTANCE, squadDetails.getName());
 		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
-		 return mv;
+		return mv;
     }
 		
 	@RequestMapping("/squad/{id}/availability")
@@ -151,6 +146,12 @@ public class SquadsController {
 		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
     	return mv;
     }
+
+	private ModelAndView renderNewSquadForm() {
+		ModelAndView mv = new ModelAndView("newSquad");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		return mv;
+	}
 
 	private List<DisplayOuting> makeDisplayObjectsFor(List<Outing> outings) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
 		List<DisplayOuting> displayOutings = new ArrayList<DisplayOuting>();

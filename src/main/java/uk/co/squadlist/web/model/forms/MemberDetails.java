@@ -1,11 +1,13 @@
 package uk.co.squadlist.web.model.forms;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 public class MemberDetails {
+
+	@NotBlank
+	private String firstName, lastName, emailAddress;
 	
-	private String firstName;
-	private String lastName;
-	private String emailAddress, contactNumber;
-	private String squad;
+	private String contactNumber, squad;
 	
 	public String getFirstName() {
 		return firstName;
