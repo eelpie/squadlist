@@ -12,8 +12,10 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.junit.Before;
 import org.junit.Test;
 
+import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -26,17 +28,35 @@ public class SquadlistApiIT {
 
 	private static final String TEST_INSTANCE_PREFIX = "testit";
 
-	@Test
-	public void canCreateAndPopulateNewInstances() throws Exception {		
-		final SquadlistApi api = new SquadlistApi("http://localhost:9090");
-		
-		final String instanceName = TEST_INSTANCE_PREFIX + System.currentTimeMillis();
+	private SquadlistApi api;
+	private String instanceName;
+
+	@Before
+	public void setup() {
+		api = new SquadlistApi("http://localhost:9090");
+		instanceName = TEST_INSTANCE_PREFIX + System.currentTimeMillis();
 		
 		final List<Instance> instances = api.getInstances();
 		System.out.println(instances);
+		// TODO assert not already present
 		
 		final Instance instance = api.createInstance(instanceName, "Test instance");
 		System.out.println(instance);	
+	}
+	
+	@Test(expected=InvalidSquadException.class)
+	public void shouldValidateNewSquadRequests() throws Exception {
+		api.createSquad(instanceName, "");
+	}
+	
+	@Test(expected=InvalidSquadException.class)
+	public void shouldNowAllowDuplicateSquadNamesWhenAddingNewSquads() throws Exception {
+		api.createSquad(instanceName, "New squad");
+		api.createSquad(instanceName, "New squad");
+	}
+	
+	@Test
+	public void canCreateAndPopulateNewInstances() throws Exception {		
 		
 		List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions(instanceName);
 		System.out.println(availabilityOptions);

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -37,6 +39,8 @@ import uk.co.squadlist.web.views.DateHelper;
 
 @Controller
 public class SquadsController {
+	
+	private static Logger log = Logger.getLogger(SquadsController.class);
 	
 	private SquadlistApi api;
 	private LoggedInUserService loggedInUserService;
@@ -66,14 +70,21 @@ public class SquadsController {
     }
 
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squad") SquadDetails squadDetails, BindingResult result) throws Exception {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squad") SquadDetails squadDetails, BindingResult result) {
 		if (result.hasErrors()) {
 			return renderNewSquadForm();
 		}
 		
-		final Squad newSquad = api.createSquad(SquadlistApi.INSTANCE, squadDetails.getName());
-		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
-		return mv;
+		try {
+			Squad newSquad = api.createSquad(SquadlistApi.INSTANCE, squadDetails.getName());
+			final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
+			return mv;
+			
+		} catch (InvalidSquadException e) {
+			log.info("Invalid squad");
+			result.rejectValue("name", null, "squad name is already in use");	         
+			return renderNewSquadForm();
+		}
     }
 		
 	@RequestMapping("/squad/{id}/availability")
@@ -146,7 +157,7 @@ public class SquadsController {
 		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
     	return mv;
     }
-
+	
 	private ModelAndView renderNewSquadForm() {
 		ModelAndView mv = new ModelAndView("newSquad");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());

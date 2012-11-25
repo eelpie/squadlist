@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -24,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
@@ -35,6 +39,7 @@ import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 import com.google.common.collect.Lists;
+import com.sun.org.apache.regexp.internal.recompile;
 
 @Service("squadlistApi")
 public class SquadlistApi {
@@ -311,14 +316,22 @@ public class SquadlistApi {
 		}		
 	}
 	
-	public Squad createSquad(String instance, String name) {
+	public Squad createSquad(String instance, String name) throws InvalidSquadException {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getSquadsUrl(instance));
 		
 			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
 			nameValuePairs.add(new BasicNameValuePair("name", name));
-			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));	
 			return jsonDeserializer.deserializeSquadDetails(httpFetcher.post(post));
+			
+		} catch (HttpBadRequestException e) {
+			log.info("Bad request response to new squad request: " + e.getResponseBody());
+			throw new InvalidSquadException();
+			
+		} catch (HttpFetchException e) {
+			log.error(e);
+			throw new RuntimeException(e);
 			
 		} catch (Exception e) {
 			log.error(e);
