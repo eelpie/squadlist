@@ -8,6 +8,10 @@
 	<div class="span9">
 		<h3>My outings</h3>
 		
+		#if($outings.isEmpty()) 
+			<p>No matching outings</p>
+		#end		
+		
 		<form>
 		#foreach($outing in $outings)
 		

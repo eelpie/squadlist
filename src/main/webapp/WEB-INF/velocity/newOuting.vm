@@ -3,9 +3,8 @@
 
 <div class="row">
 
-	<div class="span2 bs-docs-sidebar">
-	</div>
-	
+	#outingsNav('/')
+		
 	<div class="span9">	
 		<h3>Adding a new outing</h3>
 		

@@ -1,6 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,6 +44,7 @@ public class OutingsController {
     	final Outing outing = api.getOuting(SquadlistApi.INSTANCE, id);
     	    	
 		mv.addObject("outing", outing);
+		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUserService.getLoggedInUser()));
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, outing.getSquad().getId()));
@@ -56,6 +56,7 @@ public class OutingsController {
     public ModelAndView newOuting() throws Exception {
     	ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUserService.getLoggedInUser()));
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
     	
     	final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();

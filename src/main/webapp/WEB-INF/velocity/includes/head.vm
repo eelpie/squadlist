@@ -9,6 +9,11 @@
 #macro(outingsNav $action) 
 	#if($outingMonths && !$outingMonths.keySet().isEmpty())
 		<div class="span2 bs-docs-sidebar">
+				
+			<ul class="nav nav-list bs-docs-sidenav">
+				<li><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
+			</ul>
+			<p>		
 			<ul class="nav nav-list bs-docs-sidenav">
 				<li><a href="$action">Current</a></li>
 			</ul>
@@ -31,9 +36,8 @@
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Squads') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men')">Squads</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
-				<li #if($selectedTab == 'Add outing') class="active" #end><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
-				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
+				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
 			</ul>
 		</div>
 	</div>	
