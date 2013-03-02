@@ -9,7 +9,13 @@
 		
 	<div class="span9">
 		<h3>$squad.name contacts</h3>
-
+		
+		<div class="row">
+			<div class="span2"></div>
+			<div class="span3">Email</div>
+			<div class="span2">Phone</div>				
+		</div>
+		
 		#foreach( $member in $members )
 			<div class="row">
 		    	<div class="span2">
