@@ -56,7 +56,13 @@
     	newAvailability = $(this).val();    						
     	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
-			$("#currentAvailability" + outingId).text(data.availability);
+    		if (data.availability) {
+	    		$("#currentAvailability" + outingId).attr('class', 'label label-info');
+				$("#currentAvailability" + outingId).text(data.availability);
+	    	} else {
+	    		$("#currentAvailability" + outingId).attr('class', null);
+	    		$("#currentAvailability" + outingId).text('TBA');	    			    		
+	    	}
 		});
   	});
 </script>
