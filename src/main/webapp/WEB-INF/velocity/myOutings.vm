@@ -6,7 +6,7 @@
 	#outingsNav('/')
 	
 	<div class="span9">
-		<h3>My outings</h3>
+		<h3>$heading</h3>
 		
 		#if($outings.isEmpty()) 
 			<p>No matching outings</p>

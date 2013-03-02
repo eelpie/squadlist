@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.views.DateHelper;
@@ -21,12 +22,14 @@ public class MyOutingsController {
 	private LoggedInUserService loggedInUserService;
 	private SquadlistApi api;
 	private DisplayObjectFactory displayObjectFactory;
+	private DateFormatter dateFormatter;
 	
 	@Autowired
 	public MyOutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, DisplayObjectFactory displayObjectFactory) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.displayObjectFactory = displayObjectFactory;
+		this.dateFormatter = new DateFormatter();
 	}
 	
 	@RequestMapping("/")
@@ -35,18 +38,23 @@ public class MyOutingsController {
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
     	
+		String heading = "My outings";
+		
 		Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();		
 		if (month != null) {
     		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
     		startDate = monthDateTime.toDate();
     		endDate = monthDateTime.plusMonths(1).toDate();
+			heading = heading + " - " + dateFormatter.fullMonthYear(startDate);
     	}
 		
 		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api
 				.getAvailabilityFor(SquadlistApi.INSTANCE, loggedInUser,
 						startDate, endDate)));
 
+		mv.addObject("heading", heading);
+		
 		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUser));
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions(SquadlistApi.INSTANCE));
     	return mv;
