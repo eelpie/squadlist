@@ -31,10 +31,10 @@
 	<div class="navbar">
 		<div class="navbar-inner">
 	    	<ul class="nav">
-				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">Outings</a></li>
-				<li #if($selectedTab == 'My details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
+				<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">Outings</a></li>
+				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
-				<li #if($selectedTab == 'Squads') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men')">Squads</a></li>
+				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/contacts')">Contacts</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
 				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
