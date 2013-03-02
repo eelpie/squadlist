@@ -18,18 +18,23 @@
 					#parse('includes/outing-small.vm')
 				</div>
 			#end
-		</div>			
+		</div>
 		
-
 		#foreach( $member in $members )
 			<div class="row">				
 				<div class="span2">#parse('includes/member.vm')</div>				
 				#foreach($outing in $outings)
 					#set($key = "${outing.id}-$member.id")
+					#set($status = '')					
+					#set($status = $availability.get($key))
 					<div class="span1">
-						<span class="label label-info">
-							$!availability.get($key)
-						</span>
+						#if($status == '') 
+							TBA
+						#else
+							<span class="label label-info">
+								$status
+							</span>
+						#end
 					</div>
 				#end
 			</div>
