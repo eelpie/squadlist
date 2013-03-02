@@ -10,35 +10,42 @@
 	<div class="span9">
 		<h3>$squad.name availability</h3>
 
-		<div class="row">
-			<div class="span2">
-			</div>
-			#foreach($outing in $outings) 
-				<div class="span1">
-					#parse('includes/outing-small.vm')
-				</div>
-			#end
-		</div>
+		#if($members.isEmpty()) 
+			<p>No members are currently assigned to this squad.</p>
+						
+		#else
 		
-		#foreach( $member in $members )
-			<div class="row">				
-				<div class="span2">#parse('includes/member.vm')</div>				
-				#foreach($outing in $outings)
-					#set($key = "${outing.id}-$member.id")
-					#set($status = '')					
-					#set($status = $availability.get($key))
+			<div class="row">
+				<div class="span2">
+				</div>
+				#foreach($outing in $outings) 
 					<div class="span1">
-						#if($status == '') 
-							TBA
-						#else
-							<span class="label label-info">
-								$status
-							</span>
-						#end
+						#parse('includes/outing-small.vm')
 					</div>
 				#end
 			</div>
-		#end	
+			
+			#foreach( $member in $members )
+				<div class="row">				
+					<div class="span2">#parse('includes/member.vm')</div>				
+					#foreach($outing in $outings)
+						#set($key = "${outing.id}-$member.id")
+						#set($status = '')					
+						#set($status = $availability.get($key))
+						<div class="span1">
+							#if($status == '') 
+								TBA
+							#else
+								<span class="label label-info">
+									$status
+								</span>
+							#end
+						</div>
+					#end
+				</div>
+			#end
+			
+		#end
 		<hr>
 
 	</div>
