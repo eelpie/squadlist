@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -34,7 +35,7 @@ public class SquadlistApiIT {
 	@Before
 	public void setup() {
 		api = new SquadlistApi("http://localhost:9090");
-		instanceName = TEST_INSTANCE_PREFIX + System.currentTimeMillis();
+		instanceName = TEST_INSTANCE_PREFIX + UUID.randomUUID().toString();
 		
 		final List<Instance> instances = api.getInstances();
 		System.out.println(instances);
@@ -44,6 +45,11 @@ public class SquadlistApiIT {
 		System.out.println(instance);	
 	}
 	
+	@Test(expected=InstanceExistException.class)
+	public void cannotCreateTwoInstancesWithTheSameId() throws Exception {
+		api.createInstance(instanceName, "Test instance");
+	}
+		
 	@Test(expected=InvalidSquadException.class)
 	public void shouldValidateNewSquadRequests() throws Exception {
 		api.createSquad(instanceName, "");
