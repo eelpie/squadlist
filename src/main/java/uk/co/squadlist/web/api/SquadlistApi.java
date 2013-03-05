@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -28,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.web.exceptions.InvalidInstanceException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.AvailabilityOption;
@@ -39,7 +38,6 @@ import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 import com.google.common.collect.Lists;
-import com.sun.org.apache.regexp.internal.recompile;
 
 @Service("squadlistApi")
 public class SquadlistApi {
@@ -49,12 +47,14 @@ public class SquadlistApi {
 	
 	private static Logger log = Logger.getLogger(SquadlistApi.class);
 		
+	private RequestBuilder requestBuilder;
 	private ApiUrlBuilder urlBuilder;
 	private HttpFetcher httpFetcher;
 	private JsonDeserializer jsonDeserializer;
 	
 	@Autowired
-	public SquadlistApi(ApiUrlBuilder urlBuilder, HttpFetcher httpFetcher, JsonDeserializer jsonDeserializer) {
+	public SquadlistApi(RequestBuilder requestBuilder, ApiUrlBuilder urlBuilder, HttpFetcher httpFetcher, JsonDeserializer jsonDeserializer) {
+		this.requestBuilder = requestBuilder;
 		this.urlBuilder = urlBuilder;
 		this.httpFetcher = httpFetcher;
 		this.jsonDeserializer = jsonDeserializer;
@@ -78,16 +78,13 @@ public class SquadlistApi {
 		}
 	}
 	
-	public Instance createInstance(String id, String name) {
+	public Instance createInstance(String id, String name) throws InvalidInstanceException {
 		try {
-			final HttpPost post = new HttpPost(urlBuilder.getInstancesUrl());
-		
-			final List<NameValuePair> nameValuePairs = Lists.newArrayList();
-			nameValuePairs.add(new BasicNameValuePair("id", id));
-			nameValuePairs.add(new BasicNameValuePair("name", name));
-			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));		
+			final HttpPost post = requestBuilder.buildCreateInstanceRequest(id, name);		
 			return jsonDeserializer.deserializeInstanceDetails(httpFetcher.post(post));
 			
+		} catch (HttpBadRequestException e) {
+			throw new InvalidInstanceException();
 		} catch (Exception e) {
 			log.error(e);
 			throw new RuntimeException(e);
