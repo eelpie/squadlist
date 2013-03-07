@@ -16,8 +16,11 @@
 		<p>Contact number: $!member.contactNumber</p>
 	
 		<p>Weight: $!member.weight</p>
-		<p>RegistrationNumber: $!member.registrationNumber</p>
-	
+		
+		<p>Registration number: $!member.registrationNumber</p>
+		<p>Rowing points: $!member.rowingPoints</p>
+		<p>Sculling points: $!member.scullingPoints</p>
+			
 		Squads:
 		<ul>
 		#foreach($squad in $member.squads)

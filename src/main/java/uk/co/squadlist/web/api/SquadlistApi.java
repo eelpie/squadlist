@@ -73,7 +73,6 @@ public class SquadlistApi {
 		
 		} catch (Exception e) {
 			log.error(e);
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
@@ -310,7 +309,7 @@ public class SquadlistApi {
 		} catch (Exception e) {
 			log.error(e);
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 	
 	public Squad createSquad(String instance, String name) throws InvalidSquadException {
@@ -339,8 +338,7 @@ public class SquadlistApi {
 	
 	public Member updateMemberDetails(String instance, Member member) {
 		try {
-			final HttpPost post = new HttpPost(urlBuilder.getMemberDetailsUrl(instance, member.getId()));		
-			post.setEntity(new UrlEncodedFormEntity(member.toNameValuePairs()));
+			final HttpPost post = requestBuilder.buildUpdateMemberRequest(instance, member);
 			return jsonDeserializer.deserializeMemberDetails(httpFetcher.post(post));
 			
 		} catch (Exception e) {
@@ -348,7 +346,7 @@ public class SquadlistApi {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	public Outing createOuting(String instance, String squad, LocalDateTime outingDate) {
 		try {
 			final HttpPost post = new HttpPost(urlBuilder.getOutingsUrl(instance));

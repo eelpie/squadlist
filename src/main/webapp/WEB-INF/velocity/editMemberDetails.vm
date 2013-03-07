@@ -41,7 +41,11 @@
 					<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}">
 				</div>
 			</div>
-							
+			
+			#textInput('member.registrationNumber', 'Registration number')
+			#textInput('member.rowingPoints', 'Rowing points')
+			#textInput('member.scullingPoints', 'Sculling points')			
+																			
 			<div class="control-group">
 				<div class="controls">
 					<button type="submit" class="btn">Save details</button>

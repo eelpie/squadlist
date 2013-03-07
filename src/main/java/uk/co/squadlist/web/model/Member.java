@@ -11,9 +11,10 @@ import com.google.common.collect.Lists;
 
 public class Member {
 	
-	private String id, firstName, lastName, gender, dateOfBirth, emailAddress, contactNumber, registrationNumber;
+	private String id, firstName, lastName, gender, dateOfBirth, emailAddress, contactNumber, rowingPoints, scullingPoints, registrationNumber;
 	private int weight;
 	private List<Squad> squads;
+	
 	public String getId() {
 		return id;
 	}
@@ -56,6 +57,18 @@ public class Member {
 	public void setContactNumber(String contactNumber) {
 		this.contactNumber = contactNumber;
 	}
+	public String getRowingPoints() {
+		return rowingPoints;
+	}
+	public void setRowingPoints(String rowingPoints) {
+		this.rowingPoints = rowingPoints;
+	}
+	public String getScullingPoints() {
+		return scullingPoints;
+	}
+	public void setScullingPoints(String scullingPoints) {
+		this.scullingPoints = scullingPoints;
+	}
 	public String getRegistrationNumber() {
 		return registrationNumber;
 	}
@@ -81,6 +94,10 @@ public class Member {
 		nameValuePairs.add(new BasicNameValuePair("lastName", this.getLastName()));
 		nameValuePairs.add(new BasicNameValuePair("emailAddress", this.getEmailAddress()));
 		nameValuePairs.add(new BasicNameValuePair("contactNumber", this.getContactNumber()));
+		nameValuePairs.add(new BasicNameValuePair("weight", Integer.toString(this.getWeight())));
+		nameValuePairs.add(new BasicNameValuePair("registrationNumber", this.getRegistrationNumber()));
+		nameValuePairs.add(new BasicNameValuePair("rowingPoints", this.getRowingPoints()));
+		nameValuePairs.add(new BasicNameValuePair("scullingPoints", this.getScullingPoints()));
 		return nameValuePairs;
 	}
 	
@@ -88,17 +105,21 @@ public class Member {
 		this.setFirstName(memberDetails.getFirstName());
 		this.setLastName(memberDetails.getLastName());
 		this.setEmailAddress(memberDetails.getEmailAddress());
-		this.setContactNumber(memberDetails.getContactNumber());				
+		this.setContactNumber(memberDetails.getContactNumber());
+		this.setRowingPoints(memberDetails.getRowingPoints());
+		this.setScullingPoints(memberDetails.getScullingPoints());
+		this.setRegistrationNumber(memberDetails.getRegistrationNumber());
 	}
-		
+	
 	@Override
 	public String toString() {
-		return "Member [id=" + id + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", gender=" + gender + ", dateOfBirth="
+		return "Member [contactNumber=" + contactNumber + ", dateOfBirth="
 				+ dateOfBirth + ", emailAddress=" + emailAddress
-				+ ", contactNumber=" + contactNumber + ", registrationNumber="
-				+ registrationNumber + ", weight=" + weight + ", squads="
-				+ squads + "]";
+				+ ", firstName=" + firstName + ", gender=" + gender + ", id="
+				+ id + ", lastName=" + lastName + ", registrationNumber="
+				+ registrationNumber + ", rowingPoints=" + rowingPoints
+				+ ", scullingPoints=" + scullingPoints + ", squads=" + squads
+				+ ", weight=" + weight + "]";
 	}
 	
 }
