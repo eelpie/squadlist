@@ -32,8 +32,8 @@
 			    	</div>
 			    	<div class="span1">$!member.dateOfBirth</div>		    	
 			    	<div class="span1">$!member.weight</div>
-			    	<div class="span1">$!member.rowingPointst</div>
-					<div class="span1">$!member.scullingPointst</div>
+			    	<div class="span1">$!member.rowingPoints</div>
+					<div class="span1">$!member.scullingPoints</div>
 			    	<div class="span1">$!member.registrationNumber</div>
 			    	
 			    </div>
