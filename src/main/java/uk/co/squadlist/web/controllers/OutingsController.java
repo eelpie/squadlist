@@ -1,8 +1,11 @@
 package uk.co.squadlist.web.controllers;
 
+import javax.validation.Valid;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,22 +57,30 @@ public class OutingsController {
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
-    	ModelAndView mv = new ModelAndView("newOuting");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUserService.getLoggedInUser()));
-    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
-    	
-    	final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
-    	final OutingDetails defaultOutingDetails = new OutingDetails(defaultOutingDateTime);    	
-		mv.addObject("outing", defaultOutingDetails);
-    	return mv;
+		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
+		final OutingDetails defaultOutingDetails = new OutingDetails(defaultOutingDateTime);  
+    	return renderNewOutingForm(defaultOutingDetails);
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
-    public ModelAndView newOutingSubmit(@ModelAttribute("outing") OutingDetails outingDetails) throws Exception {		
+    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+		if (result.hasErrors()) {
+			return renderNewOutingForm(outingDetails);
+		}		
+		
     	final Outing outing = api.createOuting(SquadlistApi.INSTANCE, outingDetails.getSquad(), outingDetails.toLocalTime());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
+	}
+	
+	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) {
+		ModelAndView mv = new ModelAndView("newOuting");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUserService.getLoggedInUser()));
+		mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+		  	
+		mv.addObject("outing", outingDetails);
+		return mv;
 	}
 	
 	@RequestMapping(value="/availability/ajax", method=RequestMethod.POST)

@@ -7,24 +7,27 @@
 		
 	<div class="span9">	
 		<h3>Adding a new outing</h3>
-		
+						
 		<form action="/outings/new" method="POST">
-			<div class="control-group">
+			<div class="control-group">			
 				<label class="control-label" for="${status.expression}">Date</label>
-				<div class="controls">				
-					<select name="day">	
+				<div class="controls">
+					#springBind("outing.day")							
+					<select name="${status.expression}">	
 						#foreach($day in $dateHelper.days)
 							<option value="$day" #if($day == $outing.day) SELECTED #end>$day
 						#end
 					</select>
 					
-					<select name="month">
+					#springBind("outing.month")					
+					<select name="${status.expression}">
 						#foreach($month in $dateHelper.months)
 							<option value="$month" #if($month == $outing.month) SELECTED #end>$month
 						#end
 					</select>
-					
-					<select name="year">
+										
+					#springBind("outing.year")					
+					<select name="${status.expression}">
 						#foreach($year in $dateHelper.years)
 							<option value="$year" #if($year == $outing.year) SELECTED #end>$year
 						#end
@@ -34,36 +37,48 @@
 			
 			<div class="control-group">
 				<label class="control-label" for="hour">Time</label>			
-				<div class="controls">				
-					<select name="hour">	
+				<div class="controls">
+					#springBind("outing.hour")				
+					<select name="${status.expression}">	
 						#foreach($hour in $dateHelper.hours)
 							<option value="$hour" #if($hour == $outing.hour) SELECTED #end>$hour
 						#end
 					</select>
 					
-					<select name="minute">	
+					#springBind("outing.minute")					
+					<select name="${status.expression}">	
 						#foreach($minute in $dateHelper.minutes)
 							<option value="$minute" #if($minute == $outing.minute) SELECTED #end>$minute
 						#end
 					</select>
 					
-					<select name="ampm">	
+					#springBind("outing.ampm")	
+					<select name="${status.expression}">	
 						<option value="AM">AM
 						<option value="PM">PM
 					</select>									
 				</div>
 			</div>
 			
-			
-					
+			#springBind("outing.squad")
 			<div class="control-group">
-				<label class="control-label" for="${status.expression}">Squad</label>
+				<label class="control-label" for="${status.expression}">Name</label>
 				<div class="controls">
-					<select name="squad">	
-						#foreach($squad in $squads) 
-							<option value="$squad.id">$squad.name</option>
+					<select id="${status.expression}" name="${status.expression}">
+						#foreach($squad in $squads)
+							<option value="$squad.id" #if($squad.id == ${status.value}) SELECTED #end>$squad.name
 						#end
-					</select>
+					</select>					
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end				
+				</div>			
+			</div>
+			
+			#springBind("outing.notes")
+			<div class="control-group">
+				<label class="control-label" for="${status.expression}">Notes</label>
+				<div class="controls">
+					<input id="${status.expression}" name="${status.expression}" placeholder="Notes" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end				
 				</div>
 			</div>
 			

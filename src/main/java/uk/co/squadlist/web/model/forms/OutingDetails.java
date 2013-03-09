@@ -1,13 +1,17 @@
 package uk.co.squadlist.web.model.forms;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.joda.time.LocalDateTime;
 
 public class OutingDetails {
 
-	private Integer year, month, day, hour, minute;
+	private int year, month, day, hour, minute;
+	@NotBlank
 	private String ampm;
+	@NotBlank
 	private String squad;
-
+	private String notes;
+	
 	public OutingDetails() {
 	}
 	
@@ -17,7 +21,7 @@ public class OutingDetails {
     	this.setDay(defaultOutingDateTime.getDayOfMonth());
     	this.setHour(defaultOutingDateTime.getHourOfDay());
 	}
-
+	
 	public LocalDateTime toLocalTime() {
 		return new LocalDateTime(year, month, day, hour, minute);	// TODO AM PM
 	}
@@ -76,6 +80,14 @@ public class OutingDetails {
 
 	public void setSquad(String squad) {
 		this.squad = squad;
+	}
+	
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	@Override
