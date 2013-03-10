@@ -64,10 +64,7 @@ public class OutingsController {
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
-    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {		
-		final ObjectError generalError = new ObjectError("outing", "Meh");
-		result.addError(generalError);
-		
+    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
 		if (result.hasErrors()) {
 			return renderNewOutingForm(outingDetails);
 		}		

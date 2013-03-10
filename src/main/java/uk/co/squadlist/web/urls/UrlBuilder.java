@@ -18,7 +18,11 @@ public class UrlBuilder {
 	}
 	
 	public String memberUrl(Member member) {
-		return applicationUrl("/member/" + member.getId());
+		return memberUrl(member.getId());
+	}
+	
+	public String memberUrl(String memberId) {
+		return applicationUrl("/member/" + memberId);
 	}
 	
 	public String newMemberUrl() {
@@ -44,7 +48,11 @@ public class UrlBuilder {
 	public String editMemberUrl(Member member) {
 		return memberUrl(member) + "/edit";
 	}
-
+	
+	public String editMemberUrl(String memberId) {
+		return memberUrl(memberId) + "/edit";
+	}
+	
 	private String getBaseUrl() {
 		return baseUrl;
 	}

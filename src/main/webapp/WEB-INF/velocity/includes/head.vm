@@ -59,6 +59,7 @@
 		<label class="control-label" for="${status.expression}">$label</label>
 		<div class="controls">
 			<input id="${status.expression}" name="${status.expression}" placeholder="$label" value="$!{status.value}">
+			#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 		</div>
 	</div>
 #end

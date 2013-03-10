@@ -9,12 +9,13 @@
 	<div class="span9">
 		<h3>$member.firstName $member.lastName</h3>
 
-		<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">		
+		<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">		
 			#springBind("member.firstName")
 			<div class="control-group">
 				<label class="control-label" for="${status.expression}">First name</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end					
 				</div>
 			</div>
 			
@@ -23,6 +24,7 @@
 				<label class="control-label" for="${status.expression}">Last name</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end					
 				</div>
 			</div>
 			
@@ -31,6 +33,7 @@
 				<label class="control-label" for="${status.expression}">Email address</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 				</div>
 			</div>
 			
@@ -39,6 +42,7 @@
 				<label class="control-label" for="${status.expression}">Contact number</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}">
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 				</div>
 			</div>
 			
@@ -49,7 +53,7 @@
 			<div class="control-group">
 				<div class="controls">
 					<button type="submit" class="btn">Save details</button>
-					<a href="$urlBuilder.memberUrl($member)"><button class="btn btn-primary" type="button">Cancel</button></a>					
+					<a href="$urlBuilder.memberUrl($memberId)"><button class="btn btn-primary" type="button">Cancel</button></a>					
 				</div>
 			</div>
 		</form>
