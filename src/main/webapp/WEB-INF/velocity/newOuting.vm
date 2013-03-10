@@ -62,7 +62,7 @@
 			
 			#springBind("outing.squad")
 			<div class="control-group">
-				<label class="control-label" for="${status.expression}">Name</label>
+				<label class="control-label" for="${status.expression}">Squad</label>
 				<div class="controls">
 					<select id="${status.expression}" name="${status.expression}">
 						#foreach($squad in $squads)
@@ -78,7 +78,7 @@
 				<label class="control-label" for="${status.expression}">Notes</label>
 				<div class="controls">
 					<input id="${status.expression}" name="${status.expression}" placeholder="Notes" value="$!{status.value}">
-					#foreach($error in $status.errorMessages) <p class="alert">$error</p> #end				
+					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end				
 				</div>
 			</div>
 			
