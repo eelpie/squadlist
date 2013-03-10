@@ -6,6 +6,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,7 +64,10 @@ public class OutingsController {
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
-    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {		
+		final ObjectError generalError = new ObjectError("outing", "Meh");
+		result.addError(generalError);
+		
 		if (result.hasErrors()) {
 			return renderNewOutingForm(outingDetails);
 		}		
