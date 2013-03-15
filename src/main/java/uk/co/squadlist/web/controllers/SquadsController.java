@@ -91,7 +91,8 @@ public class SquadsController {
     }
 		
 	@RequestMapping("/squad/{id}/availability")
-    public ModelAndView availability(@PathVariable String id) throws Exception {
+    public ModelAndView availability(@PathVariable String id,
+    		@RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
@@ -99,8 +100,13 @@ public class SquadsController {
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
-		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
+    	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+		if (month != null) {
+    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
+    		startDate = monthDateTime.toDate();
+    		endDate = monthDateTime.plusMonths(1).toDate();
+    	}
 		
     	final List<Outing> outings = Lists.newArrayList();
     	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, startDate, endDate);
