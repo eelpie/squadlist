@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -96,13 +99,21 @@ public class SquadsController {
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
     	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
     	
-		final List<OutingWithSquadAvailability> squadAvailability = api
-				.getSquadAvailability(SquadlistApi.INSTANCE, id, DateHelper
-						.startOfCurrentOutingPeriod().toDate(), DateHelper
-						.endOfCurrentOutingPeriod().toDate());
+		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
+		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+		
+    	final List<Outing> outings = Lists.newArrayList();
+    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(SquadlistApi.INSTANCE, id, startDate, endDate);
+    	final Map<String, String> allAvailability = decorateOutingsWithMembersAvailability(squadAvailability, outings);
+    	
+    	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
+    	mv.addObject("availability", allAvailability);
+		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
+    	return mv;
+    }
 
-    	List<Outing> outings = new ArrayList<Outing>();
-    	Map<String, String> allAvailability = new HashMap<String, String>();
+	private Map<String, String> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
+		Map<String, String> allAvailability = Maps.newHashMap();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
     		outings.add(outingWithSquadAvailability.getOuting());
 			final Map<String, String> outingAvailability = outingWithSquadAvailability.getAvailability();
@@ -110,10 +121,8 @@ public class SquadsController {
 				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
 			}
 		}
-    	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
-    	mv.addObject("availability", allAvailability);
-    	return mv;
-    }
+		return allAvailability;
+	}
 	
 	@RequestMapping("/squad/{id}/contacts")
     public ModelAndView contacts(@PathVariable String id) throws Exception {

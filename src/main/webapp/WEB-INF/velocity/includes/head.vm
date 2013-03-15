@@ -44,13 +44,22 @@
 #end
 
 #macro(squadSideNav $action)
-	<ul class="nav nav-list bs-docs-sidenav">
+	<div class="nav nav-list bs-docs-sidenav">
+		#if($outingMonths && $outingMonths.size() > 0)		
+			<ul class="nav nav-list bs-docs-sidenav">
+			#foreach($outingMonth in $outingMonths.keySet())
+				<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
+			#end
+			</ul>
+		#end					
 		#if($squads && $squads.size() > 0) 
+			<ul class="nav nav-list bs-docs-sidenav">		
 			#foreach($navSquad on $squads) 
 				<li><a href="/squad/${navSquad.id}/${action}">$navSquad.name</a></li>
 			#end	
+			</ul>
 		#end
-   	</ul>
+   	</div>
 #end
 
 #macro(textInput $name $label) 
