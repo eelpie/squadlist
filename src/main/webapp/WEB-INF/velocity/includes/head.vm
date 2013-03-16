@@ -6,14 +6,15 @@
 <body>
 <div class="container">
 
-#macro(outingsNav $action) 
+#macro(outingsNav $action)
+
 	#if($outingMonths && !$outingMonths.keySet().isEmpty())
-		<div class="span2 bs-docs-sidebar">
-				
+		<div class="span2 bs-docs-sidebar">				
 			<ul class="nav nav-list bs-docs-sidenav">
 				<li><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
 			</ul>
-			<p>		
+			<p>
+			
 			<ul class="nav nav-list bs-docs-sidenav">
 				<li><a href="$action">Current</a></li>
 			</ul>
@@ -46,6 +47,11 @@
 #macro(squadSideNav $action)
 	<div class="nav nav-list bs-docs-sidenav">
 		#if($outingMonths && $outingMonths.size() > 0)		
+			<ul class="nav nav-list bs-docs-sidenav">
+				<li><a href="$action">Current</a></li>
+			</ul>
+			<p>
+			
 			<ul class="nav nav-list bs-docs-sidenav">
 			#foreach($outingMonth in $outingMonths.keySet())
 				<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
