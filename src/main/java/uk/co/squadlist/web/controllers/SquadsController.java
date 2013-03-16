@@ -3,7 +3,6 @@ package uk.co.squadlist.web.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -39,6 +36,9 @@ import uk.co.squadlist.web.model.display.DisplayOuting;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 public class SquadsController {
@@ -98,8 +98,14 @@ public class SquadsController {
     	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
     	
 		mv.addObject("squad", api.getSquad(SquadlistApi.INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(SquadlistApi.INSTANCE, id));
+		
+    	final List<Member> members = api.getSquadMembers(SquadlistApi.INSTANCE, id);
+		mv.addObject("members", members);
     	
+		if (members.isEmpty()) {
+			return mv;			
+		}
+		
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
     	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
 		if (month != null) {
@@ -115,7 +121,7 @@ public class SquadsController {
     	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
     	mv.addObject("availability", allAvailability);
 		mv.addObject("outingMonths", api.getSquadOutingMonths(SquadlistApi.INSTANCE, id));
-    	return mv;
+		return mv;		
     }
 
 	private Map<String, String> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
