@@ -5,41 +5,45 @@
 </head>
 <body>
 
-<div class="row">
+<div class="container-fluid">
 
-	<div class="span6 offset1">
-		<h2>Squadlist - $instance.name</h2>
-		
-	   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">
-	   		            
-	   		<label class="control-label" for="j_username">Username</label>
-	   	                                               
-	        <div class="control-group">
-		        <div class="controls">          
-		        	<input type="text" name="j_username" value="" placeholder="Username" class="span2">
-		        </div>
-	        </div>
+	<div class="row-fluid">
 	
-	        <div class="control-group">
-	            <label class="control-label" for="j_password">Password</label>
-	        
-	       		<div class="controls">
-	            	<input type="password" name="j_password" placeholder="Password" class="span2"/>
-	         	</div>
-	        </div>
-	        	        		
-			#if($errors)
-		        <div id="alert" class="alert">Incorrect username or password</div>
-			#end
-	                
-	        <div class="form-actions">
-	        	<input type="submit" name="login" value="Log In " class="btn" />
-	        </div>
-		</form>        
-	</div>
+		<div class="span1"></div>
 		
+		<div class="span10">
+			<h2>Squadlist - $instance.name</h2>
+			
+		   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">
+		   		            
+		   		<label class="control-label" for="j_username">Username</label>
+		   	                                               
+		        <div class="control-group">
+			        <div class="controls">          
+			        	<input type="text" name="j_username" value="" placeholder="Username" class="span8">
+			        </div>
+		        </div>
+		        		        
+		        <div class="control-group">
+		            <label class="control-label" for="j_password">Password</label>
+		        
+		       		<div class="controls">
+		            	<input type="password" name="j_password" placeholder="Password" class="span8"/>
+		         	</div>
+		        </div>
+		        	        		
+				#if($errors)
+			        <div id="alert" class="alert">Incorrect username or password</div>
+				#end
+		                
+		        <div class="form-actions">
+		        	<input type="submit" name="login" value="Log In " class="btn" />
+		        </div>
+			</form>        
+		</div>
+		
+	</div>
+	
 </div>
 </body>
 </html>
-
-	
