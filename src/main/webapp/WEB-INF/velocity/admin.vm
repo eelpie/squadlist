@@ -1,13 +1,13 @@
 #parse('includes/head.vm')
 #navTabs('Admin')
 
-<div class="row">
+<div class="row-fluid">
 		
 	<div class="span2 bs-docs-sidebar">	
 		#squadSideNav('contacts')
 	</div>
 		
-	<div class="span4">
+	<div class="span5">
 		<h3>Members</h3>
 
 		<ul>
@@ -20,7 +20,7 @@
 		
 	</div>
 	
-		<div class="span4">
+		<div class="span5">
 		<h3>Squads</h3>
 
 		<ul>

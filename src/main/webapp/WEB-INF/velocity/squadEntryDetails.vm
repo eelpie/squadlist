@@ -1,46 +1,38 @@
 #parse('includes/head.vm')
 #navTabs('Entry details')
 
-<div class="row">
+<div class="row-fluid">
 
-	<div class="span2 bs-docs-sidebar">
-		#squadSideNav('entrydetails')
-	</div>
-
-	<div class="span9">
+	#squadSideNav('entrydetails')
+	
+	<div class="span10">
 		<h3>$squad.name entry details</h3>
 		
 		#if($members.isEmpty()) 
 			<p>No members are currently assigned to this squad.</p>
 			
-		#else
-		
-			<div class="row">
+		#else		
+			<div class="row-fluid">
 				<div class="span2"></div>
-				<div class="span1">Date of birth</div>
-				<div class="span1">Weight</div>
-				<div class="span1">Rowing pts</div>
-				<div class="span1">Sculling pts</div>				
-				<div class="span1">Registration number</div>					
+				<div class="span2">Date of birth</div>
+				<div class="span2">Weight</div>
+				<div class="span2">Rowing pts</div>
+				<div class="span2">Sculling pts</div>				
+				<div class="span2">Registration</div>					
 			</div>
 			
-			#foreach( $member in $members )
-			
-				<div class="row">
-			    	<div class="span2">
-			    		#parse('includes/member.vm')
-			    	</div>
-			    	<div class="span1">$!member.dateOfBirth</div>		    	
-			    	<div class="span1">$!member.weight</div>
-			    	<div class="span1">$!member.rowingPoints</div>
-					<div class="span1">$!member.scullingPoints</div>
-			    	<div class="span1">$!member.registrationNumber</div>
-			    	
+			#foreach( $member in $members )			
+				<div class="row-fluid">
+			    	<div class="span2">#parse('includes/member.vm')</div>
+			    	<div class="span2">$!member.dateOfBirth</div>		    	
+			    	<div class="span2">$!member.weight</div>
+			    	<div class="span2">$!member.rowingPoints</div>
+					<div class="span2">$!member.scullingPoints</div>
+			    	<div class="span2">$!member.registrationNumber</div>			    	
 			    </div>
 			#end
 		#end
-		<hr>
-				
+		<hr>				
 	</div>
 </div>
 </div>

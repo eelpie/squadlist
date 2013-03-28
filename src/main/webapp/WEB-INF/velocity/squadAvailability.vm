@@ -1,13 +1,11 @@
 #parse('includes/head.vm')
 #navTabs('Squad availability')
 
-<div class="row">
+<div class="row-fluid">
 		
-	<div class="span2 bs-docs-sidebar">
-		#squadSideNav('availability')			
-	</div>
+	#squadSideNav('availability')			
 	
-	<div class="span9">
+	<div class="span10">
 		<h3>$squad.name availability</h3>
 		
 		#if($members.isEmpty()) 
@@ -17,6 +15,8 @@
 			#if($outings.isEmpty()) 
 				<p>No matching outings</p>
 			#else
+
+			<div class="container-fluid">
 					
 				<div class="row">
 					<div class="span2">
@@ -28,7 +28,7 @@
 					#end
 				</div>
 				
-				#foreach( $member in $members )
+				#foreach($member in $members)
 					<div class="row">				
 						<div class="span2">#parse('includes/member.vm')</div>				
 						#foreach($outing in $outings)
@@ -48,6 +48,7 @@
 					</div>
 				#end
 			#end
+			</div>
 			
 		#end
 		<hr>

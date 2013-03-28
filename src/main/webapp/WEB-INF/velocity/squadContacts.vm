@@ -1,34 +1,32 @@
 #parse('includes/head.vm')
 #navTabs('Squad contacts')
 
-<div class="row">
+<div class="row-fluid">
 		
-	<div class="span2 bs-docs-sidebar">	
-		#squadSideNav('contacts')
-	</div>
-		
-	<div class="span9">
+	#squadSideNav('contacts')
+	
+	<div class="span10">
 		<h3>$squad.name contacts</h3>
 		
 		#if($members.isEmpty()) 
 			<p>No members are currently assigned to this squad.</p>
 						
 		#else
-			<div class="row">
-				<div class="span2"></div>
-				<div class="span3">Email</div>
-				<div class="span2">Phone</div>				
+			<div class="row-fluid">
+				<div class="span4"></div>
+				<div class="span4">Email</div>
+				<div class="span4">Phone</div>				
 			</div>
 			
 			#foreach( $member in $members )
-				<div class="row">
-			    	<div class="span2">
+				<div class="row-fluid">
+			    	<div class="span4">
 			    		#parse('includes/member.vm')
 			    	</div>
-			    	<div class="span3">
+			    	<div class="span4">
 			    		$!member.emailAddress
 			    	</div>
-					<div class="span2">
+					<div class="span4">
 						$!member.contactNumber
 					</div>
 				</div>

@@ -1,13 +1,14 @@
 #parse('includes/head.vm')
 #navTabs('My outings')
 
-<div class="row">
+<div class="row-fluid">
 
 	#outingsNav('/')
 	
-	<div class="span9">
+	<div class="span10">
 		<h3>$heading</h3>
-		
+		<hr/>
+			
 		#if($outings.isEmpty()) 
 			<p>No matching outings</p>
 		#end		
@@ -15,12 +16,12 @@
 		<form>
 		#foreach($outing in $outings)
 		
-		    <div class="row">
-		    	<div class="span3">
+		    <div class="row-fluid">
+		    	<div class="span4">
 					#parse('includes/outing.vm')	
 		    	</div>
 				
-				<div class="span3">	
+				<div class="span5">	
 					<select class="availabilityDropdown" id="${outing.id}">
 						<option value="">TBA</option>		
 						#foreach($option in $availabilityOptions)
@@ -32,7 +33,7 @@
 						#end
 					</select>
 				</div>
-				<div class="span3">										
+				<div class="span1">										
 					#if ($outing.availability) 						
 						<span id="currentAvailability${outing.id}" class="label label-info">
 							$outing.availability 
