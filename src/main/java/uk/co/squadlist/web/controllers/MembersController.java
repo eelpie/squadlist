@@ -80,8 +80,16 @@ public class MembersController {
 		}
 		
 		final Member member = api.getMemberDetails(SquadlistApi.INSTANCE, id);
+
 		log.info("Updating member details: " + member.getId());		
-		member.updateFrom(memberDetails);		
+		member.setFirstName(memberDetails.getFirstName());
+		member.setLastName(memberDetails.getLastName());
+		member.setEmailAddress(memberDetails.getEmailAddress());
+		member.setContactNumber(memberDetails.getContactNumber());
+		member.setRowingPoints(memberDetails.getRowingPoints());
+		member.setScullingPoints(memberDetails.getScullingPoints());
+		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
+		
 		api.updateMemberDetails(SquadlistApi.INSTANCE, member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
