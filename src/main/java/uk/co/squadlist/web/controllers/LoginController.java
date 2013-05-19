@@ -31,13 +31,7 @@ public class LoginController {
 	}
 	
 	private Instance getInstance() {
-		final String instanceId = InstanceConfig.INSTANCE;
-		for (Instance instance : api.getInstances()) {	// TODO no single instance api method?
-			if (instance.getId().equals(instanceId)) {
-				return instance;
-			}
-		}
-		throw new RuntimeException("Unknown instance: " + instanceId);
+		return api.getInstance(InstanceConfig.INSTANCE);
 	}
 	
 }
