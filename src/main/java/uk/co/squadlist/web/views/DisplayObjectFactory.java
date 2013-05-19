@@ -21,6 +21,7 @@ public class DisplayObjectFactory {
 			displayOutingAvailabilities.add(new DisplayOutingAvailability(outingAvailability.getOuting().getId(), 
 					outingAvailability.getOuting().getSquad(), 
 					outingAvailability.getOuting().getDate(),
+					outingAvailability.getOuting().getNotes(),
 					outingAvailability.getAvailability()));
 		}
 		return displayOutingAvailabilities;

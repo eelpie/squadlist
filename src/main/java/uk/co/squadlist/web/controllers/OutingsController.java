@@ -68,7 +68,7 @@ public class OutingsController {
 			return renderNewOutingForm(outingDetails);
 		}		
 		
-    	final Outing outing = api.createOuting(InstanceConfig.INSTANCE, outingDetails.getSquad(), outingDetails.toLocalTime());
+    	final Outing outing = api.createOuting(InstanceConfig.INSTANCE, outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
 	}

@@ -8,6 +8,8 @@
 	<div class="span9">
 		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
 		
+		<p>$!outing.notes</p>
+		
 		#foreach($member in $members )
 		
 			<div class="row">

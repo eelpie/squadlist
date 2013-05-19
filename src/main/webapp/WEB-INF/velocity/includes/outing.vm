@@ -1,4 +1,5 @@
 <p>
 <a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$dateFormatter.dayMonthYearTime($outing.date)</a><br/>
-$outing.squad.name
+$outing.squad.name<br/>
+$!outing.notes
 </p>

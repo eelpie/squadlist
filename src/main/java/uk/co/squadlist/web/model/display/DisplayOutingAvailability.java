@@ -10,11 +10,13 @@ public class DisplayOutingAvailability {
 	private final Squad squad;
 	private final String availability;
 	private final Date date;
+	private final String notes;
 	
-	public DisplayOutingAvailability(String id, Squad squad, Date date, String availability) {
+	public DisplayOutingAvailability(String id, Squad squad, Date date, String notes, String availability) {
 		this.id = id;
 		this.squad = squad;
 		this.date = date;
+		this.notes = notes;
 		this.availability = availability;
 	}
 
@@ -29,6 +31,10 @@ public class DisplayOutingAvailability {
 	public Date getDate() {
 		return date;
 	}
+	
+	public String getNotes() {
+		return notes;
+	}
 
 	public String getAvailability() {
 		return availability;
@@ -37,7 +43,8 @@ public class DisplayOutingAvailability {
 	@Override
 	public String toString() {
 		return "DisplayOutingAvailability [availability=" + availability
-				+ ", date=" + date + ", id=" + id + ", squad=" + squad + "]";
+				+ ", date=" + date + ", id=" + id + ", notes=" + notes
+				+ ", squad=" + squad + "]";
 	}
 	
 }
