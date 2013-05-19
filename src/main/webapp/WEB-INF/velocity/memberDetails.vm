@@ -8,6 +8,8 @@
 
 	<div class="span9">
 		<h3>$member.firstName $member.lastName</h3>
+		<hr/>
+		
 		<p>$member.firstName $member.lastName</p>
 		<p>$!member.gender</p>
 		<p>$!member.dateOfBirth</p>

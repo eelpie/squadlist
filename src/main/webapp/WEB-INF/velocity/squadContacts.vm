@@ -7,7 +7,8 @@
 	
 	<div class="span10">
 		<h3>$squad.name contacts</h3>
-		
+		<hr/>
+				
 		#if($members.isEmpty()) 
 			<p>No members are currently assigned to this squad.</p>
 						
