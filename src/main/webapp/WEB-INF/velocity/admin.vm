@@ -16,22 +16,40 @@
 		#end
 		</ul>
 		
-		<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">New member</button></a>
+		<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
 		
 	</div>
 	
-		<div class="span5">
+	<div class="span5">
 		<h3>Squads</h3>
-
-		<ul>
-		#foreach( $squad in $squads )
-			<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
+			
+		#if($squads && !$squads.isEmpty())
+			<ul>
+				#foreach( $squad in $squads )
+					<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
+				#end
+			</ul>
+		#else
+			<p>No squads have been added.</p>
 		#end
-		</ul>
 		
-		<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">New squad</button></a>
-				
+		<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>
+		
+		<hr/>			
+			
+		<h3>Availability options</h3>
+		
+		#if($availabilityOptions && !$availabilityOptions.isEmpty())
+			<ul>
+				#foreach($availabilityOption in $availabilityOptions )
+					<li>$availabilityOption.label</li>
+				#end
+			</ul>
+		#else
+			<p>No availability options have been added.</p>
+		#end
 	</div>
 	
 </div>
+	
 </div>

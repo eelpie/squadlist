@@ -28,6 +28,7 @@ public class AdminController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("members", api.getMembers(InstanceConfig.INSTANCE));
     	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(InstanceConfig.INSTANCE));
     	return mv;
     }
 	
