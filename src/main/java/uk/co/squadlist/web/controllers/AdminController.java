@@ -26,8 +26,8 @@ public class AdminController {
     public ModelAndView member() throws Exception {
     	final ModelAndView mv = new ModelAndView("admin");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("members", api.getMembers(SquadlistApi.INSTANCE));
-    	mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+    	mv.addObject("members", api.getMembers(InstanceConfig.INSTANCE));
+    	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
     	return mv;
     }
 	

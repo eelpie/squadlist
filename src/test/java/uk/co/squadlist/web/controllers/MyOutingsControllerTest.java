@@ -40,7 +40,7 @@ public class MyOutingsControllerTest {
 	@Test
 	public void myOutingsShouldShowCurrentOutingsForTodayAndTheNextTwoWeeks() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(SquadlistApi.INSTANCE, MEMBER, DateTime
+		when(api.getAvailabilityFor(InstanceConfig.INSTANCE, MEMBER, DateTime
 						.now().minusDays(1).toDateMidnight().toDate(), DateTime
 						.now().minusDays(1).toDateMidnight().plusWeeks(2).toDate()))
 				.thenReturn(membersAvailability);

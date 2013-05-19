@@ -40,7 +40,7 @@ public class MembersController {
     public ModelAndView member(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("memberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", api.getMemberDetails(SquadlistApi.INSTANCE, id));
+    	mv.addObject("member", api.getMemberDetails(InstanceConfig.INSTANCE, id));
     	return mv;
     }
 	
@@ -55,8 +55,8 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 		
-		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(SquadlistApi.INSTANCE, memberDetails.getSquad()) : null;	// TODO push to spring
-		final Member newMember = api.createMember(SquadlistApi.INSTANCE, memberDetails.getFirstName(), memberDetails.getLastName(),
+		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(InstanceConfig.INSTANCE, memberDetails.getSquad()) : null;	// TODO push to spring
+		final Member newMember = api.createMember(InstanceConfig.INSTANCE, memberDetails.getFirstName(), memberDetails.getLastName(),
 				squad);
 		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
 		return mv;
@@ -64,7 +64,7 @@ public class MembersController {
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
     public ModelAndView editMember(@PathVariable String id) throws Exception {
-    	Member member = api.getMemberDetails(SquadlistApi.INSTANCE, id);
+    	Member member = api.getMemberDetails(InstanceConfig.INSTANCE, id);
 		
     	ModelAndView mv = new ModelAndView("editMemberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
@@ -79,7 +79,7 @@ public class MembersController {
 			return renderEditMemberDetailsForm(memberDetails, id);
 		}
 		
-		final Member member = api.getMemberDetails(SquadlistApi.INSTANCE, id);
+		final Member member = api.getMemberDetails(InstanceConfig.INSTANCE, id);
 
 		log.info("Updating member details: " + member.getId());		
 		member.setFirstName(memberDetails.getFirstName());
@@ -90,14 +90,14 @@ public class MembersController {
 		member.setScullingPoints(memberDetails.getScullingPoints());
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
 		
-		api.updateMemberDetails(SquadlistApi.INSTANCE, member);		
+		api.updateMemberDetails(InstanceConfig.INSTANCE, member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
 
 	private ModelAndView renderNewMemberForm() {
 		final ModelAndView mv = new ModelAndView("newMember");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("squads", api.getSquads(SquadlistApi.INSTANCE));
+		mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
 		return mv;
 	}
 	

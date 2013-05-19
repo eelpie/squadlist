@@ -50,13 +50,13 @@ public class MyOutingsController {
     	}
 		
 		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api
-				.getAvailabilityFor(SquadlistApi.INSTANCE, loggedInUser,
+				.getAvailabilityFor(InstanceConfig.INSTANCE, loggedInUser,
 						startDate, endDate)));
 
 		mv.addObject("heading", heading);
 		
-		mv.addObject("outingMonths", api.getMemberOutingMonths(SquadlistApi.INSTANCE, loggedInUser));
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(SquadlistApi.INSTANCE));
+		mv.addObject("outingMonths", api.getMemberOutingMonths(InstanceConfig.INSTANCE, loggedInUser));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(InstanceConfig.INSTANCE));
     	return mv;
     }
 	

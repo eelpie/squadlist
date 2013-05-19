@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.controllers.InstanceConfig;
 
 @Component("authenticationProvider")
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
@@ -37,7 +38,7 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
     	final String password = authToken.getCredentials().toString();
     	log.info("Attempting to auth user: " + username);
-		if (api.auth(SquadlistApi.INSTANCE, username, password)) {
+		if (api.auth(InstanceConfig.INSTANCE, username, password)) {
 			log.info("Auth successful for user: " + username);
 			Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

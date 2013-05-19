@@ -1,7 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +31,13 @@ public class LoginController {
 	}
 	
 	private Instance getInstance() {
-		List<Instance> instances = api.getInstances();
-		for (Instance instance : instances) {
-			if (instance.getId().equals(SquadlistApi.INSTANCE)) {
+		final String instanceId = InstanceConfig.INSTANCE;
+		for (Instance instance : api.getInstances()) {	// TODO no single instance api method?
+			if (instance.getId().equals(instanceId)) {
 				return instance;
 			}
 		}
-		throw new RuntimeException("Unknown instance");
+		throw new RuntimeException("Unknown instance: " + instanceId);
 	}
 	
 }
