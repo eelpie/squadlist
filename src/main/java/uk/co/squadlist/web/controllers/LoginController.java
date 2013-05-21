@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import org.apache.log4j.Logger;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import uk.co.squadlist.web.model.Instance;
 
 @Controller
 public class LoginController {
+	
+	private static Logger log = Logger.getLogger(LoginController.class);
 	
 	private SquadlistApi api;
 	
@@ -42,16 +45,19 @@ public class LoginController {
 	
 	@RequestMapping(value = "/reset-password", method = RequestMethod.POST)
 	public ModelAndView resetPassword(@RequestParam(value = "username", required = false) String username) throws Exception {
-		final ModelAndView mv = new ModelAndView("resetPassword");
-		mv.addObject("instance", getInstance());
 		if (Strings.isNullOrEmpty(username)) {
+			final ModelAndView mv = new ModelAndView("resetPassword");
+			mv.addObject("instance", getInstance());
 			mv.addObject("errors", true);
-		
-		} else {
-			api.resetPassword(InstanceConfig.INSTANCE, username);
+			return mv;
 		}
 		
+		log.info("Reseting password for: " + username);
+		api.resetPassword(InstanceConfig.INSTANCE, username);	// TODO errors	
 		
+		log.info("Reset password call successful for: " + username);
+		final ModelAndView mv = new ModelAndView("resetPasswordSent");
+		mv.addObject("instance", getInstance());		
 		return mv;
 	}
 	
