@@ -56,8 +56,11 @@ public class MembersController {
 		}
 		
 		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(InstanceConfig.INSTANCE, memberDetails.getSquad()) : null;	// TODO push to spring
-		final Member newMember = api.createMember(InstanceConfig.INSTANCE, memberDetails.getFirstName(), memberDetails.getLastName(),
+		final Member newMember = api.createMember(InstanceConfig.INSTANCE,
+				memberDetails.getFirstName(), 
+				memberDetails.getLastName(),
 				squad);
+		
 		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
 		return mv;
     }

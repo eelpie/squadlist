@@ -29,6 +29,8 @@
 		        
 		       		<div class="controls">
 		            	<input type="password" name="j_password" placeholder="Password" class="span8"/>
+		            	
+		            	<p><a href="$urlBuilder.applicationUrl('/reset-password')">Forgotten your password?</a></p>
 		         	</div>
 		        </div>
 		        	        		
