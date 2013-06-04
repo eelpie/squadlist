@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
 import org.apache.log4j.Logger;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,21 +8,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.base.Strings;
-
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.model.Instance;
+
+import com.google.common.base.Strings;
 
 @Controller
 public class LoginController {
 	
 	private static Logger log = Logger.getLogger(LoginController.class);
 	
-	private SquadlistApi api;
+	private final SquadlistApi api;
+	private final InstanceConfig instanceConfig;
 	
 	@Autowired
-	public LoginController(SquadlistApi api) {
+	public LoginController(SquadlistApi api, InstanceConfig instanceConfig) {
 		this.api = api;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -53,7 +54,7 @@ public class LoginController {
 		}
 		
 		log.info("Reseting password for: " + username);
-		api.resetPassword(InstanceConfig.INSTANCE, username);	// TODO errors	
+		api.resetPassword(instanceConfig.getInstance(), username);	// TODO errors	
 		
 		log.info("Reset password call successful for: " + username);
 		final ModelAndView mv = new ModelAndView("resetPasswordSent");
@@ -62,7 +63,7 @@ public class LoginController {
 	}
 	
 	private Instance getInstance() {
-		return api.getInstance(InstanceConfig.INSTANCE);
+		return api.getInstance(instanceConfig.getInstance());
 	}
 	
 }

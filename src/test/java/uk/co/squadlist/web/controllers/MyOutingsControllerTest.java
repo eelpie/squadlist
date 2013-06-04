@@ -25,22 +25,24 @@ public class MyOutingsControllerTest {
 	@Mock private SquadlistApi api;
 	@Mock private LoggedInUserService loggedInUserService;
 	@Mock private DisplayObjectFactory displayObjectFactory;
+	@Mock private InstanceConfig instanceConfig;
 	
 	@Mock private List<OutingAvailability> membersAvailability;
 	@Mock private List<DisplayOutingAvailability> membersAvailabilityDisplayObjects;
 
 	private MyOutingsController controller;
 
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		controller = new MyOutingsController(loggedInUserService, api, displayObjectFactory);
+		controller = new MyOutingsController(loggedInUserService, api, displayObjectFactory, instanceConfig);
 	}
 	
 	@Test
 	public void myOutingsShouldShowCurrentOutingsForTodayAndTheNextTwoWeeks() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(InstanceConfig.INSTANCE, MEMBER, DateTime
+		when(api.getAvailabilityFor(instanceConfig.getInstance(), MEMBER, DateTime
 						.now().minusDays(1).toDateMidnight().toDate(), DateTime
 						.now().minusDays(1).toDateMidnight().plusWeeks(2).toDate()))
 				.thenReturn(membersAvailability);

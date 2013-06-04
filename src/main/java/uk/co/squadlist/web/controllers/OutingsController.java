@@ -33,25 +33,27 @@ public class OutingsController {
 	private LoggedInUserService loggedInUserService;
 	private SquadlistApi api;
 	private UrlBuilder urlBuilder;
+	private InstanceConfig instanceConfig;
 	
 	@Autowired
-	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder) {
+	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
+		this.instanceConfig = instanceConfig;
 	}
 	
 	@RequestMapping("/outings/{id}")
     public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
-    	final Outing outing = api.getOuting(InstanceConfig.INSTANCE, id);
+    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
     	    	
 		mv.addObject("outing", outing);
-		mv.addObject("outingMonths", api.getMemberOutingMonths(InstanceConfig.INSTANCE, loggedInUserService.getLoggedInUser()));
+		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
 		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("members", api.getSquadMembers(InstanceConfig.INSTANCE, outing.getSquad().getId()));
-    	mv.addObject("availability", api.getOutingAvailability(InstanceConfig.INSTANCE, outing.getId()));
+    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
+    	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
     	return mv;
     }
 	
@@ -68,7 +70,7 @@ public class OutingsController {
 			return renderNewOutingForm(outingDetails);
 		}		
 		
-    	final Outing outing = api.createOuting(InstanceConfig.INSTANCE, outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
+    	final Outing outing = api.createOuting(instanceConfig.getInstance(), outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
 		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
     	return mv;
 	}
@@ -76,8 +78,8 @@ public class OutingsController {
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("outingMonths", api.getMemberOutingMonths(InstanceConfig.INSTANCE, loggedInUserService.getLoggedInUser()));
-		mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
+		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
 		  	
 		mv.addObject("outing", outingDetails);
 		return mv;
@@ -87,9 +89,9 @@ public class OutingsController {
     public ModelAndView updateAvailability(
     		@RequestParam(value="outing", required=true) String outingId,
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
-    	final Outing outing = api.getOuting(InstanceConfig.INSTANCE, outingId);
+    	final Outing outing = api.getOuting(instanceConfig.getInstance(), outingId);
     	
-    	OutingAvailability result = api.setOutingAvailability(InstanceConfig.INSTANCE, loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
+    	OutingAvailability result = api.setOutingAvailability(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
     	ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
     	return mv;

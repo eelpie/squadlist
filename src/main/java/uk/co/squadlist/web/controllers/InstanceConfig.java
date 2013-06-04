@@ -1,7 +1,17 @@
 package uk.co.squadlist.web.controllers;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
 public class InstanceConfig {
 	
-	public static String INSTANCE = "test";
+	@Value("#{squadlist['instance']}")
+	private String instance;
+	
+	public String getInstance() {
+		return instance;
+	}
+	
 
 }

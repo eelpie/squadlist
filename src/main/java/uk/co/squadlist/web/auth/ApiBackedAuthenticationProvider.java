@@ -23,11 +23,13 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
 	
     private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
     
-    private SquadlistApi api;    
+    private final SquadlistApi api;
+    private final InstanceConfig instanceConfig;    
     
     @Autowired
-    public ApiBackedAuthenticationProvider(SquadlistApi api) {
+    public ApiBackedAuthenticationProvider(SquadlistApi api, InstanceConfig instanceConfig) {
 		this.api = api;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@Override
@@ -38,7 +40,7 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
     	final String password = authToken.getCredentials().toString();
     	log.info("Attempting to auth user: " + username);
-		if (api.auth(InstanceConfig.INSTANCE, username, password)) {
+		if (api.auth(instanceConfig.getInstance(), username, password)) {
 			log.info("Auth successful for user: " + username);
 			Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

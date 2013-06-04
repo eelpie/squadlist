@@ -23,12 +23,14 @@ public class MyOutingsController {
 	private SquadlistApi api;
 	private DisplayObjectFactory displayObjectFactory;
 	private DateFormatter dateFormatter;
+	private InstanceConfig instanceConfig;
 	
 	@Autowired
-	public MyOutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, DisplayObjectFactory displayObjectFactory) {
+	public MyOutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, DisplayObjectFactory displayObjectFactory, InstanceConfig instanceConfig) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.displayObjectFactory = displayObjectFactory;
+		this.instanceConfig = instanceConfig;
 		this.dateFormatter = new DateFormatter();
 	}
 	
@@ -50,13 +52,13 @@ public class MyOutingsController {
     	}
 		
 		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api
-				.getAvailabilityFor(InstanceConfig.INSTANCE, loggedInUser,
+				.getAvailabilityFor(instanceConfig.getInstance(), loggedInUser,
 						startDate, endDate)));
 
 		mv.addObject("heading", heading);
 		
-		mv.addObject("outingMonths", api.getMemberOutingMonths(InstanceConfig.INSTANCE, loggedInUser));
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(InstanceConfig.INSTANCE));
+		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUser));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(instanceConfig.getInstance()));
     	return mv;
     }
 	

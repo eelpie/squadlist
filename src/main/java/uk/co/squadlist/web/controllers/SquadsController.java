@@ -48,22 +48,24 @@ public class SquadsController {
 	private SquadlistApi api;
 	private LoggedInUserService loggedInUserService;
 	private UrlBuilder urlBuilder;
+	private InstanceConfig instanceConfig;
 	
 	@Autowired
-	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
+	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
+		this.instanceConfig = instanceConfig;
 	}
 	
 	@RequestMapping("/squad/{id}")
     public ModelAndView index(@PathVariable String id) throws Exception {
 		final ModelAndView mv = new ModelAndView("squad");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
-		mv.addObject("squad", api.getSquad(InstanceConfig.INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(InstanceConfig.INSTANCE, id));
-    	mv.addObject("outings", api.getSquadOutings(InstanceConfig.INSTANCE, id, DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.endOfCurrentOutingPeriod().toDate()));
+    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
+    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), id));
+    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), id, DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.endOfCurrentOutingPeriod().toDate()));
     	return mv;
     }
 	
@@ -79,7 +81,7 @@ public class SquadsController {
 		}
 		
 		try {
-			Squad newSquad = api.createSquad(InstanceConfig.INSTANCE, squadDetails.getName());
+			Squad newSquad = api.createSquad(instanceConfig.getInstance(), squadDetails.getName());
 			final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
 			return mv;
 			
@@ -95,11 +97,11 @@ public class SquadsController {
     		@RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = new ModelAndView("squadAvailability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
+    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	
-		mv.addObject("squad", api.getSquad(InstanceConfig.INSTANCE, id));
+		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
 		
-    	final List<Member> members = api.getSquadMembers(InstanceConfig.INSTANCE, id);
+    	final List<Member> members = api.getSquadMembers(instanceConfig.getInstance(), id);
 		mv.addObject("members", members);
     	
 		if (members.isEmpty()) {
@@ -115,12 +117,12 @@ public class SquadsController {
     	}
 		
     	final List<Outing> outings = Lists.newArrayList();
-    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(InstanceConfig.INSTANCE, id, startDate, endDate);
+    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceConfig.getInstance(), id, startDate, endDate);
     	final Map<String, String> allAvailability = decorateOutingsWithMembersAvailability(squadAvailability, outings);
     	
     	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
     	mv.addObject("availability", allAvailability);
-		mv.addObject("outingMonths", api.getSquadOutingMonths(InstanceConfig.INSTANCE, id));
+		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), id));
 		return mv;		
     }
 
@@ -140,10 +142,10 @@ public class SquadsController {
     public ModelAndView contacts(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadContacts");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
+    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
 
-		mv.addObject("squad", api.getSquad(InstanceConfig.INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(InstanceConfig.INSTANCE, id));
+		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
+    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), id));
     	return mv;
     }
 	
@@ -151,17 +153,17 @@ public class SquadsController {
     public ModelAndView entrydetails(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(InstanceConfig.INSTANCE));
+    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
 
-		mv.addObject("squad", api.getSquad(InstanceConfig.INSTANCE, id));
-    	mv.addObject("members", api.getSquadMembers(InstanceConfig.INSTANCE, id));
+		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
+    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), id));
     	return mv;
     }
 	
 	@RequestMapping("/squad/{id}/outings")
 	public ModelAndView outings(@PathVariable String id,
 			@RequestParam(value = "month", required = false) String month) throws Exception {
-    	final Squad squad = api.getSquad(InstanceConfig.INSTANCE, id);
+    	final Squad squad = api.getSquad(instanceConfig.getInstance(), id);
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
     	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
     	
@@ -174,8 +176,8 @@ public class SquadsController {
     	final ModelAndView mv = new ModelAndView("squadOutings");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());		
 		mv.addObject("squad", squad);
-		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(InstanceConfig.INSTANCE, id, startDate, endDate)));
-		mv.addObject("outingMonths", api.getSquadOutingMonths(InstanceConfig.INSTANCE, id));
+		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(instanceConfig.getInstance(), id, startDate, endDate)));
+		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), id));
     	return mv;
     }
 	
