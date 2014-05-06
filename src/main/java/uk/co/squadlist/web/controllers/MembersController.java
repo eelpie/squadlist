@@ -57,11 +57,15 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 		
+		final String initialPassword = "password";	// TODO add to form
+		
 		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(instanceConfig.getInstance(), memberDetails.getSquad()) : null;	// TODO push to spring
 		final Member newMember = api.createMember(instanceConfig.getInstance(),
 				memberDetails.getFirstName(), 
 				memberDetails.getLastName(),
-				squad);
+				squad,
+				null,
+				initialPassword);
 		
 		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
 		return mv;
