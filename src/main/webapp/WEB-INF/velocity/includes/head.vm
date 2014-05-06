@@ -8,11 +8,7 @@
 <div class="container-fluid">
 
 #macro(outingsNav $action)
-	<div class="span2 bs-docs-sidebar">				
-		<ul class="nav nav-list bs-docs-sidenav">
-			<li><a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a></li>
-		</ul>
-	
+	<div class="span2 bs-docs-sidebar">	
 		#if($outingMonths && !$outingMonths.keySet().isEmpty())
 			<p>			
 			<ul class="nav nav-list bs-docs-sidenav">
