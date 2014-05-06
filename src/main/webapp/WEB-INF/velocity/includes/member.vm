@@ -1,1 +1,1 @@
-<p><a href="$urlBuilder.applicationUrl("/member/$member.id")">$member.firstName $member.lastName</a></p>
+<a href="$urlBuilder.applicationUrl("/member/$member.id")">$member.firstName $member.lastName</a>

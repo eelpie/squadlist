@@ -2,10 +2,8 @@
 #navTabs('Availability')
 
 <div class="row-fluid">
-		
-	#squadSideNav('availability')			
-	
-	<div class="span10">
+			
+	<div class="span12">
 		<h3>$squad.name availability</h3>
 		
 		<form method="GET" action="/availability"/>
@@ -28,24 +26,24 @@
 
 			<div class="container-fluid">
 				
-								<div class="row">
-					<div class="span2">
-					</div>
+								<table width="100%">
+					<thead>
+					<th></th>
 					#foreach($outing in $outings) 
-						<div class="span1">
+						<th>
 							#parse('includes/outing-small.vm')
-						</div>
+						</th>
 					#end
-				</div>
+				</thead>
 				
 				#foreach($member in $members)
-					<div class="row">				
-						<div class="span2">#parse('includes/member.vm')</div>				
+					<tr>				
+						<td>#parse('includes/member.vm')</td>				
 						#foreach($outing in $outings)
 							#set($key = "${outing.id}-$member.id")
 							#set($status = '')					
 							#set($status = $availability.get($key))
-							<div class="span1">
+							<td align="middle">
 								#if($status == '') 
 									TBA
 								#else
@@ -53,9 +51,9 @@
 										$status
 									</span>
 								#end
-							</div>
+							</td>
 						#end
-					</div>
+					</tr>
 				#end
 			#end
 			</div>

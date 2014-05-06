@@ -12,7 +12,7 @@
 		<div class="span1"></div>
 		
 		<div class="span10">
-			<h2>Squadlist - $instance.name</h2>
+			<h3>Squadlist - $instance.name</h3>
 			
 		   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">
 		   		            

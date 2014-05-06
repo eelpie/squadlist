@@ -2,14 +2,12 @@
 #navTabs('My outings')
 
 <div class="row-fluid">
-
-	#outingsNav('/')
 	
-	<div class="span10">
+	<div class="span12">
 		<h3>$heading</h3>				
 		<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>		
 		<hr/>
-			
+					
 		#if($outings.isEmpty()) 
 			<h4>No current outings</h4>
 			<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>		
@@ -19,11 +17,11 @@
 		#foreach($outing in $outings)
 		
 		    <div class="row-fluid">
-		    	<div class="span4">
+		    	<div class="span3">
 					#parse('includes/outing.vm')	
 		    	</div>
 				
-				<div class="span5">	
+				<div class="span9">	
 					<select class="availabilityDropdown" id="${outing.id}">
 						<option value="">TBA</option>		
 						#foreach($option in $availabilityOptions)
@@ -34,8 +32,9 @@
 							<option value="$option.label" $selected>$option.label</option>	
 						#end
 					</select>
-				</div>
-				<div class="span1">										
+					
+					&nbsp;
+											
 					#if ($outing.availability) 						
 						<span id="currentAvailability${outing.id}" class="label label-info">
 							$outing.availability 

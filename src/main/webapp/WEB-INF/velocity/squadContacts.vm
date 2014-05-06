@@ -1,52 +1,51 @@
 #parse('includes/head.vm')
 #navTabs('Contacts')
 
-<div class="row-fluid">
+<div class="container-fluid">
 		
-	<div class="span12">
-		#if(!$squads.isEmpty())
-			<h3>$squad.name contacts</h3>
-					
-			<form method="GET" action="/contacts"/>
-				<select name="squad">
-				#foreach($availableSquad in $squads) 
-					<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
-				#end
-				</select>
-				<input type="submit" value="Show contacts" />
-			</form>
-			<hr/>
-										
-			#if($members.isEmpty()) 
-				<p>No members are currently assigned to this squad.</p>								
-			#else
-				<div class="row-fluid">
-					<div class="span4"></div>
-					<div class="span4">Email</div>
-					<div class="span4">Phone</div>				
+	#if(!$squads.isEmpty())
+	
+		<div class="row-fluid">
+			<div class="span6">
+				<h4>$squad.name contacts</h4>
+			</div>
+			<div class="span6">
+				<div class="pull-right">
+					#squadSelect('/contacts', 'Show contacts')
 				</div>
+			</div>
+		</div>
+		<hr/>
+										
+		#if($members.isEmpty()) 
+			<p>No members are currently assigned to this squad.</p>								
+		#else
+			<div class="row-fluid">
+				<div class="span4"></div>
+				<div class="span4">Email</div>
+				<div class="span4">Phone</div>				
+			</div>
 				
-				#foreach( $member in $members )
-					<div class="row-fluid">
-				    	<div class="span4">
-				    		#parse('includes/member.vm')
-				    	</div>
-				    	<div class="span4">
-				    		$!member.emailAddress
-				    	</div>
-						<div class="span4">
-							$!member.contactNumber
-						</div>
+			#foreach( $member in $members )
+				<div class="row-fluid">
+			    	<div class="span4">
+			    		#parse('includes/member.vm')
+			    	</div>
+			    	<div class="span4">
+			    		$!member.emailAddress
+			    	</div>
+					<div class="span4">
+						$!member.contactNumber
 					</div>
-				#end
-			#end			
-			<hr>
+				</div>
+			#end
+		#end			
+		<hr/>
 					
-		#else	
-			<h3>Contacts</h3>
-			<hr/>
-			<p>There are currently no squads setup.</p>
-			<hr/>
-		#end
-	</div>
+	#else	
+		<h4>Contacts</h4>
+		<hr/>
+		<p>There are currently no squads setup.</p>
+		<hr/>
+	#end
 </div>

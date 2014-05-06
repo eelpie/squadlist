@@ -1,56 +1,60 @@
 #parse('includes/head.vm')
 #navTabs('Entry details')
 
-<div class="row-fluid">
-	
-	<div class="span12">
-		#if(!$squads.isEmpty())
-			<h3>$squad.name entry details</h3>
-			<hr/>
-			
-			<form method="GET" action="/entrydetails"/>
-				<select name="squad">
-				#foreach($availableSquad in $squads) 
-					<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
-				#end
-				</select>
-				<input type="submit" value="Show entry details" />
-			</form>
-			<hr/>
-				
-					
-			#if($members.isEmpty()) 
-				<p>No members are currently assigned to this squad.</p>
-				
-			#else		
-				<div class="row-fluid">
-					<div class="span2"></div>
-					<div class="span2">Date of birth</div>
-					<div class="span2">Weight</div>
-					<div class="span2">Rowing pts</div>
-					<div class="span2">Sculling pts</div>				
-					<div class="span2">Registration</div>					
-				</div>
-				
-				#foreach( $member in $members )			
-					<div class="row-fluid">
-				    	<div class="span2">#parse('includes/member.vm')</div>
-				    	<div class="span2">$!member.dateOfBirth</div>		    	
-				    	<div class="span2">$!member.weight</div>
-				    	<div class="span2">$!member.rowingPoints</div>
-						<div class="span2">$!member.scullingPoints</div>
-				    	<div class="span2">$!member.registrationNumber</div>			    	
-				    </div>
-				#end
-			#end
-			<hr>
-			
-		#else
-			<h3>Entry details</h3>
-			<hr/>
-			<p>There are currently no squads setup.</p>
-			<hr/>
-		#end
+<div class="container-fluid">
+
+	#if(!$squads.isEmpty())
 		
-	</div>
+		<div class="row-fluid">
+			<div class="span6">
+				<h4>$squad.name entry details</h4>
+			</div>
+			<div class="span6">
+				<div class="pull-right">				
+					#squadSelect('/entrydetails', 'Show entry details')
+				</div>
+			</div>						
+		</div>
+		<hr/>
+			
+		#if($members.isEmpty()) 
+			<p>No members are currently assigned to this squad.</p>				
+		#else
+			
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th></th>					
+						<th>Date of birth</th>
+						<th>Weight</th>
+						<th>Rowing pts</th>
+						<th>Sculling pts</th>				
+						<th>Registration</th>
+					</tr>
+				</thead>
+									
+				#foreach( $member in $members )			
+					<tr>
+				    	<td>#parse('includes/member.vm')</td>
+				    	<td>$!member.dateOfBirth</td>		    	
+				    	<td>$!member.weight</td>
+				    	<td>$!member.rowingPoints</td>
+						<td>$!member.scullingPoints</td>
+				    	<td>$!member.registrationNumber</td>			    	
+				    </tr>
+				#end				
+			</table>
+		#end
+	
+		<hr/>
+			
+	#else
+		<h4>Entry details</h4>
+		<hr/>
+		<p>There are currently no squads setup.</p>
+		<hr/>
+	#end
+	
 </div>
+
+#parse('includes/footer.vm')

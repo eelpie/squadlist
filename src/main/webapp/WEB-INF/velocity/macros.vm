@@ -1,0 +1,73 @@
+#macro(outingsNav $action)
+	<div class="span2 bs-docs-sidebar">	
+		#if($outingMonths && !$outingMonths.keySet().isEmpty())
+			<p>			
+			<ul class="nav nav-list bs-docs-sidenav">
+				<li><a href="$action">Current</a></li>
+			</ul>
+			<p>		
+			<ul class="nav nav-list bs-docs-sidenav">
+				#foreach($outingMonth in $outingMonths.keySet())
+					<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) 
+							&nbsp;<span class="badge">$outingMonths.get($outingMonth)</span>
+						</a></li>
+				#end
+			</ul>
+		#end
+	</div>
+#end
+
+#macro(squadSideNav $action)
+	<div class="span2 bs-docs-sidenav">
+		#if($outingMonths && $outingMonths.size() > 0)		
+			<ul class="nav nav-list bs-docs-sidenav">
+				<li><a href="$action">Current</a></li>
+			</ul>
+			<p>
+			
+			<ul class="nav nav-list bs-docs-sidenav">
+			#foreach($outingMonth in $outingMonths.keySet())
+				<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
+			#end
+			</ul>
+		#end	
+   	</div>
+#end
+
+#macro(navTabs $selectedTab) 
+	<div class="navbar">
+		<div class="navbar-inner">
+	    	<ul class="nav">
+				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
+				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
+				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/availability')">Availability</a></li>
+				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
+				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/entrydetails')">Entry details</a></li>
+				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
+				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
+			</ul>
+		</div>
+	</div>	
+#end
+
+#macro(squadSelect $action $label)
+	<form class="navbar-form navbar-left" method="GET" action="$action" id="squadForm" />
+		<select name="squad" class="form-control" onChange="squadForm.submit()">
+			#foreach($availableSquad in $squads) 
+				<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
+			#end
+		</select>
+		<input type="submit" value="$label" class="btn btn-default" />
+	</form>
+#end
+
+#macro(textInput $name $label) 
+	#springBind($name)			
+	<div class="control-group">
+		<label class="control-label" for="${status.expression}">$label</label>
+		<div class="controls">
+			<input id="${status.expression}" name="${status.expression}" placeholder="$label" value="$!{status.value}">
+			#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
+		</div>
+	</div>
+#end
