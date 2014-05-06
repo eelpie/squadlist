@@ -39,14 +39,7 @@
 				<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
 			#end
 			</ul>
-		#end					
-		#if($squads && $squads.size() > 0) 
-			<ul class="nav nav-list bs-docs-sidenav">		
-			#foreach($navSquad on $squads) 
-				<li><a href="/squad/${navSquad.id}/${action}">$navSquad.name</a></li>
-			#end	
-			</ul>
-		#end
+		#end	
    	</div>
 #end
 
@@ -56,7 +49,7 @@
 	    	<ul class="nav">
 				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
 				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
-				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
+				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>

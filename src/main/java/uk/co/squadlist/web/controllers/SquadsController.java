@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -28,17 +27,12 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
-import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.display.DisplayOuting;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Controller
 public class SquadsController {
@@ -91,52 +85,6 @@ public class SquadsController {
 			return renderNewSquadForm();
 		}
     }
-		
-	@RequestMapping("/squad/{id}/availability")
-    public ModelAndView availability(@PathVariable String id,
-    		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	ModelAndView mv = new ModelAndView("squadAvailability");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-    	
-		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
-		
-    	final List<Member> members = api.getSquadMembers(instanceConfig.getInstance(), id);
-		mv.addObject("members", members);
-    	
-		if (members.isEmpty()) {
-			return mv;			
-		}
-		
-    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-    	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
-		if (month != null) {
-    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
-    		startDate = monthDateTime.toDate();
-    		endDate = monthDateTime.plusMonths(1).toDate();
-    	}
-		
-    	final List<Outing> outings = Lists.newArrayList();
-    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceConfig.getInstance(), id, startDate, endDate);
-    	final Map<String, String> allAvailability = decorateOutingsWithMembersAvailability(squadAvailability, outings);
-    	
-    	mv.addObject("outings", makeDisplayObjectsFor(outings));    	
-    	mv.addObject("availability", allAvailability);
-		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), id));
-		return mv;		
-    }
-
-	private Map<String, String> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
-		Map<String, String> allAvailability = Maps.newHashMap();
-    	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
-    		outings.add(outingWithSquadAvailability.getOuting());
-			final Map<String, String> outingAvailability = outingWithSquadAvailability.getAvailability();
-			for (String member : outingAvailability.keySet()) {
-				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
-			}
-		}
-		return allAvailability;
-	}
 	
 	@RequestMapping("/squad/{id}/outings")
 	public ModelAndView outings(@PathVariable String id,

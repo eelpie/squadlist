@@ -1,5 +1,5 @@
 #parse('includes/head.vm')
-#navTabs('Squad availability')
+#navTabs('Availability')
 
 <div class="row-fluid">
 		
@@ -7,7 +7,16 @@
 	
 	<div class="span10">
 		<h3>$squad.name availability</h3>
-		<hr/>
+		
+		<form method="GET" action="/availability"/>
+			<select name="squad">
+			#foreach($availableSquad in $squads) 
+				<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
+			#end
+			</select>
+			<input type="submit" value="Show availability" />
+		</form>
+		<hr/>			
 				
 		#if($members.isEmpty()) 
 			<p>No members are currently assigned to this squad.</p>						
@@ -18,8 +27,8 @@
 			#else
 
 			<div class="container-fluid">
-					
-				<div class="row">
+				
+								<div class="row">
 					<div class="span2">
 					</div>
 					#foreach($outing in $outings) 
