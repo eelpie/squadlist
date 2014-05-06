@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.exceptions.UnknownUserException;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Instance;
 
 import com.google.common.base.Strings;
@@ -62,7 +62,7 @@ public class LoginController {
 			mv.addObject("instance", getInstance());		
 			return mv;		
 			
-		} catch (UnknownUserException e) {
+		} catch (UnknownMemberException e) {
 			final ModelAndView mv = new ModelAndView("resetPassword");
 			mv.addObject("instance", getInstance());
 			mv.addObject("errors", true);
