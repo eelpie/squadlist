@@ -138,17 +138,6 @@ public class SquadsController {
 		return allAvailability;
 	}
 	
-	@RequestMapping("/squad/{id}/contacts")
-    public ModelAndView contacts(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("squadContacts");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-
-		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
-    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), id));
-    	return mv;
-    }
-	
 	@RequestMapping("/squad/{id}/entrydetails")
     public ModelAndView entrydetails(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("squadEntryDetails");

@@ -3,39 +3,50 @@
 
 <div class="row-fluid">
 		
-	#squadSideNav('contacts')
-	
 	<div class="span10">
-		<h3>$squad.name contacts</h3>
-		<hr/>
-				
-		#if($members.isEmpty()) 
-			<p>No members are currently assigned to this squad.</p>
-						
-		#else
-			<div class="row-fluid">
-				<div class="span4"></div>
-				<div class="span4">Email</div>
-				<div class="span4">Phone</div>				
-			</div>
-			
-			#foreach( $member in $members )
+		#if(!$squads.isEmpty())
+			<h3>$squad.name contacts</h3>
+					
+			<form method="GET" action="/contacts"/>
+				<select name="squad">
+				#foreach($availableSquad in $squads) 
+					<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
+				#end
+				</select>
+				<input type="submit" value="Show contacts" />
+			</form>
+			<hr/>
+										
+			#if($members.isEmpty()) 
+				<p>No members are currently assigned to this squad.</p>								
+			#else
 				<div class="row-fluid">
-			    	<div class="span4">
-			    		#parse('includes/member.vm')
-			    	</div>
-			    	<div class="span4">
-			    		$!member.emailAddress
-			    	</div>
-					<div class="span4">
-						$!member.contactNumber
-					</div>
+					<div class="span4"></div>
+					<div class="span4">Email</div>
+					<div class="span4">Phone</div>				
 				</div>
-			#end
+				
+				#foreach( $member in $members )
+					<div class="row-fluid">
+				    	<div class="span4">
+				    		#parse('includes/member.vm')
+				    	</div>
+				    	<div class="span4">
+				    		$!member.emailAddress
+				    	</div>
+						<div class="span4">
+							$!member.contactNumber
+						</div>
+					</div>
+				#end
+			#end			
+			<hr>
+					
+		#else	
+			<h3>Contacts</h3>
+			<hr/>
+			<p>There are currently no squads setup.</p>
+			<hr/>
 		#end
-		<hr>
 	</div>
-	
-
-</div>
 </div>
