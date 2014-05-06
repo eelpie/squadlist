@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.exceptions.UnknownUserException;
 import uk.co.squadlist.web.model.Instance;
 
 import com.google.common.base.Strings;
@@ -16,7 +17,7 @@ import com.google.common.base.Strings;
 @Controller
 public class LoginController {
 	
-	private static Logger log = Logger.getLogger(LoginController.class);
+	private final static Logger log = Logger.getLogger(LoginController.class);
 	
 	private final SquadlistApi api;
 	private final InstanceConfig instanceConfig;
@@ -54,13 +55,28 @@ public class LoginController {
 		}
 		
 		log.info("Reseting password for: " + username);
-		api.resetPassword(instanceConfig.getInstance(), username);	// TODO errors	
-		
-		log.info("Reset password call successful for: " + username);
-		final ModelAndView mv = new ModelAndView("resetPasswordSent");
-		mv.addObject("instance", getInstance());		
+		try {
+			api.resetPassword(instanceConfig.getInstance(), username);	// TODO errors	
+			log.info("Reset password call successful for: " + username);
+			final ModelAndView mv = new ModelAndView("resetPasswordSent");
+			mv.addObject("instance", getInstance());		
+			return mv;		
+			
+		} catch (UnknownUserException e) {
+			final ModelAndView mv = new ModelAndView("resetPassword");
+			mv.addObject("instance", getInstance());
+			mv.addObject("errors", true);
+			return mv;
+		}
+	}
+	
+	@RequestMapping(value = "/reset-password/confirm", method = RequestMethod.GET)
+	public ModelAndView confirmPasswordReset() throws Exception {
+		final ModelAndView mv = new ModelAndView("resetPasswordConfirm");
+		mv.addObject("instance", getInstance());
 		return mv;
 	}
+	
 	
 	private Instance getInstance() {
 		return api.getInstance(instanceConfig.getInstance());

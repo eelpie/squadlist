@@ -23,7 +23,7 @@ import uk.co.squadlist.web.urls.UrlBuilder;
 @Controller
 public class MembersController {
 	
-	private static Logger log = Logger.getLogger(MembersController.class);
+	private final static Logger log = Logger.getLogger(MembersController.class);
 	
 	private final SquadlistApi api;
 	private final LoggedInUserService loggedInUserService;
