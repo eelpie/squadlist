@@ -40,6 +40,8 @@ public class MyOutingsController {
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
     	
+		mv.addObject("member", api.getMemberDetails(instanceConfig.getInstance(), loggedInUser));
+		
 		String heading = "My outings";
 		
 		Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
@@ -51,12 +53,13 @@ public class MyOutingsController {
 			heading = heading + " - " + dateFormatter.fullMonthYear(startDate);
     	}
 		
+		mv.addObject("startDate", startDate);
+		mv.addObject("endDate", endDate);
 		mv.addObject("outings", displayObjectFactory.makeDisplayObjectsFor(api
 				.getAvailabilityFor(instanceConfig.getInstance(), loggedInUser,
 						startDate, endDate)));
 
-		mv.addObject("heading", heading);
-		
+		mv.addObject("heading", heading);		
 		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUser));
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions(instanceConfig.getInstance()));
     	return mv;

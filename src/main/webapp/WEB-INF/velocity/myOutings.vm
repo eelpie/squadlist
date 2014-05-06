@@ -6,11 +6,13 @@
 	#outingsNav('/')
 	
 	<div class="span10">
-		<h3>$heading</h3>
+		<h3>$heading</h3>				
+		<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>		
 		<hr/>
 			
 		#if($outings.isEmpty()) 
-			<p>No matching outings</p>
+			<h4>No current outings</h4>
+			<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>		
 		#end		
 		
 		<form>
