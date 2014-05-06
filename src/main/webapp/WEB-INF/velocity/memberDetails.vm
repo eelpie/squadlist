@@ -1,5 +1,5 @@
 #parse('includes/head.vm')
-#navTabs('My details')
+#navTabs('Details')
 
 <div class="row">
 

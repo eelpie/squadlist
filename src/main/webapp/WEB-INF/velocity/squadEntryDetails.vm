@@ -2,38 +2,55 @@
 #navTabs('Entry details')
 
 <div class="row-fluid">
-
-	#squadSideNav('entrydetails')
 	
-	<div class="span10">
-		<h3>$squad.name entry details</h3>
-		<hr/>
+	<div class="span12">
+		#if(!$squads.isEmpty())
+			<h3>$squad.name entry details</h3>
+			<hr/>
+			
+			<form method="GET" action="/entrydetails"/>
+				<select name="squad">
+				#foreach($availableSquad in $squads) 
+					<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
+				#end
+				</select>
+				<input type="submit" value="Show entry details" />
+			</form>
+			<hr/>
 				
-		#if($members.isEmpty()) 
-			<p>No members are currently assigned to this squad.</p>
-			
-		#else		
-			<div class="row-fluid">
-				<div class="span2"></div>
-				<div class="span2">Date of birth</div>
-				<div class="span2">Weight</div>
-				<div class="span2">Rowing pts</div>
-				<div class="span2">Sculling pts</div>				
-				<div class="span2">Registration</div>					
-			</div>
-			
-			#foreach( $member in $members )			
+					
+			#if($members.isEmpty()) 
+				<p>No members are currently assigned to this squad.</p>
+				
+			#else		
 				<div class="row-fluid">
-			    	<div class="span2">#parse('includes/member.vm')</div>
-			    	<div class="span2">$!member.dateOfBirth</div>		    	
-			    	<div class="span2">$!member.weight</div>
-			    	<div class="span2">$!member.rowingPoints</div>
-					<div class="span2">$!member.scullingPoints</div>
-			    	<div class="span2">$!member.registrationNumber</div>			    	
-			    </div>
+					<div class="span2"></div>
+					<div class="span2">Date of birth</div>
+					<div class="span2">Weight</div>
+					<div class="span2">Rowing pts</div>
+					<div class="span2">Sculling pts</div>				
+					<div class="span2">Registration</div>					
+				</div>
+				
+				#foreach( $member in $members )			
+					<div class="row-fluid">
+				    	<div class="span2">#parse('includes/member.vm')</div>
+				    	<div class="span2">$!member.dateOfBirth</div>		    	
+				    	<div class="span2">$!member.weight</div>
+				    	<div class="span2">$!member.rowingPoints</div>
+						<div class="span2">$!member.scullingPoints</div>
+				    	<div class="span2">$!member.registrationNumber</div>			    	
+				    </div>
+				#end
 			#end
+			<hr>
+			
+		#else
+			<h3>Entry details</h3>
+			<hr/>
+			<p>There are currently no squads setup.</p>
+			<hr/>
 		#end
-		<hr>				
+		
 	</div>
-</div>
 </div>

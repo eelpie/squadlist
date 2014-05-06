@@ -1,9 +1,9 @@
 #parse('includes/head.vm')
-#navTabs('Squad contacts')
+#navTabs('Contacts')
 
 <div class="row-fluid">
 		
-	<div class="span10">
+	<div class="span12">
 		#if(!$squads.isEmpty())
 			<h3>$squad.name contacts</h3>
 					

@@ -60,7 +60,7 @@
 				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
-				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/entrydetails')">Entry details</a></li>
+				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
 				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
 			</ul>
