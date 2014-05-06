@@ -56,7 +56,7 @@
 	<div class="navbar">
 		<div class="navbar-inner">
 	    	<ul class="nav">
-				<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">Outings</a></li>
+				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
 				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/squad/novice-men/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
