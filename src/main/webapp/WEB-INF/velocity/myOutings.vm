@@ -1,15 +1,15 @@
 #parse('includes/head.vm')
 #navTabs('My outings')
 
-<div class="row-fluid">
-	
+<div class="container-fluid">
+
 	<div class="span12">
-		<h3>$heading</h3>				
+		<h4>$heading</h4>
 		<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>		
 		<hr/>
-					
-		#if($outings.isEmpty()) 
-			<h4>No current outings</h4>
+							
+		#if($outings.isEmpty())
+			<h5>No current outings</h5>
 			<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>		
 		#end		
 		
@@ -51,6 +51,8 @@
 		<hr>
 	</div>
 </div>
+</div>
+
 </div>
 
 <script>

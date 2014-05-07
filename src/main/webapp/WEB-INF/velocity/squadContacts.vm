@@ -20,25 +20,30 @@
 		#if($members.isEmpty()) 
 			<p>No members are currently assigned to this squad.</p>								
 		#else
-			<div class="row-fluid">
-				<div class="span4"></div>
-				<div class="span4">Email</div>
-				<div class="span4">Phone</div>				
-			</div>
-				
-			#foreach( $member in $members )
-				<div class="row-fluid">
-			    	<div class="span4">
-			    		#parse('includes/member.vm')
-			    	</div>
-			    	<div class="span4">
-			    		$!member.emailAddress
-			    	</div>
-					<div class="span4">
-						$!member.contactNumber
-					</div>
-				</div>
-			#end
+		
+			<table style="font-size: 14px;" class="table table-striped">
+				<thead>
+					<tr>
+						<th></th>					
+						<th>Email</th>
+						<th>Phone</th>						
+					</tr>
+				</thead>
+							
+				#foreach( $member in $members )
+					<tr>
+				    	<td>
+				    		#parse('includes/member.vm')
+				    	</td>
+				    	<td>
+				    		$!member.emailAddress
+				    	</td>
+						<td>
+							$!member.contactNumber
+						</td>
+					</tr>
+				#end
+			</table>			
 		#end			
 		<hr/>
 					

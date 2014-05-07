@@ -1,66 +1,69 @@
 #parse('includes/head.vm')
 #navTabs('Availability')
 
-<div class="row-fluid">
-			
-	<div class="span12">
-		<h3>$squad.name availability</h3>
+<div class="container-fluid">
+
+	#if(!$squads.isEmpty())
 		
-		<form method="GET" action="/availability"/>
-			<select name="squad">
-			#foreach($availableSquad in $squads) 
-				<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
-			#end
-			</select>
-			<input type="submit" value="Show availability" />
-		</form>
-		<hr/>			
-				
-		#if($members.isEmpty()) 
-			<p>No members are currently assigned to this squad.</p>						
-		#else
-			
-			#if($outings.isEmpty()) 
-				<p>No matching outings</p>
-			#else
-
-			<div class="container-fluid">
-				
-								<table width="100%">
-					<thead>
-					<th></th>
-					#foreach($outing in $outings) 
-						<th>
-							#parse('includes/outing-small.vm')
-						</th>
-					#end
-				</thead>
-				
-				#foreach($member in $members)
-					<tr>				
-						<td>#parse('includes/member.vm')</td>				
-						#foreach($outing in $outings)
-							#set($key = "${outing.id}-$member.id")
-							#set($status = '')					
-							#set($status = $availability.get($key))
-							<td align="middle">
-								#if($status == '') 
-									TBA
-								#else
-									<span class="label label-info">
-										$status
-									</span>
-								#end
-							</td>
-						#end
-					</tr>
-				#end
-			#end
+		<div class="row-fluid">
+			<div class="span6">
+				<h4>$squad.name availability</h4>
 			</div>
+			<div class="span6">
+				<div class="pull-right">				
+					#squadSelect('/availability', 'Show availiability')
+				</div>
+			</div>						
+		</div>
+		<hr/>
 			
+		#if($members.isEmpty()) 
+			<p>No members are currently assigned to this squad.</p>				
+		#else
+		
+			#if($outings.isEmpty())
+				<p>No matching outings</p>
+			
+			#else
+			
+				<table style="font-size: 14px;" class="table">
+					<thead>
+						<th></th>
+						#foreach($outing in $outings) 
+							<th>
+								#parse('includes/outing-small.vm')
+							</th>
+						#end
+					</thead>
+			
+					#foreach($member in $members)
+						<tr>				
+							<td>#parse('includes/member.vm')</td>				
+							#foreach($outing in $outings)
+								#set($key = "${outing.id}-$member.id")
+								#set($status = '')					
+								#set($status = $availability.get($key))
+								<td align="middle">
+									#if($status == '') 
+										TBA
+									#else
+										<span class="label label-info">$status</span>
+									#end
+								</td>
+							#end
+						</tr>
+					#end
+				</table>
+			#end
+			</div>			
 		#end
-		<hr>
+	
+	#else
+		<h4>Availability</h4>
+		<hr/>
+		<p>There are currently no squads setup.</p>
+	#end
+	
+</div>
 
-	</div>
-</div>
-</div>
+#parse('includes/footer.vm')
