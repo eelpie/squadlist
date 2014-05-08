@@ -4,7 +4,7 @@
 <div class="container-fluid">
 
 	#if(!$squads.isEmpty())
-		
+				
 		<div class="row-fluid">
 			<div class="span6">
 				<h4>$squad.name availability</h4>
@@ -15,49 +15,52 @@
 				</div>
 			</div>						
 		</div>
-		<hr/>
-			
-		#if($members.isEmpty()) 
-			<p>No members are currently assigned to this squad.</p>				
-		#else
 		
-			#if($outings.isEmpty())
-				<p>No matching outings</p>
+		<hr/>
+		
+		<div class="row-fluid">
 			
+			#if($members.isEmpty()) 
+				<p>No members are currently assigned to this squad.</p>				
 			#else
 			
-				<table style="font-size: 14px;" class="table">
-					<thead>
-						<th></th>
-						#foreach($outing in $outings) 
-							<th>
-								#parse('includes/outing-small.vm')
-							</th>
-						#end
-					</thead>
-			
-					#foreach($member in $members)
-						<tr>				
-							<td>#parse('includes/member.vm')</td>				
-							#foreach($outing in $outings)
-								#set($key = "${outing.id}-$member.id")
-								#set($status = '')					
-								#set($status = $availability.get($key))
-								<td align="middle">
-									#if($status == '') 
-										TBA
-									#else
-										<span class="label label-info">$status</span>
-									#end
-								</td>
+				#if($outings.isEmpty())
+					<p>No matching outings</p>
+									
+				#else
+							
+					<table style="font-size: 14px;" class="table table-striped">
+						<thead>
+							<th></th>
+							#foreach($outing in $outings) 
+								<th>
+									#parse('includes/outing-small.vm')
+								</th>
 							#end
-						</tr>
-					#end
-				</table>
+						</thead>
+				
+						#foreach($member in $members)
+							<tr>				
+								<td>#parse('includes/member.vm')</td>				
+								#foreach($outing in $outings)
+									#set($key = "${outing.id}-$member.id")
+									#set($status = '')					
+									#set($status = $availability.get($key))
+									<td>
+										#if($status == '') 
+											TBA
+										#else
+											<span class="label label-info">$status</span>
+										#end
+									</td>
+								#end
+							</tr>
+						#end
+					</table>
+				#end			
 			#end
-			</div>			
-		#end
-	
+		</div>
+		
 	#else
 		<h4>Availability</h4>
 		<hr/>
