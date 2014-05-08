@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -30,27 +31,32 @@ import uk.co.squadlist.web.views.JsonView;
 @Controller
 public class OutingsController {
 	
-	private LoggedInUserService loggedInUserService;
-	private SquadlistApi api;
-	private UrlBuilder urlBuilder;
-	private InstanceConfig instanceConfig;
+	private final LoggedInUserService loggedInUserService;
+	private final SquadlistApi api;
+	private final UrlBuilder urlBuilder;
+	private final InstanceConfig instanceConfig;
+	private final DateFormatter dateFormatter;
 	
 	@Autowired
-	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
+	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder, 
+			InstanceConfig instanceConfig, DateFormatter dateFormatter) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
 		this.instanceConfig = instanceConfig;
+		this.dateFormatter = dateFormatter;
 	}
 	
 	@RequestMapping("/outings/{id}")
     public ModelAndView outings(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
+    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
+    	
     	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
-    	    	
+    	
+    	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
 		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));

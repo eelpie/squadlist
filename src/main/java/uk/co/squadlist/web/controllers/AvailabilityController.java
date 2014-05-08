@@ -54,7 +54,8 @@ public class AvailabilityController {
     	final Squad squad = resolveSquad(squadId);
 
     	if (squad != null) {
-			mv.addObject("squad", squad);			
+			mv.addObject("squad", squad);
+			mv.addObject("title", squad.getName() + " availability");
 	    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squad.getId()));
 	    	
 			if (api.getSquadMembers(instanceConfig.getInstance(), squad.getId()).isEmpty()) {

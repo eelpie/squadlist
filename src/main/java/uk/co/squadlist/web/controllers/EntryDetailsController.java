@@ -38,6 +38,7 @@ public class EntryDetailsController {
     	
     	final Squad squadToShow = resolveSquad(squadId);
 		mv.addObject("squad", squadToShow);
+		mv.addObject("title", squadToShow.getName() + " entry details");
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squadToShow.getId()));
     	return mv;
     }

@@ -40,6 +40,7 @@ public class ContactsController {
 		mv.addObject("squads", allSquads);
     	if (!allSquads.isEmpty()) {
     		final Squad squadToShow = resolveSquad(squadId);
+    		mv.addObject("title", squadToShow.getName() + " contacts");
     		mv.addObject("squad", squadToShow);
     		mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squadToShow.getId()));    		
     	}
