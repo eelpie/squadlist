@@ -1,0 +1,41 @@
+#parse('includes/head.vm')
+#navTabs('Outings')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>$squad.name outings</h4>
+		</div>
+		<div class="col-xs-4">
+			<div class="pull-right">
+				#squadSelect('/outings', 'Outings')
+			</div>
+		</div>
+	</div>
+	<hr/>
+
+
+	<div class="row">
+		<div class="col-xs-3">
+			#outingsNav('/')
+		</div>
+		
+		<div class="col-xs-9">
+								
+				#foreach($outing in $outings)
+				
+		    <div class="row">
+	   			<div class="col-xs-3">	   
+					#parse('includes/outing.vm')	
+			    </div>	   			
+			</div>
+		#end
+		
+				
+		</div>			
+	</div>
+</div>
+<hr/>			
+
+#parse('includes/footer.vm')

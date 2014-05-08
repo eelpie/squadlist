@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import javax.validation.Valid;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,13 +17,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Strings;
+
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
+import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.JsonSerializer;
@@ -36,19 +41,35 @@ public class OutingsController {
 	private final UrlBuilder urlBuilder;
 	private final InstanceConfig instanceConfig;
 	private final DateFormatter dateFormatter;
+	private final PreferedSquadService preferedSquadService;
 	
 	@Autowired
 	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder, 
-			InstanceConfig instanceConfig, DateFormatter dateFormatter) {
+			InstanceConfig instanceConfig, DateFormatter dateFormatter, PreferedSquadService preferedSquadService) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
 		this.instanceConfig = instanceConfig;
 		this.dateFormatter = dateFormatter;
+		this.preferedSquadService = preferedSquadService;
 	}
 	
+	@RequestMapping("/outings")
+    public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId) throws Exception {
+    	final ModelAndView mv = new ModelAndView("outings");
+    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
+    	
+    	final Squad squadToShow = resolveSquad(squadId);    	
+    	mv.addObject("squad", squadToShow);
+    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(),
+    			DateTime.now().minusYears(1).toDate(), DateTime.now().plusYears(1).toDate()));    	
+    	mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+    	return mv;
+    }
+	
 	@RequestMapping("/outings/{id}")
-    public ModelAndView outings(@PathVariable String id) throws Exception {
+    public ModelAndView outing(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("outing");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
     	
@@ -60,6 +81,7 @@ public class OutingsController {
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	return mv;
     }
 	
@@ -102,6 +124,13 @@ public class OutingsController {
 		mv.addObject("data", result);
     	return mv;
     }
+	
+	private Squad resolveSquad(String squadId) {
+    	if(!Strings.isNullOrEmpty(squadId)) {
+    		return api.getSquad(instanceConfig.getInstance(), squadId);
+    	}    	
+    	return preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
+	}
 	
     @ExceptionHandler(UnknownOutingException.class)
     @ResponseStatus(value = org.springframework.http.HttpStatus.NOT_FOUND, reason = "No outing was found with the requested id")
