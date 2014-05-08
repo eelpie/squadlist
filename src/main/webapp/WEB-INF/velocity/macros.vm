@@ -55,14 +55,16 @@
 #end
 
 #macro(squadSelect $action $label)
-	<form class="navbar-form navbar-left" method="GET" action="$urlBuilder.applicationUrl($action)" id="squadForm" />
-		<select name="squad" class="form-control" onChange="squadForm.submit()">
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			$squad.name <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu pull-right" role="menu">
 			#foreach($availableSquad in $squads) 
-				<option value="$availableSquad.id" #if($squad && $availableSquad.id == $squad.id) SELECTED #end>$availableSquad.name</option>
+				<li><a href="$urlBuilder.applicationUrl($action)?squad=$availableSquad.id">$availableSquad.name</a></li>
 			#end
-		</select>
-		<input type="submit" value="$label" class="btn btn-default" />
-	</form>
+		</ul>
+	</div>
 #end
 
 #macro(textInput $name $label) 

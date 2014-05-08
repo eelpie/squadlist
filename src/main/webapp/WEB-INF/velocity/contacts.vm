@@ -5,11 +5,11 @@
 		
 	#if(!$squads.isEmpty())
 	
-		<div class="row-fluid">
-			<div class="span6">
+		<div class="row">
+			<div class="col-xs-8">
 				<h4>$squad.name contacts</h4>
 			</div>
-			<div class="span6">
+			<div class="col-xs-4">
 				<div class="pull-right">
 					#squadSelect('/contacts', 'Show contacts')
 				</div>
