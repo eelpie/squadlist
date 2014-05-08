@@ -34,20 +34,23 @@
    	</div>
 #end
 
-#macro(navTabs $selectedTab) 
-	<div class="navbar">
-		<div class="navbar-inner">
-	    	<ul class="nav">
-				<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
+#macro(navTabs $selectedTab)
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+		    <div class="navbar-header">
+		    	<a class="navbar-brand" href="#">Squadlist</a>
+		    </div>
+			<ul class="nav navbar-nav">		     
+		    	<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
 				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">Details</a></li>
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
-				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>								
-			</ul>
+				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>      
+		   	</ul>
 		</div>
-	</div>	
+	</nav>
 #end
 
 #macro(squadSelect $action $label)
