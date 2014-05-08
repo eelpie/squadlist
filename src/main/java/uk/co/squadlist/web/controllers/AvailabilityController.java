@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -27,9 +25,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 public class AvailabilityController {
-	
-	private final static Logger log = Logger.getLogger(AvailabilityController.class);
-	
+		
 	private SquadlistApi api;
 	private LoggedInUserService loggedInUserService;
 	private InstanceConfig instanceConfig;
