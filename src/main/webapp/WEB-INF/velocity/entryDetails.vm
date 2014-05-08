@@ -51,8 +51,8 @@
 		<hr/>
 		<p>There are currently no squads setup.</p>
 	#end
-	<hr/>
 	
 </div>
+<hr/>
 
 #parse('includes/footer.vm')

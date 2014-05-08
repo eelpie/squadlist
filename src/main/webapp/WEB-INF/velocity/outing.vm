@@ -1,23 +1,23 @@
 #parse('includes/head.vm')
 #navTabs('Outings')
 
-<div class="row-fluid">
-	
-	#outingsNav('/')
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-3">
+			#outingsNav('/')
+		</div>
 		
-	<div class="span10">
-		<h3>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h3>
-		<hr/>
-				
-		<div class="row-fluid">
-			<div class="span6">					
-				#foreach($member in $members )
-				
-					<div class="row-fluid">
-				    	<div class="span4">
+		<div class="col-xs-9">
+			<h4>$squad.name outing - $dateFormatter.dayMonthYearTime($outing.date)</h4>
+			<p>$!outing.notes</p>	
+			
+			<table class="table table-striped">				
+				#foreach($member in $members )					
+					<tr>
+				    	<td>
 				   			#parse('includes/member.vm')
-				   		</div>
-				   		<div class="span2">
+				   		</td>
+				   		<td>
 							#if($availability.get(${member.id}))
 								<span class="label label-info">
 									$availability.get(${member.id})
@@ -25,16 +25,13 @@
 							#else 
 								TBA
 							#end
-						</div>
-					</div>
+						</td>
+					</tr>
 				#end
-			</div>
-			<div class="span4">
-				<p>$!outing.notes</p>			
-			</div>
-		</div>
-		<hr/>
-		
+			</table>		
+		</div>			
 	</div>
 </div>
-</div>
+<hr/>			
+
+#parse('includes/footer.vm')

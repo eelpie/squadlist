@@ -45,12 +45,12 @@
 				#end
 			</table>			
 		#end			
-		<hr/>
 					
 	#else	
 		<h4>Contacts</h4>
 		<hr/>
 		<p>There are currently no squads setup.</p>
-		<hr/>
 	#end
+	
 </div>
+<hr/>
