@@ -47,7 +47,7 @@ public class AvailabilityController {
 	@RequestMapping("/availability")
     public ModelAndView availability(@RequestParam(required=false, value="squad") String squadId,
     		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	ModelAndView mv = new ModelAndView("squadAvailability");
+    	ModelAndView mv = new ModelAndView("availability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	

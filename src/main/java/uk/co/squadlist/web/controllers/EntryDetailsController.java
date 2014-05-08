@@ -32,7 +32,7 @@ public class EntryDetailsController {
 	
 	@RequestMapping("/entrydetails")
     public ModelAndView entrydetails(@RequestParam(required=false, value="squad") String squadId) throws Exception {
-    	final ModelAndView mv = new ModelAndView("squadEntryDetails");
+    	final ModelAndView mv = new ModelAndView("entryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	

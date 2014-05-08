@@ -34,7 +34,7 @@ public class ContactsController {
 	@RequestMapping("/contacts")
     public ModelAndView contacts(@RequestParam(required=false, value="squad") String squadId) throws Exception {
 		
-    	final ModelAndView mv = new ModelAndView("squadContacts");
+    	final ModelAndView mv = new ModelAndView("contacts");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	final List<Squad> allSquads = api.getSquads(instanceConfig.getInstance());
 		mv.addObject("squads", allSquads);
