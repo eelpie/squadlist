@@ -49,6 +49,14 @@ public class UrlBuilder {
 		return applicationUrl("/outings/" + outing.getId());
 	}
 	
+	public String outings(Squad squad) {
+		return applicationUrl("/outings?squad=" + squad.getId());
+	}
+	
+	public String outings(Squad squad, String month) {
+		return outings(squad) + "&month=" + month;
+	}
+	
 	public String editMemberUrl(Member member) {
 		return memberUrl(member) + "/edit";
 	}
