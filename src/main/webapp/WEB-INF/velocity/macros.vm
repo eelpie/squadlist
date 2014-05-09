@@ -8,7 +8,7 @@
 						
 		#if($outingMonths && !$outingMonths.keySet().isEmpty())		
 			<ul class="nav nav-list bs-docs-sidenav">
-				<li><a href="$action">Current</a></li>
+				<li><a href="$urlBuilder.outings($squad)">Current</a></li>
 			</ul>			
 			<ul class="nav nav-list bs-docs-sidenav">
 				#foreach($outingMonth in $outingMonths.keySet())

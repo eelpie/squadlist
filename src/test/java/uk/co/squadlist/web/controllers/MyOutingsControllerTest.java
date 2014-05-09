@@ -48,7 +48,7 @@ public class MyOutingsControllerTest {
 				.thenReturn(membersAvailability);
 		when(displayObjectFactory.makeDisplayObjectsFor(membersAvailability)).thenReturn(membersAvailabilityDisplayObjects);
 						
-		final ModelAndView mv = controller.outings(null);
+		final ModelAndView mv = controller.outings();
 		
 		assertEquals(membersAvailabilityDisplayObjects, mv.getModel().get("outings"));		
 	}
