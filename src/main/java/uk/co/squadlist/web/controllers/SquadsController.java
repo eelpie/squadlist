@@ -1,17 +1,8 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,17 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
-import uk.co.squadlist.web.model.display.DisplayOuting;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
@@ -37,12 +24,12 @@ import uk.co.squadlist.web.views.DateHelper;
 @Controller
 public class SquadsController {
 	
-	private static Logger log = Logger.getLogger(SquadsController.class);
+	private final static Logger log = Logger.getLogger(SquadsController.class);
 	
-	private SquadlistApi api;
-	private LoggedInUserService loggedInUserService;
-	private UrlBuilder urlBuilder;
-	private InstanceConfig instanceConfig;
+	private final SquadlistApi api;
+	private final LoggedInUserService loggedInUserService;
+	private final UrlBuilder urlBuilder;
+	private final InstanceConfig instanceConfig;
 	
 	@Autowired
 	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
@@ -86,41 +73,10 @@ public class SquadsController {
 		}
     }
 	
-	@RequestMapping("/squad/{id}/outings")
-	public ModelAndView outings(@PathVariable String id,
-			@RequestParam(value = "month", required = false) String month) throws Exception {
-    	final Squad squad = api.getSquad(instanceConfig.getInstance(), id);
-    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-    	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
-    	
-    	if (month != null) {
-    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
-    		startDate = monthDateTime.toDate();
-    		endDate = monthDateTime.plusMonths(1).toDate();
-    	}
-    	
-    	final ModelAndView mv = new ModelAndView("squadOutings");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());		
-		mv.addObject("squad", squad);
-		mv.addObject("outings", makeDisplayObjectsFor(api.getSquadOutings(instanceConfig.getInstance(), id, startDate, endDate)));
-		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), id));
-    	return mv;
-    }
-	
 	private ModelAndView renderNewSquadForm() {
 		ModelAndView mv = new ModelAndView("newSquad");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		return mv;
-	}
-
-	private List<DisplayOuting> makeDisplayObjectsFor(List<Outing> outings) throws JsonParseException, JsonMappingException, IOException, HttpFetchException {
-		List<DisplayOuting> displayOutings = new ArrayList<DisplayOuting>();
-		for (Outing outing : outings) {
-			displayOutings.add(new DisplayOuting(outing.getId(),
-					outing.getSquad(),
-					outing.getDate()));
-		}
-		return displayOutings;
 	}
 	
 }
