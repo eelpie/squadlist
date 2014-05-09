@@ -15,13 +15,14 @@
 	</div>
 	<hr/>
 
-
 	<div class="row">
 		<div class="col-xs-2">
-			#outingsNav('/')
+			#outingsNav()
 		</div>
 		
 		<div class="col-xs-10">
+		
+			<p>$startDate - $endDate</p>
 		
 			<table style="font-size: 14px;" class="table table-striped">								
 				#foreach($outing in $outings)

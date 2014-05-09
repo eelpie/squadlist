@@ -1,14 +1,14 @@
-#macro(outingsNav $action)
+#macro(outingsNav)
 	<div class="span2 bs-docs-sidebar">	
 		#if($outingMonths && !$outingMonths.keySet().isEmpty())
 			<p>			
 			<ul class="nav nav-list bs-docs-sidenav">
-				<li><a href="$action">Current</a></li>
+				<li><a href="$urlBuilder.applicationUrl('/outings')">Current</a></li>
 			</ul>
 			<p>		
 			<ul class="nav nav-list bs-docs-sidenav">
 				#foreach($outingMonth in $outingMonths.keySet())
-					<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) 
+					<li><a href="$urlBuilder.applicationUrl('/outings')?month=$outingMonth">$dateFormatter.month($outingMonth) 
 							&nbsp;<span class="badge">$outingMonths.get($outingMonth)</span>
 						</a></li>
 				#end

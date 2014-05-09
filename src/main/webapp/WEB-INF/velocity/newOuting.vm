@@ -2,8 +2,6 @@
 #navTabs('Add outing')
 
 <div class="row">
-
-	#outingsNav('/')
 		
 	<div class="span9">	
 		<h3>Adding a new outing</h3>

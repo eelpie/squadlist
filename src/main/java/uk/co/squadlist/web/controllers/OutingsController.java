@@ -1,9 +1,12 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.Date;
+
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -55,14 +58,27 @@ public class OutingsController {
 	}
 	
 	@RequestMapping("/outings")
-    public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId) throws Exception {
+    public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId,
+    		@RequestParam(value = "month", required = false) String month) throws Exception {
     	final ModelAndView mv = new ModelAndView("outings");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
     	
     	final Squad squadToShow = resolveSquad(squadId);    	
-    	mv.addObject("squad", squadToShow);
-    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(),
-    			DateTime.now().minusYears(1).toDate(), DateTime.now().plusYears(1).toDate()));    	
+
+    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
+		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();		
+		if (month != null) {
+    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
+    		startDate = monthDateTime.toDate();
+    		endDate = monthDateTime.plusMonths(1).toDate();
+			//heading = heading + " - " + dateFormatter.fullMonthYear(startDate);
+    	}
+		
+		mv.addObject("squad", squadToShow);
+		mv.addObject("startDate", startDate);
+		mv.addObject("endDate", endDate);
+    	    	
+    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(), startDate, endDate));
     	mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	return mv;
