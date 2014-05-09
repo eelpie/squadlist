@@ -4,64 +4,57 @@
 <div class="container-fluid">
 
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-xs-12">
 			<h4>$heading</h4>
 			<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>
 		</div>
 	</div>
 	<hr/>
-							
+									
 	#if($outings.isEmpty())
 	   <div class="row">
 	   		<div class="col-md-12">	   
 				<h5>No current outings</h5>
-				<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>
+				<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>			
 			</div>
 		</div>
 
-	#else
-		
-		<form>
-		#foreach($outing in $outings)
-				
-		    <div class="row">
-	   			<div class="col-xs-3">	   
-					#parse('includes/outing.vm')	
-			    </div>
-				
-	   			<div class="col-xs-9">	   
-					<select class="availabilityDropdown" id="${outing.id}">
-						<option value="">TBA</option>		
-						#foreach($option in $availabilityOptions)
-							#set($selected = '')
-							#if ($outing.availability == $option.label) 
-								#set($selected = 'SELECTED')
-							#end
-							<option value="$option.label" $selected>$option.label</option>	
+	#else		
+		<div class="row">
+			<div class="col-md-12">	 
+				<form>
+					<table style="font-size: 14px;" class="table table-striped">
+						#foreach($outing in $outings)					
+						    <tr>
+					   			<td>	   
+									#parse('includes/outing.vm')	
+							    </td>					
+					   			<td>	   
+									<select class="availabilityDropdown" id="${outing.id}">
+										<option value="">TBA</option>		
+										#foreach($option in $availabilityOptions)
+											#set($selected = '')
+											#if ($outing.availability == $option.label) 
+												#set($selected = 'SELECTED')
+											#end
+											<option value="$option.label" $selected>$option.label</option>	
+										#end
+									</select>								
+									#if ($outing.availability) 						
+										<span id="currentAvailability${outing.id}" class="label label-info pull-right">$outing.availability</span>
+									#else
+						 				<span class="pull-right" id="currentAvailability${outing.id}">TBA</span>
+									#end				
+							    </td>
+							</tr>
 						#end
-					</select>
-																				
-					#if ($outing.availability) 						
-						<span id="currentAvailability${outing.id}" class="label label-info">
-							$outing.availability 
-						</span>				
-					#else
-		 				<span id="currentAvailability${outing.id}">
-		 					TBA
-		 				</span>
-					#end				
-			    </div>
-			</div>
-		#end
-		</form>
-		<hr>
-	</div>
+					</table>
+				</form>				  
+			</div>	   
+		</div>		
 	#end
-	
 </div>
-</div>
-
-</div>
+<hr/>
 
 <script>
 	$('.availabilityDropdown').change(function() {
@@ -70,12 +63,14 @@
     	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
     		if (data.availability) {
-	    		$("#currentAvailability" + outingId).attr('class', 'label label-info');
+	    		$("#currentAvailability" + outingId).attr('class', 'label label-info pull-right');
 				$("#currentAvailability" + outingId).text(data.availability);
 	    	} else {
-	    		$("#currentAvailability" + outingId).attr('class', null);
+	    		$("#currentAvailability" + outingId).attr('class', 'pull-right');
 	    		$("#currentAvailability" + outingId).text('TBA');	    			    		
 	    	}
 		});
   	});
 </script>
+	
+#parse('includes/footer.vm')

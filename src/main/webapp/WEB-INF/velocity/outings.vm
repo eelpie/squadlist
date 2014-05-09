@@ -17,24 +17,25 @@
 
 
 	<div class="row">
-		<div class="col-xs-3">
+		<div class="col-xs-2">
 			#outingsNav('/')
 		</div>
 		
-		<div class="col-xs-9">
-								
-				#foreach($outing in $outings)
-				
-		    <div class="row">
-	   			<div class="col-xs-3">	   
-					#parse('includes/outing.vm')	
-			    </div>	   			
-			</div>
-		#end
+		<div class="col-xs-10">
 		
-				
+			<table style="font-size: 14px;" class="table table-striped">								
+				#foreach($outing in $outings)
+					<tr>
+			   			<td>	   
+							#parse('includes/outing.vm')	
+			    		</td>	   			
+					</tr>
+					#end
+			</table>
+							
 		</div>			
 	</div>
+
 </div>
 <hr/>			
 

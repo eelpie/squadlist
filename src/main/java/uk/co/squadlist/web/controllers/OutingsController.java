@@ -119,8 +119,9 @@ public class OutingsController {
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(instanceConfig.getInstance(), outingId);
     	
-    	OutingAvailability result = api.setOutingAvailability(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser(), outing.getId(), availability);    	
-    	ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
+    	OutingAvailability result = api.setOutingAvailability(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser(), outing.getId(), availability);
+    	
+    	final ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
     	return mv;
     }
