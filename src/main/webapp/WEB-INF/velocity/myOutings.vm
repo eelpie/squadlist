@@ -24,26 +24,27 @@
 			<div class="col-md-12">	 
 				<form>
 					<table style="font-size: 14px;" class="table table-striped">
-						#foreach($outing in $outings)					
+						#foreach($outingAvailability in $outings)					
 						    <tr>
 					   			<td>	   
+					   				#set($outing = $outingAvailability.outing)
 									#parse('includes/outing.vm')	
 							    </td>					
-					   			<td>	   
-									<select class="availabilityDropdown" id="${outing.id}">
+					   			<td>
+									<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
 										<option value="">TBA</option>		
 										#foreach($option in $availabilityOptions)
 											#set($selected = '')
-											#if ($outing.availability == $option.label) 
+											#if ($outingAvailability.availability == $option.label) 
 												#set($selected = 'SELECTED')
 											#end
 											<option value="$option.label" $selected>$option.label</option>	
 										#end
 									</select>								
-									#if ($outing.availability) 						
-										<span id="currentAvailability${outing.id}" class="label label-info pull-right">$outing.availability</span>
+									#if ($outingAvailability.availability) 						
+										<span id="currentAvailability${outingAvailability.outing.id}" class="label label-info pull-right">$outingAvailability.availability</span>
 									#else
-						 				<span class="pull-right" id="currentAvailability${outing.id}">TBA</span>
+						 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
 									#end				
 							    </td>
 							</tr>

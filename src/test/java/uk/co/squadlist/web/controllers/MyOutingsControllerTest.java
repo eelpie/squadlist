@@ -15,8 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.OutingAvailability;
-import uk.co.squadlist.web.model.display.DisplayOutingAvailability;
-import uk.co.squadlist.web.views.DisplayObjectFactory;
 
 public class MyOutingsControllerTest {
 
@@ -24,11 +22,9 @@ public class MyOutingsControllerTest {
 	
 	@Mock private SquadlistApi api;
 	@Mock private LoggedInUserService loggedInUserService;
-	@Mock private DisplayObjectFactory displayObjectFactory;
 	@Mock private InstanceConfig instanceConfig;
 	
 	@Mock private List<OutingAvailability> membersAvailability;
-	@Mock private List<DisplayOutingAvailability> membersAvailabilityDisplayObjects;
 
 	private MyOutingsController controller;
 
@@ -36,7 +32,7 @@ public class MyOutingsControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		controller = new MyOutingsController(loggedInUserService, api, displayObjectFactory, instanceConfig);
+		controller = new MyOutingsController(loggedInUserService, api, instanceConfig);
 	}
 	
 	@Test
@@ -46,11 +42,10 @@ public class MyOutingsControllerTest {
 						.now().minusDays(1).toDateMidnight().toDate(), DateTime
 						.now().minusDays(1).toDateMidnight().plusWeeks(2).toDate()))
 				.thenReturn(membersAvailability);
-		when(displayObjectFactory.makeDisplayObjectsFor(membersAvailability)).thenReturn(membersAvailabilityDisplayObjects);
 						
 		final ModelAndView mv = controller.outings();
 		
-		assertEquals(membersAvailabilityDisplayObjects, mv.getModel().get("outings"));		
+		assertEquals(membersAvailability, mv.getModel().get("outings"));		
 	}
 	
 }
