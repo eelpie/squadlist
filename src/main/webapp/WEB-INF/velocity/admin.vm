@@ -2,11 +2,7 @@
 #navTabs('Admin')
 
 <div class="row-fluid">
-		
-	<div class="span2 bs-docs-sidebar">	
-		#squadSideNav('contacts')
-	</div>
-		
+
 	<div class="span5">
 		<h3>Members</h3>
 

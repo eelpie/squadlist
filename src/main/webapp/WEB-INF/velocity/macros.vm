@@ -19,23 +19,6 @@
 	</div>
 #end
 
-#macro(squadSideNav $action)
-	<div class="span2 bs-docs-sidenav">
-		#if($outingMonths && $outingMonths.size() > 0)		
-			<ul class="nav nav-list bs-docs-sidenav">
-				<li><a href="$action">Current</a></li>
-			</ul>
-			<p>
-			
-			<ul class="nav nav-list bs-docs-sidenav">
-			#foreach($outingMonth in $outingMonths.keySet())
-				<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) ($outingMonths.get($outingMonth))</a></li>
-			#end
-			</ul>
-		#end	
-   	</div>
-#end
-
 #macro(navTabs $selectedTab)
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">

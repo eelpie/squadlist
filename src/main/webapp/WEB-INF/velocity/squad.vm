@@ -3,10 +3,6 @@
 
 <div class="row">
 		
-	<div class="span2 bs-docs-sidebar">	
-		#squadSideNav('')
-	</div>
-		
 	<div class="span4">
 		<h3>$squad.name</h3>	
 		<h5>Members</h5>
