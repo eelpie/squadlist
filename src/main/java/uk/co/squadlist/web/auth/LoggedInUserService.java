@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component("loggedInUserService")
 public class LoggedInUserService {
 
-    private static Logger log = Logger.getLogger(LoggedInUserService.class);
+    private final static Logger log = Logger.getLogger(LoggedInUserService.class);
     
 	public String getLoggedInUser() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final String username = userDetails.getUsername();
         log.info("Logged in user is: " + username);
 		return username;

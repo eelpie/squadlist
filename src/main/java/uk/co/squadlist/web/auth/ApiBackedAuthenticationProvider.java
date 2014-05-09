@@ -1,6 +1,5 @@
 package uk.co.squadlist.web.auth;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
@@ -15,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.controllers.InstanceConfig;
+import uk.co.squadlist.web.model.Member;
+
+import com.google.common.collect.Lists;
 
 @Component("authenticationProvider")
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
@@ -40,11 +42,12 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
     	final String password = authToken.getCredentials().toString();
     	log.info("Attempting to auth user: " + username);
-		if (api.auth(instanceConfig.getInstance(), username, password)) {
+		final Member authenticatedMember = api.auth(instanceConfig.getInstance(), username, password);
+		if (authenticatedMember != null) {
 			log.info("Auth successful for user: " + username);
-			Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+			Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			return new org.springframework.security.core.userdetails.User(username, password, authorities);    		
+			return new org.springframework.security.core.userdetails.User(authenticatedMember.getId(), password, authorities);    		
 		}
 		
 		log.info("Auth attempt unsuccessful for user: " + username);		
