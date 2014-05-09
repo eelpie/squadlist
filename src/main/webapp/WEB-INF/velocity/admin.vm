@@ -48,10 +48,7 @@
 		#else
 			<p>No availability options have been added.</p>
 		#end
-	</div>
-	
-	<a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a>
-		
+	</div>		
 </div>
 	
 </div>

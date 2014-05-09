@@ -1,16 +1,18 @@
 #macro(outingsNav $action)
-	<div class="span2 bs-docs-sidebar">	
-		#if($outingMonths && !$outingMonths.keySet().isEmpty())
-			<p>			
+	<div class="span2 bs-docs-sidebar">
+		<ul class="nav nav-list bs-docs-sidenav">
+			<li>
+				<a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a>
+			</li>
+		</ul>
+						
+		#if($outingMonths && !$outingMonths.keySet().isEmpty())		
 			<ul class="nav nav-list bs-docs-sidenav">
 				<li><a href="$action">Current</a></li>
-			</ul>
-			<p>		
+			</ul>			
 			<ul class="nav nav-list bs-docs-sidenav">
 				#foreach($outingMonth in $outingMonths.keySet())
-					<li><a href="$action?month=$outingMonth">$dateFormatter.month($outingMonth) 
-							&nbsp;<span class="badge">$outingMonths.get($outingMonth)</span>
-						</a></li>
+					<li><a href="$urlBuilder.outings($squad, $outingMonth)">$dateFormatter.month($outingMonth)</a></li>
 				#end
 			</ul>
 		#end

@@ -67,8 +67,7 @@ public class MembersController {
 				null,
 				initialPassword);
 		
-		final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
-		return mv;
+		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
