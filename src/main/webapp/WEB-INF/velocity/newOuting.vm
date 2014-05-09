@@ -27,7 +27,7 @@
 			#springBind("outing")
 			#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 											
-			<form action="/outings/new" method="POST">
+			<form action="$urlBuilder.applicationUrl('/outings/new')" method="POST">
 				<div class="control-group">			
 					<label class="control-label" for="${status.expression}">Date</label>
 					<div class="controls">
