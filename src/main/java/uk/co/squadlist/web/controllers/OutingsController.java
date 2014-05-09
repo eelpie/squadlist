@@ -124,7 +124,7 @@ public class OutingsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-		  	
+		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
 		return mv;
 	}
