@@ -63,7 +63,7 @@ public class OutingsController {
     	final ModelAndView mv = new ModelAndView("outings");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
     	
-    	final Squad squadToShow = resolveSquad(squadId);    	
+    	final Squad squadToShow = resolveSquad(squadId);	// TODO null safe	
 
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();		
@@ -79,7 +79,7 @@ public class OutingsController {
 		mv.addObject("endDate", endDate);
     	    	
     	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(), startDate, endDate));
-    	mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+    	mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), squadToShow.getId()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	return mv;
     }
@@ -93,7 +93,7 @@ public class OutingsController {
     	
     	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
-		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), outing.getSquad().getId()));
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
@@ -122,7 +122,6 @@ public class OutingsController {
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("outingMonths", api.getMemberOutingMonths(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
 		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
