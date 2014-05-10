@@ -69,14 +69,17 @@ public class OutingsController {
     	final Squad squadToShow = resolveSquad(squadId);	// TODO null safe	
 
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();		
+		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+		
+		String title = squadToShow.getName() + " outings";
 		if (month != null) {
     		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
     		startDate = monthDateTime.toDate();
     		endDate = monthDateTime.plusMonths(1).toDate();
-			//heading = heading + " - " + dateFormatter.fullMonthYear(startDate);
+    		title =  squadToShow.getName() + " outings - " + dateFormatter.fullMonthYear(startDate);
     	}
-		
+
+		mv.addObject("title", title);
 		mv.addObject("squad", squadToShow);
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
