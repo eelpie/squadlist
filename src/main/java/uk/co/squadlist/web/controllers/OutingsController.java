@@ -1,6 +1,8 @@
 package uk.co.squadlist.web.controllers;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
@@ -79,7 +82,7 @@ public class OutingsController {
 		mv.addObject("endDate", endDate);
     	    	
     	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(), startDate, endDate));
-    	mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), squadToShow.getId()));
+    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	return mv;
     }
@@ -93,7 +96,7 @@ public class OutingsController {
     	
     	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
-		mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), outing.getSquad().getId()));
+		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
@@ -146,6 +149,22 @@ public class OutingsController {
     		return api.getSquad(instanceConfig.getInstance(), squadId);
     	}    	
     	return preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
+	}
+	
+	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
+		final Map<String, Integer> squadOutingMonths = api.getSquadOutingMonths(instanceConfig.getInstance(), squad.getId());
+		
+		final Map<String, Integer> currentAndFutureOutingMonths = Maps.newTreeMap();		
+		final Iterator<String> iterator = squadOutingMonths.keySet().iterator();
+		final DateTime firstMonthToShow = DateHelper.startOfCurrentOutingPeriod().minusMonths(1);
+		while(iterator.hasNext()) {
+			final String month = iterator.next();
+			if (ISODateTimeFormat.yearMonth().parseDateTime(month).isAfter(firstMonthToShow)) {
+				currentAndFutureOutingMonths.put(month, squadOutingMonths.get(month));
+			}
+		}
+		
+		return currentAndFutureOutingMonths;
 	}
 	
     @ExceptionHandler(UnknownOutingException.class)
