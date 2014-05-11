@@ -36,7 +36,11 @@
 				#foreach( $member in $members )			
 					<tr>
 				    	<td>#parse('includes/member.vm')</td>
-				    	<td>$!member.dateOfBirth</td>		    	
+				    	<td>
+				    		#if($member.dateOfBirth)
+				    			$dateFormatter.dayMonthYear($member.dateOfBirth)
+				    		#end
+				    	</td>
 				    	<td>$!member.weight</td>
 				    	<td>$!member.rowingPoints</td>
 						<td>$!member.scullingPoints</td>
