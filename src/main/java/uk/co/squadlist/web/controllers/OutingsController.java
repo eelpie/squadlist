@@ -28,7 +28,9 @@ import com.google.common.collect.Maps;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
+import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -125,7 +127,7 @@ public class OutingsController {
     	return mv;
 	}
 	
-	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) {
+	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
@@ -147,7 +149,7 @@ public class OutingsController {
     	return mv;
     }
 	
-	private Squad resolveSquad(String squadId) {
+	private Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
     	if(!Strings.isNullOrEmpty(squadId)) {
     		return api.getSquad(instanceConfig.getInstance(), squadId);
     	}    	

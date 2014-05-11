@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.controllers.InstanceConfig;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 
@@ -22,7 +23,7 @@ public class PreferedSquadService {
 		this.instanceConfig = instanceConfig;
 	}
 	
-	public Squad resolvedPreferedSquad(String loggedInUser) {
+	public Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {
 		final Member loggedInMember = api.getMemberDetails(instanceConfig.getInstance(), loggedInUser);
     	if (!loggedInMember.getSquads().isEmpty()) {
     		return loggedInMember.getSquads().iterator().next();

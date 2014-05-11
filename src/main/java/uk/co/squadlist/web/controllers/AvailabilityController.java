@@ -14,6 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -76,7 +78,7 @@ public class AvailabilityController {
 		return mv;		
     }
 	
-	private Squad resolveSquad(String squadId) {
+	private Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
     	if(!Strings.isNullOrEmpty(squadId)) {
     		return api.getSquad(instanceConfig.getInstance(), squadId);
     	}    	
