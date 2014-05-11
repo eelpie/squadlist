@@ -65,7 +65,8 @@ public class MembersController {
 				memberDetails.getLastName(),
 				squad,
 				null,
-				initialPassword);
+				initialPassword,
+				null);
 		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
     }
