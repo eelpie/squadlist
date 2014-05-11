@@ -1,38 +1,42 @@
 #parse('includes/head.vm')
 #navTabs('Details')
 
-<div class="row">
+<div class="container-fluid">
 
-	<div class="span2 bs-docs-sidebar">
+	<div class="row">
+		<div class="col-md-12">
+		<h4>$member.firstName $member.lastName</h4>
+		</div>
 	</div>
+	<hr/>
 
-	<div class="span9">
-		<h3>$member.firstName $member.lastName</h3>
-		<hr/>
-		
-		<p>$member.firstName $member.lastName</p>
-		<p>$!member.gender</p>
-		<p>$!member.dateOfBirth</p>
-	
-		<p>Email address: $!member.emailAddress</p>
-		<p>Contact number: $!member.contactNumber</p>
-	
-		<p>Weight: $!member.weight</p>
-		
-		<p>Registration number: $!member.registrationNumber</p>
-		<p>Rowing points: $!member.rowingPoints</p>
-		<p>Sculling points: $!member.scullingPoints</p>
-			
-		Squads:
-		<ul>
-		#foreach($squad in $member.squads)
-		 	<li>$squad.name</li>
+	<p>$member.firstName $member.lastName</p>
+	<p>$!member.gender</p>
+	<p>Date of birth: #if($member.dateOfBirth)
+			$dateFormatter.dayMonthYear($member.dateOfBirth)
 		#end
-		</ul>
+	</p>
+	<p>Email address: $!member.emailAddress</p>
+	<p>Contact number: $!member.contactNumber</p>
+
+	<p>Weight: $!member.weight</p>
+	
+	<p>Registration number: $!member.registrationNumber</p>
+	<p>Rowing points: $!member.rowingPoints</p>
+	<p>Sculling points: $!member.scullingPoints</p>
 		
-		<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
+	Squads:
+	<ul>
+	#foreach($squad in $member.squads)
+	 	<li>$squad.name</li>
+	#end
+	</ul>
+	
+	<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
 		
 	</div>
 </div>
-</div>
+<hr/>
+
+#parse('includes/footer.vm')
 
