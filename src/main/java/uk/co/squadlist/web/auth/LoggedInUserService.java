@@ -13,7 +13,7 @@ public class LoggedInUserService {
 	public String getLoggedInUser() {
 		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final String username = userDetails.getUsername();
-        log.info("Logged in user is: " + username);
+        log.debug("Logged in user is: " + username);
 		return username;
 	}
 	
