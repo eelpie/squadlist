@@ -123,8 +123,8 @@ public class OutingsController {
 		}		
 		
     	final Outing outing = api.createOuting(instanceConfig.getInstance(), outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
-		ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
-    	return mv;
+		
+    	return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
 	}
 	
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException {
