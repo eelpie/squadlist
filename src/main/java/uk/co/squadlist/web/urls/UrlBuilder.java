@@ -18,7 +18,7 @@ public class UrlBuilder {
 	}
 	
 	public String staticUrl(String uri) {
-		return applicationUrl(uri);	// TODO don't serve statics from the application root
+		return applicationUrl("/static/") + uri;
 	}
 	
 	public String memberUrl(Member member) {
