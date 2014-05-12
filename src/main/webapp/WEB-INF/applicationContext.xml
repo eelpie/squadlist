@@ -21,7 +21,8 @@
 	<util:properties id="squadlist" location="classpath:squadlist.properties" />
 		        
 	<security:http auto-config="true">
-		<security:intercept-url pattern="/favicon.ico" access="IS_AUTHENTICATED_ANONYMOUSLY" />	
+		<security:intercept-url pattern="/favicon.ico" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<security:intercept-url pattern="/static/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<security:intercept-url pattern="/login**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<security:intercept-url pattern="/reset-password" access="IS_AUTHENTICATED_ANONYMOUSLY" />		
 		<security:intercept-url pattern="/**" access="ROLE_USER" />

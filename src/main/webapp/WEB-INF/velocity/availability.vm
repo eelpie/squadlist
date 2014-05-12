@@ -50,7 +50,7 @@
 											#if($status == '') 
 												TBA
 											#else
-												<span class="label label-info">$status</span>
+												<span class="label label-info $cssHelper.classFor($status)">$status</span>
 											#end
 										</td>
 									#end

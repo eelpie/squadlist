@@ -32,7 +32,7 @@
 				   		</td>
 				   		<td>
 							#if($availability.get(${member.id}))
-								<span class="label label-info pull-right">$availability.get(${member.id})</span>
+								<span class="label label-info pull-right $cssHelper.classFor($availability.get(${member.id}))">$availability.get(${member.id})</span>
 							#else
 								<span class="pull-right">TBA</span>
 							#end

@@ -38,11 +38,12 @@
 											#if ($outingAvailability.availability == $option.label) 
 												#set($selected = 'SELECTED')
 											#end
-											<option value="$option.label" $selected>$option.label</option>	
+											<option value="$option.label" $selected>$option.label</option>
 										#end
 									</select>								
 									#if ($outingAvailability.availability) 						
-										<span id="currentAvailability${outingAvailability.outing.id}" class="label label-info pull-right">$outingAvailability.availability</span>
+										<span id="currentAvailability${outingAvailability.outing.id}" 
+											class="label label-info pull-right $cssHelper.classFor($outingAvailability.availability)">$outingAvailability.availability</span>
 									#else
 						 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
 									#end				
