@@ -21,9 +21,9 @@ import com.google.common.collect.Lists;
 @Component("authenticationProvider")
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 	
-	private static Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
+	private final static Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
 	
-    private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
+    private final static String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
     
     private final SquadlistApi api;
     private final InstanceConfig instanceConfig;    
