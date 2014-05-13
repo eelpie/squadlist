@@ -109,6 +109,25 @@ public class OutingsController {
     	return mv;
     }
 	
+	@RequestMapping("/outings/{id}/edit")
+    public ModelAndView outingEdit(@PathVariable String id) throws Exception {
+    	ModelAndView mv = new ModelAndView("editOuting");
+    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
+    	
+    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
+    	
+    	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
+		mv.addObject("outing", outing);
+		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
+		mv.addObject("squad", outing.getSquad());
+    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
+    	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+    	return mv;
+    }
+	
+	
+	
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
 		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
