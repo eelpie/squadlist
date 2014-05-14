@@ -15,7 +15,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
@@ -50,8 +49,8 @@ public class SquadsController {
 		
 		try {
 			api.createSquad(instanceConfig.getInstance(), squadDetails.getName());
-			final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
-			return mv;
+			
+			return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 			
 		} catch (InvalidSquadException e) {
 			log.info("Invalid squad");
@@ -61,9 +60,7 @@ public class SquadsController {
     }
 	
 	private ModelAndView renderNewSquadForm() {
-		ModelAndView mv = new ModelAndView("newSquad");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		return mv;
+		return new ModelAndView("newSquad").addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 	}
 	
 }
