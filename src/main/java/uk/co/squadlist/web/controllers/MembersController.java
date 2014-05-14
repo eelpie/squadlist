@@ -17,6 +17,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
+import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
@@ -69,17 +70,24 @@ public class MembersController {
 				null);
 		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
+	}
+	
+	@RequestMapping(value="/change-password", method=RequestMethod.GET)
+    public ModelAndView changePassword() throws Exception {
+		final ModelAndView mv = new ModelAndView("changePassword");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	mv.addObject("changePassword", new ChangePassword());
+    	return mv;
     }
 	
-	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView editMember(@PathVariable String id) throws Exception {
-    	Member member = api.getMemberDetails(instanceConfig.getInstance(), id);
+	@RequestMapping(value="/change-password", method=RequestMethod.POST)
+    public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
+    	Member member = api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser());
 		
-    	ModelAndView mv = new ModelAndView("editMemberDetails");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", member);
-    	mv.addObject("memberId", id);
-    	return mv;
+    	log.info("Requesting change password for member: " + member.getId());
+    	api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
+    	
+    	return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)

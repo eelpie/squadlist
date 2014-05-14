@@ -69,6 +69,10 @@ public class UrlBuilder {
 		return memberUrl(memberId) + "/edit";
 	}
 	
+	public String changePassword() {
+		return applicationUrl("/change-password");
+	}
+	
 	private String getBaseUrl() {
 		return baseUrl;
 	}
