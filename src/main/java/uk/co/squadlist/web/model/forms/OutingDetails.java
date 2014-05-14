@@ -20,6 +20,7 @@ public class OutingDetails {
     	this.setMonth(defaultOutingDateTime.getMonthOfYear());
     	this.setDay(defaultOutingDateTime.getDayOfMonth());
     	this.setHour(defaultOutingDateTime.getHourOfDay());
+    	this.setMinute(defaultOutingDateTime.getMinuteOfHour());
 	}
 	
 	public LocalDateTime toLocalTime() {
