@@ -33,10 +33,6 @@ public class UrlBuilder {
 		return applicationUrl("/member/new");
 	}
 	
-	public String squadUrl(Squad squad) {
-		return applicationUrl("/squad/" + squad.getId());
-	}
-	
 	public String newSquadUrl() {
 		return applicationUrl("/squad/new");
 	}

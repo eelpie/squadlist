@@ -49,8 +49,8 @@ public class SquadsController {
 		}
 		
 		try {
-			Squad newSquad = api.createSquad(instanceConfig.getInstance(), squadDetails.getName());
-			final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.squadUrl(newSquad)));
+			api.createSquad(instanceConfig.getInstance(), squadDetails.getName());
+			final ModelAndView mv = new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 			return mv;
 			
 		} catch (InvalidSquadException e) {
