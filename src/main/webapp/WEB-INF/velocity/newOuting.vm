@@ -53,7 +53,7 @@
 						#springBind("outing.year")					
 						<select name="${status.expression}" class="form-control">
 							#foreach($year in $dateHelper.years)
-								<option value="$year" #if($years == $outing.years) SELECTED #end>$year
+								<option value="$year" #if($year == $outing.years) SELECTED #end>$year
 							#end
 						</select>
 						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
