@@ -25,15 +25,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -43,6 +41,9 @@ import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 @Controller
 public class OutingsController {
@@ -128,7 +129,7 @@ public class OutingsController {
 		}		
 		
 		try {
-			final Outing newOuting = buildOutingFromOutingDetails(outingDetails);			
+			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance(instanceConfig.getInstance()));			
 			final Outing outing = api.createOuting(instanceConfig.getInstance(), newOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
 			
@@ -157,7 +158,7 @@ public class OutingsController {
 			return renderEditOutingForm(outingDetails, outing);
 		}
 		try {
-			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails);			
+			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance(instanceConfig.getInstance()));
 			updatedOuting.setId(id);
 			
 			api.updateOuting(instanceConfig.getInstance(), updatedOuting);
@@ -230,9 +231,9 @@ public class OutingsController {
     public void unknownUser(UnknownOutingException e) {
     }
     
-	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails) throws UnknownSquadException {
+	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
 		final Outing newOuting = new Outing();
-		newOuting.setDate(outingDetails.toLocalTime().toDateTime(DateTimeZone.UTC).toDate());
+		newOuting.setDate(outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate());
 		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(instanceConfig.getInstance(), outingDetails.getSquad()) : null);	// TODO validation step
 		newOuting.setNotes(outingDetails.getNotes());	// TODO flatten these lines into a constructor
 		return newOuting;
