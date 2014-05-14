@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,30 +105,10 @@ public class OutingsController {
 		mv.addObject("outing", outing);
 		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	return mv;
     }
-	
-	@RequestMapping("/outings/{id}/edit")
-    public ModelAndView outingEdit(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("editOuting");
-    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
-    	
-    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
-    	
-    	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
-		mv.addObject("outing", outing);
-		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
-		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
-    	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-    	return mv;
-    }
-	
-	
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
@@ -143,8 +124,48 @@ public class OutingsController {
 		}		
 		
 		try {
-			final Outing outing = api.createOuting(instanceConfig.getInstance(), outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
+			final Outing newOuting = buildOutingFromOutingDetails(outingDetails);			
+			final Outing outing = api.createOuting(instanceConfig.getInstance(), newOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
+			
+		} catch (Exception e) {
+			result.addError(new ObjectError("outing", "Invalid outing"));
+			return renderNewOutingForm(outingDetails);
+		}
+	}
+	
+	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.GET)
+    public ModelAndView outingEdit(@PathVariable String id) throws Exception {
+    	ModelAndView mv = new ModelAndView("editOuting");
+    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
+    	
+    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
+
+    	final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
+    	outingDetails.setSquad(outing.getSquad().getId());
+    	outingDetails.setNotes(outing.getNotes());
+    	
+    	mv.addObject("outing", outingDetails);
+    	
+		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
+		mv.addObject("squad", outing.getSquad());
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+    	return mv;
+    }
+	
+	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
+    public ModelAndView editOutingSubmit(@PathVariable String id,
+    		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+		api.getOuting(instanceConfig.getInstance(), id);
+		if (result.hasErrors()) {
+			return renderNewOutingForm(outingDetails);
+		}
+		try {
+			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails);			
+			updatedOuting.setId(id);
+			
+			api.updateOuting(instanceConfig.getInstance(), updatedOuting);
+			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 			
 		} catch (Exception e) {
 			result.addError(new ObjectError("outing", "Invalid outing"));
@@ -201,5 +222,13 @@ public class OutingsController {
     @ResponseStatus(value = org.springframework.http.HttpStatus.NOT_FOUND, reason = "No outing was found with the requested id")
     public void unknownUser(UnknownOutingException e) {
     }
+    
+	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails) throws UnknownSquadException {
+		final Outing newOuting = new Outing();
+		newOuting.setDate(outingDetails.toLocalTime().toDateTime(DateTimeZone.UTC).toDate());
+		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(instanceConfig.getInstance(), outingDetails.getSquad()) : null);	// TODO validation step
+		newOuting.setNotes(outingDetails.getNotes());	// TODO flatten these lines into a constructor
+		return newOuting;
+	}
     
 }
