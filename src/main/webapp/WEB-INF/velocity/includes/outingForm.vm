@@ -1,8 +1,6 @@
 #springBind("outing")
 #foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
-								
-<form class="form-horizontal" role="form" action="$urlBuilder.applicationUrl('/outings/new')" method="POST">
-							
+															
 	<div class="form-group">
 	    <label for="inputEmail3" class="col-sm-2 control-label">Date</label>
 	    <div class="col-sm-2">
@@ -94,5 +92,3 @@
 			<a href="$urlBuilder.applicationUrl('/outings')"><button class="btn btn-primary" type="button">Cancel</button></a>					
 		</div>
 	</div>
-	
-</form>

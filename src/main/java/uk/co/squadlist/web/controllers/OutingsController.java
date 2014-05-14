@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -45,6 +46,8 @@ import uk.co.squadlist.web.views.JsonView;
 
 @Controller
 public class OutingsController {
+	
+	private final static Logger log = Logger.getLogger(OutingsController.class);
 	
 	private final LoggedInUserService loggedInUserService;
 	private final SquadlistApi api;
@@ -135,30 +138,22 @@ public class OutingsController {
 	}
 	
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView outingEdit(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("editOuting");
-    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
-    	
+    public ModelAndView outingEdit(@PathVariable String id) throws Exception {    	
     	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
 
     	final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
     	outingDetails.setSquad(outing.getSquad().getId());
     	outingDetails.setNotes(outing.getNotes());
     	
-    	mv.addObject("outing", outingDetails);
-    	
-		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
-		mv.addObject("squad", outing.getSquad());
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-    	return mv;
+    	return renderEditOutingForm(outingDetails, outing);
     }
 	
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
     public ModelAndView editOutingSubmit(@PathVariable String id,
     		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-		api.getOuting(instanceConfig.getInstance(), id);
+		final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
 		if (result.hasErrors()) {
-			return renderNewOutingForm(outingDetails);
+			return renderEditOutingForm(outingDetails, outing);
 		}
 		try {
 			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails);			
@@ -168,8 +163,9 @@ public class OutingsController {
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 			
 		} catch (Exception e) {
-			result.addError(new ObjectError("outing", "Invalid outing"));
-			return renderNewOutingForm(outingDetails);
+			log.error(e);
+			result.addError(new ObjectError("outing", "Unknown exception"));
+			return renderEditOutingForm(outingDetails, outing);
 		}
 	}
 	
@@ -179,6 +175,16 @@ public class OutingsController {
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
 		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
+		return mv;
+	}
+	
+	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException {
+		final ModelAndView mv = new ModelAndView("editOuting");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
+		mv.addObject("outing", outingDetails);
+    	mv.addObject("outingObject", outing);
 		return mv;
 	}
 	
