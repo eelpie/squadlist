@@ -12,6 +12,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -141,9 +142,14 @@ public class OutingsController {
 			return renderNewOutingForm(outingDetails);
 		}		
 		
-    	final Outing outing = api.createOuting(instanceConfig.getInstance(), outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
-		
-    	return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
+		try {
+			final Outing outing = api.createOuting(instanceConfig.getInstance(), outingDetails.getSquad(), outingDetails.toLocalTime(), outingDetails.getNotes());
+			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
+			
+		} catch (Exception e) {
+			result.addError(new ObjectError("outing", "Invalid outing"));
+			return renderNewOutingForm(outingDetails);
+		}
 	}
 	
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException {
