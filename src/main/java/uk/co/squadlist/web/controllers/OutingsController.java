@@ -110,6 +110,7 @@ public class OutingsController {
 		mv.addObject("squad", outing.getSquad());
     	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
     	return mv;
     }
 	
