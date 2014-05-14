@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -74,19 +75,18 @@ public class MembersController {
 	
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
-		final ModelAndView mv = new ModelAndView("changePassword");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("changePassword", new ChangePassword());
-    	return mv;
+		return renderChangePasswordForm(new ChangePassword());
     }
 	
 	@RequestMapping(value="/change-password", method=RequestMethod.POST)
-    public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
-    	Member member = api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser());
+    public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {		
+		if (result.hasErrors()) {
+			return renderChangePasswordForm(changePassword);
+		}
 		
+		final Member member = api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser());
     	log.info("Requesting change password for member: " + member.getId());
-    	api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
-    	
+    	api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());    	
     	return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     }
 	
@@ -123,6 +123,14 @@ public class MembersController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", id);
+    	return mv;
+	}
+	
+	private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
+		final ModelAndView mv = new ModelAndView("changePassword");
+		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		mv.addObject("member", api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+    	mv.addObject("changePassword", changePassword);
     	return mv;
 	}
 	
