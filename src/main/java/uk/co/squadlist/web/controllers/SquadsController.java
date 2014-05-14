@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +18,6 @@ import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
-import uk.co.squadlist.web.views.DateHelper;
 
 @Controller
 public class SquadsController {
@@ -38,17 +36,6 @@ public class SquadsController {
 		this.urlBuilder = urlBuilder;
 		this.instanceConfig = instanceConfig;
 	}
-	
-	@RequestMapping("/squad/{id}")
-    public ModelAndView index(@PathVariable String id) throws Exception {
-		final ModelAndView mv = new ModelAndView("squad");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-		mv.addObject("squad", api.getSquad(instanceConfig.getInstance(), id));
-    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), id));
-    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), id, DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.endOfCurrentOutingPeriod().toDate()));
-    	return mv;
-    }
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
     public ModelAndView newSquad(@ModelAttribute("squad") SquadDetails squadDetails) throws Exception {    	
