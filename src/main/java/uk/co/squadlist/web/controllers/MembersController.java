@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,9 +86,15 @@ public class MembersController {
 		}
 		
 		final Member member = api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser());
-    	log.info("Requesting change password for member: " + member.getId());
-    	api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());    	
-    	return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
+    	
+		log.info("Requesting change password for member: " + member.getId());
+    	if (api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {	
+    		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
+    	} else {
+    		result.addError(new ObjectError("changePassword", "Change password failed"));
+    		return renderChangePasswordForm(changePassword);
+    	}
+    	
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
