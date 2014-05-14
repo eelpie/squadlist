@@ -1,50 +1,62 @@
 #parse('includes/head.vm')
 #navTabs('Admin')
 
-<div class="row-fluid">
+<div class="container-fluid">
 
-	<div class="span5">
-		<h3>Members</h3>
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>Admin</h4>
+		</div>		
+	</div>
+	<hr/>
 
-		<ul>
-		#foreach( $member in $members )
-			<li>#parse('includes/member.vm')</li>
-		#end
-		</ul>
+	<div class="row">
+		<div class="col-xs-6">				
+			<h4>Members</h4>
+			
+			<ul>
+			#foreach( $member in $members )
+				<li>#parse('includes/member.vm')</li>
+			#end
+			</ul>
+					
+			<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>		
+		</div>
+			
+		<div class="col-xs-6">
 		
-		<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
+			<h4>Squads</h4>			
+			#if($squads && !$squads.isEmpty())
+				<ul>
+					#foreach( $squad in $squads )
+						<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
+					#end
+				</ul>
+			#else
+				<p>No squads have been added.</p>
+			#end
 		
+			<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>	
+			<hr/>
+			
+			
+			<h4>Availability options</h4>
+		
+			#if($availabilityOptions && !$availabilityOptions.isEmpty())
+				<ul>
+					#foreach($availabilityOption in $availabilityOptions )
+						<li>
+							<span class="label label-info $cssHelper.classFor($availabilityOption.label)">$availabilityOption.label</span>
+						</li>								
+					#end
+				</ul>
+			#else
+				<p>No availability options have been added.</p>
+			#end
+		</div>
 	</div>
 	
-	<div class="span5">
-		<h3>Squads</h3>
-			
-		#if($squads && !$squads.isEmpty())
-			<ul>
-				#foreach( $squad in $squads )
-					<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
-				#end
-			</ul>
-		#else
-			<p>No squads have been added.</p>
-		#end
-		
-		<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>
-		
-		<hr/>			
-			
-		<h3>Availability options</h3>
-		
-		#if($availabilityOptions && !$availabilityOptions.isEmpty())
-			<ul>
-				#foreach($availabilityOption in $availabilityOptions )
-					<li>$availabilityOption.label</li>
-				#end
-			</ul>
-		#else
-			<p>No availability options have been added.</p>
-		#end
-	</div>		
 </div>
-	
-</div>
+<hr/>
+
+#parse('includes/footer.vm')
