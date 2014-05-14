@@ -108,7 +108,8 @@
 				<div class="form-group">
 				    <label for="notes" class="col-sm-2 control-label">Notes</label>
 				    <div class="col-sm-10">
-				      	<input class="form-control" id="notes" placeholder="Notes">
+				    	#springBind("outing.notes")				    
+				      	<input class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="Notes">
 				      	#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 				    </div>
 				</div>
