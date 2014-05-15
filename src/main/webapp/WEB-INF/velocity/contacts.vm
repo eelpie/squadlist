@@ -36,7 +36,9 @@
 				    		#parse('includes/member.vm')
 				    	</td>
 				    	<td>
-				    		$!member.emailAddress
+				    		#if($member.emailAddress)
+					    		<a href="mailto:$member.emailAddress">$member.emailAddress</a>
+					    	#end
 				    	</td>
 						<td>
 							#if($member.contactNumber)
