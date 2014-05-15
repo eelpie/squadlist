@@ -1,63 +1,70 @@
 #parse('includes/head.vm')
 #navTabs('')
 
-<div class="row">
+<div class="container-fluid">
 
-	<div class="span2 bs-docs-sidebar">
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>$member.firstName $member.lastName</h4>
+		</div>		
 	</div>
+	<hr/>
 	
-	<div class="span9">
-		<h3>$member.firstName $member.lastName</h3>
+	<div class="row">
+	
+		<div class="col-md-12">
 
-		<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">		
-			#springBind("member.firstName")
-			<div class="control-group">
-				<label class="control-label" for="${status.expression}">First name</label>
-				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}">
-					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end					
+			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">		
+				#springBind("member.firstName")
+				<div class="control-group">
+					<label class="control-label" for="${status.expression}">First name</label>
+					<div class="controls">
+						<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}" class="form-control">
+						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end					
+					</div>
 				</div>
-			</div>
-			
-			#springBind("member.lastName")			
-			<div class="control-group">
-				<label class="control-label" for="${status.expression}">Last name</label>
-				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}">
-					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end					
-				</div>
-			</div>
-			
-			#springBind("member.emailAddress")			
-			<div class="control-group">
-				<label class="control-label" for="${status.expression}">Email address</label>
-				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}">
-					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
-				</div>
-			</div>
-			
-			#springBind("member.contactNumber")			
-			<div class="control-group">
-				<label class="control-label" for="${status.expression}">Contact number</label>
-				<div class="controls">
-					<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}">
-					#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
-				</div>
-			</div>
-			
-			#textInput('member.registrationNumber', 'Registration number')
-			#textInput('member.rowingPoints', 'Rowing points')
-			#textInput('member.scullingPoints', 'Sculling points')			
-																			
-			<div class="control-group">
-				<div class="controls">
-					<button type="submit" class="btn">Save details</button>
-					<a href="$urlBuilder.memberUrl($memberId)"><button class="btn btn-primary" type="button">Cancel</button></a>					
-				</div>
-			</div>
-		</form>
 				
+				#springBind("member.lastName")			
+				<div class="control-group">
+					<label class="control-label" for="${status.expression}">Last name</label>
+					<div class="controls">
+						<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}" class="form-control">
+						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end					
+					</div>
+				</div>
+				
+				#springBind("member.emailAddress")			
+				<div class="control-group">
+					<label class="control-label" for="${status.expression}">Email address</label>
+					<div class="controls">
+						<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}" class="form-control">
+						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end
+					</div>
+				</div>
+				
+				#springBind("member.contactNumber")			
+				<div class="control-group">
+					<label class="control-label" for="${status.expression}">Contact number</label>
+					<div class="controls">
+						<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}" class="form-control">
+						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end
+					</div>
+				</div>
+				
+				#textInput('member.registrationNumber', 'Registration number')
+				#textInput('member.rowingPoints', 'Rowing points')
+				#textInput('member.scullingPoints', 'Sculling points')			
+																				
+				<div class="control-group">
+					<div class="controls">
+						<button type="submit" class="btn">Save details</button>
+						<a href="$urlBuilder.memberUrl($memberId)"><button class="btn btn-primary" type="button">Cancel</button></a>					
+					</div>
+				</div>
+			</form>		
+		</div>
 	</div>
 </div>
-</div>
+<hr/>
+
+#parse('includes/footer.vm')

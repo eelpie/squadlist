@@ -90,14 +90,20 @@ public class MembersController {
     	} else {
     		result.addError(new ObjectError("changePassword", "Change password failed"));
     		return renderChangePasswordForm(changePassword);
-    	}
-    	
+    	}    	
+    }
+	
+	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
+    public ModelAndView updateMember(@PathVariable String id) throws Exception {	
+		final Member member = api.getMemberDetails(id);
+		
+		return renderEditMemberDetailsForm(member);
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView updateMember(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+    public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
 		if (result.hasErrors()) {
-			return renderEditMemberDetailsForm(memberDetails, id);
+			return renderEditMemberDetailsForm(memberDetails);
 		}
 		
 		final Member member = api.getMemberDetails(id);
@@ -122,11 +128,10 @@ public class MembersController {
 		return mv;
 	}
 	
-	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String id) {
+	private ModelAndView renderEditMemberDetailsForm(Object memberDetails) {
 		ModelAndView mv = new ModelAndView("editMemberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("member", memberDetails);
-    	mv.addObject("memberId", id);
     	return mv;
 	}
 	
