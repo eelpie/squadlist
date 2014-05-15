@@ -19,7 +19,7 @@
 	<context:component-scan base-package="uk.co.squadlist" />
 	
 	<util:properties id="squadlist" location="classpath:squadlist.properties" />
-		        
+			        
 	<security:http auto-config="true">
 		<security:intercept-url pattern="/favicon.ico" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<security:intercept-url pattern="/static/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -35,5 +35,7 @@
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider ref="authenticationProvider" />
 	</security:authentication-manager>
+	
+	<bean id="squadlistApi" factory-bean="squadlistApiFactory" factory-method="create" />
 	
 </beans>
