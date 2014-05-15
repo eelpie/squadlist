@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
@@ -14,17 +14,14 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 @Controller
 public class EntryDetailsController {
 		
-	private final SquadlistApi api;
+	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
-	private final InstanceConfig instanceConfig;
 	private final PreferedSquadService preferedSquadService;
 	
 	@Autowired
-	public EntryDetailsController(SquadlistApi api, LoggedInUserService loggedInUserService,
-			InstanceConfig instanceConfig, PreferedSquadService preferedSquadService) {
+	public EntryDetailsController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, PreferedSquadService preferedSquadService) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
-		this.instanceConfig = instanceConfig;
 		this.preferedSquadService = preferedSquadService;
 	}
 	
@@ -32,12 +29,12 @@ public class EntryDetailsController {
     public ModelAndView entrydetails(@RequestParam(required=false, value="squad") String squadId) throws Exception {
     	final ModelAndView mv = new ModelAndView("entryDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+    	mv.addObject("squads", api.getSquads());
     	
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
-    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squadToShow.getId()));
+    	mv.addObject("members", api.getSquadMembers(squadToShow.getId()));
     	return mv;
     }
 	

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.views.DateHelper;
 
@@ -15,14 +15,12 @@ import uk.co.squadlist.web.views.DateHelper;
 public class MyOutingsController {
 		
 	private final LoggedInUserService loggedInUserService;
-	private final SquadlistApi api;
-	private final InstanceConfig instanceConfig;
+	private final InstanceSpecificApiClient api;
 	
 	@Autowired
-	public MyOutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, InstanceConfig instanceConfig) {
+	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
-		this.instanceConfig = instanceConfig;
 	}
 	
 	@RequestMapping("/")
@@ -31,7 +29,7 @@ public class MyOutingsController {
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
 		mv.addObject("loggedInUser", loggedInUser);
     	
-		mv.addObject("member", api.getMemberDetails(instanceConfig.getInstance(), loggedInUser));
+		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
@@ -39,10 +37,10 @@ public class MyOutingsController {
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
 		
-		mv.addObject("outings", api.getAvailabilityFor(instanceConfig.getInstance(), loggedInUser, startDate, endDate));
+		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
 		
 		mv.addObject("heading", "My outings");		
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions(instanceConfig.getInstance()));
+    	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	return mv;
     }
 	

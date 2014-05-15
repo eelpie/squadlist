@@ -7,19 +7,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.model.Instance;
 
 @Controller
 public class LoginController {
 		
-	private final SquadlistApi api;
-	private final InstanceConfig instanceConfig;
+	private final InstanceSpecificApiClient api;
 	
 	@Autowired
-	public LoginController(SquadlistApi api, InstanceConfig instanceConfig) {
+	public LoginController(InstanceSpecificApiClient api) {
 		this.api = api;
-		this.instanceConfig = instanceConfig;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -33,7 +31,7 @@ public class LoginController {
 	}
 	
 	private Instance getInstance() {
-		return api.getInstance(instanceConfig.getInstance());
+		return api.getInstance();
 	}
 	
 }

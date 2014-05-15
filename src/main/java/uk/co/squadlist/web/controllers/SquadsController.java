@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.model.forms.SquadDetails;
@@ -23,17 +23,15 @@ public class SquadsController {
 	
 	private final static Logger log = Logger.getLogger(SquadsController.class);
 	
-	private final SquadlistApi api;
+	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
 	private final UrlBuilder urlBuilder;
-	private final InstanceConfig instanceConfig;
 	
 	@Autowired
-	public SquadsController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
+	public SquadsController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
-		this.instanceConfig = instanceConfig;
 	}
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
@@ -48,7 +46,7 @@ public class SquadsController {
 		}
 		
 		try {
-			api.createSquad(instanceConfig.getInstance(), squadDetails.getName());
+			api.createSquad(squadDetails.getName());
 			
 			return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 			

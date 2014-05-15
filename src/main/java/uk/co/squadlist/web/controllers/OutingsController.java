@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -50,19 +50,17 @@ public class OutingsController {
 	private final static Logger log = Logger.getLogger(OutingsController.class);
 	
 	private final LoggedInUserService loggedInUserService;
-	private final SquadlistApi api;
+	private final InstanceSpecificApiClient api;
 	private final UrlBuilder urlBuilder;
-	private final InstanceConfig instanceConfig;
 	private final DateFormatter dateFormatter;
 	private final PreferedSquadService preferedSquadService;
 	
 	@Autowired
-	public OutingsController(LoggedInUserService loggedInUserService, SquadlistApi api, UrlBuilder urlBuilder, 
-			InstanceConfig instanceConfig, DateFormatter dateFormatter, PreferedSquadService preferedSquadService) {
+	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, UrlBuilder urlBuilder,
+			DateFormatter dateFormatter, PreferedSquadService preferedSquadService) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
-		this.instanceConfig = instanceConfig;
 		this.dateFormatter = dateFormatter;
 		this.preferedSquadService = preferedSquadService;
 	}
@@ -91,9 +89,9 @@ public class OutingsController {
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
     	    	
-    	mv.addObject("outings", api.getSquadOutings(instanceConfig.getInstance(), squadToShow.getId(), startDate, endDate));
+    	mv.addObject("outings", api.getSquadOutings(squadToShow.getId(), startDate, endDate));
     	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squads", api.getSquads());
     	return mv;
     }
 	
@@ -102,15 +100,15 @@ public class OutingsController {
     	ModelAndView mv = new ModelAndView("outing");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
     	
-    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
+    	final Outing outing = api.getOuting(id);
     	
     	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
 		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("availability", api.getOutingAvailability(instanceConfig.getInstance(), outing.getId()));
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-		mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), outing.getSquad().getId()));
+    	mv.addObject("availability", api.getOutingAvailability(outing.getId()));
+		mv.addObject("squads", api.getSquads());
+		mv.addObject("members", api.getSquadMembers(outing.getSquad().getId()));
     	return mv;
     }
 	
@@ -128,8 +126,8 @@ public class OutingsController {
 		}		
 		
 		try {
-			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance(instanceConfig.getInstance()));			
-			final Outing outing = api.createOuting(instanceConfig.getInstance(), newOuting);
+			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());			
+			final Outing outing = api.createOuting(newOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
 			
 		} catch (Exception e) {
@@ -140,7 +138,7 @@ public class OutingsController {
 	
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.GET)
     public ModelAndView outingEdit(@PathVariable String id) throws Exception {    	
-    	final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
+    	final Outing outing = api.getOuting(id);
 
     	final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
     	outingDetails.setSquad(outing.getSquad().getId());
@@ -152,15 +150,15 @@ public class OutingsController {
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
     public ModelAndView editOutingSubmit(@PathVariable String id,
     		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-		final Outing outing = api.getOuting(instanceConfig.getInstance(), id);
+		final Outing outing = api.getOuting(id);
 		if (result.hasErrors()) {
 			return renderEditOutingForm(outingDetails, outing);
 		}
 		try {
-			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance(instanceConfig.getInstance()));
+			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());
 			updatedOuting.setId(id);
 			
-			api.updateOuting(instanceConfig.getInstance(), updatedOuting);
+			api.updateOuting(updatedOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 			
 		} catch (Exception e) {
@@ -173,7 +171,7 @@ public class OutingsController {
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squads", api.getSquads());
 		mv.addObject("squad", preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
 		return mv;
@@ -182,7 +180,7 @@ public class OutingsController {
 	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException {
 		final ModelAndView mv = new ModelAndView("editOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squads", api.getSquads());
 		mv.addObject("squad", outing.getSquad());
 		mv.addObject("outing", outingDetails);
     	mv.addObject("outingObject", outing);
@@ -194,9 +192,9 @@ public class OutingsController {
     public ModelAndView updateAvailability(
     		@RequestParam(value="outing", required=true) String outingId,
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
-    	final Outing outing = api.getOuting(instanceConfig.getInstance(), outingId);
+    	final Outing outing = api.getOuting(outingId);
     	
-    	OutingAvailability result = api.setOutingAvailability(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser(), outing.getId(), availability);
+    	OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
     	
     	final ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
@@ -204,7 +202,7 @@ public class OutingsController {
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
-		final Map<String, Integer> squadOutingMonths = api.getSquadOutingMonths(instanceConfig.getInstance(), squad.getId());
+		final Map<String, Integer> squadOutingMonths = api.getSquadOutingMonths(squad.getId());
 		
 		final Map<String, Integer> currentAndFutureOutingMonths = Maps.newTreeMap();		
 		final Iterator<String> iterator = squadOutingMonths.keySet().iterator();
@@ -227,7 +225,7 @@ public class OutingsController {
 	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
 		final Outing newOuting = new Outing();
 		newOuting.setDate(outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate());
-		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(instanceConfig.getInstance(), outingDetails.getSquad()) : null);	// TODO validation step
+		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null);	// TODO validation step
 		newOuting.setNotes(outingDetails.getNotes());	// TODO flatten these lines into a constructor
 		return newOuting;
 	}

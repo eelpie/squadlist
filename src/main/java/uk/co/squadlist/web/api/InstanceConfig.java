@@ -1,10 +1,10 @@
-package uk.co.squadlist.web.controllers;
+package uk.co.squadlist.web.api;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class InstanceConfig {
+class InstanceConfig {
 	
 	@Value("#{squadlist['instance']}")
 	private String instance;

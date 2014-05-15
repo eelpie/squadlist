@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
@@ -28,24 +28,22 @@ public class MembersController {
 	
 	private final static Logger log = Logger.getLogger(MembersController.class);
 	
-	private final SquadlistApi api;
+	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
 	private final UrlBuilder urlBuilder;
-	private final InstanceConfig instanceConfig;
 	
 	@Autowired
-	public MembersController(SquadlistApi api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder, InstanceConfig instanceConfig) {
+	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
-		this.instanceConfig = instanceConfig;
 	}
 
 	@RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
     	ModelAndView mv = new ModelAndView("memberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", api.getMemberDetails(instanceConfig.getInstance(), id));
+    	mv.addObject("member", api.getMemberDetails(id));
     	return mv;
     }
 	
@@ -62,9 +60,8 @@ public class MembersController {
 		
 		final String initialPassword = "password";	// TODO add to form
 		
-		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(instanceConfig.getInstance(), memberDetails.getSquad()) : null;	// TODO push to spring
-		final Member newMember = api.createMember(instanceConfig.getInstance(),
-				memberDetails.getFirstName(), 
+		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(memberDetails.getSquad()) : null;	// TODO push to spring
+		final Member newMember = api.createMember(memberDetails.getFirstName(), 
 				memberDetails.getLastName(),
 				squad,
 				null,
@@ -85,10 +82,10 @@ public class MembersController {
 			return renderChangePasswordForm(changePassword);
 		}
 		
-		final Member member = api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser());
+		final Member member = api.getMemberDetails(loggedInUserService.getLoggedInUser());
     	
 		log.info("Requesting change password for member: " + member.getId());
-    	if (api.changePassword(instanceConfig.getInstance(), member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {	
+    	if (api.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {	
     		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     	} else {
     		result.addError(new ObjectError("changePassword", "Change password failed"));
@@ -103,7 +100,7 @@ public class MembersController {
 			return renderEditMemberDetailsForm(memberDetails, id);
 		}
 		
-		final Member member = api.getMemberDetails(instanceConfig.getInstance(), id);
+		final Member member = api.getMemberDetails(id);
 
 		log.info("Updating member details: " + member.getId());		
 		member.setFirstName(memberDetails.getFirstName());
@@ -114,14 +111,14 @@ public class MembersController {
 		member.setScullingPoints(memberDetails.getScullingPoints());
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
 		
-		api.updateMemberDetails(instanceConfig.getInstance(), member);		
+		api.updateMemberDetails(member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
 
 	private ModelAndView renderNewMemberForm() {
 		final ModelAndView mv = new ModelAndView("newMember");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+		mv.addObject("squads", api.getSquads());
 		return mv;
 	}
 	
@@ -136,7 +133,7 @@ public class MembersController {
 	private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
 		final ModelAndView mv = new ModelAndView("changePassword");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-		mv.addObject("member", api.getMemberDetails(instanceConfig.getInstance(), loggedInUserService.getLoggedInUser()));
+		mv.addObject("member", api.getMemberDetails(loggedInUserService.getLoggedInUser()));
     	mv.addObject("changePassword", changePassword);
     	return mv;
 	}

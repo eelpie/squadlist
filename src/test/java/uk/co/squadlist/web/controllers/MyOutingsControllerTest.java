@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.OutingAvailability;
 
@@ -20,9 +20,8 @@ public class MyOutingsControllerTest {
 
 	private static final String MEMBER = "AMEMBER";
 	
-	@Mock private SquadlistApi api;
+	@Mock private InstanceSpecificApiClient api;
 	@Mock private LoggedInUserService loggedInUserService;
-	@Mock private InstanceConfig instanceConfig;
 	
 	@Mock private List<OutingAvailability> membersAvailability;
 
@@ -32,13 +31,13 @@ public class MyOutingsControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		controller = new MyOutingsController(loggedInUserService, api, instanceConfig);
+		controller = new MyOutingsController(loggedInUserService, api);
 	}
 	
 	@Test
 	public void myOutingsShouldShowCurrentOutingsForTodayAndTheNextTwoWeeks() throws Exception {
 		when(loggedInUserService.getLoggedInUser()).thenReturn(MEMBER);
-		when(api.getAvailabilityFor(instanceConfig.getInstance(), MEMBER, DateTime
+		when(api.getAvailabilityFor(MEMBER, DateTime
 						.now().minusDays(1).toDateMidnight().toDate(), DateTime
 						.now().minusDays(1).toDateMidnight().plusWeeks(2).toDate()))
 				.thenReturn(membersAvailability);

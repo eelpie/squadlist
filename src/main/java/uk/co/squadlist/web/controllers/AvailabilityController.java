@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
@@ -25,17 +25,14 @@ import com.google.common.collect.Maps;
 @Controller
 public class AvailabilityController {
 		
-	private SquadlistApi api;
+	private InstanceSpecificApiClient api;
 	private LoggedInUserService loggedInUserService;
-	private InstanceConfig instanceConfig;
 	private PreferedSquadService preferedSquadService;
 	
 	@Autowired
-	public AvailabilityController(SquadlistApi api, LoggedInUserService loggedInUserService,
-			InstanceConfig instanceConfig, PreferedSquadService preferedSquadService) {
+	public AvailabilityController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, PreferedSquadService preferedSquadService) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
-		this.instanceConfig = instanceConfig;
 		this.preferedSquadService = preferedSquadService;
 	}
 	
@@ -44,16 +41,16 @@ public class AvailabilityController {
     		@RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = new ModelAndView("availability");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
+    	mv.addObject("squads", api.getSquads());
     	
     	final Squad squad = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());
 
     	if (squad != null) {
 			mv.addObject("squad", squad);
 			mv.addObject("title", squad.getName() + " availability");
-	    	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squad.getId()));
+	    	mv.addObject("members", api.getSquadMembers(squad.getId()));
 	    	
-			if (api.getSquadMembers(instanceConfig.getInstance(), squad.getId()).isEmpty()) {
+			if (api.getSquadMembers(squad.getId()).isEmpty()) {
 				return mv;			
 			}
 			
@@ -65,12 +62,12 @@ public class AvailabilityController {
 	    		endDate = monthDateTime.plusMonths(1).toDate();
 	    	}
 			
-	    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(instanceConfig.getInstance(), squad.getId(), startDate, endDate);
-	    	final List<Outing> outings = api.getSquadOutings(instanceConfig.getInstance(), squad.getId(), startDate, endDate);
+	    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(squad.getId(), startDate, endDate);
+	    	final List<Outing> outings = api.getSquadOutings(squad.getId(), startDate, endDate);
 
 	    	mv.addObject("availability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
 	    	mv.addObject("outings", outings);
-			mv.addObject("outingMonths", api.getSquadOutingMonths(instanceConfig.getInstance(), squad.getId()));
+			mv.addObject("outingMonths", api.getSquadOutingMonths(squad.getId()));
     	}
 		return mv;		
     }

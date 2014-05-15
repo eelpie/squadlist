@@ -10,7 +10,7 @@ public class LoggedInUserService {
 
     private final static Logger log = Logger.getLogger(LoggedInUserService.class);
     
-	public String getLoggedInUser() {
+	public String getLoggedInUser() {	// TODO rename - is this an id or username
 		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final String username = userDetails.getUsername();
         log.debug("Logged in user is: " + username);
