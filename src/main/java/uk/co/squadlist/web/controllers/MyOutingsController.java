@@ -27,8 +27,7 @@ public class MyOutingsController {
     public ModelAndView outings() throws Exception {
     	ModelAndView mv = new ModelAndView("myOutings");
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
-		mv.addObject("loggedInUser", loggedInUser);
-    	
+		mv.addObject("loggedInUser", loggedInUser);		
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
@@ -39,7 +38,7 @@ public class MyOutingsController {
 		
 		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
 		
-		mv.addObject("heading", "My outings");		
+		mv.addObject("title", "My outings");		
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	return mv;
     }

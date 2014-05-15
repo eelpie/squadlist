@@ -29,6 +29,7 @@ public class AdminController {
     	mv.addObject("members", api.getMembers());
     	mv.addObject("squads", api.getSquads());
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+    	mv.addObject("title", "Admin");
     	return mv;
     }
 	

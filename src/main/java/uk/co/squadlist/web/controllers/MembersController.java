@@ -41,9 +41,12 @@ public class MembersController {
 
 	@RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("memberDetails");
+		final Member members = api.getMemberDetails(id);
+
+		final ModelAndView mv = new ModelAndView("memberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
-    	mv.addObject("member", api.getMemberDetails(id));
+		mv.addObject("member", members);
+    	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
     	return mv;
     }
 	
@@ -140,6 +143,7 @@ public class MembersController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("member", api.getMemberDetails(loggedInUserService.getLoggedInUser()));
     	mv.addObject("changePassword", changePassword);
+    	mv.addObject("title", "Change password");
     	return mv;
 	}
 	

@@ -5,7 +5,7 @@
 
 	<div class="row">
 		<div class="col-xs-12">
-			<h4>$heading</h4>
+			<h4>$title</h4>
 			<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>
 		</div>
 	</div>
