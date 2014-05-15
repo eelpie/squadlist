@@ -12,7 +12,7 @@ import uk.co.squadlist.web.model.Squad;
 @Component
 public class SquadNamesHelper {
 
-	private final static Joiner commaJoiner = Joiner.on(",");
+	private final static Joiner commaJoiner = Joiner.on(", ");
 
 	public String list(List<Squad> squads) {
 		final List<String> squadNames = Lists.newArrayList();
