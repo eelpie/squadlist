@@ -80,7 +80,9 @@ public class AvailabilityController {
 	
 	private Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
     	if(!Strings.isNullOrEmpty(squadId)) {
-    		return api.getSquad(instanceConfig.getInstance(), squadId);
+    		final Squad selectedSquad = api.getSquad(instanceConfig.getInstance(), squadId);
+    		preferedSquadService.setPreferedSquad(selectedSquad);
+			return selectedSquad;
     	}    	
     	return preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
 	}
