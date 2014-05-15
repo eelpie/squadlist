@@ -115,20 +115,21 @@ public class OutingsController {
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
 		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
-		final OutingDetails defaultOutingDetails = new OutingDetails(defaultOutingDateTime);  
-    	return renderNewOutingForm(defaultOutingDetails);
+		final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);  
+		outingDefaults.setSquad(preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser()).getId());
+    	return renderNewOutingForm(outingDefaults);
 	}
 	
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
     public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
 		if (result.hasErrors()) {
 			return renderNewOutingForm(outingDetails);
-		}		
+		}
 		
 		try {
-			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());			
-			final Outing outing = api.createOuting(newOuting);
-			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(outing)));
+			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());
+			api.createOuting(newOuting);
+			return new ModelAndView(new RedirectView(urlBuilder.outingsUrl()));
 			
 		} catch (Exception e) {
 			result.addError(new ObjectError("outing", "Invalid outing"));
@@ -172,7 +173,9 @@ public class OutingsController {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads());
-		mv.addObject("squad", preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser()));
+		final Squad squad = preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser());
+		mv.addObject("squad", squad);
+		mv.addObject("outingMonths", getOutingMonthsFor(squad));
 		mv.addObject("outing", outingDetails);
 		return mv;
 	}

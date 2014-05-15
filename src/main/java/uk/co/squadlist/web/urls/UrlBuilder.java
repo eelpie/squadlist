@@ -41,8 +41,12 @@ public class UrlBuilder {
 		return applicationUrl("/admin");
 	}
 	
+	public String outingsUrl() {
+		return applicationUrl("/outings");
+	}
+	
 	public String outingUrl(Outing outing) {
-		return applicationUrl("/outings/" + outing.getId());
+		return outingsUrl() + "/" + outing.getId();
 	}
 	
 	public String outingEditUrl(Outing outing) {
@@ -72,5 +76,5 @@ public class UrlBuilder {
 	private String getBaseUrl() {
 		return baseUrl;
 	}
-
+	
 }
