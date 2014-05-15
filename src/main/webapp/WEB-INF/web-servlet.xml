@@ -25,7 +25,14 @@
  	        
  	<mvc:annotation-driven validator="validator"/> 	
 	<mvc:default-servlet-handler />
-
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="uk.co.squadlist.web.views.NoCacheHandler" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 	
 	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
