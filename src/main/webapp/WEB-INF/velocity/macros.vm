@@ -26,7 +26,7 @@
 		    	<a class="navbar-brand" href="#">Squadlist</a>
 		    </div>
 			<ul class="nav navbar-nav">		     
-		    	<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('')">My outings</a></li>
+		    	<li #if($selectedTab == 'My outings') class="active" #end><a href="$urlBuilder.applicationUrl('/')">My outings</a></li>
 				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
 		    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.applicationUrl('/outings')">Outings</a></li>	
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/availability')">Availability</a></li>
