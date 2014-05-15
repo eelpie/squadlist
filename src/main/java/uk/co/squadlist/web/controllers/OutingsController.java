@@ -187,6 +187,7 @@ public class OutingsController {
 		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
     	mv.addObject("outingObject", outing);
+    	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		return mv;
 	}
 	
