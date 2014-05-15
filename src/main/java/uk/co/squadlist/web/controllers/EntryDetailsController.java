@@ -8,12 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
-
-import com.google.common.base.Strings;
 
 @Controller
 public class EntryDetailsController {
@@ -38,19 +34,11 @@ public class EntryDetailsController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
     	
-    	final Squad squadToShow = resolveSquad(squadId);
+    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
     	mv.addObject("members", api.getSquadMembers(instanceConfig.getInstance(), squadToShow.getId()));
     	return mv;
     }
 	
-	private Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
-    	if(!Strings.isNullOrEmpty(squadId)) {
-    		final Squad selectedSquad = api.getSquad(instanceConfig.getInstance(), squadId);
-    		preferedSquadService.setPreferedSquad(selectedSquad);
-			return selectedSquad;
-    	}    	
-    	return preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
-	}
 }

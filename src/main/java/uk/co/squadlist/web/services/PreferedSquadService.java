@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.controllers.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
@@ -33,7 +35,16 @@ public class PreferedSquadService {
 		this.request = request;
 	}
 	
-	public Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		
+	public Squad resolveSquad(String squadId, String loggedInUser) throws UnknownSquadException, UnknownMemberException {	// TODO inject logged in user
+    	if(!Strings.isNullOrEmpty(squadId)) {
+    		final Squad selectedSquad = api.getSquad(instanceConfig.getInstance(), squadId);
+    		setPreferedSquad(selectedSquad);
+			return selectedSquad;
+    	}
+    	return resolvedPreferedSquad(loggedInUser);
+	}
+	
+	private Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		
     	final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
 		if (selectedSquad != null) {
     		try {
@@ -55,7 +66,7 @@ public class PreferedSquadService {
     	return null;
 	}
 
-	public void setPreferedSquad(Squad selectedSquad) {
+	private void setPreferedSquad(Squad selectedSquad) {
 		log.info("Setting selected squad to: " + selectedSquad.getId());
 		request.getSession().setAttribute(SELECTED_SQUAD, selectedSquad.getId());
 		

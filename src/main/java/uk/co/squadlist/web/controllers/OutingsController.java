@@ -42,7 +42,6 @@ import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -74,7 +73,7 @@ public class OutingsController {
     	final ModelAndView mv = new ModelAndView("outings");
     	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
     	
-    	final Squad squadToShow = resolveSquad(squadId);	// TODO null safe	
+    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());	// TODO null safe	
 
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
@@ -171,20 +170,20 @@ public class OutingsController {
 		}
 	}
 	
-	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException {
+	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
 		ModelAndView mv = new ModelAndView("newOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
+		mv.addObject("squad", preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser()));
 		mv.addObject("outing", outingDetails);
 		return mv;
 	}
 	
-	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException {
+	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException {
 		final ModelAndView mv = new ModelAndView("editOuting");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads(instanceConfig.getInstance()));
-		mv.addObject("squad", preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser()));
+		mv.addObject("squad", outing.getSquad());
 		mv.addObject("outing", outingDetails);
     	mv.addObject("outingObject", outing);
     	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
@@ -202,15 +201,6 @@ public class OutingsController {
     	final ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
 		mv.addObject("data", result);
     	return mv;
-    }
-	
-	private Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
-    	if(!Strings.isNullOrEmpty(squadId)) {
-    		final Squad selectedSquad = api.getSquad(instanceConfig.getInstance(), squadId);
-    		preferedSquadService.setPreferedSquad(selectedSquad);
-			return selectedSquad;
-    	}    	
-    	return preferedSquadService.resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
