@@ -39,7 +39,9 @@
 				    		$!member.emailAddress
 				    	</td>
 						<td>
-							$!member.contactNumber
+							#if($member.contactNumber)
+								<a href="tel:$member.contactNumber">$member.contactNumber</a>
+							#end
 						</td>
 					</tr>
 				#end
