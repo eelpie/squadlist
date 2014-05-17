@@ -64,7 +64,7 @@ public class PreferedSquadService {
 	}
 
 	private void setPreferedSquad(Squad selectedSquad) {
-		log.info("Setting selected squad to: " + selectedSquad.getId());
+		log.debug("Setting selected squad to: " + selectedSquad.getId());
 		request.getSession().setAttribute(SELECTED_SQUAD, selectedSquad.getId());
 		
 	}
