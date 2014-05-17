@@ -20,8 +20,10 @@
 			#outingsNav()
 		</div>
 		
-		<div class="col-xs-10">		
-			<table style="font-size: 14px;" class="table table-striped">								
+		<div class="col-xs-10">
+			
+			#if(!$outings.isEmpty())
+			<table style="font-size: 14px;" class="table table-striped">
 				#foreach($outing in $outings)
 					<tr>
 			   			<td>	   
@@ -30,6 +32,9 @@
 					</tr>
 					#end
 			</table>
+			#else
+				<p>No matching outings found.</p>
+			#end
 							
 		</div>			
 	</div>
