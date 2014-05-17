@@ -88,7 +88,7 @@ public class OutingsController {
 		mv.addObject("squad", squadToShow);
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
-    	    	
+		mv.addObject("month", month);
     	mv.addObject("outings", api.getSquadOutings(squadToShow.getId(), startDate, endDate));
     	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
 		mv.addObject("squads", api.getSquads());
