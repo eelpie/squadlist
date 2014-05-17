@@ -24,8 +24,7 @@
 			<span class="pull-right"><a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a></span>
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 			<p>$!outing.notes</p>	
-			
-			
+						
 			<table style="font-size: 14px;" class="table table-striped">				
 				#foreach($member in $members )					
 					<tr>

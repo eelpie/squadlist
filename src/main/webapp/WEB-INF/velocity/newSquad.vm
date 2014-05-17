@@ -11,28 +11,31 @@
 	</div>
 	<hr/>
 
-	<div class="row">
-			
+	<div class="row">			
 		<div class="col-xs-12">
 		
 			<form method="POST" action="$urlBuilder.newSquadUrl()" class="form-horizontal">		
-				#springBind("squad.name")
-				<div class="control-group">
-					<label class="control-label" for="${status.expression}">Name</label>
-					<div class="controls">
-						<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}">
+				
+				<div class="form-group">				
+					#springBind("squad.name")				
+			   		<label for="squad" class="col-sm-2 control-label">Name</label>
+				    <div class="col-sm-5">    
+						<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}" class="form-control" />
 						#foreach($error in $status.errorMessages)
 							<div class="alert alert-warning">$error</div>
 						#end
-					</div>			
-				</div>
+					</div>
+				</div>		
 				
 				<div class="control-group">
+					<div  class="col-sm-2">
+					</div>	
 					<div class="controls">
-						<button type="submit" class="btn">Add new squad</button>
-						<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
+						<button type="submit" class="btn">Add squad</button>
+						<a href="$urlBuilder.applicationUrl('/outings')"><button class="btn btn-primary" type="button">Cancel</button></a>					
 					</div>
 				</div>
+									
 			</form>				
 		</div>
 	</div>
