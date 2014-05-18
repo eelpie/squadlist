@@ -100,17 +100,16 @@ public class MembersController {
     public ModelAndView updateMember(@PathVariable String id) throws Exception {	
 		final Member member = api.getMemberDetails(id);
 		
-		return renderEditMemberDetailsForm(member);
+		return renderEditMemberDetailsForm(member, member.getId());
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+		final Member member = api.getMemberDetails(id);
 		if (result.hasErrors()) {
-			return renderEditMemberDetailsForm(memberDetails);
+			return renderEditMemberDetailsForm(memberDetails, member.getId());
 		}
 		
-		final Member member = api.getMemberDetails(id);
-
 		log.info("Updating member details: " + member.getId());		
 		member.setFirstName(memberDetails.getFirstName());
 		member.setLastName(memberDetails.getLastName());
@@ -131,10 +130,11 @@ public class MembersController {
 		return mv;
 	}
 	
-	private ModelAndView renderEditMemberDetailsForm(Object memberDetails) {
+	private ModelAndView renderEditMemberDetailsForm(Object memberDetails, String memberId) {
 		ModelAndView mv = new ModelAndView("editMemberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("member", memberDetails);
+    	mv.addObject("memberId", memberId);
     	return mv;
 	}
 	
