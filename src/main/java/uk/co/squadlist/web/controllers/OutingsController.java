@@ -82,8 +82,10 @@ public class OutingsController {
     		startDate = monthDateTime.toDate();
     		endDate = monthDateTime.plusMonths(1).toDate();
     		title =  squadToShow.getName() + " outings - " + dateFormatter.fullMonthYear(startDate);
+    	} else {
+    		mv.addObject("current", true);
     	}
-
+		
 		mv.addObject("title", title);
 		mv.addObject("squad", squadToShow);
 		mv.addObject("startDate", startDate);
@@ -109,6 +111,7 @@ public class OutingsController {
     	mv.addObject("availability", api.getOutingAvailability(outing.getId()));
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("members", api.getSquadMembers(outing.getSquad().getId()));
+		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
     	return mv;
     }
 	

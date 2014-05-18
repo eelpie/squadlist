@@ -7,11 +7,11 @@
 			#if($outingMonths && !$outingMonths.keySet().isEmpty())		
 				<li>				
 				<a href="$urlBuilder.outings($squad)">
-					#if(!$month)
+					#if($current)
 						<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
 					#end
 					Current</a>
-				</li>			
+				</li>
 				#foreach($outingMonth in $outingMonths.keySet())
 					<li><a href="$urlBuilder.outings($squad, $outingMonth)">															
 						#if($outingMonth.equals($month))
