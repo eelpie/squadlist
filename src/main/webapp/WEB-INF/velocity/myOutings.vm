@@ -6,54 +6,60 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<h4>$title</h4>
-			<p>Upcoming outings for your squads ($squadNamesHelper.list($member.squads))</p>
 		</div>
 	</div>
 	<hr/>
+	
+	#if($member.squads.isEmpty()) 
+		<h5>Not assigned to any squads</h5>	
+		<p>You are not currently assigned to any squads and do not having any outings scheduled.</p>
+			
+	#else
 									
-	#if($outings.isEmpty())
-	   <div class="row">
-	   		<div class="col-md-12">	   
-				<h5>No current outings</h5>
-				<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>			
+		#if($outings.isEmpty())
+		   <div class="row">
+		   		<div class="col-md-12">	   
+					<h5>No current outings</h5>
+					<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>			
+				</div>
 			</div>
-		</div>
-
-	#else		
-		<div class="row">
-			<div class="col-md-12">	 
-				<form>
-					<table style="font-size: 14px;" class="table table-striped">
-						#foreach($outingAvailability in $outings)					
-						    <tr>
-					   			<td>	   
-					   				#set($outing = $outingAvailability.outing)
-									#parse('includes/outing.vm')	
-							    </td>					
-					   			<td>
-									<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
-										<option value="">TBA</option>		
-										#foreach($option in $availabilityOptions)
-											#set($selected = '')
-											#if ($outingAvailability.availability == $option.label) 
-												#set($selected = 'SELECTED')
+	
+		#else		
+			<div class="row">
+				<div class="col-md-12">	 
+					<form>
+						<table style="font-size: 14px;" class="table table-striped">
+							#foreach($outingAvailability in $outings)					
+							    <tr>
+						   			<td>	   
+						   				#set($outing = $outingAvailability.outing)
+										#parse('includes/outing.vm')	
+								    </td>					
+						   			<td>
+										<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
+											<option value="">TBA</option>		
+											#foreach($option in $availabilityOptions)
+												#set($selected = '')
+												#if ($outingAvailability.availability == $option.label) 
+													#set($selected = 'SELECTED')
+												#end
+												<option value="$option.label" $selected>$option.label</option>
 											#end
-											<option value="$option.label" $selected>$option.label</option>
-										#end
-									</select>								
-									#if ($outingAvailability.availability) 						
-										<span id="currentAvailability${outingAvailability.outing.id}" 
-											class="label label-info pull-right $cssHelper.classFor($outingAvailability.availability)">$outingAvailability.availability</span>
-									#else
-						 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
-									#end				
-							    </td>
-							</tr>
-						#end
-					</table>
-				</form>				  
-			</div>	   
-		</div>		
+										</select>								
+										#if ($outingAvailability.availability) 						
+											<span id="currentAvailability${outingAvailability.outing.id}" 
+												class="label label-info pull-right $cssHelper.classFor($outingAvailability.availability)">$outingAvailability.availability</span>
+										#else
+							 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
+										#end				
+								    </td>
+								</tr>
+							#end
+						</table>
+					</form>				  
+				</div>	   
+			</div>		
+		#end
 	#end
 </div>
 <hr/>
