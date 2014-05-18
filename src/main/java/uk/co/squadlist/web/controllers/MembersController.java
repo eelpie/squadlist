@@ -67,7 +67,7 @@ public class MembersController {
 		final Member newMember = api.createMember(memberDetails.getFirstName(), 
 				memberDetails.getLastName(),
 				squad,
-				null,
+				memberDetails.getEmailAddress(),
 				initialPassword,
 				null);
 		
