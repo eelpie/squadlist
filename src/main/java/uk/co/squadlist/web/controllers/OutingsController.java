@@ -191,6 +191,7 @@ public class OutingsController {
 		mv.addObject("outing", outingDetails);
     	mv.addObject("outingObject", outing);
     	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
+		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
 		return mv;
 	}
 	
