@@ -47,6 +47,19 @@
 	</nav>
 #end
 
+#macro(inputRow $field $label)
+	#springBind($field)
+	<div class="form-group">
+	    <label for="currentPassword" class="col-sm-2 control-label">$label</label>
+	    <div class="col-sm-10">					
+	        <input class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="$label">				        
+	      	#foreach($error in $status.errorMessages)
+				<div class="alert alert-warning">$error</div>
+			#end				      					   				
+	    </div>
+	</div>
+#end
+
 #macro(squadSelect $action $label)
 	<div class="btn-group">
 		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -57,16 +70,5 @@
 				<li><a href="$urlBuilder.applicationUrl($action)?squad=$availableSquad.id">$availableSquad.name</a></li>
 			#end
 		</ul>
-	</div>
-#end
-
-#macro(textInput $name $label) 
-	#springBind($name)			
-	<div class="control-group">
-		<label class="control-label" for="${status.expression}">$label</label>
-		<div class="controls">
-			<input id="${status.expression}" name="${status.expression}" placeholder="$label" value="$!{status.value}" class="form-control">
-			#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end
-		</div>
 	</div>
 #end

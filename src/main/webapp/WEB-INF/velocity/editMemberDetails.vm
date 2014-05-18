@@ -11,57 +11,27 @@
 	<hr/>
 	
 	<div class="row">
-	
-		<div class="col-md-12">
+		<div class="col-xs-12">
 
-			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">		
-				#springBind("member.firstName")
+			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">				
+				#inputRow("member.firstName", "First name")
+				#inputRow("member.lastName", "Last name")
+				#inputRow("member.emailAddress", "Email address")
+				#inputRow("member.contactNumber", "Contact number")
+				#inputRow('member.registrationNumber', 'Registration number')
+				#inputRow('member.rowingPoints', 'Rowing points')
+				#inputRow('member.scullingPoints', 'Sculling points')
+																									
 				<div class="control-group">
-					<label class="control-label" for="${status.expression}">First name</label>
-					<div class="controls">
-						<input id="${status.expression}" name="${status.expression}" placeholder="First name" value="$!{status.value}" class="form-control">
-						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end					
+					<div class="col-sm-2">
 					</div>
-				</div>
-				
-				#springBind("member.lastName")			
-				<div class="control-group">
-					<label class="control-label" for="${status.expression}">Last name</label>
-					<div class="controls">
-						<input id="${status.expression}" name="${status.expression}" placeholder="Last name" value="$!{status.value}" class="form-control">
-						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end					
-					</div>
-				</div>
-				
-				#springBind("member.emailAddress")			
-				<div class="control-group">
-					<label class="control-label" for="${status.expression}">Email address</label>
-					<div class="controls">
-						<input id="${status.expression}" name="${status.expression}" placeholder="Email address" value="$!{status.value}" class="form-control">
-						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end
-					</div>
-				</div>
-				
-				#springBind("member.contactNumber")			
-				<div class="control-group">
-					<label class="control-label" for="${status.expression}">Contact number</label>
-					<div class="controls">
-						<input id="${status.expression}" name="${status.expression}" placeholder="Contact number" value="$!{status.value}" class="form-control">
-						#foreach($error in $status.errorMessages) <p class="alert alert-warning">$error</p>#end
-					</div>
-				</div>
-				
-				#textInput('member.registrationNumber', 'Registration number')
-				#textInput('member.rowingPoints', 'Rowing points')
-				#textInput('member.scullingPoints', 'Sculling points')			
-																				
-				<div class="control-group">
 					<div class="controls">
 						<button type="submit" class="btn">Save details</button>
 						<a href="$urlBuilder.memberUrl($memberId)"><button class="btn btn-primary" type="button">Cancel</button></a>					
 					</div>
-				</div>
+				</div>				
 			</form>		
+			
 		</div>
 	</div>
 </div>
