@@ -17,6 +17,10 @@ public class UrlBuilder {
 		return getBaseUrl() + uri;
 	}
 	
+	public String loginUrl() {
+		return applicationUrl("/");
+	}
+	
 	public String staticUrl(String uri) {
 		return applicationUrl("/static/") + uri;
 	}
