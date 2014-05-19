@@ -23,9 +23,12 @@
 				#inputRow("member.lastName", "Last name")
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
+				#inputRow("member.emergencyContactName", "Emergency contact name")
+				#inputRow("member.emergencyContactNumber", "Emergency contact number")
 				#inputRow('member.registrationNumber', 'Registration number')
 				#inputRow('member.rowingPoints', 'Rowing points')
 				#inputRow('member.scullingPoints', 'Sculling points')				
+				#inputRow('member.sweepOarSide', 'Sweep oar side')				
 				#squadsCheckboxGroup
 															
 				<div class="control-group">

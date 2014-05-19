@@ -1,11 +1,9 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +30,6 @@ import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -125,9 +122,11 @@ public class MembersController {
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
 		memberDetails.setRowingPoints(member.getRowingPoints());
-		memberDetails.setScullingPoints(member.getScullingPoints());		
+		memberDetails.setScullingPoints(member.getScullingPoints());
+		memberDetails.setSweepOarSide(member.getSweepOarSide());
 		memberDetails.setSquads(member.getSquads());
-		
+		memberDetails.setEmergencyContactName(member.getEmergencyContactName());
+		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
 		return renderEditMemberDetailsForm(memberDetails, member.getId());
     }
 	
@@ -149,9 +148,13 @@ public class MembersController {
 		member.setRowingPoints(memberDetails.getRowingPoints());
 		member.setScullingPoints(memberDetails.getScullingPoints());
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
+		member.setEmergencyContactName(memberDetails.getEmergencyContactName());
+		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
+		member.setSweepOarSide(memberDetails.getSweepOarSide());
 		member.setSquads(squads);
 		
-		api.updateMemberDetails(member);		
+		log.info("Submitting updated member: " + member);
+		api.updateMemberDetails(member);
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
 	

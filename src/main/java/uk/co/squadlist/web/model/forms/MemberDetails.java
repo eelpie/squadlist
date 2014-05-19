@@ -10,9 +10,7 @@ public class MemberDetails {
 
 	@NotBlank
 	private String firstName, lastName, emailAddress;
-	
-	private String contactNumber, rowingPoints, scullingPoints, registrationNumber;
-	
+	private String contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
 	private List<Squad> squads;
 	
 	public String getFirstName() {
@@ -79,14 +77,40 @@ public class MemberDetails {
 		this.squads = squads;
 	}
 
+	public String getSweepOarSide() {
+		return sweepOarSide;
+	}
+
+	public void setSweepOarSide(String sweepOarSide) {
+		this.sweepOarSide = sweepOarSide;
+	}
+
+	public String getEmergencyContactName() {
+		return emergencyContactName;
+	}
+
+	public void setEmergencyContactName(String emergencyContactName) {
+		this.emergencyContactName = emergencyContactName;
+	}
+
+	public String getEmergencyContactNumber() {
+		return emergencyContactNumber;
+	}
+
+	public void setEmergencyContactNumber(String emergencyContactNumber) {
+		this.emergencyContactNumber = emergencyContactNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "MemberDetails [contactNumber=" + contactNumber
-				+ ", emailAddress=" + emailAddress + ", firstName=" + firstName
+				+ ", emailAddress=" + emailAddress + ", emergencyContactName="
+				+ emergencyContactName + ", emergencyContactNumber="
+				+ emergencyContactNumber + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", registrationNumber="
 				+ registrationNumber + ", rowingPoints=" + rowingPoints
 				+ ", scullingPoints=" + scullingPoints + ", squads=" + squads
-				+ "]";
+				+ ", sweepOarSide=" + sweepOarSide + "]";
 	}
 	
 }
