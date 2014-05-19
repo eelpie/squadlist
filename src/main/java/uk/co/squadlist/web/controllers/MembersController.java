@@ -25,6 +25,7 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -37,12 +38,15 @@ public class MembersController {
 	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
 	private final UrlBuilder urlBuilder;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
+	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
+			ViewFactory viewFactory) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
+		this.viewFactory = viewFactory;
 	}
 
 	@RequestMapping("/member/{id}")
@@ -149,8 +153,6 @@ public class MembersController {
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
 		member.setSquads(squads);
 		
-		
-		
 		api.updateMemberDetails(member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
@@ -159,20 +161,21 @@ public class MembersController {
 		final ModelAndView mv = new ModelAndView("newMember");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads());
+		mv.addObject("title", "Adding a new member");
 		return mv;
 	}
 	
 	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId) {
-		ModelAndView mv = new ModelAndView("editMemberDetails");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		final ModelAndView mv = viewFactory.getView("editMemberDetails");
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", memberId);
+    	mv.addObject("title", "Editing member details");
+    	mv.addObject("squads", api.getSquads());
     	return mv;
 	}
 	
 	private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
-		final ModelAndView mv = new ModelAndView("changePassword");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		final ModelAndView mv = viewFactory.getView("changePassword");
 		mv.addObject("member", api.getMemberDetails(loggedInUserService.getLoggedInUser()));
     	mv.addObject("changePassword", changePassword);
     	mv.addObject("title", "Change password");
