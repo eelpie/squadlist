@@ -17,6 +17,19 @@
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
 				#inputRow("member.emailAddress", "Email address")
+				
+				#springBind("member.squads")
+				<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Squads</label>
+	    			<div class="col-sm-10">		    				
+	    				<select multiple class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="$label">	
+							<option value=""></option>
+							#foreach($squad in $squads)
+								<option value="$squad.id" #if($status.value.contains($squad.id)) SELECTED #end>$squad.name</option>
+							#end
+						</select>				
+					</div>
+				</div>
 																			
 				<div class="control-group">
 					<div class="col-sm-2">

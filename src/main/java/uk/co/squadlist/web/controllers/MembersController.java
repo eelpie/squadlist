@@ -66,17 +66,18 @@ public class MembersController {
     }
 
 	@RequestMapping(value="/member/new", method=RequestMethod.POST)
-    public ModelAndView newMemberSubmit(@Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {		
+    public ModelAndView newMemberSubmit(@Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+		final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result);
+		
 		if (result.hasErrors()) {
 			return renderNewMemberForm();
 		}
 		
-		final String initialPassword = "password";	// TODO add to form
+		final String initialPassword = "password";	// TODO add to form		
 		
-		final Squad squad = memberDetails.getSquad() != null && !memberDetails.getSquad().isEmpty() ? api.getSquad(memberDetails.getSquad()) : null;	// TODO push to spring
 		final Member newMember = api.createMember(memberDetails.getFirstName(), 
 				memberDetails.getLastName(),
-				squad,
+				requestedSquads,
 				memberDetails.getEmailAddress(),
 				initialPassword,
 				null);
@@ -118,7 +119,12 @@ public class MembersController {
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
 		memberDetails.setRowingPoints(member.getRowingPoints());
 		memberDetails.setScullingPoints(member.getScullingPoints());
-		memberDetails.setSquad(!member.getSquads().isEmpty() ? member.getSquads().get(0).getId() : null);
+		
+		List<String> squadIds = Lists.newArrayList();
+		for (Squad squad : member.getSquads()) {
+			squadIds.add(squad.getId());
+		}
+		memberDetails.setSquads(squadIds);
 		return renderEditMemberDetailsForm(memberDetails, member.getId());
     }
 	
@@ -126,18 +132,7 @@ public class MembersController {
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
 		final Member member = api.getMemberDetails(id);
 		
-		final List<Squad> squads = Lists.newArrayList();
-		String requestedSquadId = memberDetails.getSquad();
-		log.info("Requested squad: " + requestedSquadId);
-		if (!Strings.isNullOrEmpty(requestedSquadId)) {
-			try {
-				squads.add(api.getSquad(requestedSquadId));
-			} catch (UnknownSquadException e) {
-				log.warn("Rejecting unknown squad: " + requestedSquadId);
-				result.addError(new ObjectError("member.squad", "Unknown squad"));
-			}
-		}		
-		log.info("Assigned squads: " + squads);
+		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
 		
 		if (result.hasErrors()) {
 			return renderEditMemberDetailsForm(memberDetails, member.getId());
@@ -156,7 +151,7 @@ public class MembersController {
 		api.updateMemberDetails(member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
-
+	
 	private ModelAndView renderNewMemberForm() {
 		final ModelAndView mv = new ModelAndView("newMember");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
@@ -180,6 +175,27 @@ public class MembersController {
     	mv.addObject("changePassword", changePassword);
     	mv.addObject("title", "Change password");
     	return mv;
+	}
+	
+	private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result) {
+		final List<Squad> squads = Lists.newArrayList();
+		if (memberDetails.getSquads() == null) {
+			return squads;
+		}
+		
+		for (String requestedSquadId : memberDetails.getSquads()) {					
+			log.info("Requested squad: " + requestedSquadId);
+			if (!Strings.isNullOrEmpty(requestedSquadId)) {
+				try {
+					squads.add(api.getSquad(requestedSquadId));
+				} catch (UnknownSquadException e) {
+					log.warn("Rejecting unknown squad: " + requestedSquadId);
+					result.addError(new ObjectError("member.squad", "Unknown squad"));
+				}
+			}
+		}
+		log.info("Assigned squads: " + squads);
+		return squads;
 	}
 	
 }

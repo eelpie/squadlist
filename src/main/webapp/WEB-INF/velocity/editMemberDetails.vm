@@ -6,7 +6,7 @@
 	<div class="row">
 		<div class="col-xs-8">
 			<h4>$member.firstName $member.lastName</h4>
-		</div>		
+		</div>
 	</div>
 	<hr/>
 	
@@ -27,14 +27,14 @@
 				#inputRow('member.rowingPoints', 'Rowing points')
 				#inputRow('member.scullingPoints', 'Sculling points')
 				
-				#springBind("member.squad")
+				#springBind("member.squads")
 				<div class="form-group">
-				    <label for="currentPassword" class="col-sm-2 control-label">Squad</label>
-	    			<div class="col-sm-10">		
-	    				<select class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="$label">	
+				    <label for="currentPassword" class="col-sm-2 control-label">Squads</label>
+	    			<div class="col-sm-10">		    				
+	    				<select multiple class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="$label">	
 							<option value=""></option>
 							#foreach($squad in $squads)
-								<option value="$squad.id" #if($squad.id == ${status.value}) SELECTED #end>$squad.name</option>
+								<option value="$squad.id" #if($status.value.contains($squad.id)) SELECTED #end>$squad.name</option>
 							#end
 						</select>				
 					</div>
