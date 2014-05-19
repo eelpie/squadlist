@@ -100,7 +100,16 @@ public class MembersController {
     public ModelAndView updateMember(@PathVariable String id) throws Exception {	
 		final Member member = api.getMemberDetails(id);
 		
-		return renderEditMemberDetailsForm(member, member.getId());
+		final MemberDetails memberDetails = new MemberDetails();
+		memberDetails.setFirstName(member.getFirstName());
+		memberDetails.setLastName(member.getLastName());
+		memberDetails.setEmailAddress(member.getEmailAddress());
+		memberDetails.setContactNumber(member.getContactNumber());
+		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
+		memberDetails.setRowingPoints(member.getRowingPoints());
+		memberDetails.setScullingPoints(member.getScullingPoints());
+		
+		return renderEditMemberDetailsForm(memberDetails, member.getId());
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
@@ -130,7 +139,7 @@ public class MembersController {
 		return mv;
 	}
 	
-	private ModelAndView renderEditMemberDetailsForm(Object memberDetails, String memberId) {
+	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId) {
 		ModelAndView mv = new ModelAndView("editMemberDetails");
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
     	mv.addObject("member", memberDetails);

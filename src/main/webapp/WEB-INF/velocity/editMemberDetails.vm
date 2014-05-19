@@ -13,7 +13,7 @@
 	<div class="row">
 		<div class="col-xs-12">
 
-			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal">				
+			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
 				#inputRow("member.emailAddress", "Email address")
