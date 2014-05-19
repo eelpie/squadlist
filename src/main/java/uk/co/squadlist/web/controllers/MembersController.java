@@ -1,14 +1,18 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +24,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.exceptions.propertyeditors.SquadPropertyEditor;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -39,14 +44,16 @@ public class MembersController {
 	private final LoggedInUserService loggedInUserService;
 	private final UrlBuilder urlBuilder;
 	private final ViewFactory viewFactory;
+	private final SquadPropertyEditor squadPropertyEditor;
 	
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
-			ViewFactory viewFactory) {
+			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
+		this.squadPropertyEditor = squadPropertyEditor;
 	}
 
 	@RequestMapping("/member/{id}")
@@ -120,9 +127,11 @@ public class MembersController {
 		memberDetails.setRowingPoints(member.getRowingPoints());
 		memberDetails.setScullingPoints(member.getScullingPoints());
 		
-		List<String> squadIds = Lists.newArrayList();
+		Squad[] squadIds = new Squad[member.getSquads().size()];
+		int i = 0;
 		for (Squad squad : member.getSquads()) {
-			squadIds.add(squad.getId());
+			squadIds[i] = squad;
+			i++;
 		}
 		memberDetails.setSquads(squadIds);
 		return renderEditMemberDetailsForm(memberDetails, member.getId());
@@ -183,19 +192,23 @@ public class MembersController {
 			return squads;
 		}
 		
-		for (String requestedSquadId : memberDetails.getSquads()) {					
+		for (Squad requestedSquadId : memberDetails.getSquads()) {					
 			log.info("Requested squad: " + requestedSquadId);
-			if (!Strings.isNullOrEmpty(requestedSquadId)) {
-				try {
-					squads.add(api.getSquad(requestedSquadId));
-				} catch (UnknownSquadException e) {
-					log.warn("Rejecting unknown squad: " + requestedSquadId);
-					result.addError(new ObjectError("member.squad", "Unknown squad"));
-				}
+			try {
+				squads.add(api.getSquad(requestedSquadId.getId()));
+			} catch (UnknownSquadException e) {
+				log.warn("Rejecting unknown squad: " + requestedSquadId);
+				result.addError(new ObjectError("member.squad", "Unknown squad"));			
 			}
 		}
 		log.info("Assigned squads: " + squads);
 		return squads;
+	}
+	
+	@InitBinder
+	public void binder(WebDataBinder binder) {
+		log.debug("Registering property editor: " + squadPropertyEditor);
+		binder.registerCustomEditor(Squad.class, squadPropertyEditor);
 	}
 	
 }

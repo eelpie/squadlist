@@ -25,10 +25,9 @@
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow('member.registrationNumber', 'Registration number')
 				#inputRow('member.rowingPoints', 'Rowing points')
-				#inputRow('member.scullingPoints', 'Sculling points')
-				
+				#inputRow('member.scullingPoints', 'Sculling points')				
 				#squadsCheckboxGroup
-																											
+															
 				<div class="control-group">
 					<div class="col-sm-2">
 					</div>
