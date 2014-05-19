@@ -60,6 +60,22 @@
 	</div>
 #end
 
+#macro(squadsCheckboxGroup)
+	#springBind("member.squads")
+	<div class="form-group">
+	    <label for="currentPassword" class="col-sm-2 control-label">Squads</label>
+		<div class="col-sm-10">		    				
+			#foreach($squad in $squads)
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" value="$squad.id" name="${status.expression}" #if($status.value.contains($squad.id)) CHECKED #end>$squad.name</input>
+					</label>
+				</div>
+			#end				
+		</div>
+	</div>
+#end
+
 #macro(squadSelect $action $label)
 	<div class="btn-group">
 		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
