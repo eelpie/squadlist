@@ -20,10 +20,12 @@ public class LoginController {
 		this.api = api;
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "/login", method = RequestMethod.GET)	// TODO SEO this onto the root url
 	public ModelAndView member(@RequestParam(value = "errors", required = false) Boolean errors) throws Exception {
 		final ModelAndView mv = new ModelAndView("login");
-		mv.addObject("instance", getInstance());
+		final Instance instance = getInstance();
+		mv.addObject("title", instance.getName());
+		mv.addObject("instance", instance);
 		if (errors != null && errors) {
 			mv.addObject("errors", true);
 		}
