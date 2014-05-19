@@ -129,7 +129,7 @@ public class MembersController {
 		memberDetails.setSquads(member.getSquads());
 		memberDetails.setEmergencyContactName(member.getEmergencyContactName());
 		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
-		return renderEditMemberDetailsForm(memberDetails, member.getId());
+		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
@@ -139,7 +139,7 @@ public class MembersController {
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
 		
 		if (result.hasErrors()) {
-			return renderEditMemberDetailsForm(memberDetails, member.getId());
+			return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
 		}
 		
 		log.info("Updating member details: " + member.getId());		
@@ -168,11 +168,11 @@ public class MembersController {
 		return mv;
 	}
 	
-	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId) {
+	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title) {
 		final ModelAndView mv = viewFactory.getView("editMemberDetails");
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", memberId);
-    	mv.addObject("title", "Editing member details");
+    	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());    	
     	mv.addObject("pointsOptions", Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"));
     	return mv;
