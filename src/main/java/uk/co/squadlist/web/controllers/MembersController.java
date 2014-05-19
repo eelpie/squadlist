@@ -125,15 +125,9 @@ public class MembersController {
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
 		memberDetails.setRowingPoints(member.getRowingPoints());
-		memberDetails.setScullingPoints(member.getScullingPoints());
+		memberDetails.setScullingPoints(member.getScullingPoints());		
+		memberDetails.setSquads(member.getSquads());
 		
-		Squad[] squadIds = new Squad[member.getSquads().size()];
-		int i = 0;
-		for (Squad squad : member.getSquads()) {
-			squadIds[i] = squad;
-			i++;
-		}
-		memberDetails.setSquads(squadIds);
 		return renderEditMemberDetailsForm(memberDetails, member.getId());
     }
 	

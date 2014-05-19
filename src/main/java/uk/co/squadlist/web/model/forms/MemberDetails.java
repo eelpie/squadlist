@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.model.forms;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import uk.co.squadlist.web.model.Squad;
@@ -11,7 +13,7 @@ public class MemberDetails {
 	
 	private String contactNumber, rowingPoints, scullingPoints, registrationNumber;
 	
-	private Squad[] squads;
+	private List<Squad> squads;
 	
 	public String getFirstName() {
 		return firstName;
@@ -69,11 +71,11 @@ public class MemberDetails {
 		this.registrationNumber = registrationNumber;
 	}
 
-	public Squad[] getSquads() {
+	public List<Squad> getSquads() {
 		return squads;
 	}
 
-	public void setSquads(Squad[] squads) {
+	public void setSquads(List<Squad> squads) {
 		this.squads = squads;
 	}
 
