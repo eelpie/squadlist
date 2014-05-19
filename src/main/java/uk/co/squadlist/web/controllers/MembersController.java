@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -17,11 +19,15 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 @Controller
 public class MembersController {
@@ -108,13 +114,27 @@ public class MembersController {
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
 		memberDetails.setRowingPoints(member.getRowingPoints());
 		memberDetails.setScullingPoints(member.getScullingPoints());
-		
+		memberDetails.setSquad(!member.getSquads().isEmpty() ? member.getSquads().get(0).getId() : null);
 		return renderEditMemberDetailsForm(memberDetails, member.getId());
     }
 	
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
 		final Member member = api.getMemberDetails(id);
+		
+		final List<Squad> squads = Lists.newArrayList();
+		String requestedSquadId = memberDetails.getSquad();
+		log.info("Requested squad: " + requestedSquadId);
+		if (!Strings.isNullOrEmpty(requestedSquadId)) {
+			try {
+				squads.add(api.getSquad(requestedSquadId));
+			} catch (UnknownSquadException e) {
+				log.warn("Rejecting unknown squad: " + requestedSquadId);
+				result.addError(new ObjectError("member.squad", "Unknown squad"));
+			}
+		}		
+		log.info("Assigned squads: " + squads);
+		
 		if (result.hasErrors()) {
 			return renderEditMemberDetailsForm(memberDetails, member.getId());
 		}
@@ -127,6 +147,9 @@ public class MembersController {
 		member.setRowingPoints(memberDetails.getRowingPoints());
 		member.setScullingPoints(memberDetails.getScullingPoints());
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
+		member.setSquads(squads);
+		
+		
 		
 		api.updateMemberDetails(member);		
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	

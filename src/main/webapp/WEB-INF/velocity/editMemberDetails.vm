@@ -12,7 +12,12 @@
 	
 	<div class="row">
 		<div class="col-xs-12">
-
+		
+			#springBind("member")
+			#foreach($error in $status.errorMessages)
+				<div class="alert alert-warning">$error</div>
+			#end
+			
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
@@ -21,6 +26,8 @@
 				#inputRow('member.registrationNumber', 'Registration number')
 				#inputRow('member.rowingPoints', 'Rowing points')
 				#inputRow('member.scullingPoints', 'Sculling points')
+				
+				#inputRow('member.squad', 'Squad')
 																									
 				<div class="control-group">
 					<div class="col-sm-2">
