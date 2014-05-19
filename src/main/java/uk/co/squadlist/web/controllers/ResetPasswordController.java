@@ -29,6 +29,7 @@ public class ResetPasswordController {
 	public ModelAndView resetPasswordPrompt() throws Exception {
 		final ModelAndView mv = new ModelAndView("resetPassword");
 		mv.addObject("instance", api.getInstance());
+		mv.addObject("title", "Reset password");
 		return mv;
 	}
 	
@@ -38,6 +39,7 @@ public class ResetPasswordController {
 			final ModelAndView mv = new ModelAndView("resetPassword");
 			mv.addObject("instance", api.getInstance());
 			mv.addObject("errors", true);
+			mv.addObject("title", "Reset password");
 			return mv;
 		}
 		
@@ -46,12 +48,14 @@ public class ResetPasswordController {
 			api.resetPassword(username);	// TODO errors	
 			log.info("Reset password call successful for: " + username);
 			final ModelAndView mv = new ModelAndView("resetPasswordSent");
-			mv.addObject("instance", api.getInstance());		
-			return mv;		
+			mv.addObject("instance", api.getInstance());
+			mv.addObject("title", "Reset password");
+			return mv;
 			
 		} catch (UnknownMemberException e) {
 			final ModelAndView mv = new ModelAndView("resetPassword");
 			mv.addObject("instance", api.getInstance());
+			mv.addObject("title", "Reset password");
 			mv.addObject("errors", true);
 			return mv;
 		}
