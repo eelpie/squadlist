@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
@@ -25,20 +26,22 @@ public class PreferedSquadService {
 	
 	private final InstanceSpecificApiClient api;
 	private final HttpServletRequest request;
+	private final LoggedInUserService loggedInUserService;
 	
 	@Autowired
-	public PreferedSquadService(InstanceSpecificApiClient api, HttpServletRequest request) {
+	public PreferedSquadService(InstanceSpecificApiClient api, HttpServletRequest request, LoggedInUserService loggedInUserService) {
 		this.api = api;
 		this.request = request;
+		this.loggedInUserService = loggedInUserService;
 	}
 	
-	public Squad resolveSquad(String squadId, String loggedInUser) throws UnknownSquadException, UnknownMemberException {	// TODO inject logged in user
+	public Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
     	if(!Strings.isNullOrEmpty(squadId)) {
     		final Squad selectedSquad = api.getSquad(squadId);
     		setPreferedSquad(selectedSquad);
 			return selectedSquad;
     	}
-    	return resolvedPreferedSquad(loggedInUser);
+    	return resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
 	}
 	
 	private Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		

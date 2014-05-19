@@ -73,7 +73,7 @@ public class OutingsController {
     		@RequestParam(value = "month", required = false) String month) throws Exception {
     	final ModelAndView mv = viewFactory.getView("outings");
     	
-    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());	// TODO null safe	
+    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);	// TODO null safe	
 
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
@@ -119,7 +119,7 @@ public class OutingsController {
     public ModelAndView newOuting() throws Exception {
 		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
 		final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);  
-		outingDefaults.setSquad(preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser()).getId());
+		outingDefaults.setSquad(preferedSquadService.resolveSquad(null).getId());
     	return renderNewOutingForm(outingDefaults);
 	}
 	
@@ -175,7 +175,7 @@ public class OutingsController {
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
 		final ModelAndView mv = viewFactory.getView("newOuting");				
 		mv.addObject("squads", api.getSquads());
-		final Squad squad = preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser());
+		final Squad squad = preferedSquadService.resolveSquad(null);
 		mv.addObject("squad", squad);
 		mv.addObject("outingMonths", getOutingMonthsFor(squad));
 		mv.addObject("outing", outingDetails);

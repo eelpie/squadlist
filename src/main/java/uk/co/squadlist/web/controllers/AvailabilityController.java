@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.views.DateHelper;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Maps;
 
@@ -26,24 +26,23 @@ import com.google.common.collect.Maps;
 public class AvailabilityController {
 		
 	private InstanceSpecificApiClient api;
-	private LoggedInUserService loggedInUserService;
 	private PreferedSquadService preferedSquadService;
+	private ViewFactory viewFactory;
 	
 	@Autowired
-	public AvailabilityController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, PreferedSquadService preferedSquadService) {
+	public AvailabilityController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory) {
 		this.api = api;
-		this.loggedInUserService = loggedInUserService;
 		this.preferedSquadService = preferedSquadService;
+		this.viewFactory = viewFactory;
 	}
 	
 	@RequestMapping("/availability")
     public ModelAndView availability(@RequestParam(required=false, value="squad") String squadId,
     		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	ModelAndView mv = new ModelAndView("availability");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	ModelAndView mv = viewFactory.getView("availability");
     	mv.addObject("squads", api.getSquads());
     	
-    	final Squad squad = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());
+    	final Squad squad = preferedSquadService.resolveSquad(squadId);
 
     	if (squad != null) {
 			mv.addObject("squad", squad);
