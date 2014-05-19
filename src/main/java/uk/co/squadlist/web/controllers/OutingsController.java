@@ -41,6 +41,7 @@ import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.JsonSerializer;
 import uk.co.squadlist.web.views.JsonView;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Maps;
 
@@ -54,22 +55,23 @@ public class OutingsController {
 	private final UrlBuilder urlBuilder;
 	private final DateFormatter dateFormatter;
 	private final PreferedSquadService preferedSquadService;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
 	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, UrlBuilder urlBuilder,
-			DateFormatter dateFormatter, PreferedSquadService preferedSquadService) {
+			DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
 		this.dateFormatter = dateFormatter;
 		this.preferedSquadService = preferedSquadService;
+		this.viewFactory = viewFactory;
 	}
 	
 	@RequestMapping("/outings")
     public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId,
     		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	final ModelAndView mv = new ModelAndView("outings");
-    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
+    	final ModelAndView mv = viewFactory.getView("outings");
     	
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId, loggedInUserService.getLoggedInUser());	// TODO null safe	
 
@@ -98,12 +100,10 @@ public class OutingsController {
     }
 	
 	@RequestMapping("/outings/{id}")
-    public ModelAndView outing(@PathVariable String id) throws Exception {
-    	ModelAndView mv = new ModelAndView("outing");
-    	mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());	// TODO shouldn't need todo this explictly on each controller - move to velocity context
-    	
+    public ModelAndView outing(@PathVariable String id) throws Exception {    	
     	final Outing outing = api.getOuting(id);
     	
+    	final ModelAndView mv = viewFactory.getView("outing");
     	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
 		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
@@ -173,8 +173,7 @@ public class OutingsController {
 	}
 	
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
-		ModelAndView mv = new ModelAndView("newOuting");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		final ModelAndView mv = viewFactory.getView("newOuting");				
 		mv.addObject("squads", api.getSquads());
 		final Squad squad = preferedSquadService.resolveSquad(null, loggedInUserService.getLoggedInUser());
 		mv.addObject("squad", squad);
@@ -184,8 +183,7 @@ public class OutingsController {
 	}
 	
 	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException {
-		final ModelAndView mv = new ModelAndView("editOuting");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	final ModelAndView mv = viewFactory.getView("editOuting");    	
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("squad", outing.getSquad());
 		mv.addObject("outing", outingDetails);
