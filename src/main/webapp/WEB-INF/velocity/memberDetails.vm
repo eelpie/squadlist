@@ -25,11 +25,8 @@
 	<p>Rowing points: $!member.rowingPoints</p>
 	<p>Sculling points: $!member.scullingPoints</p>
 		
-	Squads:
-	<ul>
-	#foreach($squad in $member.squads)
-	 	<li>$squad.name</li>
-	#end
+	<p>Squads: $squadNamesHelper.list($member.squads)</p>
+	
 	</ul>
 	
 	<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
