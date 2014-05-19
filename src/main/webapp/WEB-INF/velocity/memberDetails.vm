@@ -19,15 +19,17 @@
 	<p>Email address: $!member.emailAddress</p>
 	<p>Contact number: $!member.contactNumber</p>
 
+	<p>Emergency contact name: $!member.emergencyContactName</p>
+	<p>Emergency contact number: $!member.emergencyContactNumber</p>
+
 	<p>Weight: $!member.weight</p>
 	
 	<p>Registration number: $!member.registrationNumber</p>
 	<p>Rowing points: $!member.rowingPoints</p>
 	<p>Sculling points: $!member.scullingPoints</p>
-		
+	<p>Sweep oar side: $!member.sweepOarSide</p>
+				
 	<p>Squads: $squadNamesHelper.list($member.squads)</p>
-	
-	</ul>
 	
 	<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
 		
