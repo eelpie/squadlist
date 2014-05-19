@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -171,7 +173,8 @@ public class MembersController {
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", "Editing member details");
-    	mv.addObject("squads", api.getSquads());
+    	mv.addObject("squads", api.getSquads());    	
+    	mv.addObject("pointsOptions", Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"));
     	return mv;
 	}
 	

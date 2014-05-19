@@ -26,8 +26,34 @@
 				#inputRow("member.emergencyContactName", "Emergency contact name")
 				#inputRow("member.emergencyContactNumber", "Emergency contact number")
 				#inputRow('member.registrationNumber', 'Registration number')
-				#inputRow('member.rowingPoints', 'Rowing points')
-				#inputRow('member.scullingPoints', 'Sculling points')				
+				
+				#springBind("member.rowingPoints")
+				<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Rowing points</label>
+				    <div class="col-sm-10">					
+						<select name="${status.expression}" class="form-control">
+							<option value=""></option>																	    				
+							#foreach($option in $pointsOptions)				
+								<option value="$option" #if($status.getValue() == $option) SELECTED #end>$option</option>
+							#end
+						</select>
+					</div>
+				</div>
+				
+				#springBind("member.scullingPoints")
+				<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Sculling points</label>
+				    <div class="col-sm-10">					
+						<select name="${status.expression}" class="form-control">
+							<option value=""></option>								    				
+							#foreach($option in $pointsOptions)				
+								<option value="$option" #if($status.getValue() == $option) SELECTED #end>$option</option>
+							#end
+						</select>
+					</div>
+				</div>
+				
+				
 				#inputRow('member.sweepOarSide', 'Sweep oar side')				
 				#squadsCheckboxGroup
 															
