@@ -39,15 +39,29 @@
 		    		#end
 		    	</a>		    	
 		    	</li>
-				<li #if($selectedTab == 'Details') class="active" #end><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
 		    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.applicationUrl('/outings')">Outings</a></li>	
 				<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl('/availability')">Availability</a></li>
 				<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl('/contacts')">Contacts</a></li>
 				<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl('/entrydetails')">Entry details</a></li>
 				<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
-				<li #if($selectedTab == 'Change password') class="active" #end><a href="$urlBuilder.changePassword()">Change password</a></li>				
-				<li #if($selectedTab == 'Logout') class="active" #end><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>      
 		   	</ul>
+		   	
+		   	
+		  	<ul class="nav navbar-nav navbar-right">
+		        <li class="dropdown">
+        			  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        			  <span class="glyphicon glyphicon-cog" style="color: black"></span>
+        			   <b class="caret"></b></a>
+			          <ul class="dropdown-menu">
+						<li><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}">My details</a></li>
+						<li><a href="$urlBuilder.changePassword()">Change password</a></li>				
+						<li><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>		         
+			          </ul>
+        </li>
+      </ul>
+		   	
+		   	
+		   	
 		</div>
 	</nav>
 #end
