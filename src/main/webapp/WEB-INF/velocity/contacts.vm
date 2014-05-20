@@ -33,7 +33,10 @@
 				#foreach( $member in $members )
 					<tr>
 				    	<td>
-				    		#parse('includes/member.vm')
+				    		#parse('includes/member.vm') 
+				    		#if($member.role && $member.role != 'Rower')
+					    		($!member.role)
+					    	#end
 				    	</td>
 				    	<td>
 				    		#if($member.emailAddress)
