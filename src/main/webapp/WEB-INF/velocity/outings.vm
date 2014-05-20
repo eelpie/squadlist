@@ -32,7 +32,7 @@
 							<td>
 								<div class="pull-right">
 								#foreach($availabilityOption in $outingAvailabilityCounts.get($outing.id).keySet())
-									<span class="$cssHelper.classFor($availabilityOption)">
+									<span class="$cssHelper.classFor($availabilityOption) badge" title="$availabilityOption">
 										$outingAvailabilityCounts.get($outing.id).get($availabilityOption)
 									</span>
 								#end
