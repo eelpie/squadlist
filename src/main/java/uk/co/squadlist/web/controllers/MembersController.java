@@ -1,7 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -38,6 +36,9 @@ import com.google.common.collect.Lists;
 public class MembersController {
 	
 	private final static Logger log = Logger.getLogger(MembersController.class);
+	
+	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	
 	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
@@ -174,7 +175,8 @@ public class MembersController {
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());    	
-    	mv.addObject("pointsOptions", Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"));
+    	mv.addObject("pointsOptions", POINTS_OPTIONS);
+    	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	return mv;
 	}
 	

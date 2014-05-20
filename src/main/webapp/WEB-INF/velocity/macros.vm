@@ -60,6 +60,21 @@
 	</div>
 #end
 
+#macro(selectRow $label $field $options)
+	#springBind($field)
+	<div class="form-group">
+	    <label for="currentPassword" class="col-sm-2 control-label">$label</label>
+	    <div class="col-sm-10">					
+			<select name="${status.expression}" class="form-control">
+				<option value=""></option>																	    				
+				#foreach($option in $options)				
+					<option value="$option" #if($status.getValue() == $option) SELECTED #end>$option</option>
+				#end
+			</select>
+		</div>
+	</div>
+#end
+
 #macro(squadsCheckboxGroup)
 	#springBind("member.squads")
 	<div class="form-group">
