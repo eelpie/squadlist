@@ -22,16 +22,26 @@
 		
 		<div class="col-xs-10">
 			
-			#if(!$outings.isEmpty())
-			<table style="font-size: 14px;" class="table table-striped">
-				#foreach($outing in $outings)
-					<tr>
-			   			<td>	   
-							#parse('includes/outing.vm')	
-			    		</td>	   			
-					</tr>
-					#end
-			</table>
+			#if(!$outings.isEmpty())			
+				<table style="font-size: 14px;" class="table table-striped">
+					#foreach($outing in $outings)
+						<tr>
+				   			<td>	   
+								#parse('includes/outing.vm')
+							</td>
+							<td>
+								<div class="pull-right">
+								#foreach($availabilityOption in $outingAvailabilityCounts.get($outing.id).keySet())
+									<span class="$cssHelper.classFor($availabilityOption)">
+										$outingAvailabilityCounts.get($outing.id).get($availabilityOption)
+									</span>
+								#end
+								</div>		
+									
+				    		</td>	   			
+						</tr>
+						#end
+				</table>
 			#else
 				<p>No matching outings found.</p>
 			#end

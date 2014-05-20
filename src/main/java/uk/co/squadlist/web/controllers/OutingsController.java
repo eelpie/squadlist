@@ -1,12 +1,16 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -26,14 +30,17 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.PreferedSquadService;
@@ -94,8 +101,9 @@ public class OutingsController {
 		mv.addObject("endDate", endDate);
 		mv.addObject("month", month);
     	mv.addObject("outings", api.getSquadOutings(squadToShow.getId(), startDate, endDate));
-    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
-		mv.addObject("squads", api.getSquads());
+    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));		
+    	mv.addObject("outingAvailabilityCounts", buildOutingAvailabilityCounts(squadToShow, startDate, endDate));    	
+    	mv.addObject("squads", api.getSquads());
     	return mv;
     }
 	
@@ -233,6 +241,29 @@ public class OutingsController {
 		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null);	// TODO validation step
 		newOuting.setNotes(outingDetails.getNotes());	// TODO flatten these lines into a constructor
 		return newOuting;
+	}
+	
+	private Map<String, Map<String, Integer>> buildOutingAvailabilityCounts(final Squad squad, Date startDate, Date endDate) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		final Map<String, Map<String, Integer>> results = Maps.newHashMap();
+
+		final List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
+		for (OutingWithSquadAvailability outingWithAvailability : api.getSquadAvailability(squad.getId(), startDate, endDate)) {			
+			final Map<String, Integer> counts = Maps.newHashMap();			
+			for(AvailabilityOption availabilityOption : availabilityOptions) {
+				counts.put(availabilityOption.getLabel(), 0);	// TODO there's a Guava map which doesn't need this
+			}
+			
+			final Map<String, String> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
+			for (String availabilityOption : membersAvailabilityForThisOuting.values()) {	// TODO api should be typed?
+				if (availabilityOption != null) {	// TODO should api have explict nulls?
+					int count = counts.get(availabilityOption);
+					count = count + 1;
+					counts.put(availabilityOption, count);
+				}
+			}
+			results.put(outingWithAvailability.getOuting().getId(), counts);
+		}
+		return results;
 	}
     
 }
