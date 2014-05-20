@@ -10,28 +10,30 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.views.DateHelper;
+import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class MyOutingsController {
 		
 	private final LoggedInUserService loggedInUserService;
 	private final InstanceSpecificApiClient api;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api) {
+	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, ViewFactory viewFactory) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
+		this.viewFactory = viewFactory;
 	}
 	
 	@RequestMapping("/")
     public ModelAndView outings() throws Exception {
-    	ModelAndView mv = new ModelAndView("myOutings");
+    	final ModelAndView mv = viewFactory.getView("myOutings");
     	final String loggedInUser = loggedInUserService.getLoggedInUser();
-		mv.addObject("loggedInUser", loggedInUser);		
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();	// TODO probably needs to show all
 		
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
