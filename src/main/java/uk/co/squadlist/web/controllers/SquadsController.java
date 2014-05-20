@@ -17,6 +17,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class SquadsController {
@@ -26,12 +27,14 @@ public class SquadsController {
 	private final InstanceSpecificApiClient api;
 	private final LoggedInUserService loggedInUserService;
 	private final UrlBuilder urlBuilder;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public SquadsController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
+	public SquadsController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder, ViewFactory viewFactory) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
+		this.viewFactory = viewFactory;
 	}
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
@@ -58,7 +61,7 @@ public class SquadsController {
     }
 	
 	private ModelAndView renderNewSquadForm() {
-		return new ModelAndView("newSquad").addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+		return viewFactory.getView("newSquad").addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 	}
 	
 }
