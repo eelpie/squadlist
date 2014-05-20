@@ -248,7 +248,7 @@ public class OutingsController {
 
 		final List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
 		for (OutingWithSquadAvailability outingWithAvailability : api.getSquadAvailability(squad.getId(), startDate, endDate)) {			
-			final Map<String, Integer> counts = Maps.newHashMap();			
+			final Map<String, Integer> counts = Maps.newTreeMap();			
 			for(AvailabilityOption availabilityOption : availabilityOptions) {
 				counts.put(availabilityOption.getLabel(), 0);	// TODO there's a Guava map which doesn't need this
 			}
