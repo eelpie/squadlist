@@ -247,7 +247,7 @@ public class OutingsController {
 		final Map<String, Map<String, Integer>> results = Maps.newHashMap();
 
 		final List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
-		for (OutingWithSquadAvailability outingWithAvailability : api.getSquadAvailability(squad.getId(), startDate, endDate)) {			
+		for (OutingWithSquadAvailability outingWithAvailability : api.getSquadAvailability(squad.getId(), startDate, endDate)) {	// TODO Someone (the API) needs to filter non current squad members out.
 			final Map<String, Integer> counts = Maps.newTreeMap();			
 			for(AvailabilityOption availabilityOption : availabilityOptions) {
 				counts.put(availabilityOption.getLabel(), 0);	// TODO there's a Guava map which doesn't need this
