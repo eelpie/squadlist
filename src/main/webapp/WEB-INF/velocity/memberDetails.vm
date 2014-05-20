@@ -10,8 +10,8 @@
 	</div>
 	<hr/>
 
-	<p>$member.firstName $member.lastName</p>
-	<p>$!member.gender</p>
+	<p>Gender: $!member.gender</p>
+	<p>Role: $!member.role</p>
 	<p>Date of birth: #if($member.dateOfBirth)
 			$dateFormatter.dayMonthYear($member.dateOfBirth)
 		#end
