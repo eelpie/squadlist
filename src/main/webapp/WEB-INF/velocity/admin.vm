@@ -38,7 +38,14 @@
 		
 			<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>	
 			<hr/>
-			
+				
+			<h4>Admins</h4>			
+			<ul>
+			#foreach( $member in $admins )
+				<li>#parse('includes/member.vm')</li>
+			#end
+			</ul>
+			<hr/>
 			
 			<h4>Availability options</h4>
 		
