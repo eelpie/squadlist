@@ -3,20 +3,20 @@ package uk.co.squadlist.web.views;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-
 public class DateHelperTest {
 
-	//@Test
+	@Test
 	public void canOutputListOfMonthNames() throws Exception {
-		final List<String> months = DateHelper.getMonths();
+		final Map<Integer, String> months = DateHelper.getMonths();
 		
 		assertEquals(12, months.size());
-		assertEquals("Jan", months.get(0));
-		assertEquals("Dec", months.get(11));
+		assertEquals("Jan", months.get(1));
+		assertEquals("Nov", months.get(11));
 	}
 	
 	@Test

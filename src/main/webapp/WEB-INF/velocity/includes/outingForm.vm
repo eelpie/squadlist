@@ -56,17 +56,7 @@
 					#end
 				</select>
 			</div>
-		</div>					
-		 <div class="col-sm-2">
-			<div class="controls">
-				#springBind("outing.ampm")	
-				<select name="${status.expression}" class="form-control">	
-					<option value="AM">AM
-					<option value="PM">PM
-				</select>
-				#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end							
-			</div>
-		</div>				
+		</div>		
 	</div>
 	
 	<div class="form-group">

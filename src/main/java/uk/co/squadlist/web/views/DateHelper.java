@@ -31,7 +31,7 @@ public class DateHelper {
 		return years;
 	}
 	
-	public Map<Integer, String> getMonths() {
+	public static Map<Integer, String> getMonths() {
 		final Map<Integer, String> months = Maps.newTreeMap();
 		for (int i = 1; i <= 12; i++) {		
 			months.put(i, new DateTime(1970, i, 1, 0, 0, 0).toString("MMM"));
@@ -41,7 +41,7 @@ public class DateHelper {
 	
 	public static List<String> getHours() {
 		final List<String> hours = Lists.newArrayList();
-		for (int i = 1; i <= 12; i = i + 1) {
+		for (int i = 1; i <= 23; i = i + 1) {
 			hours.add(Integer.toString(i));
 		}
 		return hours;

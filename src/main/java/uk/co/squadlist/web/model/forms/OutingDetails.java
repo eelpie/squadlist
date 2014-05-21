@@ -7,8 +7,6 @@ public class OutingDetails {
 
 	private int year, month, day, hour, minute;
 	@NotBlank
-	private String ampm;
-	@NotBlank
 	private String squad;
 	private String notes;
 	
@@ -66,15 +64,7 @@ public class OutingDetails {
 	public void setMinute(Integer minute) {
 		this.minute = minute;
 	}
-
-	public String getAmpm() {
-		return ampm;
-	}
-
-	public void setAmpm(String ampm) {
-		this.ampm = ampm;
-	}
-
+	
 	public String getSquad() {
 		return squad;
 	}
@@ -93,9 +83,9 @@ public class OutingDetails {
 
 	@Override
 	public String toString() {
-		return "OutingDetails [ampm=" + ampm + ", day=" + day + ", hour="
-				+ hour + ", minute=" + minute + ", month=" + month + ", squad="
+		return "OutingDetails [day=" + day + ", hour=" + hour + ", minute="
+				+ minute + ", month=" + month + ", notes=" + notes + ", squad="
 				+ squad + ", year=" + year + "]";
 	}
-
+	
 }
