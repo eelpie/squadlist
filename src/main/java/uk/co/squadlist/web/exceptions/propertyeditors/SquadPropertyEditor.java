@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.Squad;
 
 @Component
 public class SquadPropertyEditor extends PropertyEditorSupport {

@@ -17,9 +17,11 @@
 		</div>
 		<div class="col-sm-2">
 			#springBind("outing.month")					
+			
+			#set($months =  $dateHelper.months)
 			<select name="${status.expression}" class="form-control">
-				#foreach($month in $dateHelper.months)
-					<option value="$month" #if($month == $outing.month) SELECTED #end>$month
+				#foreach($month in $months.keySet())
+					<option value="$month" #if($month == $outing.month) SELECTED #end>$months.get($month)
 				#end
 			</select>
 			#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end

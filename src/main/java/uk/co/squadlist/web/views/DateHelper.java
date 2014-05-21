@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.views;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -8,6 +9,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Component
 public class DateHelper {
@@ -29,14 +31,12 @@ public class DateHelper {
 		return years;
 	}
 	
-	public static List<String> getMonths() {
-		final List<String> days = Lists.newArrayList();
-		for (int i = 1; i <= 12; i++) {
-			DateTime month = new DateTime(1970, i, 1, 0, 0, 0);
-			//days.add(month.toString("MMM"));
-			days.add(Integer.toString(i));
+	public Map<Integer, String> getMonths() {
+		final Map<Integer, String> months = Maps.newTreeMap();
+		for (int i = 1; i <= 12; i++) {		
+			months.put(i, new DateTime(1970, i, 1, 0, 0, 0).toString("MMM"));
 		}
-		return days;
+		return months;
 	}
 	
 	public static List<String> getHours() {
