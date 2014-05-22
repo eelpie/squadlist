@@ -9,6 +9,7 @@ public class OutingDetails {
 	@NotBlank
 	private String squad;
 	private String notes;
+	private Boolean repeats;
 	
 	public OutingDetails() {
 	}
@@ -80,12 +81,21 @@ public class OutingDetails {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+	
+	public Boolean getRepeats() {
+		return repeats;
+	}
+
+	public void setRepeats(Boolean repeats) {
+		this.repeats = repeats;
+	}
 
 	@Override
 	public String toString() {
 		return "OutingDetails [day=" + day + ", hour=" + hour + ", minute="
-				+ minute + ", month=" + month + ", notes=" + notes + ", squad="
-				+ squad + ", year=" + year + "]";
+				+ minute + ", month=" + month + ", notes=" + notes
+				+ ", repeats=" + repeats + ", squad=" + squad + ", year="
+				+ year + "]";
 	}
 	
 }

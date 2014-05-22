@@ -21,10 +21,25 @@
 		</div>
 		
 		<div class="col-xs-10">		
-			<h4>Adding a new outing</h4>			
+			<h4>Adding a new outing</h4>
+					
 			<form class="form-horizontal" role="form" action="$urlBuilder.applicationUrl('/outings/new')" method="POST">			
 				#parse('includes/outingForm.vm')
 				
+				#springBind("outing.repeats")																			
+				<div class="form-group">
+	    			<div class="col-sm-2"></div>
+				    <div class="col-sm-5">
+			    		<div class="checkbox">
+							<label>
+								<input type="checkbox" value="$squad.id" name="${status.expression}" #if($status.getValue()) CHECKED #end>
+								 	This outing repeats for the next 2 weeks.
+								</input>
+							</label>
+						</div>
+					</div>
+				</div>
+						
 				<div class="control-group">
 					<div  class="col-sm-2">
 					</div>	
@@ -32,9 +47,9 @@
 						<button type="submit" class="btn">Add outing</button>
 						<a href="$urlBuilder.applicationUrl('/outings')"><button class="btn btn-primary" type="button">Cancel</button></a>					
 					</div>
-				</div>
-				
-			</form>			
+				</div>				
+			</form>
+							
 		</div>	
 	</div>
 </div>
