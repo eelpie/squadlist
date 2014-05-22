@@ -32,13 +32,15 @@
 				    <div class="col-sm-5">
 			    		<div class="checkbox">
 							<label>
-								<input type="checkbox" value="$squad.id" name="${status.expression}" #if($status.getValue()) CHECKED #end>
+								<input type="checkbox" value="true" name="${status.expression}" #if($status.getValue()) CHECKED #end>
 								 	This outing repeats for the next 2 weeks.
 								</input>
 							</label>
 						</div>
+						#foreach($error in $status.errorMessages)<div class="alert alert-warning">$error</div>#end						
 					</div>
 				</div>
+				
 						
 				<div class="control-group">
 					<div  class="col-sm-2">
@@ -47,7 +49,8 @@
 						<button type="submit" class="btn">Add outing</button>
 						<a href="$urlBuilder.applicationUrl('/outings')"><button class="btn btn-primary" type="button">Cancel</button></a>					
 					</div>
-				</div>				
+				</div>
+				
 			</form>
 							
 		</div>	
