@@ -1,7 +1,5 @@
 package uk.co.squadlist.web.api;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,16 +11,17 @@ class InstanceConfig {
 	private final static Logger log = Logger.getLogger(InstanceConfig.class);
 	
 	private final String instance;
-	private final HttpServletRequest request;
+
+	private final RequestHostService requestHostService;
 	
 	@Autowired
-	public InstanceConfig(@Value("#{squadlist['instance']}") String instance, HttpServletRequest request) {
+	public InstanceConfig(@Value("#{squadlist['instance']}") String instance, RequestHostService requestHostService) {
 		this.instance = instance;
-		this.request = request;
+		this.requestHostService = requestHostService;
 	}
 	
 	public String getInstance() {
-		log.info("Request host is: " + request.getServerName());
+		log.info("Request host is: " + requestHostService.getRequestHost());
 		return instance;
 	}
 
