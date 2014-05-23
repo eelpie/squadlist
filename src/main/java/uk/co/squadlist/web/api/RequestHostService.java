@@ -16,7 +16,7 @@ public class RequestHostService {
 		final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 
-		final String serverName = request.getServerName();
+		final String serverName = request.getHeader("hostname");
 		log.info("Request host is: " + serverName);
 		return serverName;
 	}
