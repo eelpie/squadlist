@@ -20,7 +20,8 @@ public class RequestHostService {
 		
 		Enumeration headerNames = request.getHeaderNames();
 		while(headerNames.hasMoreElements()) {
-			log.info(headerNames.nextElement());
+			String header = (String) headerNames.nextElement();
+			log.info(header + ": " + request.getHeader(header));
 		}
 		
 		final String serverName = request.getHeader("host");
