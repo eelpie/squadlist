@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 class InstanceConfig {
 	
@@ -21,8 +23,14 @@ class InstanceConfig {
 	}
 	
 	public String getInstance() {
-		log.info("Request host is: " + requestHostService.getRequestHost());
-		return instance;
+		if (!Strings.isNullOrEmpty(instance)) {
+			log.info("Using configured instance: " + instance);
+			return instance;			
+		}
+		
+		String requestHost = requestHostService.getRequestHost();
+		log.info("Request host is: " + requestHost);
+		return requestHost.split("\\.")[0];
 	}
 
 }
