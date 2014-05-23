@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.api;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -15,8 +17,13 @@ public class RequestHostService {
 	public String getRequestHost() {
 		final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
-
-		final String serverName = request.getHeader("hostname");
+		
+		Enumeration headerNames = request.getHeaderNames();
+		while(headerNames.hasMoreElements()) {
+			log.info(headerNames.nextElement());
+		}
+		
+		final String serverName = request.getHeader("host");
 		log.info("Request host is: " + serverName);
 		return serverName;
 	}
