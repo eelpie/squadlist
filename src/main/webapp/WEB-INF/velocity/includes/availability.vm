@@ -1,0 +1,2 @@
+<span class="label label-info pull-right $cssHelper.classFor($availability)">$availability</span>
+												

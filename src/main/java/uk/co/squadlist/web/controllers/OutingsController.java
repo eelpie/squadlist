@@ -46,8 +46,6 @@ import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
-import uk.co.squadlist.web.views.JsonSerializer;
-import uk.co.squadlist.web.views.JsonView;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Maps;
@@ -207,11 +205,9 @@ public class OutingsController {
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(outingId);
     	
-    	OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
+    	final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
     	
-    	final ModelAndView mv = new ModelAndView(new JsonView(new JsonSerializer()));
-		mv.addObject("data", result);
-    	return mv;
+    	return viewFactory.getView("includes/availability").addObject("availability", result.getAvailability());
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {

@@ -1,6 +1,8 @@
 #parse('includes/head.vm')
 #navTabs('My outings')
 
+<span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('/wait30.gif')"></span>
+												
 <div class="container-fluid">
 
 	<div class="row">
@@ -45,10 +47,15 @@
 												#end
 												<option value="$option.label" $selected>$option.label</option>
 											#end
-										</select>								
+										</select>
+									</td>
+									<td>								
 										#if ($outingAvailability.availability) 						
-											<span id="currentAvailability${outingAvailability.outing.id}" 
-												class="label label-info pull-right $cssHelper.classFor($outingAvailability.availability)">$outingAvailability.availability</span>
+											<span id="currentAvailability${outingAvailability.outing.id}" class="pull-right">
+												#set($availability = $outingAvailability.availability)
+												#parse('includes/availability.vm')											
+											</span>
+										
 										#else
 							 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
 										#end				
@@ -67,16 +74,13 @@
 <script>
 	$('.availabilityDropdown').change(function() {
     	outingId = $(this).attr('id');
-    	newAvailability = $(this).val();    						
+    	newAvailability = $(this).val();
+    	
+		$("#currentAvailability" + outingId).html($('#spinner').html())
+    	    						
     	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
-    		if (data.availability) {
-	    		$("#currentAvailability" + outingId).attr('class', 'label label-info pull-right');
-				$("#currentAvailability" + outingId).text(data.availability);
-	    	} else {
-	    		$("#currentAvailability" + outingId).attr('class', 'pull-right');
-	    		$("#currentAvailability" + outingId).text('TBA');	    			    		
-	    	}
+    		$("#currentAvailability" + outingId).html(data);    		
 		});
   	});
 </script>
