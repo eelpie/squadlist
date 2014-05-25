@@ -2,44 +2,65 @@
 
 <div class="container-fluid">
 
-	<div class="row-fluid">
-	
-		<div class="span1"></div>
-		
-		<div class="span10">
+	<div class="row">
+		<div class="col-xs-8">
 			<h3>Squadlist - $instance.name</h3>
-			
-		   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">
-		   		            
-		   		<label class="control-label" for="j_username">Username</label>
-		   	                                               
-		        <div class="control-group">
-			        <div class="controls">          
-			        	<input type="text" name="j_username" value="" placeholder="Username" class="span8">
-			        </div>
-		        </div>
-		        		        
-		        <div class="control-group">
-		            <label class="control-label" for="j_password">Password</label>
-		        
-		       		<div class="controls">
-		            	<input type="password" name="j_password" placeholder="Password" class="span8"/>
-		            	
-		            	<p><a href="$urlBuilder.applicationUrl('/reset-password')">Forgotten your password?</a></p>
-		         	</div>
-		        </div>
-		        	        		
-				#if($errors)
-			        <div id="alert" class="alert">Incorrect username or password</div>
-				#end
-		                
-		        <div class="form-actions">
-		        	<input type="submit" name="login" value="Log In " class="btn" />
-		        </div>
-			</form>        
 		</div>
-		
 	</div>
+	<hr/>
+		
+	<div class="row">		
+		<div class="col-xs-12">					
+		   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal">		   	   		      							
+				<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Username</label>
+				    <div class="col-sm-6">					
+				        <input type="text" class="form-control" name="j_username" placeholder="Username">				        
+				      	#foreach($error in $status.errorMessages)
+							<div class="alert alert-warning">$error</div>
+						#end				      					   				
+				    </div>
+				</div>
+				        
+		   	  	<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Password</label>
+				    <div class="col-sm-6">					
+				        <input type="password" class="form-control" name="j_password" placeholder="Password">
+				       	<p><a href="$urlBuilder.applicationUrl('/reset-password')">Forgotten your password?</a></p>				     				       	
+				    </div>
+				</div>
+								
+				<div class="row">	
+					<div class="col-sm-2">
+					</div>	
+		   	
+				   	<div class="col-sm-6">					
+						#if($errors)
+					        <div id="alert" class="alert alert-warning">Incorrect username or password</div>
+						#end
+					</div>					
+				</div>
+	
+				<div class="control-group">
+					<div  class="col-sm-2">
+					</div>	
+					<div class="controls">
+						<input type="submit" name="login" value="Log In " class="btn" />
+					</div>
+				</div>		   	            
+		     </form>	     
+		</div>		
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-6">
+			<p>
+			<br/>				
+			<p>If you are a $instance.name member who requires access to this copy of Squadlist, please contact your coach.</p>
+		</div>					
+	</div>				
+	<hr/>
 	
 </div>
 </body>
