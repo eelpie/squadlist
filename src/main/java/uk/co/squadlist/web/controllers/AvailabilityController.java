@@ -72,9 +72,8 @@ public class AvailabilityController {
     }
 	
 	private Map<String, String> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
-		Map<String, String> allAvailability = Maps.newHashMap();
+		final Map<String, String> allAvailability = Maps.newHashMap();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
-    		outings.add(outingWithSquadAvailability.getOuting());
 			final Map<String, String> outingAvailability = outingWithSquadAvailability.getAvailability();
 			for (String member : outingAvailability.keySet()) {
 				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
