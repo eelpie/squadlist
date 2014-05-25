@@ -1,2 +1,7 @@
-<span class="label label-info pull-right $cssHelper.classFor($availability)">$availability</span>
-												
+#if ($availability)
+	<span class="label label-info pull-right $cssHelper.classFor($availability)">
+		$availability
+	</span>
+#else
+	TBA
+#end												
