@@ -5,7 +5,7 @@
 
 	<div class="row">
 		<div class="col-xs-8">
-			<h4>Add squad</h4>
+			<h4>Edit squad</h4>
 		</div>		
 	</div>
 	<hr/>
@@ -13,10 +13,10 @@
 	<div class="row">			
 		<div class="col-xs-12">
 		
-			<form method="POST" action="$urlBuilder.newSquadUrl()" class="form-horizontal">		
+			<form method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">		
 				
 				<div class="form-group">				
-					#springBind("squad.name")				
+					#springBind("squadDetails.name")				
 			   		<label for="squad" class="col-sm-2 control-label">Name</label>
 				    <div class="col-sm-5">    
 						<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}" class="form-control" />
@@ -30,7 +30,7 @@
 					<div  class="col-sm-2">
 					</div>	
 					<div class="controls">
-						<button type="submit" class="btn">Add squad</button>
+						<button type="submit" class="btn">Update squad</button>
 						<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
 					</div>
 				</div>

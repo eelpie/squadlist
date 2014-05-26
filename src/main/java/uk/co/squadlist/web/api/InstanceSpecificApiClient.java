@@ -129,5 +129,9 @@ public class InstanceSpecificApiClient {
 	public OutingAvailability setOutingAvailability(String loggedInUser, String id, String availability) {
 		return api.setOutingAvailability(instanceConfig.getInstance(), loggedInUser, id, availability);
 	}
+
+	public Squad updateSquad(Squad squad) {
+		return api.updateSquad(instanceConfig.getInstance(), squad);
+	}
 	
 }

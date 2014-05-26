@@ -29,7 +29,7 @@
 			#if($squads && !$squads.isEmpty())
 				<ul>
 					#foreach( $squad in $squads )
-						<li><a href="$urlBuilder.squadUrl($squad)">$squad.name</a></li>
+						<li><a href="$urlBuilder.editSquadUrl($squad)">$squad.name</a></li>
 					#end
 				</ul>
 			#else

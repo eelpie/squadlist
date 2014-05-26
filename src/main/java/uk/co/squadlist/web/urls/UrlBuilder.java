@@ -52,6 +52,10 @@ public class UrlBuilder {
 		return applicationUrl("/squad/new");
 	}
 	
+	public String editSquadUrl(Squad squad) {
+		return applicationUrl("/squad/" + squad.getId() + "/edit");
+	}
+	
 	public String adminUrl() {
 		return applicationUrl("/admin");
 	}
