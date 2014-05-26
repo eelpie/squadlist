@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
@@ -71,10 +72,10 @@ public class AvailabilityController {
 		return mv;		
     }
 	
-	private Map<String, String> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
-		final Map<String, String> allAvailability = Maps.newHashMap();
+	private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
+		final Map<String, AvailabilityOption> allAvailability = Maps.newHashMap();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
-			final Map<String, String> outingAvailability = outingWithSquadAvailability.getAvailability();
+			final Map<String, AvailabilityOption> outingAvailability = outingWithSquadAvailability.getAvailability();
 			for (String member : outingAvailability.keySet()) {
 				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
 			}

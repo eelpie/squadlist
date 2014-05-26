@@ -49,8 +49,8 @@
 										<td>
 											#if($status == '') 
 												TBA
-											#else
-												<span class="label label-info $cssHelper.classFor($status)">$status</span>
+											#else											 
+												<span class="label label-info $cssHelper.classFor($status.label)">$status.label</span>
 											#end
 										</td>
 									#end

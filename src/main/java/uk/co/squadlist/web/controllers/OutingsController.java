@@ -249,12 +249,12 @@ public class OutingsController {
 				counts.put(availabilityOption.getLabel(), 0);	// TODO there's a Guava map which doesn't need this
 			}
 			
-			final Map<String, String> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
-			for (String availabilityOption : membersAvailabilityForThisOuting.values()) {	// TODO api should be typed?
+			final Map<String, AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
+			for (AvailabilityOption availabilityOption : membersAvailabilityForThisOuting.values()) {
 				if (availabilityOption != null) {	// TODO should api have explict nulls?
-					int count = counts.get(availabilityOption);
+					int count = counts.get(availabilityOption.getLabel());
 					count = count + 1;
-					counts.put(availabilityOption, count);
+					counts.put(availabilityOption.getLabel(), count);
 				}
 			}
 			results.put(outingWithAvailability.getOuting().getId(), counts);
