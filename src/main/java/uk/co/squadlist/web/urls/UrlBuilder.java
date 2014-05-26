@@ -1,8 +1,12 @@
 package uk.co.squadlist.web.urls;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
+import uk.co.squadlist.web.api.RequestHostService;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -10,9 +14,16 @@ import uk.co.squadlist.web.model.Squad;
 @Component("urlBuilder")
 public class UrlBuilder {
 	
-	@Value("#{squadlist['baseUrl']}")
-	private String baseUrl;
-    
+	private final RequestHostService requestHostService;
+	private final String baseUrl;
+	
+	@Autowired
+	public UrlBuilder(RequestHostService requestHostService, 
+			@Value("#{squadlist['baseUrl']}") String baseUrl) {
+		this.requestHostService = requestHostService;
+		this.baseUrl = baseUrl;
+	}
+
 	public String applicationUrl(String uri) {
 		return getBaseUrl() + uri;
 	}
@@ -78,7 +89,10 @@ public class UrlBuilder {
 	}
 	
 	private String getBaseUrl() {
-		return baseUrl;
+		if (!Strings.isNullOrEmpty(baseUrl)) {
+			return baseUrl;			
+		}
+		return "http://" + requestHostService.getRequestHost();
 	}
 	
 }
