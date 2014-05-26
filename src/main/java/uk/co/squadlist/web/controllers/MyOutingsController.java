@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,10 +34,7 @@ public class MyOutingsController {
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();	// TODO probably needs to show all
-		
-		mv.addObject("startDate", startDate);
-		mv.addObject("endDate", endDate);
+		final Date endDate = DateTime.now().plusYears(1).toDate();
 		
 		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
 		

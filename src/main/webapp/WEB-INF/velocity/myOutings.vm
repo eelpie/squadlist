@@ -22,7 +22,7 @@
 		   <div class="row">
 		   		<div class="col-md-12">	   
 					<h5>No current outings</h5>
-					<p>There are no outings scheduled for your squads between $dateFormatter.dayMonthYear($startDate) and $dateFormatter.dayMonthYear($endDate).</p>			
+					<p>There are no outings scheduled for your squads.</p>			
 				</div>
 			</div>
 	
