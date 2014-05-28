@@ -16,11 +16,11 @@
 	<hr/>
 
 	<div class="row">
-		<div class="col-xs-2">
+		<div class="col-xs-3">
 			#outingsNav()
 		</div>
 		
-		<div class="col-xs-10">
+		<div class="col-xs-9">
 			<span class="pull-right"><a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a></span>
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 			<p>$!outing.notes</p>	

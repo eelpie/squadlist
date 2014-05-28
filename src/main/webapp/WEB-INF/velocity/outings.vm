@@ -16,11 +16,11 @@
 	<hr/>
 
 	<div class="row">
-		<div class="col-xs-2">
+		<div class="col-xs-3">
 			#outingsNav()
 		</div>
 		
-		<div class="col-xs-10">
+		<div class="col-xs-9">
 			
 			#if(!$outings.isEmpty())			
 				<table style="font-size: 14px;" class="table table-striped">
