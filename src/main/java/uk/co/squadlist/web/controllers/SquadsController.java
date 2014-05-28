@@ -38,14 +38,14 @@ public class SquadsController {
 	}
 	
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
-    public ModelAndView newSquad(@ModelAttribute("squad") SquadDetails squadDetails) throws Exception {    	
-		return renderNewSquadForm();
+    public ModelAndView newSquad(@ModelAttribute("squadDetails") SquadDetails squadDetails) throws Exception {    	
+		return renderNewSquadForm(new SquadDetails());
     }
 
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
     public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) {
 		if (result.hasErrors()) {
-			return renderNewSquadForm();
+			return renderNewSquadForm(squadDetails);
 		}
 		
 		try {
@@ -56,7 +56,7 @@ public class SquadsController {
 		} catch (InvalidSquadException e) {
 			log.info("Invalid squad");
 			result.rejectValue("name", null, "squad name is already in use");	         
-			return renderNewSquadForm();
+			return renderNewSquadForm(squadDetails);
 		}
     }
 	
@@ -68,13 +68,6 @@ public class SquadsController {
 		squadDetails.setName(squad.getName());
 		
 		return renderEditSquadForm(squad, squadDetails);
-	}
-
-	private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails) {
-		final ModelAndView mv = viewFactory.getView("editSquad");
-		mv.addObject("squad", squad);
-		mv.addObject("squadDetails", squadDetails);
-		return mv;
 	}
 	
 	@RequestMapping(value="/squad/{id}/edit", method=RequestMethod.POST)
@@ -91,8 +84,15 @@ public class SquadsController {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));	
     }
 	
-	private ModelAndView renderNewSquadForm() {
-		return viewFactory.getView("newSquad");
+	private ModelAndView renderNewSquadForm(SquadDetails squadDetails) {
+		return viewFactory.getView("newSquad").addObject("squadDetails", squadDetails);
+	}
+	
+	private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails) {
+		final ModelAndView mv = viewFactory.getView("editSquad");
+		mv.addObject("squad", squad);
+		mv.addObject("squadDetails", squadDetails);
+		return mv;
 	}
 	
 }

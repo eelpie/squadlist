@@ -16,7 +16,7 @@
 			<form method="POST" action="$urlBuilder.newSquadUrl()" class="form-horizontal">		
 				
 				<div class="form-group">				
-					#springBind("squad.name")				
+					#springBind("squadDetails.name")				
 			   		<label for="squad" class="col-sm-2 control-label">Name</label>
 				    <div class="col-sm-5">    
 						<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}" class="form-control" />
