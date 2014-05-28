@@ -24,7 +24,8 @@
 			
 			#if(!$outings.isEmpty())			
 				<table style="font-size: 14px;" class="table table-striped">
-					#foreach($outing in $outings)
+					#foreach($outingWithAvailability in $outings)
+						#set($outing = $outingWithAvailability.outing)
 						<tr>
 				   			<td>	   
 								#parse('includes/outing.vm')

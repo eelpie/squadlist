@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
+import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
@@ -95,9 +97,12 @@ public class OutingsController {
 		mv.addObject("startDate", startDate);
 		mv.addObject("endDate", endDate);
 		mv.addObject("month", month);
-    	mv.addObject("outings", api.getSquadOutings(squadToShow.getId(), startDate, endDate));
-    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));		
-    	mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadToShow, startDate, endDate));    	
+    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
+    	
+		final List<OutingWithSquadAvailability> squadOutings = api.getSquadAvailability(squadToShow.getId(), startDate, endDate);
+		mv.addObject("outings", squadOutings);
+    	mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
+    	
     	mv.addObject("squads", api.getSquads());
     	return mv;
     }
