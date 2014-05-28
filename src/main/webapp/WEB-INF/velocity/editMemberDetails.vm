@@ -37,8 +37,8 @@
 					<div class="col-sm-2">
 					</div>
 					<div class="controls">
-						<button type="submit" class="btn">Update details</button>
-						<a href="$urlBuilder.memberUrl($memberId)"><button class="btn btn-primary" type="button">Cancel</button></a>					
+						<button type="submit" class="btn btn-primary">Update details</button>
+						#cancel($urlBuilder.memberUrl($memberId))			
 					</div>
 				</div>				
 			</form>		

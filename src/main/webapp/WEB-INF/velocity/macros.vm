@@ -132,3 +132,7 @@
 		</ul>
 	</div>
 #end
+
+#macro(cancel $action)
+	<a href="$action"><button class="btn" type="button">Cancel</button></a>
+#end

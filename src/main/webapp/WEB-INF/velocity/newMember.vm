@@ -25,7 +25,7 @@
 					</div>
 					<div class="controls">
 						<input type="submit" class="btn btn-primary" value="Add member" />
-						<a href="$urlBuilder.adminUrl()"><button class="btn" type="button">Cancel</button></a>					
+						#cancel($urlBuilder.adminUrl())				
 					</div>
 				</div>				
 			</form>
