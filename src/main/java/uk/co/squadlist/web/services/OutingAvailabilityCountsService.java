@@ -17,6 +17,7 @@ import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AtomicLongMap;
 
 @Component
 public class OutingAvailabilityCountsService {
@@ -28,26 +29,17 @@ public class OutingAvailabilityCountsService {
 		this.api = api;
 	}
 	
-	public Map<String, Map<String, Integer>> buildOutingAvailabilityCounts(final Squad squad, Date startDate, Date endDate) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
-		final Map<String, Map<String, Integer>> results = Maps.newHashMap();
+	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(final Squad squad, Date startDate, Date endDate) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		final Map<String, Map<String, Long>> results = Maps.newHashMap();
 
-		final List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
 		final List<OutingWithSquadAvailability> squadOutings = api.getSquadAvailability(squad.getId(), startDate, endDate);
 		for (OutingWithSquadAvailability outingWithAvailability : squadOutings) {	// TODO Someone (the API) needs to filter non current squad members out.
-			final Map<String, Integer> counts = Maps.newTreeMap();			
-			for(AvailabilityOption availabilityOption : availabilityOptions) {
-				counts.put(availabilityOption.getColour(), 0);	// TODO there's a Guava map which doesn't need this
-			}
-			
+			final AtomicLongMap<String> counts = AtomicLongMap.create();			
 			final Map<String, AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
 			for (AvailabilityOption availabilityOption : membersAvailabilityForThisOuting.values()) {
-				if (availabilityOption != null) {	// TODO should api have explict nulls?
-					int count = counts.get(availabilityOption.getColour());
-					count = count + 1;
-					counts.put(availabilityOption.getColour(), count);
-				}
-			}
-			results.put(outingWithAvailability.getOuting().getId(), counts);
+				counts.addAndGet(availabilityOption.getColour(), 1);				
+			}			
+			results.put(outingWithAvailability.getOuting().getId(), counts.asMap());
 		}
 		return results;
 	}
