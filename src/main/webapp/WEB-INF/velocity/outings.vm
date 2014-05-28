@@ -30,12 +30,12 @@
 								#parse('includes/outing.vm')
 							</td>
 							<td>
-								<div class="pull-right">
-								#foreach($availabilityOption in $outingAvailabilityCounts.get($outing.id).keySet())
-									<span class="$cssHelper.classFor($availabilityOption) badge" title="$availabilityOption">
-										$outingAvailabilityCounts.get($outing.id).get($availabilityOption)
-									</span>
-								#end
+								<div class="pull-right">								
+									#foreach($colour in $outingAvailabilityCounts.get($outing.id).keySet())
+										<span class="badge" style="background-color: $colour" title="$availabilityOption">
+											$outingAvailabilityCounts.get($outing.id).get($colour)
+										</span>
+									#end
 								</div>		
 									
 				    		</td>	   			
