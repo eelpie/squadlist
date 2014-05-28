@@ -30,8 +30,8 @@
 					<div  class="col-sm-2">
 					</div>	
 					<div class="controls">
-						<button type="submit" class="btn">Add squad</button>
-						<a href="$urlBuilder.adminUrl()"><button class="btn btn-primary" type="button">Cancel</button></a>					
+						<button type="submit" class="btn btn-primary">Add squad</button>
+						<a href="$urlBuilder.adminUrl()"><button class="btn" type="button">Cancel</button></a>					
 					</div>
 				</div>
 									

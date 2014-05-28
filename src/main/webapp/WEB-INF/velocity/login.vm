@@ -41,7 +41,7 @@
 					<div class="col-sm-2">
 					</div>	
 					<div class="controls">
-						<input type="submit" name="login" value="Log In " class="btn" />
+						<input type="submit" name="login" value="Log In " class="btn btn-primary" />
 					</div>
 				</div>		   	            
 		     </form>	     
