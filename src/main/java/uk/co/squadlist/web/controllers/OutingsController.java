@@ -29,6 +29,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -142,8 +143,12 @@ public class OutingsController {
 			api.createOuting(newOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingsUrl()));
 			
+		} catch (InvalidOutingException e) {
+			result.addError(new ObjectError("outing", e.getMessage()));
+			return renderNewOutingForm(outingDetails);
+		
 		} catch (Exception e) {
-			result.addError(new ObjectError("outing", "Invalid outing"));
+			result.addError(new ObjectError("outing", "Unknown error"));
 			return renderNewOutingForm(outingDetails);
 		}
 	}
