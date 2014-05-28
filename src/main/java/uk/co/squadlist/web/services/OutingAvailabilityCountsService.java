@@ -21,7 +21,7 @@ public class OutingAvailabilityCountsService {
 	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(List<OutingWithSquadAvailability> squadOutings) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
 		final Map<String, Map<String, Long>> results = Maps.newHashMap();
 		
-		for (OutingWithSquadAvailability outingWithAvailability : squadOutings) {	// TODO Someone (the API) needs to filter non current squad members out.			
+		for (OutingWithSquadAvailability outingWithAvailability : squadOutings) {		
 			final AtomicLongMap<String> counts = AtomicLongMap.create();			
 			final Map<String, AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
 			for (AvailabilityOption availabilityOption : membersAvailabilityForThisOuting.values()) {
