@@ -178,6 +178,10 @@ public class OutingsController {
 			api.updateOuting(updatedOuting);
 			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 			
+		} catch (InvalidOutingException e) {
+			result.addError(new ObjectError("outing", e.getMessage()));
+			return renderEditOutingForm(outingDetails, outing);
+					
 		} catch (Exception e) {
 			log.error(e);
 			result.addError(new ObjectError("outing", "Unknown exception"));
