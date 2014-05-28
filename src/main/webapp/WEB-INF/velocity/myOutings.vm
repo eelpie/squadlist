@@ -37,12 +37,12 @@
 						   				#set($outing = $outingAvailability.outing)
 										#parse('includes/outing.vm')	
 								    </td>					
-						   			<td>
+						   			<td>						   			
 										<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
 											<option value="">TBA</option>		
 											#foreach($option in $availabilityOptions)
 												#set($selected = '')
-												#if ($outingAvailability.availability == $option.label) 
+												#if ($outingAvailability && $outingAvailability.availability.label == $option.label) 
 													#set($selected = 'SELECTED')
 												#end
 												<option value="$option.label" $selected>$option.label</option>

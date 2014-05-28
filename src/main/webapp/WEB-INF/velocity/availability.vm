@@ -43,15 +43,11 @@
 								<tr>				
 									<td>#parse('includes/member.vm')</td>				
 									#foreach($outing in $outings)
+										#set($availability = '')
 										#set($key = "${outing.id}-$member.id")
-										#set($status = '')					
-										#set($status = $availability.get($key))
+										#set($availability = $squadAvailability.get($key))
 										<td>
-											#if($status == '') 
-												TBA
-											#else											 
-												<span class="label label-info $cssHelper.classFor($status.label)">$status.label</span>
-											#end
+											#parse('includes/availability.vm')
 										</td>
 									#end
 								</tr>

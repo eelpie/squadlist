@@ -1,6 +1,6 @@
-#if ($availability)
-	<span class="label label-info pull-right $cssHelper.classFor($availability)">
-		$availability
+#if ($availability && $availability != '')
+	<span class="label label-info" style="background-color: $cssHelper.classFor($availability)">
+		$availability.label
 	</span>
 #else
 	TBA

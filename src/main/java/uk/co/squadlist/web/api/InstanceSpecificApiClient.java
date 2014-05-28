@@ -114,7 +114,7 @@ public class InstanceSpecificApiClient {
 		return api.getOuting(instanceConfig.getInstance(), id);
 	}
 
-	public Map<String, String> getOutingAvailability(String id) throws UnknownOutingException {
+	public Map<String, AvailabilityOption> getOutingAvailability(String id) throws UnknownOutingException {
 		return api.getOutingAvailability(instanceConfig.getInstance(), id);
 	}
 

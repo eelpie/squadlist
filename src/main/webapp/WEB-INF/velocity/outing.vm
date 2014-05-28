@@ -32,11 +32,9 @@
 				   			#parse('includes/member.vm')
 				   		</td>
 				   		<td>
-							#if($availability.get(${member.id}))
-								<span class="label label-info pull-right $cssHelper.classFor($availability.get(${member.id}))">$availability.get(${member.id})</span>
-							#else
-								<span class="pull-right">TBA</span>
-							#end
+				   			#set($availability = '')
+							#set($availability = $squadAvailability.get(${member.id}))
+							#parse('includes/availability.vm')							
 						</td>
 					</tr>
 				#end

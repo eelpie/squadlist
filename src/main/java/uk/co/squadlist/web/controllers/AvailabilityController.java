@@ -65,7 +65,7 @@ public class AvailabilityController {
 	    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(squad.getId(), startDate, endDate);
 	    	final List<Outing> outings = api.getSquadOutings(squad.getId(), startDate, endDate);
 
-	    	mv.addObject("availability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
+	    	mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
 	    	mv.addObject("outings", outings);
 			mv.addObject("outingMonths", api.getSquadOutingMonths(squad.getId()));
     	}
