@@ -140,7 +140,11 @@ public class OutingsController {
 		
 		try {
 			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());
-			api.createOuting(newOuting);
+			if (outingDetails.getRepeats() != null && outingDetails.getRepeats()) {
+				api.createOuting(newOuting, 2);
+			} else {
+				api.createOuting(newOuting);
+			}
 			return new ModelAndView(new RedirectView(urlBuilder.outingsUrl()));
 			
 		} catch (InvalidOutingException e) {

@@ -121,7 +121,11 @@ public class InstanceSpecificApiClient {
 	public Outing createOuting(Outing newOuting) throws InvalidOutingException {
 		return api.createOuting(instanceConfig.getInstance(), newOuting);
 	}
-
+	
+	public Outing createOuting(Outing newOuting, int repeats) throws InvalidOutingException {
+		return api.createOuting(instanceConfig.getInstance(), newOuting, repeats);		
+	}
+	
 	public Outing updateOuting(Outing updatedOuting) throws InvalidOutingException {
 		return api.updateOuting(instanceConfig.getInstance(), updatedOuting);		
 	}
