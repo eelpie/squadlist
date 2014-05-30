@@ -228,19 +228,7 @@ public class OutingsController {
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
-		final Map<String, Integer> squadOutingMonths = api.getSquadOutingMonths(squad.getId());
-		
-		final Map<String, Integer> currentAndFutureOutingMonths = Maps.newTreeMap();		
-		final Iterator<String> iterator = squadOutingMonths.keySet().iterator();
-		final DateTime firstMonthToShow = DateHelper.startOfCurrentOutingPeriod().minusMonths(1);
-		while(iterator.hasNext()) {
-			final String month = iterator.next();
-			if (ISODateTimeFormat.yearMonth().parseDateTime(month).isAfter(firstMonthToShow)) {	// TODO the API is doing this now - redundant code
-				currentAndFutureOutingMonths.put(month, squadOutingMonths.get(month));
-			}
-		}
-		
-		return currentAndFutureOutingMonths;
+		return api.getSquadOutingMonths(squad.getId());
 	}
 	
     @ExceptionHandler(UnknownOutingException.class)
