@@ -145,7 +145,9 @@ public class OutingsController {
 			} else {
 				api.createOuting(newOuting);
 			}
-			return new ModelAndView(new RedirectView(urlBuilder.outingsUrl()));
+			
+			final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
+			return new ModelAndView(new RedirectView(outingsViewForNewOutingsSquadAndMonth));
 			
 		} catch (InvalidOutingException e) {
 			result.addError(new ObjectError("outing", e.getMessage()));
@@ -233,7 +235,7 @@ public class OutingsController {
 		final DateTime firstMonthToShow = DateHelper.startOfCurrentOutingPeriod().minusMonths(1);
 		while(iterator.hasNext()) {
 			final String month = iterator.next();
-			if (ISODateTimeFormat.yearMonth().parseDateTime(month).isAfter(firstMonthToShow)) {
+			if (ISODateTimeFormat.yearMonth().parseDateTime(month).isAfter(firstMonthToShow)) {	// TODO the API is doing this now - redundant code
 				currentAndFutureOutingMonths.put(month, squadOutingMonths.get(month));
 			}
 		}
