@@ -13,7 +13,7 @@
 	<div class="row">
 		<div class="col-xs-6">				
 			<h4>Members</h4>
-			
+						
 			<ul>
 			#foreach( $member in $members )
 				<li>#parse('includes/member.vm')</li>
@@ -25,6 +25,12 @@
 			
 		<div class="col-xs-6">
 		
+			<h4>Configuration</h4>		
+			<ul>
+				<li>Club name: $instance.name</li>
+				<li>Time zone: $instance.timeZone</li>
+			</ul>
+							
 			<h4>Squads</h4>			
 			#if($squads && !$squads.isEmpty())
 				<ul>

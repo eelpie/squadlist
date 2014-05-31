@@ -38,6 +38,7 @@ public class AdminController {
     	final List<Member> members = api.getMembers();
 		mv.addObject("members", members);
     	mv.addObject("admins", extractAdminUsersFrom(members));
+    	mv.addObject("instance", api.getInstance());
     	return mv;
     }
 
