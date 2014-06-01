@@ -20,6 +20,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.exceptions.propertyeditors.SquadPropertyEditor;
@@ -90,17 +91,22 @@ public class MembersController {
 		
 		final String initialPassword = "password";	// TODO add to form		
 		
-		final Member newMember = api.createMember(memberDetails.getFirstName(), 
+		try {
+			final Member newMember = api.createMember(memberDetails.getFirstName(), 
 				memberDetails.getLastName(),
 				requestedSquads,
 				memberDetails.getEmailAddress(),
 				initialPassword,
 				null);
 		
-		return new ModelAndView("memberAdded").
-			addObject("member", newMember).
-			addObject("initialPassword", initialPassword).
-			addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
+			return new ModelAndView("memberAdded").
+				addObject("member", newMember).
+				addObject("initialPassword", initialPassword).
+				addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
+		
+		} catch (InvalidMemberException e) {
+			return renderNewMemberForm();
+		}
 	}
 	
 	@RequestMapping(value="/member/{id}/invite", method=RequestMethod.POST)
