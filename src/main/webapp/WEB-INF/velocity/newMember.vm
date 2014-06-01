@@ -13,6 +13,10 @@
 	<div class="row">
 		<div class="col-xs-12">
 		
+			#foreach($error in $status.errorMessages) 
+				<div class="alert alert-warning">$error</div>
+			#end
+	
 			<form method="POST" action="$urlBuilder.newMemberUrl()" class="form-horizontal">		
 				#inputRow("memberDetails.firstName", "First name")
 				#inputRow("memberDetails.lastName", "Last name")
