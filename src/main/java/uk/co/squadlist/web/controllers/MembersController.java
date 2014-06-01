@@ -105,6 +105,7 @@ public class MembersController {
 				addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
 		
 		} catch (InvalidMemberException e) {
+			result.addError(new ObjectError("memberDetails", e.getMessage()));
 			return renderNewMemberForm();
 		}
 	}
