@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +43,6 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
-
-import com.google.common.collect.Maps;
 
 @Controller
 public class OutingsController {
@@ -170,6 +167,28 @@ public class OutingsController {
     	return renderEditOutingForm(outingDetails, outing);
     }
 	
+	@RequestMapping(value="/outings/{id}/close", method=RequestMethod.GET)
+    public ModelAndView closeOuting(@PathVariable String id) throws Exception {    	
+    	final Outing outing = api.getOuting(id);
+
+    	log.info("Closing outing: " + outing);
+    	outing.setClosed(true);
+    	api.updateOuting(outing);
+    	
+    	return redirectToOuting(outing);
+    }
+	
+	@RequestMapping(value="/outings/{id}/reopen", method=RequestMethod.GET)
+    public ModelAndView reopenOuting(@PathVariable String id) throws Exception {    	
+    	final Outing outing = api.getOuting(id);
+
+    	log.info("Reopening outing: " + outing);
+    	outing.setClosed(false);
+    	api.updateOuting(outing);
+    	
+    	return redirectToOuting(outing);
+    }
+		
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
     public ModelAndView editOutingSubmit(@PathVariable String id,
     		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
@@ -182,7 +201,7 @@ public class OutingsController {
 			updatedOuting.setId(id);
 			
 			api.updateOuting(updatedOuting);
-			return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
+			return redirectToOuting(updatedOuting);
 			
 		} catch (InvalidOutingException e) {
 			result.addError(new ObjectError("outing", e.getMessage()));
@@ -193,6 +212,10 @@ public class OutingsController {
 			result.addError(new ObjectError("outing", "Unknown exception"));
 			return renderEditOutingForm(outingDetails, outing);
 		}
+	}
+	
+	private ModelAndView redirectToOuting(final Outing updatedOuting) {
+		return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 	}
 	
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
@@ -222,9 +245,12 @@ public class OutingsController {
     		@RequestParam(value="availability", required=true) String availability) throws Exception {
     	final Outing outing = api.getOuting(outingId);
     	
-    	final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
-    	
-    	return viewFactory.getView("includes/availability").addObject("availability", result.getAvailability());
+    	if (!outing.isClosed()) {
+    		final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
+    		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailability());
+    	}
+
+    	return null;	// TODO proper return
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {

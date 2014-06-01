@@ -38,16 +38,21 @@
 										#parse('includes/outing.vm')	
 								    </td>					
 						   			<td>						   			
-										<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
-											<option value="">TBA</option>		
-											#foreach($option in $availabilityOptions)
-												#set($selected = '')
-												#if ($outingAvailability && $outingAvailability.availability.label == $option.label) 
-													#set($selected = 'SELECTED')
+						   				#if($outing.closed)
+						   					#parse('includes/closedOuting.vm')
+																					   				
+						   				#else						   									   			
+											<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
+												<option value="">TBA</option>		
+												#foreach($option in $availabilityOptions)
+													#set($selected = '')
+													#if ($outingAvailability && $outingAvailability.availability.label == $option.label) 
+														#set($selected = 'SELECTED')
+													#end
+													<option value="$option.label" $selected>$option.label</option>
 												#end
-												<option value="$option.label" $selected>$option.label</option>
-											#end
-										</select>
+											</select>
+										#end
 									</td>
 									<td>								
 										#if ($outingAvailability.availability) 						

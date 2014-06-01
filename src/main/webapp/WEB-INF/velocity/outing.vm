@@ -21,10 +21,21 @@
 		</div>
 		
 		<div class="col-xs-9">
-			<span class="pull-right"><a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a></span>
+			<span class="pull-right">
+				<a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a>
+				#if($outing.closed) 
+					<a href="$urlBuilder.outingReopenUrl($outing)">Reopen outing</a>
+				#else
+					<a href="$urlBuilder.outingCloseUrl($outing)">Close outing</a>
+				#end
+			</span>
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 			<p>$!outing.notes</p>	
-						
+		
+			#if($outing.closed)
+				#parse('includes/closedOuting.vm')
+			#end
+									
 			<table style="font-size: 14px;" class="table table-striped">				
 				#foreach($member in $members )					
 					<tr>

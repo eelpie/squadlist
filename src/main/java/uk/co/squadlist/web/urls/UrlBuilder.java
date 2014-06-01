@@ -68,6 +68,14 @@ public class UrlBuilder {
 		return outingsUrl() + "/" + outing.getId();
 	}
 	
+	public String outingCloseUrl(Outing outing) {
+		return outingUrl(outing) + "/close";
+	}
+	
+	public String outingReopenUrl(Outing outing) {
+		return outingUrl(outing) + "/reopen";
+	}
+	
 	public String outingEditUrl(Outing outing) {
 		return outingUrl(outing) + "/edit";
 	}
