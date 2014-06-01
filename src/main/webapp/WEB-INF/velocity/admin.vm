@@ -12,20 +12,27 @@
 
 	<div class="row">
 		<div class="col-xs-6">				
+			
+			<span class="pull-right">			
+				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
+			</span>
+			
 			<h4>Members</h4>
-						
 			<ul>
 			#foreach( $member in $members )
 				<li>#parse('includes/member.vm')</li>
 			#end
 			</ul>
 					
-			<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>		
 		</div>
 			
 		<div class="col-xs-6">
-									
-			<h4>Squads</h4>			
+							
+			<span class="pull-right">
+				<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>
+			</span>
+					
+			<h4>Squads</h4>		
 			#if($squads && !$squads.isEmpty())
 				<ul>
 					#foreach( $squad in $squads )
@@ -35,8 +42,7 @@
 			#else
 				<p>No squads have been added.</p>
 			#end
-		
-			<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>	
+					
 			<hr/>
 				
 			<h4>Admins</h4>			

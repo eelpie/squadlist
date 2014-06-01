@@ -23,10 +23,13 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.exceptions.propertyeditors.SquadPropertyEditor;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
+import uk.co.squadlist.web.services.email.EmailMessageComposer;
+import uk.co.squadlist.web.services.email.EmailService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -45,15 +48,20 @@ public class MembersController {
 	private final UrlBuilder urlBuilder;
 	private final ViewFactory viewFactory;
 	private final SquadPropertyEditor squadPropertyEditor;
+	private final EmailMessageComposer emailMessageComposer;
+	private final EmailService emailService;
 	
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
-			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor) {
+			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor,
+			EmailMessageComposer emailMessageComposer, EmailService emailService) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
 		this.squadPropertyEditor = squadPropertyEditor;
+		this.emailMessageComposer = emailMessageComposer;
+		this.emailService = emailService;
 	}
 
 	@RequestMapping("/member/{id}")
@@ -68,12 +76,12 @@ public class MembersController {
     }
 	
 	@RequestMapping(value="/member/new", method=RequestMethod.GET)
-    public ModelAndView newMember(@ModelAttribute("member") MemberDetails memberDetails) throws Exception {    	
+    public ModelAndView newMember(@ModelAttribute("memberDetails") MemberDetails memberDetails) throws Exception {    	
 		return renderNewMemberForm();
     }
 
 	@RequestMapping(value="/member/new", method=RequestMethod.POST)
-    public ModelAndView newMemberSubmit(@Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+    public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
 		final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result);
 		
 		if (result.hasErrors()) {
@@ -89,9 +97,22 @@ public class MembersController {
 				initialPassword,
 				null);
 		
-		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(newMember)));
+		return new ModelAndView("memberAdded").
+			addObject("member", newMember).
+			addObject("initialPassword", initialPassword).
+			addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
 	}
 	
+	@RequestMapping(value="/member/{id}/invite", method=RequestMethod.POST)
+    public ModelAndView inviteMemberSubmit(@PathVariable String id) throws Exception {
+		final Member member = api.getMemberDetails(id);		
+		final Instance instance = api.getInstance();
+		
+		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, "TODO");
+		emailService.sendEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", body, member.getEmailAddress());
+		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+    }
+		
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
 		return renderChangePasswordForm(new ChangePassword());

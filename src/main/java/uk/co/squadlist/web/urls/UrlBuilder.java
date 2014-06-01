@@ -96,6 +96,10 @@ public class UrlBuilder {
 		return memberUrl(memberId) + "/edit";
 	}
 	
+	public String inviteMemberUrl(Member member) {
+		return memberUrl(member) + "/invite";
+	}
+	
 	public String changePassword() {
 		return applicationUrl("/change-password");
 	}
