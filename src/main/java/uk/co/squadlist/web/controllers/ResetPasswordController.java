@@ -63,12 +63,19 @@ public class ResetPasswordController {
 	
 	@RequestMapping(value = "/reset-password/confirm", method = RequestMethod.GET)
 	public ModelAndView confirmPasswordReset(@RequestParam String token) throws Exception {
-		final String newPassword = api.confirmResetPassword(token);
-		
-		final ModelAndView mv = new ModelAndView("resetPasswordConfirm");
-		mv.addObject("instance", api.getInstance());
-		mv.addObject("newPassword", newPassword);
-		return mv;
+		try {
+			final String newPassword = api.confirmResetPassword(token);
+			
+			final ModelAndView mv = new ModelAndView("resetPasswordConfirm");
+			mv.addObject("instance", api.getInstance());
+			mv.addObject("newPassword", newPassword);
+			return mv;
+			
+		} catch (Exception e) {
+			final ModelAndView mv = new ModelAndView("resetPasswordInvalidToken");
+			mv.addObject("instance", api.getInstance());
+			return mv;
+		}
 	}
 	
 }
