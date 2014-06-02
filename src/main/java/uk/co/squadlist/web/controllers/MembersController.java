@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
@@ -30,7 +31,6 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.services.email.EmailMessageComposer;
-import uk.co.squadlist.web.services.email.EmailService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -116,10 +116,10 @@ public class MembersController {
 		final Instance instance = api.getInstance();
 		
 		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, "TODO");
-		emailService.sendEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", body, member.getEmailAddress());
+		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", body, member.getEmailAddress());
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
     }
-		
+	
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
 		return renderChangePasswordForm(new ChangePassword());
