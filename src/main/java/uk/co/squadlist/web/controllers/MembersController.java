@@ -93,7 +93,7 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 		
-		final String initialPassword = passwordGenerator.generateRandomPassword();
+		final String initialPassword = passwordGenerator.generateRandomPassword(10);
 		
 		try {
 			final Member newMember = api.createMember(memberDetails.getFirstName(), 
@@ -120,7 +120,7 @@ public class MembersController {
 		final Instance instance = api.getInstance();
 		
 		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, "TODO");
-		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", body, member.getEmailAddress());
+		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", member.getEmailAddress(), body);
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
     }
 	
