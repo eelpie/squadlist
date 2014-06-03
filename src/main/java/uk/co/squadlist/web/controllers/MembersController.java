@@ -30,6 +30,7 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
+import uk.co.squadlist.web.services.PasswordGenerator;
 import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -51,11 +52,13 @@ public class MembersController {
 	private final SquadPropertyEditor squadPropertyEditor;
 	private final EmailMessageComposer emailMessageComposer;
 	private final EmailService emailService;
+	private final PasswordGenerator passwordGenerator;
 	
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor,
-			EmailMessageComposer emailMessageComposer, EmailService emailService) {
+			EmailMessageComposer emailMessageComposer, EmailService emailService,
+			PasswordGenerator passwordGenerator) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
@@ -63,6 +66,7 @@ public class MembersController {
 		this.squadPropertyEditor = squadPropertyEditor;
 		this.emailMessageComposer = emailMessageComposer;
 		this.emailService = emailService;
+		this.passwordGenerator = passwordGenerator;
 	}
 
 	@RequestMapping("/member/{id}")
@@ -89,7 +93,7 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 		
-		final String initialPassword = "password";	// TODO add to form		
+		final String initialPassword = passwordGenerator.generateRandomPassword();
 		
 		try {
 			final Member newMember = api.createMember(memberDetails.getFirstName(), 
@@ -109,7 +113,7 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 	}
-	
+
 	@RequestMapping(value="/member/{id}/invite", method=RequestMethod.POST)
     public ModelAndView inviteMemberSubmit(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);		
