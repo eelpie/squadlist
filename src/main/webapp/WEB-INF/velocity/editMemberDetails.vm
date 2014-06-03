@@ -25,12 +25,13 @@
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")
 				#inputRow("member.emergencyContactNumber", "Emergency contact number")
-				#inputRow('member.registrationNumber', 'Registration number')
 				
+				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
+											
+				#inputRow('member.registrationNumber', 'Registration number')				
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
-				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
-												
+																
 				#squadsCheckboxGroup
 															
 				<div class="control-group">
