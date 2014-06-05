@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -119,10 +120,14 @@ public class MembersController {
 		final Member member = api.getMemberDetails(id);		
 		final Instance instance = api.getInstance();
 		
-		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, "TODO");
-		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", member.getEmailAddress(), body);
+		sendNewMemberInvite(instance, member, "TODO");
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
     }
+
+	private void sendNewMemberInvite(final Instance instance, final Member member, String initialPassword) throws EmailException {
+		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, initialPassword);
+		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", member.getEmailAddress(), body);
+	}
 	
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
