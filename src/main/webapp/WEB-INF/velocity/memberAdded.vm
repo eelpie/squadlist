@@ -15,24 +15,18 @@
 
 			<p>The following member has been added: $member.firstName $member.lastName</p>
 			
-			<p>This new member will need to know their username and password to access the availability system.</p>
-			<p>The following introductory message can be sent to their email address:</p>
-
+			<p>The following introductory message has been sent to their email address ($member.emailAddress) :</p>
+			
 			<pre>$inviteMessage</pre>
-	
-			<p>Alternatively, you can pass these details to the member yourself.</p>
-
-			<form method="POST" action="$urlBuilder.inviteMemberUrl($member)" class="form-horizontal">		
-				<div class="control-group">
-					<div class="col-sm-2">
-					</div>
-					<div class="controls">
-						<input type="submit" class="btn btn-primary" value="Send email" />
-						<a href="$urlBuilder.adminUrl()"><button class="btn" type="button">Do not send</button></a>		
-					</div>
-				</div>		
-			</form>
-							
+		
+			<div class="control-group">
+				<div class="col-sm-2">
+				</div>
+				<div class="controls">
+					<a href="$urlBuilder.adminUrl()"><button class="btn" type="button">Return to admin</button></a>		
+				</div>
+			</div>		
+										
 		</div>
 	</div>
 </div>

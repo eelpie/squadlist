@@ -103,7 +103,9 @@ public class MembersController {
 				memberDetails.getEmailAddress(),
 				initialPassword,
 				null);
-		
+			
+			sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
+			
 			return new ModelAndView("memberAdded").
 				addObject("member", newMember).
 				addObject("initialPassword", initialPassword).
@@ -114,16 +116,7 @@ public class MembersController {
 			return renderNewMemberForm();
 		}
 	}
-
-	@RequestMapping(value="/member/{id}/invite", method=RequestMethod.POST)
-    public ModelAndView inviteMemberSubmit(@PathVariable String id) throws Exception {
-		final Member member = api.getMemberDetails(id);		
-		final Instance instance = api.getInstance();
-		
-		sendNewMemberInvite(instance, member, "TODO");
-		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
-    }
-
+	
 	private void sendNewMemberInvite(final Instance instance, final Member member, String initialPassword) throws EmailException {
 		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, initialPassword);
 		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", member.getEmailAddress(), body);

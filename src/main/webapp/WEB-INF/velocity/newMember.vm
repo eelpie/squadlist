@@ -20,8 +20,24 @@
 			<form method="POST" action="$urlBuilder.newMemberUrl()" class="form-horizontal">		
 				#inputRow("memberDetails.firstName", "First name")
 				#inputRow("memberDetails.lastName", "Last name")
-				#inputRow("memberDetails.emailAddress", "Email address")
-				
+							
+				#springBind("memberDetails.emailAddress")
+				<div class="form-group">
+				    <label for="currentPassword" class="col-sm-2 control-label">Email address</label>
+				    <div class="col-sm-10">					
+				        <input class="form-control" name="${status.expression}" value="$!{status.value}" placeholder="Email address">				        
+				      	#foreach($error in $status.errorMessages)
+							<div class="alert alert-warning">$error</div>
+						#end
+						
+						<div class="alert alert-info">		
+							<p>The member's email address will be used to send them their access details.<br/>
+							It's also helpful if they need to reset a forgotten password in the future.
+							</p>
+						</div>			
+				    </div>
+				</div>
+										
 				#springBind("memberDetails.squads")
 				#squadsCheckboxGroup
 																							
