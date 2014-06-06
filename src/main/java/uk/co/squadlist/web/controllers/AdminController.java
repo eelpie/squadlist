@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Lists;
 
@@ -19,18 +18,17 @@ import com.google.common.collect.Lists;
 public class AdminController {
 		
 	private final InstanceSpecificApiClient api;
-	private final LoggedInUserService loggedInUserService;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory) {
 		this.api = api;
-		this.loggedInUserService = loggedInUserService;
+		this.viewFactory = viewFactory;
 	}
 
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
-    	final ModelAndView mv = new ModelAndView("admin");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
+    	final ModelAndView mv = viewFactory.getView("admin");
     	mv.addObject("squads", api.getSquads());
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	mv.addObject("title", "Admin");
