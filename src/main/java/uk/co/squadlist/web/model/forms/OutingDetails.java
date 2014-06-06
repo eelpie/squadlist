@@ -23,7 +23,7 @@ public class OutingDetails {
 	}
 	
 	public LocalDateTime toLocalTime() {
-		return new LocalDateTime(year, month, day, hour, minute);	// TODO AM PM
+		return new LocalDateTime(year, month, day, hour, minute);
 	}
 
 	public Integer getYear() {
