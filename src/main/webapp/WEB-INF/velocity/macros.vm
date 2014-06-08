@@ -43,9 +43,7 @@
 				<ul class="nav navbar-nav">		     
 		    		<li #if($selectedTab == 'My outings') class="active" #end>
 		    			<a href="$urlBuilder.applicationUrl('/')">My outings
-		    				#if($pendingOutingsCount)
-			    				<span id="pendingOutings" class="badge">$pendingOutingsCount</span>
-				    		#end
+		    				<span id="pendingOutings" class="badge">$!pendingOutingsCount</span>
 		 	 	  		</a>		    	
 			    	</li>
 			    	<li><a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}/edit">My details</a></li>			    	
