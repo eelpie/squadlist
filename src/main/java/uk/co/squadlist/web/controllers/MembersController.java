@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.email.EmailService;
+import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
@@ -32,6 +33,7 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.services.PasswordGenerator;
+import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -48,14 +50,17 @@ public class MembersController {
 	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	
-	private final InstanceSpecificApiClient api;
-	private final LoggedInUserService loggedInUserService;
-	private final UrlBuilder urlBuilder;
-	private final ViewFactory viewFactory;
-	private final SquadPropertyEditor squadPropertyEditor;
-	private final EmailMessageComposer emailMessageComposer;
-	private final EmailService emailService;
-	private final PasswordGenerator passwordGenerator;
+	private InstanceSpecificApiClient api;
+	private LoggedInUserService loggedInUserService;
+	private UrlBuilder urlBuilder;
+	private ViewFactory viewFactory;
+	private SquadPropertyEditor squadPropertyEditor;
+	private EmailMessageComposer emailMessageComposer;
+	private EmailService emailService;
+	private PasswordGenerator passwordGenerator;
+	
+	public MembersController() {
+	}
 	
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
@@ -83,11 +88,13 @@ public class MembersController {
     	return mv;
     }
 	
+	@RequiresPermission(permission=Permission.ADD_MEMBER)
 	@RequestMapping(value="/member/new", method=RequestMethod.GET)
     public ModelAndView newMember(@ModelAttribute("memberDetails") MemberDetails memberDetails) throws Exception {    	
 		return renderNewMemberForm();
     }
 
+	@RequiresPermission(permission=Permission.ADD_MEMBER)
 	@RequestMapping(value="/member/new", method=RequestMethod.POST)
     public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
 		final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result);

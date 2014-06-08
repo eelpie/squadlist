@@ -2,8 +2,11 @@ package uk.co.squadlist.web.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -12,7 +15,28 @@ import uk.co.squadlist.web.model.Squad;
 @Component
 public class PermissionsService {
 
-	public boolean canSeeAdminScreen(Member member) {
+	private InstanceSpecificApiClient api;
+	
+	@Autowired
+	public PermissionsService(InstanceSpecificApiClient api) {
+		this.api = api;
+	}
+	
+	public boolean hasPermission(String memberId, Permission permission) throws UnknownMemberException {
+		final Member loggedInMember = api.getMemberDetails(memberId);	// TODO once per request?
+		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+			return true;
+		}
+		
+		if (permission == Permission.ADD_MEMBER) {
+			return canAddNewMember(loggedInMember);
+		} else if (permission == Permission.SEE_ADMIN_SCREEN) {
+			return canSeeAdminScreen(loggedInMember);
+		}
+		return true;
+	}
+	
+	private boolean canSeeAdminScreen(Member member) {
 		return userIsCoachOrSquadRep(member);
 	}
 	
@@ -55,10 +79,6 @@ public class PermissionsService {
 	}
 	
 	public boolean canAddNewOuting(Member member) {
-		return userIsCoachOrSquadRep(member);
-	}
-	
-	public boolean canAddNewRower(Member member) {
 		return userIsCoachOrSquadRep(member);
 	}
 	
@@ -142,6 +162,10 @@ public class PermissionsService {
   		 return userIsCoach(loggedInRower) || isSquadRepForThisSquad(loggedInRower, squad) || true;	// TODO make configuable and migrate
   	}
 	
+	private boolean canAddNewMember(Member member) {
+		return userIsCoachOrSquadRep(member);
+	}
+		
 	private boolean isSquadRepForThisSquad(Member member, Squad squad) {
 		if (userIsSquadRep(member)) {
 			return member.getSquads().contains(squad);			

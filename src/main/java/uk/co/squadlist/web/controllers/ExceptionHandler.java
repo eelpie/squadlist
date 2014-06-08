@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.squadlist.web.exceptions.PermissionDeniedException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -37,6 +38,11 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 		if (e instanceof UnknownMemberException) {			
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
+		}
+		
+		if (e instanceof PermissionDeniedException) {			
+			response.setStatus(HttpStatus.FORBIDDEN.value());
+			return new ModelAndView("403");
 		}
 		
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

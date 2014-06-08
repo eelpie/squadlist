@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.model.Member;
+import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Lists;
@@ -17,15 +19,19 @@ import com.google.common.collect.Lists;
 @Controller
 public class AdminController {
 		
-	private final InstanceSpecificApiClient api;
-	private final ViewFactory viewFactory;
+	private InstanceSpecificApiClient api;
+	private ViewFactory viewFactory;
+	
+	public AdminController() {
+	}
 	
 	@Autowired
 	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 	}
-
+	
+	@RequiresPermission(permission=Permission.SEE_ADMIN_SCREEN)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
     	final ModelAndView mv = viewFactory.getView("admin");
