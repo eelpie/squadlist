@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -19,12 +20,15 @@ public class MyOutingsController {
 	private final LoggedInUserService loggedInUserService;
 	private final InstanceSpecificApiClient api;
 	private final ViewFactory viewFactory;
+	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
 	
 	@Autowired
-	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, ViewFactory viewFactory) {
+	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, ViewFactory viewFactory,
+			OutingAvailabilityCountsService outingAvailabilityCountsService) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.viewFactory = viewFactory;
+		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 	}
 	
 	@RequestMapping("/")
@@ -40,6 +44,16 @@ public class MyOutingsController {
 		
 		mv.addObject("title", "My outings");		
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+    	return mv;
+    }
+	
+	@RequestMapping("/myoutings/ajax")
+    public ModelAndView ajax() throws Exception {
+    	final ModelAndView mv = viewFactory.getView("myOutingsAjax");
+    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInUser());
+    	if (pendingOutingsCountFor > 0) {
+    		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
+    	}
     	return mv;
     }
 	

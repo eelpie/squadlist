@@ -85,8 +85,12 @@
     	    						
     	$.post("$urlBuilder.applicationUrl('/availability/ajax')", { outing: outingId, availability: newAvailability },
     	function(data) {
-    		$("#currentAvailability" + outingId).html(data);
-    		$("#pendingOutings").html("");  		
+    		$("#currentAvailability" + outingId).html(data);    		
+    		$.post("$urlBuilder.applicationUrl('/myoutings/ajax')", {},
+    			function(data) {
+    				$("#pendingOutings").html(data);  		
+				}
+			);    		  		
 		});
   	});
 </script>
