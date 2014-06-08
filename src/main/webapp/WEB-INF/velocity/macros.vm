@@ -44,7 +44,7 @@
 		    		<li #if($selectedTab == 'My outings') class="active" #end>
 		    			<a href="$urlBuilder.applicationUrl('/')">My outings
 		    				#if($pendingOutingsCount)
-			    				<span class="badge">$pendingOutingsCount</span>
+			    				<span id="pendingOutings" class="badge">$pendingOutingsCount</span>
 				    		#end
 		 	 	  		</a>		    	
 			    	</li>
