@@ -1,4 +1,4 @@
 The $instance.name Availability system can be accessed at:
-http://$instance.id - TODO
+$instanceUrl
 
 Your username is ($member.username) and your initial password is ($initialPassword)
