@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.web.annotations.Timed;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
@@ -28,15 +29,19 @@ import uk.co.squadlist.web.model.Squad;
 @Component
 public class InstanceSpecificApiClient {
 
-	private final InstanceConfig instanceConfig;
-	private final SquadlistApi api;
+	private InstanceConfig instanceConfig;
+	private SquadlistApi api;
 
+	public InstanceSpecificApiClient() {
+	}
+	
 	@Autowired
 	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api) {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
 	}
 	
+	@Timed
 	public List<Squad> getSquads() {
 		return api.getSquads(instanceConfig.getInstance());
 	}

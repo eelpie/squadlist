@@ -24,7 +24,7 @@ public class InstanceConfig {
 	
 	public String getInstance() {
 		if (!Strings.isNullOrEmpty(manuallyConfiguredInstanceToUseForAllRequests)) {
-			log.info("Using manually configured instance: " + manuallyConfiguredInstanceToUseForAllRequests);
+			log.debug("Using manually configured instance: " + manuallyConfiguredInstanceToUseForAllRequests);
 			return manuallyConfiguredInstanceToUseForAllRequests;			
 		}
 		
