@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.email.EmailService;
+import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -77,6 +78,7 @@ public class MembersController {
 		this.passwordGenerator = passwordGenerator;
 	}
 
+	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
 	@RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
 		final Member members = api.getMemberDetails(id);
@@ -153,6 +155,7 @@ public class MembersController {
     	}    	
     }
 	
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
     public ModelAndView updateMember(@PathVariable String id) throws Exception {	
 		final Member member = api.getMemberDetails(id);
@@ -172,6 +175,7 @@ public class MembersController {
 		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
     }
 	
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
 		final Member member = api.getMemberDetails(id);

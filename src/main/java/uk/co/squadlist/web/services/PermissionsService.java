@@ -22,8 +22,8 @@ public class PermissionsService {
 		this.api = api;
 	}
 	
-	public boolean hasPermission(String memberId, Permission permission) throws UnknownMemberException {
-		final Member loggedInMember = api.getMemberDetails(memberId);	// TODO once per request?
+	public boolean hasPermission(String loggedInMemberId, Permission permission) throws UnknownMemberException {
+		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
@@ -34,6 +34,19 @@ public class PermissionsService {
 			return canSeeAdminScreen(loggedInMember);
 		}
 		return true;
+	}
+
+	public boolean hasMemberPermission(String loggedInMemberId, Permission permission, String memberId) throws UnknownMemberException {
+		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+			return true;
+		}
+		
+		if (permission == Permission.VIEW_MEMBER_DETAILS || permission == Permission.EDIT_MEMBER_DETAILS) {
+			return canEditAnotherMembersDetails(loggedInMember, api.getMemberDetails(memberId));
+		}
+		
+		return false;
 	}
 	
 	private boolean canSeeAdminScreen(Member member) {

@@ -9,7 +9,7 @@ import uk.co.squadlist.web.services.Permission;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface RequiresPermission {
+public @interface RequiresMemberPermission {
 	
 	Permission permission();
 	
