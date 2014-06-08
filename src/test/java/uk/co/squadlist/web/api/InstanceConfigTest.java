@@ -41,5 +41,14 @@ public class InstanceConfigTest {
 		
 		assertEquals("reallycalledbetasomething", instanceConfig.getInstance());		
 	}
+	
+	@Test
+	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() throws Exception {
+		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance");
+
+		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 		
+		assertEquals("manuallyconfiguredinstance", instanceConfig.getInstance());		
+	}
+	
 }
