@@ -42,6 +42,8 @@ import com.google.common.collect.Lists;
 public class MembersController {
 	
 	private final static Logger log = Logger.getLogger(MembersController.class);
+
+	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
 	
 	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
@@ -119,7 +121,7 @@ public class MembersController {
 	
 	private void sendNewMemberInvite(final Instance instance, final Member member, String initialPassword) throws EmailException {
 		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, initialPassword);
-		emailService.sendPlaintextEmail(instance.getName() + " availability invite", "no-reply@squadlist.co.uk", member.getEmailAddress(), body);
+		emailService.sendPlaintextEmail(instance.getName() + " availability invite", NOREPLY_SQUADLIST_CO_UK, member.getEmailAddress(), body);
 	}
 	
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)

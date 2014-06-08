@@ -97,7 +97,7 @@ public class UrlBuilder {
 		return applicationUrl("/change-password");
 	}
 	
-	private String getBaseUrl() {
+	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
 	}
 	

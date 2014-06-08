@@ -14,16 +14,19 @@ import org.springframework.ui.velocity.VelocityEngineFactory;
 
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
+import uk.co.squadlist.web.urls.UrlBuilder;
 
 @Component
 public class EmailMessageComposer {
 	
 	private final static Logger log = Logger.getLogger(EmailMessageComposer.class);
 	
+	private final UrlBuilder urlBuilder;
 	private final VelocityEngine velocityEngine;
 	
 	@Autowired
-	public EmailMessageComposer(VelocityEngineFactory velocityEngineFactory) throws VelocityException, IOException {
+	public EmailMessageComposer(VelocityEngineFactory velocityEngineFactory, UrlBuilder urlBuilder) throws VelocityException, IOException {
+		this.urlBuilder = urlBuilder;
 		velocityEngine = velocityEngineFactory.createVelocityEngine();			
 	}
 	
@@ -33,6 +36,7 @@ public class EmailMessageComposer {
 			
 			final VelocityContext context = new VelocityContext();
 			context.put("instance", instance);
+			context.put("instanceUrl", urlBuilder.getBaseUrl());
 			context.put("member", member);
 			context.put("initialPassword", initialPassword);
 			
