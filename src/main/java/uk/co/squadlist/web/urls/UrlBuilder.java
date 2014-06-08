@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-
-import uk.co.squadlist.web.api.RequestHostService;
+import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -14,14 +12,13 @@ import uk.co.squadlist.web.model.Squad;
 @Component("urlBuilder")
 public class UrlBuilder {
 	
-	private final RequestHostService requestHostService;
 	private final String baseUrl;
+	private final InstanceConfig instanceConfig;
 	
 	@Autowired
-	public UrlBuilder(RequestHostService requestHostService, 
-			@Value("#{squadlist['baseUrl']}") String baseUrl) {
-		this.requestHostService = requestHostService;
+	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig) {
 		this.baseUrl = baseUrl;
+		this.instanceConfig = instanceConfig;
 	}
 
 	public String applicationUrl(String uri) {
@@ -101,10 +98,7 @@ public class UrlBuilder {
 	}
 	
 	private String getBaseUrl() {
-		if (!Strings.isNullOrEmpty(baseUrl)) {
-			return baseUrl;			
-		}
-		return "http://" + requestHostService.getRequestHost();
+		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
 	}
 	
 }

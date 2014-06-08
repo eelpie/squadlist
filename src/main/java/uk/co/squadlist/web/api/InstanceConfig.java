@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 @Component
-class InstanceConfig {
+public class InstanceConfig {
 	
 	private final static Logger log = Logger.getLogger(InstanceConfig.class);
 	
