@@ -38,7 +38,7 @@ public class MyOutingsController {
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateTime.now().plusYears(1).toDate();
+		final Date endDate = DateHelper.oneYearFromNow().toDate();
 		
 		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
 		

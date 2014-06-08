@@ -62,7 +62,11 @@ public class DateHelper {
 	public static DateTime startOfCurrentOutingPeriod() {
 		return midnightYesterday().toDateTime();
 	}
-
+	
+	public static DateTime oneYearFromNow() {
+		return DateTime.now().plusYears(1);
+	}
+	
 	public static DateTime endOfCurrentOutingPeriod() {
 		return startOfCurrentOutingPeriod().plusWeeks(2);
 	}
