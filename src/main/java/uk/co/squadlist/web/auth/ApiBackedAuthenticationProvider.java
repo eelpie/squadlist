@@ -43,18 +43,10 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
 		final Member authenticatedMember = api.auth(username, password);
 		if (authenticatedMember != null) {
 			log.info("Auth successful for user: " + username);
-			
-			final boolean isCoach = authenticatedMember.getRole() != null && authenticatedMember.getRole().equals("Coach");
-			final boolean isAdmin = authenticatedMember.getAdmin() != null && authenticatedMember.getAdmin();
-			if (isCoach || isAdmin) {			
-				Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
-				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-				return new org.springframework.security.core.userdetails.User(authenticatedMember.getId(), password, authorities); 
-				
-			} else {
-				log.warn("Refusing login from non coach/admin member: " + authenticatedMember.getUsername());
-				throw new BadCredentialsException(COACHES_AND_ADMINS_ONLY);
-			}
+					
+			Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+			return new org.springframework.security.core.userdetails.User(authenticatedMember.getId(), password, authorities);		
 		}
 		
 		log.info("Auth attempt unsuccessful for user: " + username);		
