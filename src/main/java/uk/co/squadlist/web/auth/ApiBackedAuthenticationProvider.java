@@ -20,9 +20,10 @@ import com.google.common.collect.Lists;
 @Component("authenticationProvider")
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 	
-	private final static Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
+	private static final Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
 	
-    private final static String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
+    private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
+	private static final String COACHES_AND_ADMINS_ONLY = "Only coaches and admins are currently allowed to view this test copy";
     
     private final InstanceSpecificApiClient api;
     
@@ -42,9 +43,18 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
 		final Member authenticatedMember = api.auth(username, password);
 		if (authenticatedMember != null) {
 			log.info("Auth successful for user: " + username);
-			Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			return new org.springframework.security.core.userdetails.User(authenticatedMember.getId(), password, authorities);    		
+			
+			final boolean isCoach = authenticatedMember.getRole() != null && authenticatedMember.getRole().equals("Coach");
+			final boolean isAdmin = authenticatedMember.getAdmin() != null && authenticatedMember.getAdmin();
+			if (isCoach || isAdmin) {			
+				Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
+				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+				return new org.springframework.security.core.userdetails.User(authenticatedMember.getId(), password, authorities); 
+				
+			} else {
+				log.warn("Refusing login from non coach/admin member: " + authenticatedMember.getUsername());
+				throw new BadCredentialsException(COACHES_AND_ADMINS_ONLY);
+			}
 		}
 		
 		log.info("Auth attempt unsuccessful for user: " + username);		
