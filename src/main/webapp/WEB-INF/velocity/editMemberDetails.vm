@@ -31,7 +31,8 @@
 				#inputRow('member.registrationNumber', 'Registration number')				
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
-																
+										
+				#springBind("member.squads")																
 				#squadsCheckboxGroup
 															
 				<div class="control-group">
