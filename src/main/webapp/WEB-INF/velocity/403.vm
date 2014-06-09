@@ -1,1 +1,15 @@
-<h1>403</h1>
+#parse('includes/head.vm')
+#navTabs()
+										
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-12">
+			<h4>403</h4>
+		</div>
+	</div>
+
+</div>
+<hr/>
+	
+#parse('includes/footer.vm')
