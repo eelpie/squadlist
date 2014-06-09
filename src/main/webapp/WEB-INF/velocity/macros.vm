@@ -105,7 +105,7 @@
 			#foreach($squad in $squads)
 				<div class="checkbox">
 					<label>
-						<input type="checkbox" value="$squad.id" name="${status.expression}" #if($status.getValue().contains($squad)) CHECKED #end>$squad.name</input>
+						<input type="checkbox" value="$squad.id" name="${status.expression}" #if($status.getValue().contains($squad)) CHECKED#end />$squad.name
 					</label>
 				</div>
 			#end
