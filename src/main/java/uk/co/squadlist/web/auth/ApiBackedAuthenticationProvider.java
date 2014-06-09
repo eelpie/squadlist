@@ -23,7 +23,6 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
 	private static final Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
 	
     private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
-	private static final String COACHES_AND_ADMINS_ONLY = "Only coaches and admins are currently allowed to view this test copy";
     
     private final InstanceSpecificApiClient api;
     

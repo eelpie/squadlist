@@ -14,15 +14,20 @@ import uk.co.squadlist.web.views.ViewFactory;
 @Controller
 public class EntryDetailsController {
 		
-	private final InstanceSpecificApiClient api;
-	private final PreferedSquadService preferedSquadService;
-	private final ViewFactory viewFactory;
+	private InstanceSpecificApiClient api;
+	private PreferedSquadService preferedSquadService;
+	private ViewFactory viewFactory;
+	private EntryDetailsModelPopulator entryDetailsModelPopulator;
+	
+	public EntryDetailsController() {
+	}
 	
 	@Autowired
-	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory) {
+	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, EntryDetailsModelPopulator entryDetailsModelPopulator) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
+		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
 	}
 	
 	@RequestMapping("/entrydetails")
@@ -31,10 +36,8 @@ public class EntryDetailsController {
     	mv.addObject("squads", api.getSquads());
     	
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-		mv.addObject("squad", squadToShow);
-		mv.addObject("title", squadToShow.getName() + " entry details");
-    	mv.addObject("members", api.getSquadMembers(squadToShow.getId()));
+		entryDetailsModelPopulator.populateModel(squadToShow, mv);
     	return mv;
     }
-	
+
 }
