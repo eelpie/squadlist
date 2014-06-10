@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -21,14 +22,16 @@ public class AdminController {
 		
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
+	private GoverningBody governingBody;
 	
 	public AdminController() {
 	}
 	
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody) {
 		this.api = api;
 		this.viewFactory = viewFactory;
+		this.governingBody = governingBody;
 	}
 	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -43,6 +46,7 @@ public class AdminController {
 		mv.addObject("members", members);
     	mv.addObject("admins", extractAdminUsersFrom(members));
     	mv.addObject("instance", api.getInstance());
+    	mv.addObject("governingBody", governingBody);
     	return mv;
     }
 
