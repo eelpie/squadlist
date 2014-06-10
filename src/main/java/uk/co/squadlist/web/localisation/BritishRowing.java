@@ -3,9 +3,12 @@ package uk.co.squadlist.web.localisation;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -15,7 +18,9 @@ import com.google.common.collect.Maps;
 @Component
 public class BritishRowing implements GoverningBody {
 
+	private static final Pattern VALID_REGISTRATION_NUMBER = Pattern.compile("\\d{6}[G|S|J|U|C|B]\\d{7}", Pattern.CASE_INSENSITIVE);	// TODO check with BR about valid codes
 	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");	// TODO N is deprecated - move to 0
+	
 	private final Map<String, Integer> statusMaximumPoints;
 	private final Map<String, Integer> mastersMinimumAges;
 
@@ -91,6 +96,25 @@ public class BritishRowing implements GoverningBody {
 			return 0;
 		}
 		return Integer.parseInt(points);
+	}
+
+	@Override
+	public String checkRegistrationNumber(String registrationNumber) {
+		if (Strings.isNullOrEmpty(registrationNumber)) {
+			return null;
+		}
+		
+		if (VALID_REGISTRATION_NUMBER.matcher(registrationNumber).matches()) {			
+			final String dateString = registrationNumber.substring(0, 6);
+			
+			final DateTime parse = ISODateTimeFormat.basicDate().parseDateTime(dateString + "01");			
+			final DateTime endOfRegistrationDate = parse.plusMonths(1);			
+			if (endOfRegistrationDate.isBefore(DateTime.now())) {
+				return "Expired registration";
+			}			
+			return null;
+		}
+		return "Not in the expected British Rowing format";	
 	}
 	
 }

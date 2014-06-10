@@ -10,5 +10,6 @@ public interface GoverningBody {
 	public String getRowingStatus(String points);
 	public String getScullingStatus(String points);
 	public String getAgeGrade(Date dateOfBirth);
+	public String checkRegistrationNumber(String registrationNumber);
 	
 }

@@ -46,7 +46,21 @@
 				    	<td>$!member.weight</td>
 				    	<td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span></td>
 				    	<td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >$!member.scullingPoints</span></td>
-				    	<td>$!member.registrationNumber</td>			    	
+				    	<td>
+				    		#set($registrationNumberProblems = '')
+				    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))
+				    	
+				    		
+				    		#if($registrationNumberProblems != '')
+					    		<div class="alert alert-danger">
+					    			$!member.registrationNumber<br/>
+					    			$registrationNumberProblems
+					    		</div>
+					    	#else					    	
+			    				$!member.registrationNumber
+					    	#end
+					    					    		
+				    	</td>
 				    </tr>
 				#end				
 			</table>
