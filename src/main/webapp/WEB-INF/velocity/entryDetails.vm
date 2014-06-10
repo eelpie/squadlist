@@ -42,8 +42,8 @@
 				    		#end
 				    	</td>
 				    	<td>$!member.weight</td>
-				    	<td>$!member.rowingPoints</td>
-						<td>$!member.scullingPoints</td>
+				    	<td>$!member.rowingPoints #if($member.rowingPoints) - $governingBody.getRowingStatus($member.rowingPoints) #end</td>
+						<td>$!member.scullingPoints  #if($member.scullingPoints) - $governingBody.getRowingStatus($member.scullingPoints) #end</td>
 				    	<td>$!member.registrationNumber</td>			    	
 				    </tr>
 				#end				

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -18,22 +19,26 @@ public class EntryDetailsController {
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
+	private GoverningBody governingBody;
 	
 	public EntryDetailsController() {
 	}
 	
 	@Autowired
-	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, EntryDetailsModelPopulator entryDetailsModelPopulator) {
+	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, 
+			EntryDetailsModelPopulator entryDetailsModelPopulator, GoverningBody governingBody) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
+		this.governingBody = governingBody;
 	}
 	
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getView("entryDetails");
     	mv.addObject("squads", api.getSquads());
+    	mv.addObject("governingBody", governingBody);
     	
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 		entryDetailsModelPopulator.populateModel(squadToShow, mv);

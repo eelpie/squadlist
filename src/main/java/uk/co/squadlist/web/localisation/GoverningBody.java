@@ -6,5 +6,7 @@ public interface GoverningBody {
 
 	public String getName();
 	public List<String> getPointsOptions();
+	public String getRowingStatus(String points);
+	public String getScullingStatus(String points);
 	
 }
