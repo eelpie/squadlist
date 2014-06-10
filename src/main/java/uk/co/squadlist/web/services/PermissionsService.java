@@ -39,7 +39,11 @@ public class PermissionsService {
 		if (permission == Permission.ADD_OUTING) {
 			return canAddNewOuting(loggedInMember);
 		}
-		return true;
+		if (permission == Permission.VIEW_ENTRY_DETAILS) {
+			return canSeeEntryFormDetails(loggedInMember);
+		}
+		
+		return false;
 	}
 
 	public boolean hasMemberPermission(String loggedInMemberId, Permission permission, String memberId) throws UnknownMemberException {
@@ -161,6 +165,16 @@ public class PermissionsService {
 		final boolean isSquadRepForRower = isSquadRepForRower(loggedInRower, member);
 		final boolean isCoach =  userIsCoach(loggedInRower);
 		return isSameRower || isCoach || isSquadRepForRower;
+	}
+	
+	private boolean canSeeEntryFormDetails(Member loggedInMember) {
+		List<Squad> squads = api.getSquads();
+		for (Squad squad : squads) {
+			if (canSeeEntryFormDetailsForSquad(loggedInMember, squad)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean canSeeEntryFormDetailsFor(Member member, Squad squad) {		

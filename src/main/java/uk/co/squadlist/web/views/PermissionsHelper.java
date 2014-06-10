@@ -29,7 +29,7 @@ public class PermissionsHelper {
 		Permission.valueOf(permissionName);
 		final String loggedInUser = loggedInUserService.getLoggedInUser();
 		final Permission permission = Permission.valueOf(permissionName);
-		log.info("Checking view permission " + permission +  " for " + loggedInUserService);
+		log.info("Checking view permission " + permission +  " for " + loggedInUser);
 		return permissionsService.hasPermission(loggedInUser, permission);
 	}
 	
