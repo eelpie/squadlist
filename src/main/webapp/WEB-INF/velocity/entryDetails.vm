@@ -39,6 +39,8 @@
 				    	<td>
 				    		#if($member.dateOfBirth)
 				    			$dateFormatter.dayMonthYear($member.dateOfBirth)
+				    			#set($ageGrade = $governingBody.getAgeGrade($member.dateOfBirth)) 
+				    			#if($ageGrade) - $ageGrade #end
 				    		#end
 				    	</td>
 				    	<td>$!member.weight</td>
