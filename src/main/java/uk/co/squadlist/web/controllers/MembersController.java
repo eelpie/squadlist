@@ -28,6 +28,7 @@ import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.exceptions.propertyeditors.SquadPropertyEditor;
+import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -39,6 +40,7 @@ import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -48,7 +50,6 @@ public class MembersController {
 
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
 	
-	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	
 	private InstanceSpecificApiClient api;
@@ -59,6 +60,7 @@ public class MembersController {
 	private EmailMessageComposer emailMessageComposer;
 	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
+	private GoverningBody governingBody;
 	
 	public MembersController() {
 	}
@@ -67,7 +69,7 @@ public class MembersController {
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
-			PasswordGenerator passwordGenerator) {
+			PasswordGenerator passwordGenerator, GoverningBody governingBody) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
@@ -76,6 +78,7 @@ public class MembersController {
 		this.emailMessageComposer = emailMessageComposer;
 		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
+		this.governingBody = governingBody;
 	}
 
 	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
@@ -181,8 +184,18 @@ public class MembersController {
 		final Member member = api.getMemberDetails(id);
 		
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
+		if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
+			if (!governingBody.getPointsOptions().contains(memberDetails.getScullingPoints())) {
+				result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));	
+			}
+		}
+		if (!Strings.isNullOrEmpty(memberDetails.getRowingPoints())) {
+			if (!governingBody.getPointsOptions().contains(memberDetails.getRowingPoints())) {
+				result.addError(new ObjectError("member.rowingPoints", "Invalid points option"));	
+			}
+		}
 		
-		if (result.hasErrors()) {
+ 		if (result.hasErrors()) {
 			return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
 		}
 		
@@ -218,7 +231,7 @@ public class MembersController {
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());    	
-    	mv.addObject("pointsOptions", POINTS_OPTIONS);
+    	mv.addObject("pointsOptions", governingBody.getPointsOptions());
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	return mv;
 	}
