@@ -51,8 +51,10 @@
 			    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.applicationUrl("/outings?squad=$preferredSquad.id")">Outings</a></li>	
 					<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.applicationUrl("/availability/$preferredSquad.id")">Availability</a></li>
 					<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.applicationUrl("/contacts/$preferredSquad.id")">Contacts</a></li>
-					<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl("/entrydetails/$preferredSquad.id")">Entry details</a></li>
-					<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
+					<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl("/entrydetails/$preferredSquad.id")">Entry details</a></li>									
+					#if($permissionsHelper.hasPermission('VIEW_ADMIN_SCREEN'))				
+						<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
+					#end					
 			   	</ul>
 			   	<ul class="nav navbar-nav navbar-right">
 		        	<li class="dropdown">

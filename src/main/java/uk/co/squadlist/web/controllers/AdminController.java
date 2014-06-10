@@ -31,7 +31,7 @@ public class AdminController {
 		this.viewFactory = viewFactory;
 	}
 	
-	@RequiresPermission(permission=Permission.SEE_ADMIN_SCREEN)
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
     	final ModelAndView mv = viewFactory.getView("admin");

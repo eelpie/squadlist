@@ -32,7 +32,7 @@ public class PermissionsService {
 		
 		if (permission == Permission.ADD_MEMBER) {
 			return canAddNewMember(loggedInMember);
-		} else if (permission == Permission.SEE_ADMIN_SCREEN) {
+		} else if (permission == Permission.VIEW_ADMIN_SCREEN) {
 			return canSeeAdminScreen(loggedInMember);
 		}
 		return true;
