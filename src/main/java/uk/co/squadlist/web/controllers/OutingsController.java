@@ -25,6 +25,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
+import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
@@ -122,6 +123,7 @@ public class OutingsController {
     	return mv;
     }
 	
+	@RequiresPermission(permission=Permission.ADD_OUTING)
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
 		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
@@ -130,6 +132,7 @@ public class OutingsController {
     	return renderNewOutingForm(outingDefaults);
 	}
 	
+	@RequiresPermission(permission=Permission.ADD_OUTING)
 	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
     public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
 		if (result.hasErrors()) {

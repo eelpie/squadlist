@@ -32,8 +32,12 @@ public class PermissionsService {
 		
 		if (permission == Permission.ADD_MEMBER) {
 			return canAddNewMember(loggedInMember);
-		} else if (permission == Permission.VIEW_ADMIN_SCREEN) {
+		}
+		if (permission == Permission.VIEW_ADMIN_SCREEN) {
 			return canSeeAdminScreen(loggedInMember);
+		}
+		if (permission == Permission.ADD_OUTING) {
+			return canAddNewOuting(loggedInMember);
 		}
 		return true;
 	}
