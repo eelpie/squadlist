@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -64,7 +65,22 @@ public class PermissionsService {
 		}
 		
 		return false;
-	}	
+	}
+	
+	public boolean hasOutingPermission(String loggedInMemberId, Permission permission, String outingId) throws UnknownMemberException, UnknownOutingException {
+		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+			return true;
+		}
+
+		final Outing outing = api.getOuting(outingId);
+		if (permission == Permission.EDIT_OUTING) {
+			return canEditOuting(loggedInMember, outing);
+		}
+		
+		return false;
+	}
+	
 	private boolean canSeeAdminScreen(Member member) {
 		return userIsCoachOrSquadRep(member);
 	}

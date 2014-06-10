@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
@@ -39,6 +40,7 @@ import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
+import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
@@ -49,13 +51,16 @@ public class OutingsController {
 	
 	private final static Logger log = Logger.getLogger(OutingsController.class);
 	
-	private final LoggedInUserService loggedInUserService;
-	private final InstanceSpecificApiClient api;
-	private final UrlBuilder urlBuilder;
-	private final DateFormatter dateFormatter;
-	private final PreferedSquadService preferedSquadService;
-	private final ViewFactory viewFactory;
-	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+	private LoggedInUserService loggedInUserService;
+	private InstanceSpecificApiClient api;
+	private UrlBuilder urlBuilder;
+	private DateFormatter dateFormatter;
+	private PreferedSquadService preferedSquadService;
+	private ViewFactory viewFactory;
+	private OutingAvailabilityCountsService outingAvailabilityCountsService;
+	
+	public OutingsController() {
+	}
 	
 	@Autowired
 	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, UrlBuilder urlBuilder,
@@ -156,6 +161,7 @@ public class OutingsController {
 		}
 	}
 	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.GET)
     public ModelAndView outingEdit(@PathVariable String id) throws Exception {    	
     	final Outing outing = api.getOuting(id);
@@ -167,6 +173,7 @@ public class OutingsController {
     	return renderEditOutingForm(outingDetails, outing);
     }
 	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
 	@RequestMapping(value="/outings/{id}/close", method=RequestMethod.GET)
     public ModelAndView closeOuting(@PathVariable String id) throws Exception {    	
     	final Outing outing = api.getOuting(id);
@@ -178,6 +185,7 @@ public class OutingsController {
     	return redirectToOuting(outing);
     }
 	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
 	@RequestMapping(value="/outings/{id}/reopen", method=RequestMethod.GET)
     public ModelAndView reopenOuting(@PathVariable String id) throws Exception {    	
     	final Outing outing = api.getOuting(id);
@@ -188,7 +196,8 @@ public class OutingsController {
     	
     	return redirectToOuting(outing);
     }
-		
+	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
 	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
     public ModelAndView editOutingSubmit(@PathVariable String id,
     		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
@@ -257,6 +266,7 @@ public class OutingsController {
 		return api.getSquadOutingMonths(squad.getId());
 	}
 	
+	// TODO push to exception handler
     @ExceptionHandler(UnknownOutingException.class)
     @ResponseStatus(value = org.springframework.http.HttpStatus.NOT_FOUND, reason = "No outing was found with the requested id")
     public void unknownUser(UnknownOutingException e) {
