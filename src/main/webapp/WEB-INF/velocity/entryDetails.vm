@@ -38,14 +38,14 @@
 				    	<td>#parse('includes/member.vm')</td>
 				    	<td>
 				    		#if($member.dateOfBirth)
-				    			$dateFormatter.dayMonthYear($member.dateOfBirth)
+				    			#set($ageGrade = "")				    		
 				    			#set($ageGrade = $governingBody.getAgeGrade($member.dateOfBirth)) 
-				    			#if($ageGrade) - $ageGrade #end
+				    			<span #if($ageGrade) title="$ageGrade" #end>$dateFormatter.dayMonthYear($member.dateOfBirth)</span>
 				    		#end
 				    	</td>
 				    	<td>$!member.weight</td>
-				    	<td>$!member.rowingPoints #if($member.rowingPoints) - $governingBody.getRowingStatus($member.rowingPoints) #end</td>
-						<td>$!member.scullingPoints  #if($member.scullingPoints) - $governingBody.getRowingStatus($member.scullingPoints) #end</td>
+				    	<td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span></td>
+				    	<td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >$!member.scullingPoints</span></td>
 				    	<td>$!member.registrationNumber</td>			    	
 				    </tr>
 				#end				
