@@ -97,8 +97,25 @@ public class UrlBuilder {
 		return applicationUrl("/change-password");
 	}
 	
+	public String socialMediaAccounts() {
+		return applicationUrl("/social");
+	}
+	
+	public String linkFacebookUrl() {
+		return applicationUrl("/social/facebook/link");
+	}
+	
+	public String removeFacebookUrl() {
+		return applicationUrl("/social/facebook/remove");
+	}
+	
+	public String getFacebookCallbackUrl() {
+		return applicationUrl("/social/facebook/callback");
+	}
+	
 	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
 	}
+
 	
 }

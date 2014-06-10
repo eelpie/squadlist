@@ -1,0 +1,25 @@
+#parse('includes/head.vm')
+#navTabs('')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>Social</h4>
+		</div>		
+	</div>
+	<hr/>
+
+	<div class="row">			
+		<div class="col-xs-12">
+			#if($hasLinkedFacebook)
+				<p><a href="$urlBuilder.removeFacebookUrl()">Remove linked Facebook account</a></p>
+			#else
+				<p><a href="$urlBuilder.linkFacebookUrl()">Link your Facebook account</a></p>
+			#end					
+		</div>
+	</div>
+</div>
+<hr/>
+
+#parse('includes/footer.vm')
