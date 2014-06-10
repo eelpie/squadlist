@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,9 +38,8 @@ public class AvailabilityController {
 		this.viewFactory = viewFactory;
 	}
 	
-	@RequestMapping("/availability")
-    public ModelAndView availability(@RequestParam(required=false, value="squad") String squadId,
-    		@RequestParam(value = "month", required = false) String month) throws Exception {
+	@RequestMapping("/availability/{squadId}")
+    public ModelAndView availability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = viewFactory.getView("availability");
     	mv.addObject("squads", api.getSquads());
     	

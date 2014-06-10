@@ -36,7 +36,7 @@ public class PreferedSquadService {
 	}
 	
 	public Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
-    	if(!Strings.isNullOrEmpty(squadId)) {
+    	if(!Strings.isNullOrEmpty(squadId)) {    		
     		final Squad selectedSquad = api.getSquad(squadId);
     		setPreferedSquad(selectedSquad);
 			return selectedSquad;
@@ -44,13 +44,13 @@ public class PreferedSquadService {
     	return resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
 	}
 	
-	private Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		
+	public Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		
     	final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
 		if (selectedSquad != null) {
     		try {
 				return api.getSquad(selectedSquad);
 			} catch (UnknownSquadException e) {
-				request.getSession().removeAttribute(SELECTED_SQUAD);
+				clearPreferedSquad();
 			}
     	}
     	
@@ -66,10 +66,14 @@ public class PreferedSquadService {
     	return null;
 	}
 
-	private void setPreferedSquad(Squad selectedSquad) {
+	public void setPreferedSquad(Squad selectedSquad) {
 		log.debug("Setting selected squad to: " + selectedSquad.getId());
 		request.getSession().setAttribute(SELECTED_SQUAD, selectedSquad.getId());
 		
+	}
+	
+	private void clearPreferedSquad() {
+		request.getSession().removeAttribute(SELECTED_SQUAD);
 	}
 	
 }

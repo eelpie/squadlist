@@ -11,7 +11,7 @@
 			</div>
 			<div class="col-xs-4">
 				<div class="pull-right">
-					#squadSelect('/availability', 'Show contacts')					
+					#squadSelect('/availability/', 'Availability')					
 				</div>
 			</div>
 		</div>		

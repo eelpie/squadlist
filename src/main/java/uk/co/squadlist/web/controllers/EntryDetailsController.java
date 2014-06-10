@@ -2,8 +2,8 @@ package uk.co.squadlist.web.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -30,8 +30,8 @@ public class EntryDetailsController {
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
 	}
 	
-	@RequestMapping("/entrydetails")
-    public ModelAndView entrydetails(@RequestParam(required=false, value="squad") String squadId) throws Exception {
+	@RequestMapping("/entrydetails/{squadId}")
+    public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getView("entryDetails");
     	mv.addObject("squads", api.getSquads());
     	

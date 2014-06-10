@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -35,13 +35,14 @@ public class ContactsController {
 		this.contactsModelPopulator = contactsModelPopulator;
 	}
 	
-	@RequestMapping("/contacts")
-    public ModelAndView contacts(@RequestParam(required=false, value="squad") String squadId) throws Exception {
+	@RequestMapping("/contacts/{squadId}")
+    public ModelAndView contacts(@PathVariable String squadId) throws Exception {
+		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+		
     	final ModelAndView mv =  viewFactory.getView("contacts");
     	final List<Squad> allSquads = api.getSquads();
 		mv.addObject("squads", allSquads);
     	if (!allSquads.isEmpty()) {
-    		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     		log.info("Squad to show: " + squadToShow);
     		contactsModelPopulator.populateModel(squadToShow, mv);    		
     	}

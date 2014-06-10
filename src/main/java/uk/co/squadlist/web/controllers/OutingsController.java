@@ -74,14 +74,13 @@ public class OutingsController {
 	
 	@RequestMapping("/outings")
     public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId,
-    		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	final ModelAndView mv = viewFactory.getView("outings");
+    		@RequestParam(value = "month", required = false) String month) throws Exception {    	
+    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     	
-    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);	// TODO null safe	
-
     	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
 		
+		final ModelAndView mv = viewFactory.getView("outings");
 		String title = squadToShow.getName() + " outings";
 		if (month != null) {
     		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
