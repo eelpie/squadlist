@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.exceptions.UnknownOutingException;
+import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -29,6 +31,14 @@ public class PermissionsHelper {
 		final Permission permission = Permission.valueOf(permissionName);
 		log.info("Checking view permission " + permission +  " for " + loggedInUserService);
 		return permissionsService.hasPermission(loggedInUser, permission);
+	}
+	
+	public boolean hasOutingPermission(Outing outing, String permissionName) throws UnknownMemberException, UnknownOutingException {
+		Permission.valueOf(permissionName);
+		final String loggedInUser = loggedInUserService.getLoggedInUser();
+		final Permission permission = Permission.valueOf(permissionName);
+		log.info("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInUserService);
+		return permissionsService.hasOutingPermission(loggedInUser, permission, outing.getId());
 	}
 	
 }

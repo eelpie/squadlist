@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
