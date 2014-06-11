@@ -1,52 +1,41 @@
 package uk.co.squadlist.web.controllers.social;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Maps;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.model.Member;
 
 @Component
 public class FacebookLinkedAccountsService {
 	
 	private final static Logger log = Logger.getLogger(FacebookLinkedAccountsService.class);
 
-	private  final Map<String, String> linkedAccounts;
-
-	public FacebookLinkedAccountsService() {
-		linkedAccounts = Maps.newConcurrentMap();
+	private final InstanceSpecificApiClient api;
+	
+	@Autowired
+	public FacebookLinkedAccountsService(InstanceSpecificApiClient api) {		
+		this.api = api;
 	}
 	
-	public void linkAccount(String loggedInMember, String faceBookId) {
-		log.info("Linking logged in user " + loggedInMember + " to Facebook user: " + faceBookId);
-		linkedAccounts.put(faceBookId, loggedInMember);	
+	public void linkAccount(String memberId, String facebookId) throws UnknownMemberException {
+		log.info("Linking logged in user " + memberId + " to Facebook user: " + facebookId);
+		Member member = api.getMemberDetails(memberId);
+		member.setFacebookId(facebookId);
+		api.updateMemberDetails(member);
 	}
 	
-	public boolean isLinked(String loggedInMember) {
-		return linkedAccounts.containsValue(loggedInMember);
+	public boolean isLinked(String memberId) throws UnknownMemberException {
+		return api.getMemberDetails(memberId).getFacebookId() != null;
 	}
 	
-	public void removeLinkage(String loggedInMember) {
-		final String facebookIdToRemove = getLinkedFacebookIdForMember(loggedInMember);		
-		if (facebookIdToRemove != null) {
-			log.info("Removed linkage from " + loggedInMember + " to Facebook account: " + facebookIdToRemove);
-			linkedAccounts.remove(facebookIdToRemove);
-		}
-	}
-	
-	public String getLinkedUserFor(String facebookId) {
-		return linkedAccounts.get(facebookId);
-	}
-	
-	private String getLinkedFacebookIdForMember(String loggedInMember) {
-		String facebookIdToRemove = null;
-		for (String facebookId : linkedAccounts.keySet()) {
-			if (linkedAccounts.get(facebookId).equals(loggedInMember)) {
-				facebookIdToRemove = facebookId;
-			}			
-		}
-		return facebookIdToRemove;
+	public void removeLinkage(String memberId) throws UnknownMemberException {
+		log.info("Removing linked Facebook account for logged in user " + memberId);		
+		Member member = api.getMemberDetails(memberId);
+		member.setFacebookId(null);
+		api.updateMemberDetails(member);
 	}
 	
 }

@@ -62,6 +62,10 @@ public class InstanceSpecificApiClient {
 		return api.auth(instanceConfig.getInstance(), username, password);
 	}
 
+	public Member authFacebook(String token) {
+		return api.authFacebook(instanceConfig.getInstance(), token);	
+	}
+	
 	public Map<String, Integer> getSquadOutingMonths(String squadId) {
 		return api.getSquadOutingMonths(instanceConfig.getInstance(), squadId);
 	}
