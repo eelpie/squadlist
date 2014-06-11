@@ -108,7 +108,8 @@ public class FacebookSigninController {
 		
 		final Member linkedMember = api.authFacebook(facebookUserAccessToken.getAccessToken());
 		if (linkedMember == null) {
-			throw new RuntimeException("No linked account");	// TODO
+			log.warn("No linked Facebook account");
+			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));	// TODO specific error
 		}
 		
 		setLoggedInSpringUser(linkedMember);
