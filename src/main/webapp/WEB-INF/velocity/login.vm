@@ -43,10 +43,22 @@
 					<div class="controls">
 						<input type="submit" name="login" value="Log In " class="btn btn-primary" />
 					</div>
-				</div>		   	            
+				</div>
+				
+			
+								   	            
 		     </form>	     
 		</div>		
 	</div>
+	
+	<div class="row">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-6">
+			<p>
+			<br/>				
+			<p><a href="$urlBuilder.facebookSignin()">Or sign in using a previous linked Facebook account</a></p>
+		</div>					
+	</div>	
 	
 	<div class="row">
 		<div class="col-sm-2"></div>

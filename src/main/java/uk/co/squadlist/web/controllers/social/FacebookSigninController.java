@@ -1,9 +1,16 @@
 package uk.co.squadlist.web.controllers.social;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
+import com.google.common.collect.Lists;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.DefaultWebRequestor;
 import com.restfb.FacebookClient;
@@ -35,7 +43,9 @@ public class FacebookSigninController {
 	
 	@Autowired
 	public FacebookSigninController(UrlBuilder urlBuilder, FacebookOauthStateService facebookOauthStateService,
-			LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService) {
+			LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService,
+			 @Value("#{squadlist['facebook.clientId']}") String facebookClientId,
+			 @Value("#{squadlist['facebook.clientSecret']}") String facebookClientSecret) {
 		this.urlBuilder = urlBuilder;
 		this.facebookOauthStateService = facebookOauthStateService;
 		this.loggedInUserService = loggedInUserService;
@@ -45,11 +55,21 @@ public class FacebookSigninController {
 	@RequestMapping(value="/social/facebook/link", method=RequestMethod.GET)
 	public ModelAndView link() {
 		final String facebookAuthUrl = "https://www.facebook.com/dialog/oauth?client_id=" + facebookClientId + 
-			"&redirect_uri=" + urlBuilder.getFacebookCallbackUrl() + "&state=" + facebookOauthStateService.registerState();
+			"&redirect_uri=" + urlBuilder.getLinkFacebookCallbackUrl() + "&state=" + facebookOauthStateService.registerState();
 		
 		log.info("Redirecting user to facebook auth url: " + facebookAuthUrl);
 		return new ModelAndView(new RedirectView(facebookAuthUrl));	
 	}
+	
+	@RequestMapping(value="/social/facebook/signin", method=RequestMethod.GET)
+	public ModelAndView signin() {
+		final String facebookAuthUrl = "https://www.facebook.com/dialog/oauth?client_id=" + facebookClientId + 
+			"&redirect_uri=" + urlBuilder.facebookSigninCallbackUrl() + "&state=" + facebookOauthStateService.registerState();
+		
+		log.info("Redirecting user to facebook auth url: " + facebookAuthUrl);
+		return new ModelAndView(new RedirectView(facebookAuthUrl));	
+	}
+	
 	
 	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
 	public ModelAndView remove() {
@@ -57,10 +77,10 @@ public class FacebookSigninController {
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));	
 	}
 	
-	@RequestMapping(value="/social/facebook/callback", method=RequestMethod.GET)
-	public ModelAndView facebookCallback(@RequestParam(required=true) String code, @RequestParam(required=true) String state) throws IOException {				
+	@RequestMapping(value="/social/facebook/link/callback", method=RequestMethod.GET)
+	public ModelAndView facebookLinkCallback(@RequestParam(required=true) String code, @RequestParam(required=true) String state) throws IOException {				
 		log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
-		com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.getFacebookCallbackUrl());
+		com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.getLinkFacebookCallbackUrl());
 		facebookOauthStateService.clearState(state);
 		log.info("Got access token: " + facebookUserAccessToken);
 		
@@ -68,6 +88,31 @@ public class FacebookSigninController {
 		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInUser(), facebookUser.getId());
 		
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));		
+	}
+	
+	@RequestMapping(value="/social/facebook/signin/callback", method=RequestMethod.GET)
+	public ModelAndView facebookSigninCallback(@RequestParam(required=true) String code, @RequestParam(required=true) String state) throws IOException {				
+		log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
+		com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.facebookSigninCallbackUrl());
+		facebookOauthStateService.clearState(state);
+		log.info("Got access token: " + facebookUserAccessToken);
+		
+		final User facebookUser = getFacebookUserById(facebookUserAccessToken);
+		final String linkedMember = facebookLinkedAccountsService.getLinkedUserFor(facebookUser.getId());
+		if (linkedMember == null) {
+			throw new RuntimeException("No linked account");	// TODO
+		}
+		
+		log.info("Authenticating user: " + linkedMember);
+		Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
+		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		
+		UserDetails userDetail = new org.springframework.security.core.userdetails.User(linkedMember, "unknown", authorities);
+		
+		Authentication authentication = new PreAuthenticatedAuthenticationToken(userDetail, null, authorities);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	  	    		
+		return new ModelAndView(new RedirectView(urlBuilder.applicationUrl("/")));	// TODO can get normal redirect to wanted page?
 	}
 
 	// http://stackoverflow.com/questions/13671694/restfb-using-a-facebook-app-to-get-the-users-access-token

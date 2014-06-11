@@ -109,13 +109,23 @@ public class UrlBuilder {
 		return applicationUrl("/social/facebook/remove");
 	}
 	
-	public String getFacebookCallbackUrl() {
-		return applicationUrl("/social/facebook/callback");
+	public String getLinkFacebookCallbackUrl() {
+		return applicationUrl("/social/facebook/link/callback");
+	}
+	
+	public String facebookSigninCallbackUrl() {
+		return applicationUrl("/social/facebook/signin/callback");
+	}
+		
+	public String facebookSignin() {
+		return applicationUrl("/social/facebook/signin");
 	}
 	
 	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
 	}
+
+	
 
 	
 }

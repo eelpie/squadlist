@@ -28,17 +28,25 @@ public class FacebookLinkedAccountsService {
 	}
 	
 	public void removeLinkage(String loggedInMember) {
+		final String facebookIdToRemove = getLinkedFacebookIdForMember(loggedInMember);		
+		if (facebookIdToRemove != null) {
+			log.info("Removed linkage from " + loggedInMember + " to Facebook account: " + facebookIdToRemove);
+			linkedAccounts.remove(facebookIdToRemove);
+		}
+	}
+	
+	public String getLinkedUserFor(String facebookId) {
+		return linkedAccounts.get(facebookId);
+	}
+	
+	private String getLinkedFacebookIdForMember(String loggedInMember) {
 		String facebookIdToRemove = null;
 		for (String facebookId : linkedAccounts.keySet()) {
 			if (linkedAccounts.get(facebookId).equals(loggedInMember)) {
 				facebookIdToRemove = facebookId;
 			}			
 		}
-		
-		if (facebookIdToRemove != null) {
-			log.info("Removed linkage from " + loggedInMember + " to Facebook account: " + facebookIdToRemove);
-			linkedAccounts.remove(facebookIdToRemove);
-		}
+		return facebookIdToRemove;
 	}
 	
 }
