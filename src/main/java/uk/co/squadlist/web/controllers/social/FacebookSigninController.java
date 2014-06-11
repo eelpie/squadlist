@@ -120,7 +120,7 @@ public class FacebookSigninController {
 		log.info("Authenticating user: " + linkedMember);
 		Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
 		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));		
-		UserDetails userDetail = new org.springframework.security.core.userdetails.User(linkedMember.getUsername(), "unknown", authorities);		
+		UserDetails userDetail = new org.springframework.security.core.userdetails.User(linkedMember.getId(), "unknown", authorities);		
 		Authentication authentication = new PreAuthenticatedAuthenticationToken(userDetail, null, authorities);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
