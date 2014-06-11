@@ -56,6 +56,8 @@ public class FacebookSigninController {
 		this.loggedInUserService = loggedInUserService;
 		this.facebookLinkedAccountsService = facebookLinkedAccountsService;
 		this.api = api;
+		this.facebookClientId = facebookClientId;
+		this.facebookClientSecret = facebookClientSecret;
 	}
 		
 	@RequestMapping(value="/social/facebook/link", method=RequestMethod.GET)
