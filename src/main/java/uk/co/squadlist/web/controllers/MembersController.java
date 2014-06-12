@@ -166,6 +166,7 @@ public class MembersController {
 		final MemberDetails memberDetails = new MemberDetails();
 		memberDetails.setFirstName(member.getFirstName());
 		memberDetails.setLastName(member.getLastName());
+		memberDetails.setGender(member.getGender());
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
@@ -202,6 +203,7 @@ public class MembersController {
 		log.info("Updating member details: " + member.getId());		
 		member.setFirstName(memberDetails.getFirstName());
 		member.setLastName(memberDetails.getLastName());
+		member.setGender(memberDetails.getGender());
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
 		member.setRowingPoints(memberDetails.getRowingPoints());

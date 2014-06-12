@@ -10,7 +10,7 @@ public class MemberDetails {
 
 	@NotBlank
 	private String firstName, lastName, emailAddress;
-	private String contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
+	private String gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
 	private List<Squad> squads;
 	
 	public String getFirstName() {
@@ -101,16 +101,25 @@ public class MemberDetails {
 		this.emergencyContactNumber = emergencyContactNumber;
 	}
 
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	@Override
 	public String toString() {
 		return "MemberDetails [contactNumber=" + contactNumber
 				+ ", emailAddress=" + emailAddress + ", emergencyContactName="
 				+ emergencyContactName + ", emergencyContactNumber="
 				+ emergencyContactNumber + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", registrationNumber="
-				+ registrationNumber + ", rowingPoints=" + rowingPoints
-				+ ", scullingPoints=" + scullingPoints + ", squads=" + squads
-				+ ", sweepOarSide=" + sweepOarSide + "]";
+				+ ", gender=" + gender + ", lastName=" + lastName
+				+ ", registrationNumber=" + registrationNumber
+				+ ", rowingPoints=" + rowingPoints + ", scullingPoints="
+				+ scullingPoints + ", squads=" + squads + ", sweepOarSide="
+				+ sweepOarSide + "]";
 	}
 	
 }

@@ -17,10 +17,11 @@
 			#foreach($error in $status.errorMessages)
 				<div class="alert alert-warning">$error</div>
 			#end
-			
+						
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
+				#inputRow("member.gender", "Gender")				
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")
