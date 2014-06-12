@@ -21,7 +21,9 @@
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
+				TODO Known as
 				#inputRow("member.gender", "Gender")
+				TODO DOB
 				
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
@@ -33,6 +35,7 @@
 															
 				#inputRow('member.registrationNumber', 'Registration number')				
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)
+				TODO Can Scull
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
 										
 				#springBind("member.squads")																
