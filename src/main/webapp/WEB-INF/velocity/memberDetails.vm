@@ -12,7 +12,6 @@
 
 	<p>Known as: $!member.knownAs</p>
 	<p>Gender: $!member.gender</p>
-	<p>Role: $!member.role</p>
 	<p>Date of birth: 
 		#if($member.dateOfBirth) $dateFormatter.dayMonthYear($member.dateOfBirth) 
 			 #if($governingBody.getAgeGrade($member.dateOfBirth)) 
@@ -46,6 +45,8 @@
 				
 	<p>Squads: $squadNamesHelper.list($member.squads)</p>
 	
+	<p>Role: $!member.role</p>
+		
 	<a href="$urlBuilder.editMemberUrl($member)"><button class="btn btn-primary" type="button">Edit details</button></a>
 			
 	</div>
