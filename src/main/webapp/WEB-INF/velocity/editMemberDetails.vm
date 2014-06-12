@@ -21,14 +21,16 @@
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
-				#inputRow("member.gender", "Gender")				
+				#inputRow("member.gender", "Gender")
+				
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")
 				#inputRow("member.emergencyContactNumber", "Emergency contact number")
-				
+								
+				#inputRow("member.weight", "Weight")				
 				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
-											
+															
 				#inputRow('member.registrationNumber', 'Registration number')				
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)

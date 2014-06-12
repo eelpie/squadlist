@@ -9,8 +9,9 @@ import uk.co.squadlist.web.model.Squad;
 public class MemberDetails {
 
 	@NotBlank
-	private String firstName, lastName, emailAddress;
-	private String gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
+	private String firstName, lastName;
+	private String emailAddress, gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
+	private String weight;	// TODO validate
 	private List<Squad> squads;
 	
 	public String getFirstName() {
@@ -104,9 +105,15 @@ public class MemberDetails {
 	public String getGender() {
 		return gender;
 	}
-
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	
+	public String getWeight() {
+		return weight;
+	}
+	public void setWeight(String weight) {
+		this.weight = weight;
 	}
 
 	@Override
@@ -119,7 +126,7 @@ public class MemberDetails {
 				+ ", registrationNumber=" + registrationNumber
 				+ ", rowingPoints=" + rowingPoints + ", scullingPoints="
 				+ scullingPoints + ", squads=" + squads + ", sweepOarSide="
-				+ sweepOarSide + "]";
+				+ sweepOarSide + ", weight=" + weight + "]";
 	}
 	
 }

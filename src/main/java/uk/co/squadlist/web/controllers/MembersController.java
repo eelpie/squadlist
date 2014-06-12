@@ -167,6 +167,7 @@ public class MembersController {
 		memberDetails.setFirstName(member.getFirstName());
 		memberDetails.setLastName(member.getLastName());
 		memberDetails.setGender(member.getGender());
+		memberDetails.setWeight(Integer.toString(member.getWeight()));
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
@@ -204,6 +205,7 @@ public class MembersController {
 		member.setFirstName(memberDetails.getFirstName());
 		member.setLastName(memberDetails.getLastName());
 		member.setGender(memberDetails.getGender());
+		member.setWeight(Integer.parseInt(memberDetails.getWeight()));
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
 		member.setRowingPoints(memberDetails.getRowingPoints());
