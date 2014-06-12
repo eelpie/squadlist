@@ -22,8 +22,8 @@
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
 				#inputRow("member.knownAs", "Known as")
-
-				#inputRow("member.gender", "Gender")
+				
+				#selectRow('Gender', 'member.gender', $genderOptions)
 				#inputRow("member.dateOfBirth", "Date of birth")
 								
 				#inputRow("member.emailAddress", "Email address")
