@@ -21,10 +21,11 @@
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
-				TODO Known as
+				#inputRow("member.knownAs", "Known as")
+
 				#inputRow("member.gender", "Gender")
-				TODO DOB
-				
+				#inputRow("member.knownAs", "Known as")
+								
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")

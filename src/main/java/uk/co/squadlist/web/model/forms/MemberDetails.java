@@ -9,8 +9,9 @@ import uk.co.squadlist.web.model.Squad;
 public class MemberDetails {
 
 	@NotBlank
-	private String firstName, lastName;
-	private String emailAddress, gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber;	
+	private String firstName, lastName, knownAs;
+	private String emailAddress, gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
+	private String dateOfBirth;	// TODO validate
 	private String weight;	// TODO validate
 	private List<Squad> squads;
 	
@@ -115,18 +116,39 @@ public class MemberDetails {
 	public void setWeight(String weight) {
 		this.weight = weight;
 	}
+	public String getKnownAs() {
+		return knownAs;
+	}
+	public void setKnownAs(String knownAs) {
+		this.knownAs = knownAs;
+	}
+
+	public String getSculling() {
+		return sculling;
+	}
+	public void setSculling(String sculling) {
+		this.sculling = sculling;
+	}
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 
 	@Override
 	public String toString() {
 		return "MemberDetails [contactNumber=" + contactNumber
-				+ ", emailAddress=" + emailAddress + ", emergencyContactName="
+				+ ", dateOfBirth=" + dateOfBirth + ", emailAddress="
+				+ emailAddress + ", emergencyContactName="
 				+ emergencyContactName + ", emergencyContactNumber="
 				+ emergencyContactNumber + ", firstName=" + firstName
-				+ ", gender=" + gender + ", lastName=" + lastName
-				+ ", registrationNumber=" + registrationNumber
-				+ ", rowingPoints=" + rowingPoints + ", scullingPoints="
-				+ scullingPoints + ", squads=" + squads + ", sweepOarSide="
-				+ sweepOarSide + ", weight=" + weight + "]";
+				+ ", gender=" + gender + ", knownAs=" + knownAs + ", lastName="
+				+ lastName + ", registrationNumber=" + registrationNumber
+				+ ", rowingPoints=" + rowingPoints + ", sculling=" + sculling
+				+ ", scullingPoints=" + scullingPoints + ", squads=" + squads
+				+ ", sweepOarSide=" + sweepOarSide + ", weight=" + weight + "]";
 	}
 	
 }
