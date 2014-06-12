@@ -26,7 +26,7 @@ public class UrlBuilder {
 	}
 	
 	public String loginUrl() {
-		return applicationUrl("/");
+		return applicationUrl("/login");
 	}
 	
 	public String staticUrl(String uri) {
