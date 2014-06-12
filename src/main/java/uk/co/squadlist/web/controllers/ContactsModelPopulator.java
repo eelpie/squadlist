@@ -1,17 +1,23 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 
 @Component
 public class ContactsModelPopulator {
@@ -35,20 +41,38 @@ public class ContactsModelPopulator {
 	private final static Ordering<Member> byRoleThenLastName =byRole.compound(byLastName);
 	
 	private InstanceSpecificApiClient api;
+	private LoggedInUserService loggedInUserService;
+	private PermissionsService permissionsService;
 	
 	public ContactsModelPopulator() {
 	}
 	
 	@Autowired
-	public ContactsModelPopulator(InstanceSpecificApiClient api) {
+	public ContactsModelPopulator(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, PermissionsService permissionsService) {
 		this.api = api;
+		this.loggedInUserService = loggedInUserService;
+		this.permissionsService = permissionsService;
 	}
 	
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_CONTACT_DETAILS)
-	public void populateModel(final Squad squad, final ModelAndView mv) {
+	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException {
 		mv.addObject("title", squad.getName() + " contacts");
 		mv.addObject("squad", squad);    		
-		mv.addObject("members", byRoleThenLastName.sortedCopy(api.getSquadMembers(squad.getId())));
+		
+		final List<Member> members = byRoleThenLastName.sortedCopy(api.getSquadMembers(squad.getId()));
+		final List<Member> redactedMembers = redactContentDetailsForMembers(api.getMemberDetails(loggedInUserService.getLoggedInUser()), members);
+		mv.addObject("members", redactedMembers);
+	}
+
+	private List<Member> redactContentDetailsForMembers(Member loggedInMember, List<Member> members) {
+		List<Member> redactedMembers = Lists.newArrayList();
+		for (Member member : members) {
+			if (!permissionsService.canSeePhoneNumberForRower(loggedInMember, member)) {
+				member.setContactNumber(null);
+			}		
+			redactedMembers.add(member);
+		}
+		return redactedMembers;
 	}
 	
 }
