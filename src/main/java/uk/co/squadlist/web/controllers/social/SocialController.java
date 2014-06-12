@@ -6,25 +6,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.squadlist.web.annotations.RequiresPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class SocialController {
 		
-	private final InstanceSpecificApiClient api;
-	private final ViewFactory viewFactory;
 	private final FacebookLinkedAccountsService facebookLinkedAccountsService;
 	private final LoggedInUserService loggedInUserService;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public SocialController(InstanceSpecificApiClient api, ViewFactory viewFactory, LoggedInUserService loggedInUserService, 
-			FacebookLinkedAccountsService facebookLinkedAccountsService) {
-		this.api = api;
+	public SocialController(LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService, 
+			ViewFactory viewFactory) {
 		this.viewFactory = viewFactory;
 		this.loggedInUserService = loggedInUserService;
 		this.facebookLinkedAccountsService = facebookLinkedAccountsService;
