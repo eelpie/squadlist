@@ -228,7 +228,7 @@ public class PermissionsService {
 	}
 	
 	public boolean canSeeContactDetailsForSquad(Member member, Squad squad) {
-		return userIsCoach(member) || isMemberOfSquad(member, squad);
+		return true;
 	}
 
 	private boolean isMemberOfSquad(Member member, Squad squad) {
