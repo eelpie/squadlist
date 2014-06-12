@@ -24,8 +24,39 @@
 				#inputRow("member.knownAs", "Known as")
 				
 				#selectRow('Gender', 'member.gender', $genderOptions)
-				#inputRow("member.dateOfBirth", "Date of birth")
-								
+				
+				<div class="form-group">
+				    <label for="inputEmail3" class="col-sm-2 control-label">Date of birth</label>
+				    <div class="col-sm-2">
+				    	#springBind("member.dateOfBirthDay")							
+						<select name="${status.expression}" class="form-control">	
+							#foreach($day in $dateHelper.days)
+								<option value="$day" #if($day == ${status.value}) SELECTED #end>$day
+							#end
+						</select>
+						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
+					</div>
+					<div class="col-sm-2">
+						#springBind("member.dateOfBirthMonth")									
+						#set($months =  $dateHelper.months)
+						<select name="${status.expression}" class="form-control">
+							#foreach($month in $months.keySet())
+								<option value="$month" #if($month == ${status.value}) SELECTED #end>$months.get($month)
+							#end
+						</select>
+						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
+					</div>
+					<div class="col-sm-2">
+						#springBind("member.dateOfBirthYear")			
+						<select name="${status.expression}" class="form-control">
+							#foreach($year in $dateHelper.dateOfBirthYears)
+								<option value="$year" #if($year == ${status.value}) SELECTED #end>$year
+							#end
+						</select>
+						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
+					</div>
+				</div>
+				
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")
