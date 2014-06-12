@@ -176,6 +176,7 @@ public class MembersController {
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
 		memberDetails.setRowingPoints(member.getRowingPoints());
+		memberDetails.setSculling(member.getSculling());
 		memberDetails.setScullingPoints(member.getScullingPoints());
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
 		memberDetails.setSquads(member.getSquads());
@@ -208,12 +209,14 @@ public class MembersController {
 		log.info("Updating member details: " + member.getId());		
 		member.setFirstName(memberDetails.getFirstName());
 		member.setLastName(memberDetails.getLastName());
+		member.setKnownAs(memberDetails.getKnownAs());
 		member.setGender(memberDetails.getGender());
 		member.setDateOfBirth(!Strings.isNullOrEmpty(memberDetails.getDateOfBirth()) ? DATE_FORMAT.parseDateTime(memberDetails.getDateOfBirth()).toDate() : null);
 		member.setWeight(Integer.parseInt(memberDetails.getWeight()));
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
 		member.setRowingPoints(memberDetails.getRowingPoints());
+		member.setSculling(memberDetails.getSculling());
 		member.setScullingPoints(memberDetails.getScullingPoints());
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
 		member.setEmergencyContactName(memberDetails.getEmergencyContactName());

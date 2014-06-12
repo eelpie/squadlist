@@ -35,8 +35,8 @@
 				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
 															
 				#inputRow('member.registrationNumber', 'Registration number')				
-				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)
-				TODO Can Scull
+				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)								
+				#inputRow('member.sculling', 'Sculling')				
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
 										
 				#springBind("member.squads")																
