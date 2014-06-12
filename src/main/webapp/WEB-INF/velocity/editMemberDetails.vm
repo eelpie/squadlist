@@ -35,10 +35,10 @@
 				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
 															
 				#inputRow('member.registrationNumber', 'Registration number')				
-				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)								
-				#inputRow('member.sculling', 'Sculling')				
+				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)				
+				#selectRow('Sculling', 'member.sculling', $yesNoOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
-										
+														
 				#springBind("member.squads")																
 				#squadsCheckboxGroup
 															
