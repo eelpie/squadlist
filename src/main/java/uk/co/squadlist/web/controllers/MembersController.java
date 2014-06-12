@@ -54,8 +54,8 @@ public class MembersController {
 
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
-	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("Male", "Female");
-	private static final List<String> YES_NO_OPTIONS = Lists.newArrayList("Yes", "No");
+	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("male", "female");
+	private static final List<String> YES_NO_OPTIONS = Lists.newArrayList("Y", "N");
 	
 	private InstanceSpecificApiClient api;
 	private LoggedInUserService loggedInUserService;
