@@ -94,6 +94,7 @@ public class MembersController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("member", members);
     	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
+    	mv.addObject("governingBody", governingBody);
     	return mv;
     }
 	
