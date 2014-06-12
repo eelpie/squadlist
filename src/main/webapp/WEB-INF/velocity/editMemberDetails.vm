@@ -24,7 +24,7 @@
 				#inputRow("member.knownAs", "Known as")
 
 				#inputRow("member.gender", "Gender")
-				#inputRow("member.knownAs", "Known as")
+				#inputRow("member.dateOfBirth", "Date of birth")
 								
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
