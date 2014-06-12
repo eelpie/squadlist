@@ -23,12 +23,11 @@ public class DateHelper {
 	}
 	
 	public static List<String> getYears() {
-		final List<String> years = Lists.newArrayList();
-		final int yearOfEra = DateTime.now().getYearOfEra();
-		for (int i = 0; i < 3; i++) {
-			years.add(Integer.toString(yearOfEra + i));
-		}
-		return years;
+		return listYears(DateTime.now().getYearOfEra(), 3);
+	}
+
+	public static List<String> getDateOfBirthYears() {
+		return listYears(DateTime.now().getYearOfEra() - 100, 100);
 	}
 	
 	public static Map<Integer, String> getMonths() {
@@ -73,6 +72,14 @@ public class DateHelper {
 	
 	private static DateMidnight midnightYesterday() {
 		return DateTime.now().minusDays(1).toDateMidnight();
+	}
+	
+	private static List<String> listYears(int firstYear, int numberToShow) {
+		final List<String> years = Lists.newArrayList();
+		for (int i = 0; i < numberToShow; i++) {
+			years.add(Integer.toString(firstYear + i));
+		}
+		return years;
 	}
 	
 }

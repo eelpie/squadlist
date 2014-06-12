@@ -11,7 +11,7 @@ public class MemberDetails {
 	@NotBlank
 	private String firstName, lastName, knownAs;
 	private String emailAddress, gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
-	private String dateOfBirth;	// TODO validate
+	private Integer dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear;
 	private String weight;	// TODO validate
 	private List<Squad> squads;
 	
@@ -130,18 +130,36 @@ public class MemberDetails {
 		this.sculling = sculling;
 	}
 
-	public String getDateOfBirth() {
-		return dateOfBirth;
+	public Integer getDateOfBirthDay() {
+		return dateOfBirthDay;
 	}
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
+
+	public void setDateOfBirthDay(Integer dateOfBirthDay) {
+		this.dateOfBirthDay = dateOfBirthDay;
+	}
+
+	public Integer getDateOfBirthMonth() {
+		return dateOfBirthMonth;
+	}
+
+	public void setDateOfBirthMonth(Integer dateOfBirthMonth) {
+		this.dateOfBirthMonth = dateOfBirthMonth;
+	}
+
+	public Integer getDateOfBirthYear() {
+		return dateOfBirthYear;
+	}
+
+	public void setDateOfBirthYear(Integer dateOfBirthYear) {
+		this.dateOfBirthYear = dateOfBirthYear;
 	}
 
 	@Override
 	public String toString() {
 		return "MemberDetails [contactNumber=" + contactNumber
-				+ ", dateOfBirth=" + dateOfBirth + ", emailAddress="
-				+ emailAddress + ", emergencyContactName="
+				+ ", dateOfBirthDay=" + dateOfBirthDay + ", dateOfBirthMonth="
+				+ dateOfBirthMonth + ", dateOfBirthYear=" + dateOfBirthYear
+				+ ", emailAddress=" + emailAddress + ", emergencyContactName="
 				+ emergencyContactName + ", emergencyContactNumber="
 				+ emergencyContactNumber + ", firstName=" + firstName
 				+ ", gender=" + gender + ", knownAs=" + knownAs + ", lastName="

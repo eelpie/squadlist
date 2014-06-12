@@ -1,13 +1,15 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.IllegalFieldValueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -50,7 +52,6 @@ public class MembersController {
 	
 	private final static Logger log = Logger.getLogger(MembersController.class);
 
-	private final static DateTimeFormatter DATE_FORMAT = ISODateTimeFormat.basicDate();
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("Male", "Female");
@@ -173,7 +174,11 @@ public class MembersController {
 		memberDetails.setLastName(member.getLastName());
 		memberDetails.setKnownAs(member.getKnownAs());
 		memberDetails.setGender(member.getGender());
-		memberDetails.setDateOfBirth(DATE_FORMAT.print(member.getDateOfBirth().getTime()));
+		
+		memberDetails.setDateOfBirthDay(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getDayOfMonth() : null);
+		memberDetails.setDateOfBirthMonth(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getMonthOfYear() : null);
+		memberDetails.setDateOfBirthYear(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getYear() : null);
+		
 		memberDetails.setWeight(Integer.toString(member.getWeight()));
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
@@ -205,6 +210,20 @@ public class MembersController {
 			}
 		}
 		
+		Date updatedDateOfBirth = null;
+		if (memberDetails.getDateOfBirthDay() != null &&
+				memberDetails.getDateOfBirthMonth() != null &&
+				memberDetails.getDateOfBirthYear() != null) {
+			try {
+				updatedDateOfBirth = new DateTime(memberDetails.getDateOfBirthYear(),
+					memberDetails.getDateOfBirthMonth(), memberDetails.getDateOfBirthDay(), 0, 0, 0, 
+					DateTimeZone.UTC).toDate();
+				member.setDateOfBirth(updatedDateOfBirth);
+			} catch (IllegalFieldValueException e) {
+				result.addError(new ObjectError("member.dateOfBirthYear", "Invalid date"));	
+			}
+		}
+
  		if (result.hasErrors()) {
 			return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
 		}
@@ -214,7 +233,9 @@ public class MembersController {
 		member.setLastName(memberDetails.getLastName());
 		member.setKnownAs(memberDetails.getKnownAs());
 		member.setGender(memberDetails.getGender());
-		member.setDateOfBirth(!Strings.isNullOrEmpty(memberDetails.getDateOfBirth()) ? DATE_FORMAT.parseDateTime(memberDetails.getDateOfBirth()).toDate() : null);
+				
+		member.setDateOfBirth(updatedDateOfBirth);
+				
 		member.setWeight(Integer.parseInt(memberDetails.getWeight()));
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
