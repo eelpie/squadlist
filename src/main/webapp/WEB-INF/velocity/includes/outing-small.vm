@@ -1,3 +1,0 @@
-<p>
-<a href="$urlBuilder.applicationUrl("/outings/$outing.id")">$dateFormatter.dayMonthYearTime($outing.date)</a>
-</p>

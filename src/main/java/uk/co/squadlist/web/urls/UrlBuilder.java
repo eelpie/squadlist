@@ -85,6 +85,15 @@ public class UrlBuilder {
 		return outings(squad) + "&month=" + month;
 	}
 	
+	public String availability(Squad squad) {
+		return applicationUrl("/availability/" + squad.getId());
+	}
+	
+	public String availability(Squad squad, String month) {
+		return availability(squad) + "?month=" + month;
+	}
+	
+	
 	public String editMemberUrl(Member member) {
 		return memberUrl(member) + "/edit";
 	}

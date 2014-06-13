@@ -6,10 +6,37 @@
 	#if(!$squads.isEmpty())
 				
 		<div class="row">
-			<div class="col-xs-8">
+			<div class="col-xs-4">
 				<h4>$squad.name availability</h4>
 			</div>
-			<div class="col-xs-4">
+			
+			<div class="col-xs-6" style="padding-top: 10px;">
+				
+				#if($outingMonths && !$outingMonths.keySet().isEmpty())		
+				<ul class="list-inline">
+				
+					<li>				
+					<a href="$urlBuilder.availability($squad)">
+						#if($current)
+							<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
+						#end
+						Current</a>
+					</li>
+					#foreach($outingMonth in $outingMonths.keySet())
+						<li><a href="$urlBuilder.availability($squad, $outingMonth)">															
+							#if($outingMonth.equals($month))
+								<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
+							#end
+							$dateFormatter.month($outingMonth)							
+							</a>
+						</li>
+					#end
+				</ul>
+				#end
+				
+				
+			</div>
+			<div class="col-xs-2">
 				<div class="pull-right">
 					#squadSelect('/availability/', 'Availability')					
 				</div>
@@ -34,7 +61,7 @@
 								<th></th>
 								#foreach($outing in $outings) 
 									<th>
-										#parse('includes/outing-small.vm')
+										#parse('includes/outing-header.vm')
 									</th>
 								#end
 							</thead>
