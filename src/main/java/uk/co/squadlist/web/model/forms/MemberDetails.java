@@ -9,8 +9,8 @@ import uk.co.squadlist.web.model.Squad;
 public class MemberDetails {
 
 	@NotBlank
-	private String firstName, lastName, knownAs;
-	private String emailAddress, gender, role, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
+	private String firstName, lastName;
+	private String knownAs, emailAddress, gender, role, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
 	private Integer dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear;
 	private String weight;	// TODO validate
 	private List<Squad> squads;

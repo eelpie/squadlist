@@ -54,7 +54,7 @@ public class MembersController {
 
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
 	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("male", "female");
-	private static final List<String> ROLES_OPTIONS = Lists.newArrayList("Rower", "Squad representative", "Coach");
+	private static final List<String> ROLES_OPTIONS = Lists.newArrayList("Rower", "Rep", "Coach", "Cox", "Non rowing");
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	private static final List<String> YES_NO_OPTIONS = Lists.newArrayList("Y", "N");
 	
@@ -112,6 +112,7 @@ public class MembersController {
 		final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result);
 		
 		if (result.hasErrors()) {
+			log.info("New member submission has errors: " + result.getAllErrors());
 			return renderNewMemberForm();
 		}
 		
@@ -123,7 +124,8 @@ public class MembersController {
 				requestedSquads,
 				memberDetails.getEmailAddress(),
 				initialPassword,
-				null);
+				null,
+				memberDetails.getRole());
 			
 			sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
 			
@@ -133,6 +135,7 @@ public class MembersController {
 				addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
 		
 		} catch (InvalidMemberException e) {
+			log.warn("Invalid member exception: " + e.getMessage());
 			result.addError(new ObjectError("memberDetails", e.getMessage()));
 			return renderNewMemberForm();
 		}
@@ -298,7 +301,7 @@ public class MembersController {
 				squads.add(api.getSquad(requestedSquadId.getId()));
 			} catch (UnknownSquadException e) {
 				log.warn("Rejecting unknown squad: " + requestedSquadId);
-				result.addError(new ObjectError("member.squad", "Unknown squad"));			
+				result.addError(new ObjectError("memberDetails.squad", "Unknown squad"));			
 			}
 		}
 		log.info("Assigned squads: " + squads);

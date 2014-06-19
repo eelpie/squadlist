@@ -91,8 +91,8 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Member createMember(String firstName, String lastName, List<Squad> squads, 
-			String emailAddress, String initialPassword, Date dateOfBirth) throws InvalidMemberException {
-		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth);
+			String emailAddress, String initialPassword, Date dateOfBirth, String role) throws InvalidMemberException {
+		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
 	}
 
 	public Member updateMemberDetails(Member member) {
