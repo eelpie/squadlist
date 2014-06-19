@@ -20,7 +20,7 @@
 			<form method="POST" action="$urlBuilder.newMemberUrl()" class="form-horizontal">		
 				#inputRow("memberDetails.firstName", "First name")
 				#inputRow("memberDetails.lastName", "Last name")
-							
+											
 				#springBind("memberDetails.emailAddress")
 				<div class="form-group">
 				    <label for="currentPassword" class="col-sm-2 control-label">Email address</label>
@@ -37,7 +37,9 @@
 						</div>			
 				    </div>
 				</div>
-										
+								
+				#selectRow('Role', 'memberDetails.role', $rolesOptions)				
+														
 				#springBind("memberDetails.squads")
 				#squadsCheckboxGroup
 																							

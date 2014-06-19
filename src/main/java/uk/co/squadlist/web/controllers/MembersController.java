@@ -53,8 +53,9 @@ public class MembersController {
 	private final static Logger log = Logger.getLogger(MembersController.class);
 
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
-	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("male", "female");
+	private static final List<String> ROLES_OPTIONS = Lists.newArrayList("Rower", "Squad representative", "Coach");
+	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	private static final List<String> YES_NO_OPTIONS = Lists.newArrayList("Y", "N");
 	
 	private InstanceSpecificApiClient api;
@@ -258,6 +259,7 @@ public class MembersController {
 		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("title", "Adding a new member");
+    	mv.addObject("rolesOptions", ROLES_OPTIONS);
 		return mv;
 	}
 	
@@ -270,6 +272,7 @@ public class MembersController {
 
     	mv.addObject("genderOptions", GENDER_OPTIONS);
     	mv.addObject("pointsOptions", governingBody.getPointsOptions());
+    	mv.addObject("rolesOptions", ROLES_OPTIONS);
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);
     	return mv;

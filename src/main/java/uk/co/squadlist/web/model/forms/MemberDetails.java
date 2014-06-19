@@ -10,7 +10,7 @@ public class MemberDetails {
 
 	@NotBlank
 	private String firstName, lastName, knownAs;
-	private String emailAddress, gender, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
+	private String emailAddress, gender, role, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
 	private Integer dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear;
 	private String weight;	// TODO validate
 	private List<Squad> squads;
@@ -153,6 +153,13 @@ public class MemberDetails {
 	public void setDateOfBirthYear(Integer dateOfBirthYear) {
 		this.dateOfBirthYear = dateOfBirthYear;
 	}
+	
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
 
 	@Override
 	public String toString() {
@@ -164,9 +171,10 @@ public class MemberDetails {
 				+ emergencyContactNumber + ", firstName=" + firstName
 				+ ", gender=" + gender + ", knownAs=" + knownAs + ", lastName="
 				+ lastName + ", registrationNumber=" + registrationNumber
-				+ ", rowingPoints=" + rowingPoints + ", sculling=" + sculling
-				+ ", scullingPoints=" + scullingPoints + ", squads=" + squads
-				+ ", sweepOarSide=" + sweepOarSide + ", weight=" + weight + "]";
+				+ ", role=" + role + ", rowingPoints=" + rowingPoints
+				+ ", sculling=" + sculling + ", scullingPoints="
+				+ scullingPoints + ", squads=" + squads + ", sweepOarSide="
+				+ sweepOarSide + ", weight=" + weight + "]";
 	}
 	
 }
