@@ -194,6 +194,8 @@ public class MembersController {
 		memberDetails.setSquads(member.getSquads());
 		memberDetails.setEmergencyContactName(member.getEmergencyContactName());
 		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
+		memberDetails.setRole(member.getRole());
+		
 		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
     }
 	
@@ -250,6 +252,7 @@ public class MembersController {
 		member.setEmergencyContactName(memberDetails.getEmergencyContactName());
 		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
 		member.setSweepOarSide(memberDetails.getSweepOarSide());
+		member.setRole(memberDetails.getRole());
 		member.setSquads(squads);
 		
 		log.info("Submitting updated member: " + member);

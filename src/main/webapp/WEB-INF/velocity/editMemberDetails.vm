@@ -69,7 +69,9 @@
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)				
 				#selectRow('Sculling', 'member.sculling', $yesNoOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
-														
+									
+				#selectRow('Role', 'member.role', $rolesOptions)
+											
 				#springBind("member.squads")																
 				#squadsCheckboxGroup
 															
