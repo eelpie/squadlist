@@ -12,32 +12,97 @@
 
 	<div class="row">			
 		<div class="col-xs-12">
+				
+		<script>
+			$(function() {
+			$( "#sortable1, #sortable2" ).sortable({
+			connectWith: ".connectedSortable"
+			}).disableSelection();
+			});
+		</script>
+				
+		<style>.connectedSortable { background-color: #eee }</style>
 		
-			<form method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">		
-				
-				<div class="form-group">				
-					#springBind("squadDetails.name")				
-			   		<label for="squad" class="col-sm-2 control-label">Name</label>
-				    <div class="col-sm-5">    
-						<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}" class="form-control" />
-						#foreach($error in $status.errorMessages)
-							<div class="alert alert-warning">$error</div>
-						#end
-					</div>
-				</div>		
-				
-				<div class="control-group">
-					<div  class="col-sm-2">
-					</div>	
-					<div class="controls">
-						<button type="submit" class="btn btn-primary"">Update squad</button>
-						#cancel($urlBuilder.adminUrl())					
-					</div>
+		<form method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">		
+	
+			<div class="form-group">				
+				#springBind("squadDetails.name")				
+		   		<label for="squad" class="col-sm-2 control-label">Name</label>
+			    <div class="col-sm-10">    
+					<input id="${status.expression}" name="${status.expression}" placeholder="Name" value="$!{status.value}" class="form-control" />
+					#foreach($error in $status.errorMessages)
+						<div class="alert alert-warning">$error</div>
+					#end
 				</div>
-									
-			</form>				
-		</div>
+			</div>
+					
+			<div class="form-group">				
+				#springBind("squadDetails.name")				
+		   		<label class="col-sm-2 control-label">Members</label>
+			    <div class="col-sm-10">    
+					
+					<div class="container-fluid">
+					
+						<div class="row">
+							<div class="col-xs-5">
+								<h5>Existing</h5>
+								
+								<div id="meh">Click me</div>
+								
+							</div>
+							<div class="col-xs-5">
+								<h5>Available</h5>
+							</div>
+						</div>
+													
+						<div class="row">
+						
+							<div class="col-xs-5">
+								<ul id="sortable1" class="connectedSortable">
+									#foreach($member in $squadMembers)
+										<li id="$member.id" class="ui-state-default">$member.firstName $member.lastName</li>
+									#end
+								</ul>
+							</div>
+							
+							<div class="col-xs-5">
+								<ul id="sortable2" class="connectedSortable">										    
+									#foreach($member in $availableMembers)
+										<li id="$member.id" class="ui-state-highlight">$member.firstName $member.lastName</li>
+									#end
+								</ul>
+							</div>
+						
+						</div>
+						
+					</div>
+					
+				</div>
+			</div>		
+
+			<div class="control-group">
+				<div  class="col-sm-2">
+				</div>
+			</div>
+			<div class="controls">
+				<button type="submit" class="btn btn-primary">Update squad</button>
+					#cancel($urlBuilder.adminUrl())					
+				</div>
+			</div>
+												
+		</form>				
 	</div>
+	
+	<script>
+		$('#meh').click(function() {			
+			var selected = '';		
+			$( "#sortable1 li" ).each(function(index) {
+				console.log("a");
+				selected = selected + $( this ).attr('id') + ",";
+			});	
+		});		
+	</script>
+			
 </div>
 <hr/>
 

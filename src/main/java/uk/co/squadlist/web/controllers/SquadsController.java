@@ -92,6 +92,8 @@ public class SquadsController {
 		final ModelAndView mv = viewFactory.getView("editSquad");
 		mv.addObject("squad", squad);
 		mv.addObject("squadDetails", squadDetails);
+		mv.addObject("squadMembers", api.getSquadMembers(squad.getId()));
+		mv.addObject("availableMembers", api.getMembers());	// TODO diff
 		return mv;
 	}
 	
