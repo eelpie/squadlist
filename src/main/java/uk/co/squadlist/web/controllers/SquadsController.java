@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -92,8 +95,13 @@ public class SquadsController {
 		final ModelAndView mv = viewFactory.getView("editSquad");
 		mv.addObject("squad", squad);
 		mv.addObject("squadDetails", squadDetails);
-		mv.addObject("squadMembers", api.getSquadMembers(squad.getId()));
-		mv.addObject("availableMembers", api.getMembers());	// TODO diff
+		
+		final List<Member> squadMembers = api.getSquadMembers(squad.getId());
+		mv.addObject("squadMembers", squadMembers);
+				
+		final List<Member> availableMembers = api.getMembers();		
+		availableMembers.removeAll(squadMembers);
+		mv.addObject("availableMembers", availableMembers);
 		return mv;
 	}
 	
