@@ -97,11 +97,14 @@
 		$('#meh').click(function() {			
 			var selected = '';		
 			$( "#sortable1 li" ).each(function(index) {
-				console.log("a");
 				selected = selected + $( this ).attr('id') + ",";
-			});	
+			});
+			
+			$('#selected').text(selected);	
 		});		
 	</script>
+	
+	<div id="selected"></div>
 			
 </div>
 <hr/>
