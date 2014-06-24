@@ -23,8 +23,8 @@
 				
 		<style>.connectedSortable { background-color: #eee }</style>
 		
-		<form method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">		
-	
+		<form id="squadDetails" method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">
+				
 			<div class="form-group">				
 				#springBind("squadDetails.name")				
 		   		<label for="squad" class="col-sm-2 control-label">Name</label>
@@ -43,12 +43,11 @@
 					
 					<div class="container-fluid">
 					
+						<input id="members" type="hidden" name="members" />
+											
 						<div class="row">
 							<div class="col-xs-5">
-								<h5>Existing</h5>
-								
-								<div id="meh">Click me</div>
-								
+								<h5>Existing</h5>								
 							</div>
 							<div class="col-xs-5">
 								<h5>Available</h5>
@@ -94,18 +93,18 @@
 	</div>
 	
 	<script>
-		$('#meh').click(function() {			
+		$('#squadDetails').submit(function(event) {			
 			var selected = '';		
 			$( "#sortable1 li" ).each(function(index) {
-				selected = selected + $( this ).attr('id') + ",";
+				if (selected) {
+					selected = selected + ',';
+				}
+				selected = selected + $( this ).attr('id');
 			});
-			
-			$('#selected').text(selected);	
+			$('#members').val(selected);	
 		});		
 	</script>
-	
-	<div id="selected"></div>
-			
+				
 </div>
 <hr/>
 

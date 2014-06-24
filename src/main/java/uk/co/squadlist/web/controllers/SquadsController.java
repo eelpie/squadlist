@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -24,10 +25,15 @@ import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+
 @Controller
 public class SquadsController {
 	
 	private final static Logger log = Logger.getLogger(SquadsController.class);
+	
+	private final static Splitter COMMA_SPLITTER = Splitter.on(",");
 	
 	private final InstanceSpecificApiClient api;
 	private final UrlBuilder urlBuilder;
@@ -80,10 +86,14 @@ public class SquadsController {
 			return renderEditSquadForm(squad, squadDetails);
 		}
 		
-		squad.setName(squadDetails.getName());
-		
+		squad.setName(squadDetails.getName());		
 		log.info("Updating squad: " + squad);
 		api.updateSquad(squad);
+				
+		final Set<String> updatedSquadMembers = Sets.newHashSet(COMMA_SPLITTER.split(squadDetails.getMembers()).iterator());
+		log.info("Setting squad members to " + updatedSquadMembers.size() + " members: " + updatedSquadMembers);
+		// TODO API call
+		
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));	
     }
 	

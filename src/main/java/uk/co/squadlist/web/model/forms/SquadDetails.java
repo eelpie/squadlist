@@ -7,6 +7,8 @@ public class SquadDetails {
     @NotBlank
 	private String name;
     
+    private String members;
+    
 	public String getName() {
 		return name;
 	}
@@ -14,10 +16,18 @@ public class SquadDetails {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getMembers() {
+		return members;
+	}
+
+	public void setMembers(String members) {
+		this.members = members;
+	}
 
 	@Override
 	public String toString() {
-		return "SquadDetails [name=" + name + "]";
+		return "SquadDetails [members=" + members + ", name=" + name + "]";
 	}
 	
 }
