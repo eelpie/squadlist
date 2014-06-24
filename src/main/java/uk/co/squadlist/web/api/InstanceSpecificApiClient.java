@@ -4,13 +4,18 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
+import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.annotations.Timed;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
@@ -145,6 +150,10 @@ public class InstanceSpecificApiClient {
 
 	public Squad updateSquad(Squad squad) {
 		return api.updateSquad(instanceConfig.getInstance(), squad);
+	}
+
+	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
+		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);		
 	}
 	
 }

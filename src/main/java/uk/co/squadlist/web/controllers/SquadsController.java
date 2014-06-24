@@ -1,11 +1,14 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
+import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -80,7 +87,7 @@ public class SquadsController {
 	}
 	
 	@RequestMapping(value="/squad/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException {
+    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
 		final Squad squad = api.getSquad(id);
 		if (result.hasErrors()) {
 			return renderEditSquadForm(squad, squadDetails);
@@ -92,7 +99,7 @@ public class SquadsController {
 				
 		final Set<String> updatedSquadMembers = Sets.newHashSet(COMMA_SPLITTER.split(squadDetails.getMembers()).iterator());
 		log.info("Setting squad members to " + updatedSquadMembers.size() + " members: " + updatedSquadMembers);
-		// TODO API call
+		api.setSquadMembers(squad, updatedSquadMembers);
 		
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));	
     }
