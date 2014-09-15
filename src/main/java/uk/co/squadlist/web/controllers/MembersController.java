@@ -202,6 +202,7 @@ public class MembersController {
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+		log.info("Received edit member request: " + memberDetails);
 		final Member member = api.getMemberDetails(id);
 		
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
