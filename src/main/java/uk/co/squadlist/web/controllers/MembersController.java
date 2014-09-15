@@ -183,7 +183,7 @@ public class MembersController {
 		memberDetails.setDateOfBirthMonth(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getMonthOfYear() : null);
 		memberDetails.setDateOfBirthYear(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getYear() : null);
 		
-		memberDetails.setWeight(Integer.toString(member.getWeight()));
+		memberDetails.setWeight(member.getWeight() != null ? Integer.toString(member.getWeight()) : null);
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
