@@ -18,7 +18,7 @@
 				<div class="alert alert-warning">$error</div>
 			#end
 						
-			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal">				
+			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal" accept-charset="UTF-8">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
 				#inputRow("member.knownAs", "Known as")

@@ -23,7 +23,7 @@
 				
 		<style>.connectedSortable { background-color: #eee }</style>
 		
-		<form id="squadDetails" method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal">
+		<form id="squadDetails" method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal" accept-charset="UTF-8">
 				
 			<div class="form-group">				
 				#springBind("squadDetails.name")				
