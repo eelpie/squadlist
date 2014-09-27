@@ -133,8 +133,28 @@ public class UrlBuilder {
 	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
 	}
-
 	
+	public String contactsUrl() {
+		return applicationUrl("/contacts");
+	}
+	public String contactsUrl(Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, contactsUrl());
+	}
+	
+	public String outingsUrl(Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, outingsUrl());
+	}
+	
+	public String availabilityUrl(Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, availabilityUrl());
+	}
 
+	private String availabilityUrl() {
+		return applicationUrl("/availability");
+	}
+	
+	private String appendSquad(Squad prefferredSquad, final String baseUrl) {
+		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
+	}
 	
 }
