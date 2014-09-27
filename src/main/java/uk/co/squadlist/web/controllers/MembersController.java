@@ -243,7 +243,7 @@ public class MembersController {
 				
 		member.setDateOfBirth(updatedDateOfBirth);
 				
-		member.setWeight(Integer.parseInt(memberDetails.getWeight()));
+		member.setWeight(!Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null);	// TODO validate
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
 		member.setRowingPoints(memberDetails.getRowingPoints());
