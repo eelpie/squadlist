@@ -1,5 +1,8 @@
 package uk.co.squadlist.web.urls;
 
+import java.net.URISyntaxException;
+
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -141,8 +144,12 @@ public class UrlBuilder {
 		return appendSquad(prefferredSquad, contactsUrl());
 	}
 	
-	public String outingsUrl(Squad prefferredSquad) {
-		return appendSquad(prefferredSquad, outingsUrl());
+	public String outingsUrl(Squad prefferredSquad) throws URISyntaxException {
+		final URIBuilder url = new URIBuilder(outingsUrl());
+		if (prefferredSquad != null) {
+			url.addParameter("squad", prefferredSquad.getId());
+		}
+		return url.build().toString();
 	}
 	
 	public String availabilityUrl(Squad prefferredSquad) {
