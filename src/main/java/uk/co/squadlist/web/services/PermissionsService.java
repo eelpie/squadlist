@@ -17,6 +17,9 @@ import uk.co.squadlist.web.model.Squad;
 @Component
 public class PermissionsService {
 
+	private static final String REP = "Rep";
+	private static final String COACH = "Coach";	// TODO push to an enum
+	
 	private InstanceSpecificApiClient api;
 	
 	@Autowired
@@ -267,11 +270,11 @@ public class PermissionsService {
 	
 	
 	private boolean userIsCoach(Member member) {
-		return "Coach".equals(member.getRole());
+		return COACH.equals(member.getRole());
 	}
 
 	private boolean userIsSquadRep(Member member) {
-		return "Rep".equals(member.getRole());
+		return REP.equals(member.getRole());
 	}
 
 	private boolean userIsCoachOrSquadRep(Member member) {
