@@ -267,11 +267,11 @@ public class PermissionsService {
 	
 	
 	private boolean userIsCoach(Member member) {
-		return member.getRole().equals("Coach");
+		return "Coach".equals(member.getRole());
 	}
 
 	private boolean userIsSquadRep(Member member) {
-		return member.getRole().equals("Rep");	
+		return "Rep".equals(member.getRole());
 	}
 
 	private boolean userIsCoachOrSquadRep(Member member) {
