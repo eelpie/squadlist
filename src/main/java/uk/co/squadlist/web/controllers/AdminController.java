@@ -1,7 +1,12 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.velocity.runtime.directive.Foreach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +18,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Lists;
@@ -23,15 +29,17 @@ public class AdminController {
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
 	private GoverningBody governingBody;
+	private CSVLinePrinter csvLinePrinter;
 	
 	public AdminController() {
 	}
 	
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
+		this.csvLinePrinter = csvLinePrinter;
 	}
 	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -49,7 +57,24 @@ public class AdminController {
     	mv.addObject("governingBody", governingBody);
     	return mv;
     }
-
+	
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/admin/members/csv", method=RequestMethod.GET)
+    public void membersCSV(HttpServletResponse response) throws Exception {
+		final List<List<String>> rows = Lists.newArrayList();
+    	for (Member member : api.getMembers()) {
+    		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), member.getEmailAddress()}));
+		}
+    	
+    	final String output = csvLinePrinter.printAsCSVLine(rows);
+		
+    	response.setContentType("text/csv");
+    	PrintWriter writer = response.getWriter();
+		writer.print(output);
+		writer.flush();
+		return;
+	}
+	
 	private List<Member> extractAdminUsersFrom(List<Member> members) {
 		List<Member> admins = Lists.newArrayList();
 		for (Member member : members) {
