@@ -23,6 +23,7 @@
 				<li>#parse('includes/member.vm')</li>
 			#end
 			</ul>
+			<a href="/admin/export/members.csv">Export as CSV</a>
 					
 		</div>
 			

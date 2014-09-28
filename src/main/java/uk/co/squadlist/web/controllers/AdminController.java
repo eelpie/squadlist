@@ -59,7 +59,7 @@ public class AdminController {
     }
 	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/members/csv", method=RequestMethod.GET)
+	@RequestMapping(value="/admin/export/members.csv", method=RequestMethod.GET)
     public void membersCSV(HttpServletResponse response) throws Exception {
 		final List<List<String>> rows = Lists.newArrayList();
     	for (Member member : api.getMembers()) {
