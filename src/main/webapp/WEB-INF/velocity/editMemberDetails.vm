@@ -73,9 +73,12 @@
 				#if($canChangeRole)			
 					#selectRow('Role', 'member.role', $rolesOptions)
 				#end
-														
-				#springBind("member.squads")															
-				#squadsCheckboxGroup
+				
+				$canChangeSquads
+				#if($canChangeSquads)				
+					#springBind("member.squads")															
+					#squadsCheckboxGroup
+				#end
 															
 				<div class="control-group">
 					<div class="col-sm-2">

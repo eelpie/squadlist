@@ -258,11 +258,15 @@ public class MembersController {
 		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
 		member.setSweepOarSide(memberDetails.getSweepOarSide());
 			
-		if (permissionsService.canChangeRoleFor(api.getMemberDetails(loggedInUserService.getLoggedInUser()), member)) {
+		final boolean canChangeRole = permissionsService.canChangeRoleFor(api.getMemberDetails(loggedInUserService.getLoggedInUser()), member);
+		if (canChangeRole) {
 			member.setRole(memberDetails.getRole());
 		}
 		
-		member.setSquads(squads);
+		final boolean canChangeSquads = canChangeRole;
+		if (canChangeSquads) {
+			member.setSquads(squads);
+		}
 		
 		log.info("Submitting updated member: " + member);
 		api.updateMemberDetails(member);
@@ -292,7 +296,9 @@ public class MembersController {
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);
     	
 		final Member loggedInMember = api.getMemberDetails(loggedInUserService.getLoggedInUser());	// TODO once per request?
-    	mv.addObject("canChangeRole", permissionsService.canChangeRoleFor(loggedInMember, member));
+    	final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInMember, member);
+		mv.addObject("canChangeRole", canChangeRole);
+    	mv.addObject("canChangeSquads", canChangeRole);
     	return mv;
 	}
 	
