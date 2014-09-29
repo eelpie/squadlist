@@ -40,6 +40,7 @@ import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.services.PasswordGenerator;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -67,6 +68,7 @@ public class MembersController {
 	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
 	private GoverningBody governingBody;
+	private PermissionsService permissionsService;
 	
 	public MembersController() {
 	}
@@ -75,7 +77,8 @@ public class MembersController {
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
-			PasswordGenerator passwordGenerator, GoverningBody governingBody) {
+			PasswordGenerator passwordGenerator, GoverningBody governingBody,
+			PermissionsService permissionsService) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
@@ -85,6 +88,7 @@ public class MembersController {
 		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
 		this.governingBody = governingBody;
+		this.permissionsService = permissionsService;
 	}
 
 	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
@@ -196,7 +200,7 @@ public class MembersController {
 		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
 		memberDetails.setRole(member.getRole());
 		
-		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
+		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
     }
 	
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
@@ -232,7 +236,7 @@ public class MembersController {
 		}
 
  		if (result.hasErrors()) {
-			return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName());
+			return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
 		}
 		
 		log.info("Updating member details: " + member.getId());		
@@ -253,7 +257,11 @@ public class MembersController {
 		member.setEmergencyContactName(memberDetails.getEmergencyContactName());
 		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
 		member.setSweepOarSide(memberDetails.getSweepOarSide());
-		member.setRole(memberDetails.getRole());
+			
+		if (permissionsService.canChangeRoleFor(api.getMemberDetails(loggedInUserService.getLoggedInUser()), member)) {
+			member.setRole(memberDetails.getRole());
+		}
+		
 		member.setSquads(squads);
 		
 		log.info("Submitting updated member: " + member);
@@ -270,7 +278,7 @@ public class MembersController {
 		return mv;
 	}
 	
-	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title) {
+	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member) throws UnknownMemberException {
 		final ModelAndView mv = viewFactory.getView("editMemberDetails");
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", memberId);
@@ -282,6 +290,9 @@ public class MembersController {
     	mv.addObject("rolesOptions", ROLES_OPTIONS);
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);
+    	
+		final Member loggedInMember = api.getMemberDetails(loggedInUserService.getLoggedInUser());	// TODO once per request?
+    	mv.addObject("canChangeRole", permissionsService.canChangeRoleFor(loggedInMember, member));
     	return mv;
 	}
 	

@@ -17,7 +17,7 @@
 			#foreach($error in $status.errorMessages)
 				<div class="alert alert-warning">$error</div>
 			#end
-						
+									
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal" accept-charset="UTF-8">				
 				#inputRow("member.firstName", "First name")
 				#inputRow("member.lastName", "Last name")
@@ -69,10 +69,12 @@
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)				
 				#selectRow('Sculling', 'member.sculling', $yesNoOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
-									
-				#selectRow('Role', 'member.role', $rolesOptions)
-											
-				#springBind("member.squads")																
+					
+				#if($canChangeRole)			
+					#selectRow('Role', 'member.role', $rolesOptions)
+				#end
+														
+				#springBind("member.squads")															
 				#squadsCheckboxGroup
 															
 				<div class="control-group">

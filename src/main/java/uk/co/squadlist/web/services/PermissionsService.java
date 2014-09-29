@@ -190,6 +190,13 @@ public class PermissionsService {
 		return false;
 	}
 	
+	public boolean canChangeRoleFor(Member loggedInRower, Member member) {		
+		if (userIsCoach(member)) {
+			return true;
+		}		
+		return false;
+	}
+	
 	public boolean canExportRowerData(Member member) {
 		return userIsCoach(member);
 	}
