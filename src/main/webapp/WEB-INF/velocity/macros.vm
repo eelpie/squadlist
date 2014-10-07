@@ -126,16 +126,18 @@
 #end
 
 #macro(squadSelect $action $label)
-	<div class="btn-group">
-		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-			$squad.name <span class="caret"></span>
-		</button>
-		<ul class="dropdown-menu pull-right" role="menu">
-			#foreach($availableSquad in $squads) 
-				<li><a href="$urlBuilder.applicationUrl($action)$availableSquad.id">$availableSquad.name</a></li>
-			#end
-		</ul>
-	</div>
+	#if ($squads)
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				$squad.name <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu pull-right" role="menu">
+				#foreach($availableSquad in $squads) 
+					<li><a href="$urlBuilder.applicationUrl($action)$availableSquad.id">$availableSquad.name</a></li>
+				#end
+			</ul>
+		</div>
+	#end
 #end
 
 #macro(cancel $action)
