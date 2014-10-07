@@ -13,8 +13,8 @@
 	<hr/>
 	
 	#if($member.squads.isEmpty()) 
-		<h5>Not assigned to any squads</h5>	
-		<p>You are not currently assigned to any squads and do not having any outings scheduled.</p>
+		<h5>You are not assigned to any squads</h5>	
+		<p>You are not currently assigned to any squads and therefore do not having any outings scheduled.</p>
 			
 	#else
 									
