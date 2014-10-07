@@ -35,8 +35,16 @@ public class ContactsController {
 		this.contactsModelPopulator = contactsModelPopulator;
 	}
 	
+	@RequestMapping("/contacts")
+    public ModelAndView contacts() throws Exception {		
+    	final ModelAndView mv =  viewFactory.getView("contacts");
+    	final List<Squad> allSquads = api.getSquads();
+		mv.addObject("squads", allSquads);
+    	return mv;
+    }
+	
 	@RequestMapping("/contacts/{squadId}")
-    public ModelAndView contacts(@PathVariable String squadId) throws Exception {
+    public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
 		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 		
     	final ModelAndView mv =  viewFactory.getView("contacts");
