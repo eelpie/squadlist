@@ -29,7 +29,7 @@ public class ViewFactory {
 		final ModelAndView mv = new ModelAndView(templateName);
 		mv.addObject("loggedInUser", loggedInUser);
 		
-    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser);
+    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser);	// TODO should be a post handler?
     	if (pendingOutingsCountFor > 0) {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}

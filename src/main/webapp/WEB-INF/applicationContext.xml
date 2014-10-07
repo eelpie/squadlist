@@ -31,6 +31,7 @@
 		<security:intercept-url pattern="/login**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<security:intercept-url pattern="/reset-password/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />		
 		<security:intercept-url pattern="/reset-password" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<security:intercept-url pattern="/rss" access="IS_AUTHENTICATED_ANONYMOUSLY" />			
 		<security:intercept-url pattern="/social/facebook/signin" access="IS_AUTHENTICATED_ANONYMOUSLY" />		
 		<security:intercept-url pattern="/social/facebook/signin/callback" access="IS_AUTHENTICATED_ANONYMOUSLY" />			
 		<security:intercept-url pattern="/**" access="ROLE_USER" />
