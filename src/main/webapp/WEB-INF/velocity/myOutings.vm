@@ -69,7 +69,10 @@
 							#end
 						</table>
 					</form>				  
-				</div>	   
+				</div>
+				
+				<p><a href="/rss?user=38">RSS</a></p>
+				<p><a href="/ical?user=38">iCal</a></p>				  
 			</div>		
 		#end
 	#end
