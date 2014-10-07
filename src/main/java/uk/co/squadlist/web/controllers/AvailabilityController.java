@@ -38,8 +38,15 @@ public class AvailabilityController {
 		this.viewFactory = viewFactory;
 	}
 	
+	@RequestMapping("/availability")
+    public ModelAndView availability() throws Exception {
+    	ModelAndView mv = viewFactory.getView("availability");
+    	mv.addObject("squads", api.getSquads());
+		return mv;		
+    }
+	
 	@RequestMapping("/availability/{squadId}")
-    public ModelAndView availability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
+    public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = viewFactory.getView("availability");
     	mv.addObject("squads", api.getSquads());
     	
