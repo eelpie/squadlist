@@ -159,7 +159,8 @@ public class UrlBuilder {
 	}
 	
 	public String outingsIcal(String userid) throws URISyntaxException {
-		final URIBuilder url = new URIBuilder(baseUrl  + "/ical"); 
+		String webcalBaseUrl = baseUrl.replace("http(s)?://", "webcal://");
+		final URIBuilder url = new URIBuilder(webcalBaseUrl  + "/ical"); 
 		url.addParameter("user", userid);
 		return url.build().toString();
 	}
