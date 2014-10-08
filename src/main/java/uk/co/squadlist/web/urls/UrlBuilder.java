@@ -153,13 +153,13 @@ public class UrlBuilder {
 	}
 	
 	public String outingsRss(String userid) throws URISyntaxException {
-		final URIBuilder url = new URIBuilder(baseUrl  + "/rss"); 
+		final URIBuilder url = new URIBuilder(applicationUrl("/rss")); 
 		url.addParameter("user", userid);
 		return url.build().toString();
 	}
 	
-	public String outingsIcal(String userid) throws URISyntaxException {
-		String webcalBaseUrl = baseUrl.replaceAll("^https?://", "webcal://");
+	public String outingsIcal(String userid) throws URISyntaxException {		
+		String webcalBaseUrl = getBaseUrl().replaceAll("^https?://", "webcal://");
 		final URIBuilder url = new URIBuilder(webcalBaseUrl  + "/ical"); 
 		url.addParameter("user", userid);
 		return url.build().toString();
