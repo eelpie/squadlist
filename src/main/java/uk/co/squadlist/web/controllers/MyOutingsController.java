@@ -8,11 +8,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.parameter.TzId;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;

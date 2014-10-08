@@ -152,6 +152,18 @@ public class UrlBuilder {
 		return url.build().toString();
 	}
 	
+	public String outingsRss(String userid) throws URISyntaxException {
+		final URIBuilder url = new URIBuilder(baseUrl  + "/rss"); 
+		url.addParameter("user", userid);
+		return url.build().toString();
+	}
+	
+	public String outingsIcal(String userid) throws URISyntaxException {
+		final URIBuilder url = new URIBuilder(baseUrl  + "/ical"); 
+		url.addParameter("user", userid);
+		return url.build().toString();
+	}
+	
 	public String availabilityUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, availabilityUrl());
 	}
