@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceConfig;
+import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -17,11 +18,13 @@ public class UrlBuilder {
 	
 	private final String baseUrl;
 	private final InstanceConfig instanceConfig;
+	private final SeoLinkBuilder seoLinkBuilder;
 	
 	@Autowired
-	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig) {
+	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
+		this.seoLinkBuilder = seoLinkBuilder;
 	}
 
 	public String applicationUrl(String uri) {
@@ -168,7 +171,11 @@ public class UrlBuilder {
 	public String availabilityUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, availabilityUrl());
 	}
-
+	
+	public Object governingBody(GoverningBody governingBody) {
+		return applicationUrl("/governing-body/" + seoLinkBuilder.makeSeoLinkFor(governingBody.getName()));
+	}
+	
 	private String availabilityUrl() {
 		return applicationUrl("/availability");
 	}
