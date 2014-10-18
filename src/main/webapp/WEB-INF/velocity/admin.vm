@@ -17,7 +17,7 @@
 				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
 			</span>
 			
-			<h4>Members</h4>
+			<h4>Members ($members.size())</h4>
 			<ul>
 			#foreach( $member in $members )
 				<li>#parse('includes/member.vm')</li>
