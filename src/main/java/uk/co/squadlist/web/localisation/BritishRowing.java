@@ -54,6 +54,14 @@ public class BritishRowing implements GoverningBody {
 	public List<String> getPointsOptions() {
 		return POINTS_OPTIONS;
 	}
+	
+	public Map<String, Integer> getStatusPoints() {
+		return statusMaximumPoints;
+	}
+
+	public Map<String, Integer> getAgeGrades() {
+		return mastersMinimumAges;
+	}
 
 	@Override
 	public String getRowingStatus(String rowingPoints) {		
@@ -79,25 +87,6 @@ public class BritishRowing implements GoverningBody {
 		return null;
 	}
 	
-	private String determineStatusFromCurrentPoints(final int p) {
-		for (String status : statusMaximumPoints.keySet()) {
-			if (p <= statusMaximumPoints.get(status)) {
-				return status;
-			}
- 		}
-		return null;
-	}
-	
-	private int parsePoints(String points) {
-		if (Strings.isNullOrEmpty(points)) {
-			return 0;
-		}
-		if (points.equals("N")) {	// TODO N is deprecated
-			return 0;
-		}
-		return Integer.parseInt(points);
-	}
-
 	@Override
 	public String checkRegistrationNumber(String registrationNumber) {
 		if (Strings.isNullOrEmpty(registrationNumber)) {
@@ -115,6 +104,25 @@ public class BritishRowing implements GoverningBody {
 			return null;
 		}
 		return "Not in the expected British Rowing format";	
+	}
+
+	private String determineStatusFromCurrentPoints(final int p) {
+		for (String status : statusMaximumPoints.keySet()) {
+			if (p <= statusMaximumPoints.get(status)) {
+				return status;
+			}
+ 		}
+		return null;
+	}
+	
+	private int parsePoints(String points) {
+		if (Strings.isNullOrEmpty(points)) {
+			return 0;
+		}
+		if (points.equals("N")) {	// TODO N is deprecated
+			return 0;
+		}
+		return Integer.parseInt(points);
 	}
 	
 }

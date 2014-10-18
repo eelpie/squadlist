@@ -1,0 +1,50 @@
+#parse('includes/head.vm')
+#navTabs('Admin')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>$title</h4>
+		</div>	
+	</div>
+	<hr/>
+	
+	<div class="row">
+		<div class="col-xs-12">				
+			<p>This copy of Squadlist is localised to use the following governing body settings.<p/>			
+		</div>
+	</div>
+		
+	<div class="row">
+		<div class="col-xs-6">				
+			<h5>Statuses</h5>
+			#table($statuses)	
+		</div>
+			
+		<div class="col-xs-6">
+			<h5>Age grades</h5>		
+			#table($ageGrades)		
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<p>If you are interested in developing a localisation for a different country, please contact us.</p>			
+		</div>
+	</div>
+	
+</div>
+<hr/>
+
+#macro(table $values) 
+	<table class="table table-striped">
+		#foreach($value in $values.keySet()) 
+			<tr>
+				<td>$value</td><td>$values.get($value)</td>
+			</tr>
+		#end
+	</table>
+#end
+
+#parse('includes/footer.vm')
