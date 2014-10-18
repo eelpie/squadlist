@@ -1,7 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,8 +8,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.views.ViewFactory;
-
-import com.google.common.collect.Maps;
 
 @Controller
 public class GoverningBodyController {
@@ -32,17 +28,9 @@ public class GoverningBodyController {
 
 		final ModelAndView mv = viewFactory.getView("governingBody");    	
     	mv.addObject("title", governingBody.getName());
-		mv.addObject("ageGrades", toStringMap(governingBody.getAgeGrades()));
-    	mv.addObject("statuses", toStringMap(governingBody.getStatusPoints()));
+		mv.addObject("ageGrades", governingBody.getAgeGrades());
+    	mv.addObject("statuses", governingBody.getStatusPoints());
     	return mv;
     }
-	
-	private Map<String, String> toStringMap(Map<String, Integer> map) {
-		final Map<String, String> stringMap = Maps.newHashMap();		
-		for (String key : map.keySet()) {
-			stringMap.put(key, map.get(key).toString());
-		}		
-		return stringMap;
-	}
 	
 }
