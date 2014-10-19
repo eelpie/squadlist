@@ -41,11 +41,16 @@
 				    			#set($ageGrade = "")				    		
 				    			#set($ageGrade = $governingBody.getAgeGrade($member.dateOfBirth)) 
 				    			<span #if($ageGrade) title="$ageGrade" #end>$dateFormatter.dayMonthYear($member.dateOfBirth)</span>
+				    			<br/>#if($ageGrade) title="$ageGrade" #end
 				    		#end
 				    	</td>
 				    	<td>$!member.weight</td>
-				    	<td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span></td>
-				    	<td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >$!member.scullingPoints</span></td>
+				    	<td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span>
+				    		<br/>#if($member.rowingPoints) $governingBody.getRowingStatus($member.rowingPoints) #end
+				    	</td>
+				    	<td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >$!member.scullingPoints</span>
+					    	#if($member.scullingPoints) <br/>$governingBody.getRowingStatus($member.scullingPoints) #end
+				    	</td>
 				    	<td>
 				    		#set($registrationNumberProblems = '')
 				    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))
