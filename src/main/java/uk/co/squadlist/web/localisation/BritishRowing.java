@@ -80,7 +80,7 @@ public class BritishRowing implements GoverningBody {
 		
 		for (String mastersGrade : mastersMinimumAges.keySet()) {
 			if (age.getYears() >= mastersMinimumAges.get(mastersGrade)) {
-				return "Masters " + mastersGrade;
+				return mastersGrade;
 			}
 		}
 		
