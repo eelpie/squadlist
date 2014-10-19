@@ -34,16 +34,16 @@ public class BritishRowing implements GoverningBody {
 		statusMaximumPoints.put("Elite", Integer.MAX_VALUE);
 		
 		mastersMinimumAges = Maps.newLinkedHashMap();
-		mastersMinimumAges.put("J", 80);
-		mastersMinimumAges.put("I", 75);
-		mastersMinimumAges.put("H", 70);
-		mastersMinimumAges.put("G", 65);
-		mastersMinimumAges.put("F", 60);
-		mastersMinimumAges.put("E", 55);
-		mastersMinimumAges.put("D", 50);
-		mastersMinimumAges.put("C", 43);
-		mastersMinimumAges.put("B", 36);
-		mastersMinimumAges.put("A", 27);
+		mastersMinimumAges.put("Masters J", 80);
+		mastersMinimumAges.put("Masters I", 75);
+		mastersMinimumAges.put("Masters H", 70);
+		mastersMinimumAges.put("Masters G", 65);
+		mastersMinimumAges.put("Masters F", 60);
+		mastersMinimumAges.put("Masters E", 55);
+		mastersMinimumAges.put("Masters D", 50);
+		mastersMinimumAges.put("Masters C", 43);
+		mastersMinimumAges.put("Masters B", 36);
+		mastersMinimumAges.put("Masters A", 27);
 	}
 	
 	@Override
