@@ -41,7 +41,7 @@
 				    			#set($ageGrade = "")				    		
 				    			#set($ageGrade = $governingBody.getAgeGrade($member.dateOfBirth)) 
 				    			<span #if($ageGrade) title="$ageGrade" #end>$dateFormatter.dayMonthYear($member.dateOfBirth)</span>
-				    			<br/>#if($ageGrade) title="$ageGrade" #end
+				    			<br/>#if($ageGrade) $ageGrade #end
 				    		#end
 				    	</td>
 				    	<td>$!member.weight</td>
