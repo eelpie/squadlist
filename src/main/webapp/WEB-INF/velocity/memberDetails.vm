@@ -2,13 +2,17 @@
 #navTabs('Details')
 
 <div class="container-fluid">
-
+		    			
 	<div class="row">
 		<div class="col-md-12">
 		<h4>$member.firstName $member.lastName</h4>
 		</div>
 	</div>
 	<hr/>
+		
+	#if($member.profileImage) 
+		<img src="$urlBuilder.staticImage($member.profileImage)" width="200px" align="right"/><br/>
+	#end	
 
 	<p>Known as: $!member.knownAs</p>
 	<p>Gender: $!member.gender</p>

@@ -55,7 +55,13 @@
 		</plugins>
 	</build>
 
-	<dependencies>	
+	<dependencies>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>uk.co.squadlist</groupId>
 			<artifactId>squadlist-api-client</artifactId>
@@ -67,7 +73,7 @@
 			<artifactId>common-dates</artifactId>
 			<version>1.0.7</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

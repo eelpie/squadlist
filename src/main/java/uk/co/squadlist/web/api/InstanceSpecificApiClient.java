@@ -103,7 +103,11 @@ public class InstanceSpecificApiClient {
 	public Member updateMemberDetails(Member member) {
 		return api.updateMemberDetails(instanceConfig.getInstance(), member);		
 	}
-
+	
+	public Member updateMemberProfileImage(Member member, byte[] image) {
+		return api.updateMemberProfileImage(instanceConfig.getInstance(), member, image);
+	}
+	
 	public boolean changePassword(String id, String currentPassword, String newPassword) {
 		return api.changePassword(instanceConfig.getInstance(), id, currentPassword, newPassword);
 	}

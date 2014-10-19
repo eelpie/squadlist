@@ -14,6 +14,7 @@ public class MemberDetails {
 	private Integer dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear;
 	private String weight;	// TODO validate
 	private List<Squad> squads;
+	private String profileImage;
 	
 	public String getFirstName() {
 		return firstName;
@@ -160,21 +161,29 @@ public class MemberDetails {
 	public void setRole(String role) {
 		this.role = role;
 	}
+	
+	public String getProfileImage() {
+		return profileImage;
+	}
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
 
 	@Override
 	public String toString() {
-		return "MemberDetails [contactNumber=" + contactNumber
+		return "MemberDetails [firstName=" + firstName + ", lastName="
+				+ lastName + ", knownAs=" + knownAs + ", emailAddress="
+				+ emailAddress + ", gender=" + gender + ", role=" + role
+				+ ", contactNumber=" + contactNumber + ", rowingPoints="
+				+ rowingPoints + ", scullingPoints=" + scullingPoints
+				+ ", sweepOarSide=" + sweepOarSide + ", registrationNumber="
+				+ registrationNumber + ", emergencyContactName="
+				+ emergencyContactName + ", emergencyContactNumber="
+				+ emergencyContactNumber + ", sculling=" + sculling
 				+ ", dateOfBirthDay=" + dateOfBirthDay + ", dateOfBirthMonth="
 				+ dateOfBirthMonth + ", dateOfBirthYear=" + dateOfBirthYear
-				+ ", emailAddress=" + emailAddress + ", emergencyContactName="
-				+ emergencyContactName + ", emergencyContactNumber="
-				+ emergencyContactNumber + ", firstName=" + firstName
-				+ ", gender=" + gender + ", knownAs=" + knownAs + ", lastName="
-				+ lastName + ", registrationNumber=" + registrationNumber
-				+ ", role=" + role + ", rowingPoints=" + rowingPoints
-				+ ", sculling=" + sculling + ", scullingPoints="
-				+ scullingPoints + ", squads=" + squads + ", sweepOarSide="
-				+ sweepOarSide + ", weight=" + weight + "]";
+				+ ", weight=" + weight + ", squads=" + squads
+				+ ", profileImage=" + profileImage + "]";
 	}
 	
 }

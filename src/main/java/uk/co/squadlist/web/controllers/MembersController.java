@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -199,6 +201,7 @@ public class MembersController {
 		memberDetails.setEmergencyContactName(member.getEmergencyContactName());
 		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
 		memberDetails.setRole(member.getRole());
+		memberDetails.setProfileImage(member.getProfileImage());
 		
 		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
     }
@@ -270,6 +273,19 @@ public class MembersController {
 		
 		log.info("Submitting updated member: " + member);
 		api.updateMemberDetails(member);
+		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
+    }
+	
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/edit/profileimage", method=RequestMethod.POST)
+    public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws Exception {
+		log.info("Received update member profile image request: " + id);
+		final Member member = api.getMemberDetails(id);
+		
+		final MultipartFile file = request.getFile("image");
+		
+		log.info("Submitting updated member: " + member);
+		api.updateMemberProfileImage(member, file.getBytes());
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));	
     }
 	

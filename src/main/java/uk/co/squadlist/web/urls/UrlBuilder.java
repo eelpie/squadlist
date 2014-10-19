@@ -19,12 +19,14 @@ public class UrlBuilder {
 	private final String baseUrl;
 	private final InstanceConfig instanceConfig;
 	private final SeoLinkBuilder seoLinkBuilder;
+	private String apiUrl;
 	
 	@Autowired
-	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder) {
+	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder, @Value("#{squadlist['apiUrl']}") String apiUrl) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
 		this.seoLinkBuilder = seoLinkBuilder;
+		this.apiUrl = apiUrl;
 	}
 
 	public String applicationUrl(String uri) {
@@ -172,8 +174,12 @@ public class UrlBuilder {
 		return appendSquad(prefferredSquad, availabilityUrl());
 	}
 	
-	public Object governingBody(GoverningBody governingBody) {
+	public String governingBody(GoverningBody governingBody) {
 		return applicationUrl("/governing-body/" + seoLinkBuilder.makeSeoLinkFor(governingBody.getName()));
+	}
+	
+	public String staticImage(String filename) {
+		return apiUrl + "/static/" + filename + ".jpg";
 	}
 	
 	private String availabilityUrl() {
