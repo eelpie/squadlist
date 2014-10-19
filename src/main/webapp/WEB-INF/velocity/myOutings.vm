@@ -10,7 +10,9 @@
 			<h4>$title</h4>
 		</div>
 		<div class="col-xs-2">
-			<p><a href="$urlBuilder.outingsRss($loggedInUser)">RSS</a> | <a href="$urlBuilder.outingsIcal($loggedInUser)">iCal</a></p>
+			<span class="pull-right">
+				<a href="$urlBuilder.outingsRss($loggedInUser)">RSS</a> | <a href="$urlBuilder.outingsIcal($loggedInUser)">iCal</a>
+			</span>
 		</div>
 	</div>
 	<hr/>
