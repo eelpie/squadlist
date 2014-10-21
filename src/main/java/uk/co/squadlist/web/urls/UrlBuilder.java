@@ -110,6 +110,10 @@ public class UrlBuilder {
 		return memberUrl(memberId) + "/edit";
 	}
 	
+	public String entryDetailsCsv(Squad squad) {
+		return applicationUrl("/entrydetails/" + squad.getId() + ".csv");
+	}
+	
 	public String changePassword() {
 		return applicationUrl("/change-password");
 	}
