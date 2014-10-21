@@ -56,7 +56,7 @@
 		<div class="col-sm-6">
 			<p>
 			<br/>				
-			<p><a href="$urlBuilder.facebookSignin()">Or sign in using a previous linked Facebook account</a></p>
+			<p><a href="$urlBuilder.facebookSignin()">Or sign in using a previously linked Facebook account</a></p>
 		</div>					
 	</div>	
 	
