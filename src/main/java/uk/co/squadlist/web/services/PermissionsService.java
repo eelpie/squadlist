@@ -285,7 +285,7 @@ public class PermissionsService {
 	}
 
 	private boolean userIsCoachOrSquadRep(Member member) {
-		return userIsCoach(member) ||userIsSquadRep(member);	
+		return userIsCoach(member) || userIsSquadRep(member);	
 	}
 	
 }
