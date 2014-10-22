@@ -33,7 +33,7 @@ public class RssOuting implements RssFeedable {
 
 	@Override
 	public String getHeadline() {
-		return outing.getSquad().getName() + " - " + outing.getDate();
+		return outing.getSquad().getName() + " - " + DateFormatter.dayMonthTime(outing.getDate());
 	}
 
 	@Override
