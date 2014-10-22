@@ -24,12 +24,13 @@
 				#inputRow("member.knownAs", "Known as")
 				
 				#selectRow('Gender', 'member.gender', $genderOptions)
-				
+								
 				<div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label">Date of birth</label>
 				    <div class="col-sm-2">
-				    	#springBind("member.dateOfBirthDay")							
-						<select name="${status.expression}" class="form-control">	
+				    	#springBind("member.dateOfBirthDay")   			
+						<select name="${status.expression}" class="form-control">						
+							<option value="">
 							#foreach($day in $dateHelper.days)
 								<option value="$day" #if($day == ${status.value}) SELECTED #end>$day
 							#end
@@ -40,6 +41,7 @@
 						#springBind("member.dateOfBirthMonth")									
 						#set($months =  $dateHelper.months)
 						<select name="${status.expression}" class="form-control">
+							<option value="">						
 							#foreach($month in $months.keySet())
 								<option value="$month" #if($month == ${status.value}) SELECTED #end>$months.get($month)
 							#end
@@ -49,6 +51,7 @@
 					<div class="col-sm-2">
 						#springBind("member.dateOfBirthYear")			
 						<select name="${status.expression}" class="form-control">
+							<option value="">						
 							#foreach($year in $dateHelper.dateOfBirthYears)
 								<option value="$year" #if($year == ${status.value}) SELECTED #end>$year
 							#end
