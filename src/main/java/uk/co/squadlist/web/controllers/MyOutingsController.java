@@ -73,6 +73,9 @@ public class MyOutingsController {
 		
 		mv.addObject("title", "My outings");		
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+    	
+    	mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, api.getInstance()));
+    	mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, api.getInstance()));
     	return mv;
     }
 	

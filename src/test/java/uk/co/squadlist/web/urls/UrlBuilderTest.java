@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 
 import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
+import uk.co.squadlist.web.model.Instance;
 
 public class UrlBuilderTest {
 
@@ -17,11 +18,15 @@ public class UrlBuilderTest {
 	private InstanceConfig instanceConfig;
 	private SeoLinkBuilder seoLinkBuilder;
 	
+	private Instance instance;
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		when(instanceConfig.getInstance()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
+
+		instance = new Instance("aninstance", "An instance", null, true);
 	}
 	
 	@Test
@@ -33,19 +38,19 @@ public class UrlBuilderTest {
 	@Test
 	public void canComposeWebcalFeedUrlFromBaseUrl() throws Exception {		
 		final UrlBuilder urlBuilder = new UrlBuilder("http://localhost", instanceConfig, seoLinkBuilder, null);
-		assertEquals("webcal://localhost/ical?user=a-user", urlBuilder.outingsIcal("a-user"));
+		assertEquals("webcal://localhost/ical?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsIcal("a-user", instance));
 	}
 	
 	@Test
 	public void webcalFeedsAreHttpEvenIfTheMainSiteIsHttps() throws Exception {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
-		assertEquals("webcal://twrcbeta.squadlist.co.uk/ical?user=a-user", urlBuilder.outingsIcal("a-user"));
+		assertEquals("webcal://twrcbeta.squadlist.co.uk/ical?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsIcal("a-user", instance));
 	}
 	
 	@Test
 	public void canComposeRssFeedUrlFromBaseUrl() throws Exception {		
 		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
-		assertEquals("https://twrcbeta.squadlist.co.uk/rss?user=a-user", urlBuilder.outingsRss("a-user"));
+		assertEquals("https://twrcbeta.squadlist.co.uk/rss?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsRss("a-user", instance));
 	}
 	
 	@Test

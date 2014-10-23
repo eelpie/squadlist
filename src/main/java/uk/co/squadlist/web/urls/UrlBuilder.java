@@ -2,6 +2,7 @@ package uk.co.squadlist.web.urls;
 
 import java.net.URISyntaxException;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -161,16 +163,18 @@ public class UrlBuilder {
 		return url.build().toString();
 	}
 	
-	public String outingsRss(String userid) throws URISyntaxException {
+	public String outingsRss(String userid, Instance instance) throws URISyntaxException {
 		final URIBuilder url = new URIBuilder(applicationUrl("/rss")); 
 		url.addParameter("user", userid);
+		url.addParameter("key", generateFeedKeyFor(userid, instance));
 		return url.build().toString();
 	}
 	
-	public String outingsIcal(String userid) throws URISyntaxException {		
+	public String outingsIcal(String userid, Instance instance) throws URISyntaxException {		
 		String webcalBaseUrl = getBaseUrl().replaceAll("^https?://", "webcal://");
-		final URIBuilder url = new URIBuilder(webcalBaseUrl  + "/ical"); 
+		final URIBuilder url = new URIBuilder(webcalBaseUrl  + "/ical");
 		url.addParameter("user", userid);
+		url.addParameter("key", generateFeedKeyFor(userid, instance));
 		return url.build().toString();
 	}
 	
@@ -192,6 +196,10 @@ public class UrlBuilder {
 	
 	private String appendSquad(Squad prefferredSquad, final String baseUrl) {
 		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
+	}
+	
+	private String generateFeedKeyFor(String userid, Instance instance) {
+		return DigestUtils.md5Hex(instance.getId() + userid);
 	}
 	
 }

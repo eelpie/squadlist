@@ -11,7 +11,7 @@
 		</div>
 		<div class="col-xs-2">
 			<span class="pull-right">
-				<a href="$urlBuilder.outingsRss($loggedInUser)">RSS</a> | <a href="$urlBuilder.outingsIcal($loggedInUser)">iCal</a>
+				<a href="$rssUrl">RSS</a> | <a href="$icalUrl">iCal</a>
 			</span>
 		</div>
 	</div>
