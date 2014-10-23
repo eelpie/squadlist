@@ -29,12 +29,14 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.RssOuting;
+import uk.co.squadlist.web.views.SquadNamesHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.base.Strings;
@@ -49,15 +51,18 @@ public class MyOutingsController {
 	private final ViewFactory viewFactory;
 	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private final UrlBuilder urlBuilder;
+	private final SquadNamesHelper squadNamesHelper;
 	
 	@Autowired
 	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, ViewFactory viewFactory,
-			OutingAvailabilityCountsService outingAvailabilityCountsService, UrlBuilder urlBuilder) {
+			OutingAvailabilityCountsService outingAvailabilityCountsService, UrlBuilder urlBuilder,
+			SquadNamesHelper squadNamesHelper) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.urlBuilder = urlBuilder;
+		this.squadNamesHelper = squadNamesHelper;
 	}
 	
 	@RequestMapping("/")
@@ -73,12 +78,10 @@ public class MyOutingsController {
 		
 		mv.addObject("title", "My outings");		
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
-    	
     	mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, api.getInstance()));
     	mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, api.getInstance()));
     	return mv;
     }
-	
 	
 	@RequestMapping("/ical")
     public void outingsIcal(@RequestParam(value="user", required=false) String user, HttpServletResponse response) throws Exception {
@@ -124,7 +127,7 @@ public class MyOutingsController {
 			return null;	// TODO 404
 		}
 		
-		api.getMemberDetails(user);	// TODO could be removed if getavailability for 404ed nicely
+		final Member member = api.getMemberDetails(user);	// TODO could be removed if getavailability for 404ed nicely
 		
     	final String loggedInUser = user;	// TODO access control
 		
@@ -138,7 +141,8 @@ public class MyOutingsController {
 		}
 
 		final String title = api.getInstance().getName() + " outings";
-		final ModelAndView mv = new ModelAndView(new uk.co.eelpieconsulting.common.views.ViewFactory(new EtagGenerator()).getRssView(title, urlBuilder.getBaseUrl(), title));
+		final ModelAndView mv = new ModelAndView(new uk.co.eelpieconsulting.common.views.ViewFactory(new EtagGenerator()).getRssView(title, urlBuilder.getBaseUrl(), 
+				squadNamesHelper.list(member.getSquads()) + " outings"));
 		mv.addObject("data", outings);
 		return mv;
     }
