@@ -4,11 +4,13 @@
 <head>
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-
 	<script src="$urlBuilder.staticUrl('/bootstrap/js/bootstrap.js')"></script>
 	<link href="$urlBuilder.staticUrl('/bootstrap/css/bootstrap.css')" rel="stylesheet" />
 	<title>Squadlist - $!title</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	#if($rssUrl) 
+        <link rel="alternate" type="application/rss+xml" href="$rssUrl">
+	#end
 </head>
 <body>
 
