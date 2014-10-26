@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -46,6 +47,7 @@ import com.google.common.collect.Lists;
 public class MyOutingsController {
 		
 	private static final Dur ONE_HOUR = new Dur(0, 1, 0, 0);
+	
 	private final LoggedInUserService loggedInUserService;
 	private final InstanceSpecificApiClient api;
 	private final ViewFactory viewFactory;
@@ -86,32 +88,14 @@ public class MyOutingsController {
 	@RequestMapping("/ical")
     public void outingsIcal(@RequestParam(value="user", required=false) String user, HttpServletResponse response) throws Exception {
 		if (Strings.isNullOrEmpty(user)) {
-			return;	// TODO 404
+			throw new UnknownMemberException();
 		}
 		
-		api.getMemberDetails(user);	// TODO could be removed if getavailability for 404ed nicely
-		
-    	final String loggedInUser = user;	// TODO access control
-		
-		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateHelper.oneYearFromNow().toDate();		
-		List<OutingAvailability> availabilityFor = api.getAvailabilityFor(loggedInUser, startDate, endDate);
-		
-		final Calendar calendar = new Calendar();
-		calendar.getProperties().add(new ProdId("-//Squadlist//iCal4j 1.0//EN"));
-		calendar.getProperties().add(Version.VERSION_2_0);
-		calendar.getProperties().add(CalScale.GREGORIAN);
-
-		final String name = api.getInstance().getName() + " outings";
-		calendar.getProperties().add(new Name(name));
-		calendar.getProperties().add(new XProperty("X-WR-CALNAME", name));	// TODO check source code for enum
-		calendar.getProperties().add(new XProperty("X-PUBLISHED-TTL", "PT1H"));
-		calendar.getProperties().add(new XProperty("REFRESH-INTERVAL;VALUE=DURATION", "P1H"));
-		
-		for (OutingAvailability outingAvailability : availabilityFor) {
-			final Outing outing = outingAvailability.getOuting();
-			calendar.getComponents().add(buildEventFor(outing));
-		}
+		final Member member = api.getMemberDetails(user);
+				
+		final Calendar calendar = buildCalendarFor(api.getAvailabilityFor(member.getUsername(), 
+				DateHelper.startOfCurrentOutingPeriod().toDate(),
+				DateHelper.oneYearFromNow().toDate()));
 				
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/calendar");
@@ -124,29 +108,22 @@ public class MyOutingsController {
 	@RequestMapping("/rss")
     public ModelAndView outingsRss(@RequestParam(value="user", required=false) String user) throws Exception {
 		if (Strings.isNullOrEmpty(user)) {
-			return null;	// TODO 404
+			throw new UnknownMemberException();
 		}
 		
-		final Member member = api.getMemberDetails(user);	// TODO could be removed if getavailability for 404ed nicely
-		
-    	final String loggedInUser = user;	// TODO access control
-		
-		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		final Date endDate = DateHelper.oneYearFromNow().toDate();		
-		List<OutingAvailability> availabilityFor = api.getAvailabilityFor(loggedInUser, startDate, endDate);
+		final Member member = api.getMemberDetails(user);
 				
-		List<RssOuting> outings = Lists.newArrayList();
-		for (OutingAvailability outingAvailability : availabilityFor) {
-			outings.add(new RssOuting(outingAvailability.getOuting(), urlBuilder.outingUrl(outingAvailability.getOuting())));					
-		}
-
+		final List<OutingAvailability> availabilityFor = api.getAvailabilityFor(member.getUsername(),
+				DateHelper.startOfCurrentOutingPeriod().toDate(),
+				DateHelper.oneYearFromNow().toDate());
+				
 		final String title = api.getInstance().getName() + " outings";
 		final ModelAndView mv = new ModelAndView(new uk.co.eelpieconsulting.common.views.ViewFactory(new EtagGenerator()).getRssView(title, urlBuilder.getBaseUrl(), 
 				squadNamesHelper.list(member.getSquads()) + " outings"));
-		mv.addObject("data", outings);
+		mv.addObject("data", buildRssItemsFor(availabilityFor));
 		return mv;
     }
-	
+
 	@RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
     	final ModelAndView mv = viewFactory.getView("myOutingsAjax");
@@ -156,6 +133,26 @@ public class MyOutingsController {
     	}
     	return mv;
     }
+
+	private Calendar buildCalendarFor(List<OutingAvailability> availabilityFor)
+			throws SocketException {
+		final Calendar calendar = new Calendar();
+		calendar.getProperties().add(new ProdId("-//Squadlist//iCal4j 1.0//EN"));
+		calendar.getProperties().add(Version.VERSION_2_0);
+		calendar.getProperties().add(CalScale.GREGORIAN);
+	
+		final String name = api.getInstance().getName() + " outings";
+		calendar.getProperties().add(new Name(name));
+		calendar.getProperties().add(new XProperty("X-WR-CALNAME", name));	// TODO check source code for enum
+		calendar.getProperties().add(new XProperty("X-PUBLISHED-TTL", "PT1H"));
+		calendar.getProperties().add(new XProperty("REFRESH-INTERVAL;VALUE=DURATION", "P1H"));
+		
+		for (OutingAvailability outingAvailability : availabilityFor) {
+			final Outing outing = outingAvailability.getOuting();
+			calendar.getComponents().add(buildEventFor(outing));
+		}
+		return calendar;
+	}
 
 	private VEvent buildEventFor(final Outing outing) throws SocketException {
 		final VEvent outingEvent = new VEvent(new net.fortuna.ical4j.model.DateTime(outing.getDate()), ONE_HOUR, outing.getSquad().getName());
@@ -170,6 +167,15 @@ public class MyOutingsController {
 		final UidGenerator ug = new UidGenerator(outing.getId());	// TODO how does this work - can we use the outing id?
 		outingEvent.getProperties().add(ug.generateUid());
 		return outingEvent;
+	}
+
+	private List<RssOuting> buildRssItemsFor(
+			final List<OutingAvailability> availabilityFor) {
+		List<RssOuting> outings = Lists.newArrayList();
+		for (OutingAvailability outingAvailability : availabilityFor) {
+			outings.add(new RssOuting(outingAvailability.getOuting(), urlBuilder.outingUrl(outingAvailability.getOuting())));					
+		}
+		return outings;
 	}
 	
 }
