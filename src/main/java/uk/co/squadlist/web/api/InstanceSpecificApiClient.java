@@ -20,6 +20,7 @@ import uk.co.squadlist.web.annotations.Timed;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -91,7 +92,7 @@ public class InstanceSpecificApiClient {
 		return api.getMemberDetails(instanceConfig.getInstance(), id);
 	}
 
-	public Instance getInstance() {
+	public Instance getInstance() throws UnknownInstanceException {
 		return api.getInstance(instanceConfig.getInstance());
 	}
 

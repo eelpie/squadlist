@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 
 @Controller
@@ -32,7 +33,7 @@ public class LoginController {
 		return mv;
 	}
 	
-	private Instance getInstance() {
+	private Instance getInstance() throws UnknownInstanceException {
 		return api.getInstance();
 	}
 	
