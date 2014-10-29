@@ -54,6 +54,7 @@ public class AdminController {
     	mv.addObject("admins", extractAdminUsersFrom(members));
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);
+    	mv.addObject("statistics", api.statistics());
     	return mv;
     }
 	

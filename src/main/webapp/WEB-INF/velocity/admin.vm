@@ -75,6 +75,13 @@
 					<p>No availability options have been added.</p>
 				#end
 			</ul>
+			<hr/>
+			
+			<h4>Statistics</h4>
+			<ul>
+				<li>Active members: $statistics.get('recentMembersCount')
+				<li>Total outings: $statistics.get('totalOutingsCount')
+			</ul>
 				
 		</div>
 	</div>

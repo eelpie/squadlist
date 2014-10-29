@@ -160,5 +160,9 @@ public class InstanceSpecificApiClient {
 	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
 		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);		
 	}
+
+	public Map<String, Object> statistics() throws UnknownInstanceException {
+		return api.getInstanceStatistics(instanceConfig.getInstance());
+	}
 	
 }
