@@ -103,7 +103,7 @@ public class MyOutingsController {
 		
 		final Member member = api.getMemberDetails(user);
 				
-		final List<OutingAvailability> availabilityFor = api.getAvailabilityFor(member.getUsername(),
+		final List<OutingAvailability> availabilityFor = api.getAvailabilityFor(member.getId(),
 				DateHelper.startOfCurrentOutingPeriod().toDate(),
 				DateHelper.oneYearFromNow().toDate());
 				
