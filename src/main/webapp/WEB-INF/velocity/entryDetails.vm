@@ -26,6 +26,7 @@
 					<tr>
 						<th></th>					
 						<th>Date of birth</th>
+						<th>Effective age</th>
 						<th>Weight</th>
 						<th>Rowing pts</th>
 						<th>Sculling pts</th>				
@@ -38,9 +39,14 @@
 				    	<td>#parse('includes/member.vm')</td>
 				    	<td>
 				    		#if($member.dateOfBirth)
+				    			$dateFormatter.dayMonthYear($member.dateOfBirth)
+				    		#end
+				    	</td>
+				    	<td>
+				    		#if($member.dateOfBirth)
 				    			#set($ageGrade = "")				    		
-				    			#set($ageGrade = $governingBody.getAgeGrade($member.dateOfBirth)) 
-				    			<span #if($ageGrade) title="$ageGrade" #end>$dateFormatter.dayMonthYear($member.dateOfBirth)</span>
+				    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth))) 
+				    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody($member.dateOfBirth)</span>
 				    			<br/>#if($ageGrade) $ageGrade #end
 				    		#end
 				    	</td>

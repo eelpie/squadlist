@@ -74,18 +74,22 @@ public class BritishRowing implements GoverningBody {
 	}
 	
 	@Override
-	public String getAgeGrade(Date dateOfBirth) {
+	public int getEffectiveAge(Date dateOfBirth) {
+		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
+		final Years age = Years.yearsBetween(localDateOfBirth, LocalDate.now());
+		return age.getYears();
+	}
+	
+	@Override
+	public String getAgeGrade(int age) {
 		/* TODO The age restriction is the lower limit for the average age of the crew (excluding coxswain), 
 		 * measured in whole years attained during the current "calendar" year 
 		 * i.e. if you are 40 on 1 June 2010 then you would be deemed to be 40 (or Masters B) 
 		 * for all events between 1 Jan and 31 Dec 2010.
 		 */
 		 
-		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
-		final Years age = Years.yearsBetween(localDateOfBirth, LocalDate.now());	// TODO push to date formatter?
-		
 		for (String mastersGrade : mastersMinimumAges.keySet()) {
-			if (age.getYears() >= mastersMinimumAges.get(mastersGrade)) {
+			if (age >= mastersMinimumAges.get(mastersGrade)) {
 				return mastersGrade;
 			}
 		}
@@ -130,5 +134,5 @@ public class BritishRowing implements GoverningBody {
 		}
 		return Integer.parseInt(points);
 	}
-	
+
 }

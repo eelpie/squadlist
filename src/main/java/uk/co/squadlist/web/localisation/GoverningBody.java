@@ -9,7 +9,8 @@ public interface GoverningBody {
 	public List<String> getPointsOptions();
 	public String getRowingStatus(String points);
 	public String getScullingStatus(String points);
-	public String getAgeGrade(Date dateOfBirth);
+	public int getEffectiveAge(Date dateOfBirth);
+	public String getAgeGrade(int age);
 	public String checkRegistrationNumber(String registrationNumber);
 	
 }
