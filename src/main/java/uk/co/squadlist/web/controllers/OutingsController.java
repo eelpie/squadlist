@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -24,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -31,6 +35,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -258,11 +263,24 @@ public class OutingsController {
     	final Outing outing = api.getOuting(outingId);
     	
     	if (!outing.isClosed()) {
-    		final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInUser(), outing.getId(), availability);
+    		final OutingAvailability result = api.setOutingAvailability(api.getMemberDetails(loggedInUserService.getLoggedInUser()), 
+    				outing,getAvailabilityOptionFor(availability));
     		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailability());
     	}
 
-    	return null;	// TODO proper return
+    	throw new RuntimeException("Outing is closed");	// TODO
+	}
+
+	private AvailabilityOption getAvailabilityOptionFor(String availability)
+			throws JsonParseException, JsonMappingException,
+			HttpFetchException, IOException {
+		List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
+		for (AvailabilityOption availabilityOption : availabilityOptions) {
+			if (availabilityOption.getLabel().equals(availabilityOption.getLabel())) {
+				return availabilityOption;
+			}			
+		}
+		throw new RuntimeException("Unknown availability option: " + availability);	// TODO
 	}
 	
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
