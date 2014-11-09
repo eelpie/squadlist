@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Strings;
+import com.sun.accessibility.internal.resources.accessibility;
+
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
@@ -264,21 +267,24 @@ public class OutingsController {
     	
     	if (!outing.isClosed()) {
     		final OutingAvailability result = api.setOutingAvailability(api.getMemberDetails(loggedInUserService.getLoggedInUser()), 
-    				outing,getAvailabilityOptionFor(availability));
-    		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailability());
+    				outing, getAvailabilityOptionById(availability));
+    		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailabilityOption());
     	}
 
     	throw new RuntimeException("Outing is closed");	// TODO
 	}
 
-	private AvailabilityOption getAvailabilityOptionFor(String availability)
-			throws JsonParseException, JsonMappingException,
-			HttpFetchException, IOException {
+	private AvailabilityOption getAvailabilityOptionById(String availability) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		if (Strings.isNullOrEmpty(availability)) {
+			return null;
+		}
+		
 		List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
 		for (AvailabilityOption availabilityOption : availabilityOptions) {
-			if (availabilityOption.getLabel().equals(availabilityOption.getLabel())) {
+			if (availabilityOption.getId().equals(availability)) {
+				log.info(availability + ": " + availabilityOption);
 				return availabilityOption;
-			}			
+			}
 		}
 		throw new RuntimeException("Unknown availability option: " + availability);	// TODO
 	}
