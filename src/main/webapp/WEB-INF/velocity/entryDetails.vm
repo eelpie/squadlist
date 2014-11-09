@@ -46,7 +46,7 @@
 				    		#if($member.dateOfBirth)
 				    			#set($ageGrade = "")				    		
 				    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth))) 
-				    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody($member.dateOfBirth)</span>
+				    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($member.dateOfBirth)</span>
 				    			<br/>#if($ageGrade) $ageGrade #end
 				    		#end
 				    	</td>
