@@ -29,13 +29,6 @@ public class InstanceConfigTest {
 	}
 	
 	@Test
-	public void shouldAlsoRecogniseBetaInstances() throws Exception {		
-		when(requestHostService.getRequestHost()).thenReturn("shinynewbeta.squadlist.co.uk");
-		
-		assertEquals("shinynew", instanceConfig.getInstance());		
-	}
-	
-	@Test
 	public void needToBeCarefulAboutLeadingBetas() throws Exception {		
 		when(requestHostService.getRequestHost()).thenReturn("reallycalledbetasomething.squadlist.co.uk");
 		
@@ -49,6 +42,13 @@ public class InstanceConfigTest {
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 		
 		assertEquals("manuallyconfiguredinstance", instanceConfig.getInstance());		
+	}
+	
+	@Test
+	public void stripTheLoggedInUserHintFromDemoSites() throws Exception {
+	when(requestHostService.getRequestHost()).thenReturn("coach-demo.squadlist.co.uk");
+		
+		assertEquals("demo", instanceConfig.getInstance());		
 	}
 	
 }

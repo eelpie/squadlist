@@ -34,9 +34,9 @@ public class InstanceConfig {
 		final String vhostName = requestHost.split("\\.")[0];
 		log.debug("Request vhost is: " + vhostName);		
 		
-		final String nonBetaVhostName = vhostName.replaceAll("(.*)beta$", "$1");
-		log.debug("Non beta vhost is: " + nonBetaVhostName);
-		return nonBetaVhostName;
+		final String nonPrefixed = vhostName.replaceAll(".*-(.*)$", "$1");
+		log.debug("Non prefixed vhost is: " + nonPrefixed);
+		return nonPrefixed;
 	}
 
 }
