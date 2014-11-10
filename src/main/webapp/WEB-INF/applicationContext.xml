@@ -38,12 +38,29 @@
 		<security:intercept-url pattern="/**" access="ROLE_USER" />
 		
 		<security:form-login default-target-url="/" login-page="/login" authentication-failure-url="/login?errors=true" />                
-		<security:logout logout-success-url="/" />		
+		<security:logout logout-success-url="/" />
+		
+		<security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthFilter" />		        	
 	</security:http>
 	
-	<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider ref="authenticationProvider" />
-	</security:authentication-manager>
+	<bean id="preAuthFilter" class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+    	<property name="principalRequestHeader" value="squadlist-user"/>
+    	<property name="exceptionIfHeaderMissing" value="false" />
+    	<property name="authenticationManager" ref="authenticationManager" />
+	  </bean>
+
+  <bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <property name="preAuthenticatedUserDetailsService">
+      <bean id="userDetailsServiceWrapper" class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+        <property name="userDetailsService" ref="userDetailsService"/>
+      </bean>
+    </property>
+    </bean>
+
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="preauthAuthProvider" />
+      <security:authentication-provider ref="authenticationProvider" />
+    </security:authentication-manager>
 	
 	<bean id="squadlistApi" factory-bean="squadlistApiFactory" factory-method="create" />
 
