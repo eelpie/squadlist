@@ -75,8 +75,10 @@ public class BritishRowing implements GoverningBody {
 	
 	@Override
 	public int getEffectiveAge(Date dateOfBirth) {
-		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
-		final Years age = Years.yearsBetween(localDateOfBirth, LocalDate.now());
+		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);		
+		final LocalDate localEndOfYear = new LocalDate(new DateTime().withDate(DateTime.now().getYear(), 12, 31).toDate());
+		
+		final Years age = Years.yearsBetween(localDateOfBirth, localEndOfYear);
 		return age.getYears();
 	}
 	
