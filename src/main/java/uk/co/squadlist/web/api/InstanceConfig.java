@@ -23,6 +23,14 @@ public class InstanceConfig {
 	}
 	
 	public String getInstance() {
+		final String vhostName = getVhost();		
+		
+		final String nonPrefixed = vhostName.replaceAll(".*-(.*)$", "$1");
+		log.debug("Non prefixed vhost is: " + nonPrefixed);
+		return nonPrefixed;
+	}
+
+	public String getVhost() {
 		if (!Strings.isNullOrEmpty(manuallyConfiguredInstanceToUseForAllRequests)) {
 			log.debug("Using manually configured instance: " + manuallyConfiguredInstanceToUseForAllRequests);
 			return manuallyConfiguredInstanceToUseForAllRequests;			
@@ -32,11 +40,8 @@ public class InstanceConfig {
 		
 		log.debug("Request host is: " + requestHost);
 		final String vhostName = requestHost.split("\\.")[0];
-		log.debug("Request vhost is: " + vhostName);		
-		
-		final String nonPrefixed = vhostName.replaceAll(".*-(.*)$", "$1");
-		log.debug("Non prefixed vhost is: " + nonPrefixed);
-		return nonPrefixed;
+		log.debug("Request vhost is: " + vhostName);
+		return vhostName;
 	}
 
 }

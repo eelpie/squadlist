@@ -145,7 +145,7 @@ public class UrlBuilder {
 	}
 	
 	public String getBaseUrl() {
-		return baseUrl.replace("INSTANCE", instanceConfig.getInstance());		
+		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());		
 	}
 	
 	public String contactsUrl() {
