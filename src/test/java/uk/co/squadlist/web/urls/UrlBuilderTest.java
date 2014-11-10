@@ -23,7 +23,7 @@ public class UrlBuilderTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		when(instanceConfig.getInstance()).thenReturn("twrc");
+		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
 
 		instance = new Instance("aninstance", "An instance", null, true);
