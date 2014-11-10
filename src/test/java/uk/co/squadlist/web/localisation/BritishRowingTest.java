@@ -3,8 +3,6 @@ package uk.co.squadlist.web.localisation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -32,6 +30,16 @@ public class BritishRowingTest {
 		assertEquals(39, britishRowing.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));		
 		assertEquals(39, britishRowing.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));		
 		assertEquals(39, britishRowing.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));		
+	}
+	
+	@Test
+	public void pointsGradesAreBasedOnMaximumPointsAllowed() throws Exception {
+		assertEquals("Novice", britishRowing.getRowingStatus("0"));
+		assertEquals("Intermediate 3", britishRowing.getRowingStatus("1"));
+		assertEquals("Intermediate 3", britishRowing.getRowingStatus("2"));
+		assertEquals("Intermediate 2", britishRowing.getRowingStatus("3"));
+		assertEquals("Intermediate 1", britishRowing.getRowingStatus("5"));
+		assertEquals("Elite", britishRowing.getRowingStatus("10"));
 	}
 	
 }

@@ -27,10 +27,10 @@ public class BritishRowing implements GoverningBody {
 	public BritishRowing() {
 		statusMaximumPoints = Maps.newLinkedHashMap();
 		statusMaximumPoints.put("Novice", 0);
-		statusMaximumPoints.put("Intermediate 3", 4);
-		statusMaximumPoints.put("Intermediate 2", 8);
-		statusMaximumPoints.put("Intermediate 1", 12);
-		statusMaximumPoints.put("Senior", 18);
+		statusMaximumPoints.put("Intermediate 3", 2);
+		statusMaximumPoints.put("Intermediate 2", 4);
+		statusMaximumPoints.put("Intermediate 1", 6);
+		statusMaximumPoints.put("Senior", 9);
 		statusMaximumPoints.put("Elite", Integer.MAX_VALUE);
 		
 		mastersMinimumAges = Maps.newLinkedHashMap();
