@@ -51,10 +51,11 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
 			log.info("Pre authing user: " + preauthedUser);
 			try {
 				final Member preAuthenticatedMember = api.getMemberDetails(preauthedUser);
+				log.info("Pre authed user: " + preAuthenticatedMember);
 				
 				Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
 				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-				return new org.springframework.security.core.userdetails.User(preAuthenticatedMember.getId(), null, authorities);
+				return new org.springframework.security.core.userdetails.User(preAuthenticatedMember.getId(), "password", authorities);
 				
 			} catch (UnknownMemberException e) {
 				log.error(e);
