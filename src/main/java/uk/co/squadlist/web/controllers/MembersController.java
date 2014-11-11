@@ -54,7 +54,7 @@ public class MembersController {
 	private final static Logger log = Logger.getLogger(MembersController.class);
 
 	private static final String NOREPLY_SQUADLIST_CO_UK = "noreply@squadlist.co.uk";
-	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("male", "female");
+	private static final List<String> GENDER_OPTIONS = Lists.newArrayList("female", "male");
 	private static final List<String> ROLES_OPTIONS = Lists.newArrayList("Rower", "Rep", "Coach", "Cox", "Non rowing");
 	private static final List<String> SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow");
 	private static final List<String> YES_NO_OPTIONS = Lists.newArrayList("Y", "N");
