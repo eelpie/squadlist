@@ -319,6 +319,8 @@ public class MembersController {
     	final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInMember, member);
 		mv.addObject("canChangeRole", canChangeRole);
     	mv.addObject("canChangeSquads", canChangeRole);
+    	
+    	mv.addObject("memberSquads", member.getSquads());	// TODO would not be needed id member.squads would form bind
     	return mv;
 	}
 	

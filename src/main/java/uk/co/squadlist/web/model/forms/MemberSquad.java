@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.model.forms;
 
+@Deprecated	// TODO why won't Squad bind?
 public class MemberSquad {
 	
 	private String id;
