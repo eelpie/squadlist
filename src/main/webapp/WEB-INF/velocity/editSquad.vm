@@ -21,7 +21,7 @@
 			});
 		</script>
 				
-		<style>.connectedSortable { background-color: #eee }</style>
+		<style>.connectedSortable { background-color: #eee; padding: 20px;}</style>
 		
 		<form id="squadDetails" method="POST" action="$urlBuilder.editSquadUrl($squad)" class="form-horizontal" accept-charset="UTF-8">
 				
