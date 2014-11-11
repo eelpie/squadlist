@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import uk.co.squadlist.web.model.Squad;
-
 public class MemberDetails {
 
 	@NotBlank
@@ -13,7 +11,7 @@ public class MemberDetails {
 	private String knownAs, emailAddress, gender, role, contactNumber, rowingPoints, scullingPoints, sweepOarSide, registrationNumber, emergencyContactName, emergencyContactNumber, sculling;	
 	private Integer dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear;
 	private String weight;	// TODO validate
-	private List<Squad> squads;
+	private List<MemberSquad> squads;
 	private String profileImage;
 	
 	public String getFirstName() {
@@ -72,11 +70,11 @@ public class MemberDetails {
 		this.registrationNumber = registrationNumber;
 	}
 
-	public List<Squad> getSquads() {
+	public List<MemberSquad> getSquads() {
 		return squads;
 	}
 
-	public void setSquads(List<Squad> squads) {
+	public void setSquads(List<MemberSquad> squads) {
 		this.squads = squads;
 	}
 

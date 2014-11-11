@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +31,13 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.exceptions.propertyeditors.SquadPropertyEditor;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
+import uk.co.squadlist.web.model.forms.MemberSquad;
 import uk.co.squadlist.web.services.PasswordGenerator;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -65,7 +63,6 @@ public class MembersController {
 	private LoggedInUserService loggedInUserService;
 	private UrlBuilder urlBuilder;
 	private ViewFactory viewFactory;
-	private SquadPropertyEditor squadPropertyEditor;
 	private EmailMessageComposer emailMessageComposer;
 	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
@@ -77,7 +74,7 @@ public class MembersController {
 	
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
-			ViewFactory viewFactory, SquadPropertyEditor squadPropertyEditor,
+			ViewFactory viewFactory,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
 			PasswordGenerator passwordGenerator, GoverningBody governingBody,
 			PermissionsService permissionsService) {
@@ -85,7 +82,6 @@ public class MembersController {
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
-		this.squadPropertyEditor = squadPropertyEditor;
 		this.emailMessageComposer = emailMessageComposer;
 		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
@@ -197,7 +193,15 @@ public class MembersController {
 		memberDetails.setSculling(member.getSculling());
 		memberDetails.setScullingPoints(member.getScullingPoints());
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
-		memberDetails.setSquads(member.getSquads());
+		
+		log.info(member.getSquads());
+		
+		List<MemberSquad> memberSquads = Lists.newArrayList();
+		for(Squad squad : member.getSquads()) {
+			memberSquads.add(new MemberSquad(squad.getId()));
+		}
+		
+		memberDetails.setSquads(memberSquads);
 		memberDetails.setEmergencyContactName(member.getEmergencyContactName());
 		memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
 		memberDetails.setRole(member.getRole());
@@ -332,23 +336,17 @@ public class MembersController {
 			return squads;
 		}
 		
-		for (Squad requestedSquadId : memberDetails.getSquads()) {					
-			log.info("Requested squad: " + requestedSquadId);
+		for (MemberSquad requestedSquad : memberDetails.getSquads()) {					
+			log.info("Requested squad: " + requestedSquad);
 			try {
-				squads.add(api.getSquad(requestedSquadId.getId()));
+				squads.add(api.getSquad(requestedSquad.getId()));
 			} catch (UnknownSquadException e) {
-				log.warn("Rejecting unknown squad: " + requestedSquadId);
+				log.warn("Rejecting unknown squad: " + requestedSquad);
 				result.addError(new ObjectError("memberDetails.squad", "Unknown squad"));			
 			}
 		}
 		log.info("Assigned squads: " + squads);
 		return squads;
-	}
-	
-	@InitBinder
-	public void binder(WebDataBinder binder) {
-		log.debug("Registering property editor: " + squadPropertyEditor);
-		binder.registerCustomEditor(Squad.class, squadPropertyEditor);
 	}
 	
 }
