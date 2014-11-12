@@ -1,0 +1,18 @@
+#if($members)
+<div class="row">
+		<div class="col-xs-4">
+		<ul>
+		#foreach($member in $members)
+			<li>$member.displayName</li>
+		#end
+		</ul>
+	</div>
+		<div class="col-xs-8">
+			
+			<p>Total rowing points: $rowingPoints<br/>
+			Total sculling points: $scullingPoints
+			</p>
+		</div>
+</div>
+#end
+<hr/>
