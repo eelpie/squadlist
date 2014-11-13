@@ -12,5 +12,7 @@ public interface GoverningBody {
 	public int getEffectiveAge(Date dateOfBirth);
 	public String getAgeGrade(int age);
 	public String checkRegistrationNumber(String registrationNumber);
+	public String getRowingStatus(String totalRowingPoints, int crewSize);
+	public String getScullingStatus(String totalScullingPoints, int crewSize);
 	
 }

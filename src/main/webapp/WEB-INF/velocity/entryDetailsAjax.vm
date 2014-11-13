@@ -1,18 +1,42 @@
 #if($members)
 <div class="row">
-		<div class="col-xs-4">
+	<div class="col-xs-3">
 		<ul>
 		#foreach($member in $members)
 			<li>$member.displayName</li>
 		#end
 		</ul>
 	</div>
-		<div class="col-xs-8">
-			
-			<p>Total rowing points: $rowingPoints<br/>
-			Total sculling points: $scullingPoints
+	
+	<div class="col-xs-1">
+		<span class="badge #if($ok) alert-success #end">$members.size()</span>
+		#if ($ok) 
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+		#end			
+	</div>
+	
+	#if ($ok)	
+		<div class="col-xs-3">
+			<p>Rowing points: $rowingPoints<br/>
+			$rowingStatus</p>		
+		</div>
+		<div class="col-xs-3">
+			<p>Sculling points: $scullingPoints</br>
+			$scullingStatus</p>
+		</div>
+		
+		<div class="col-xs-2">	
+			<p align="right">
+				<!-- <a href="http://localhost:9080/entrydetails/15.csv">Export as CSV</a> -->
 			</p>
 		</div>
+		
+	#else
+		<div class="col-xs-3">	
+			<p>Not a complete boat</p>
+		</div>
+	#end
+			
 </div>
 #end
 <hr/>

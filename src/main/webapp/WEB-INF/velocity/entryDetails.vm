@@ -29,6 +29,7 @@
 				<thead>
 					<tr>
 						<th></th>					
+						<th></th>
 						<th>Date of birth</th>
 						<th>Effective age</th>
 						<th>Weight</th>
@@ -74,7 +75,7 @@
 						    			$!member.registrationNumber<br/>
 						    			$registrationNumberProblems
 						    		</div>
-						    	#else					    	
+						    	#else				    	
 				    				$!member.registrationNumber
 						    	#end
 						    					    		

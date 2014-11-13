@@ -30,6 +30,8 @@ import com.google.common.collect.Lists;
 @Controller
 public class EntryDetailsController {
 		
+	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
+	
 	private InstanceSpecificApiClient api;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
@@ -86,8 +88,17 @@ public class EntryDetailsController {
 		final ModelAndView mv = viewFactory.getView("entryDetailsAjax");
 		if (!selectedMembers.isEmpty()) {
 			mv.addObject("members", selectedMembers);
-			mv.addObject("rowingPoints", rowingPoints);
-			mv.addObject("scullingPoints", scullingPoints);
+			
+			int crewSize = selectedMembers.size();
+			final boolean isFullBoat = BOAT_SIZES.contains(crewSize);
+			mv.addObject("ok", isFullBoat);
+			if (isFullBoat) {
+				mv.addObject("rowingPoints", rowingPoints);				
+				mv.addObject("rowingStatus", governingBody.getRowingStatus(Integer.toString(rowingPoints), crewSize));
+				
+				mv.addObject("scullingPoints", scullingPoints);
+				mv.addObject("scullingStatus", governingBody.getScullingStatus(Integer.toString(scullingPoints), crewSize));
+			}
 		}
 		return mv;
 	}

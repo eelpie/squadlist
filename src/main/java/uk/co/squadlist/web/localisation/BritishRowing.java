@@ -65,12 +65,22 @@ public class BritishRowing implements GoverningBody {
 
 	@Override
 	public String getRowingStatus(String rowingPoints) {		
-		return determineStatusFromCurrentPoints(parsePoints(rowingPoints));
+		return determineStatusFromCurrentPoints(parsePoints(rowingPoints), 1);
+	}
+	
+	@Override
+	public String getRowingStatus(String totalRowingPoints, int crewSize) {
+		return determineStatusFromCurrentPoints(parsePoints(totalRowingPoints), crewSize);
 	}
 	
 	@Override
 	public String getScullingStatus(String scullingPoints) {
-		return determineStatusFromCurrentPoints(parsePoints(scullingPoints));
+		return determineStatusFromCurrentPoints(parsePoints(scullingPoints), 1);
+	}
+	
+	@Override
+	public String getScullingStatus(String totalScullingPoints, int crewSize) {
+		return determineStatusFromCurrentPoints(parsePoints(totalScullingPoints), crewSize);
 	}
 	
 	@Override
@@ -118,9 +128,9 @@ public class BritishRowing implements GoverningBody {
 		return "Not in the expected British Rowing format";	
 	}
 
-	private String determineStatusFromCurrentPoints(final int p) {
+	private String determineStatusFromCurrentPoints(final int p, int crewSize) {
 		for (String status : statusMaximumPoints.keySet()) {
-			if (p <= statusMaximumPoints.get(status)) {
+			if (p <= statusMaximumPoints.get(status) * crewSize) {
 				return status;
 			}
  		}
