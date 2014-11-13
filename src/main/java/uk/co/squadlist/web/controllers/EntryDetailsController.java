@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -98,6 +99,17 @@ public class EntryDetailsController {
 				
 				mv.addObject("scullingPoints", scullingPoints);
 				mv.addObject("scullingStatus", governingBody.getScullingStatus(Integer.toString(scullingPoints), crewSize));
+				
+				List<Date> datesOfBirth = Lists.newArrayList();
+				for (Member member: selectedMembers) {
+					datesOfBirth.add(member.getDateOfBirth());
+				}
+				
+				Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
+				if (effectiveAge != null) {
+					mv.addObject("effectiveAge", effectiveAge);
+					mv.addObject("ageGrade", governingBody.getAgeGrade(effectiveAge));
+				}
 			}
 		}
 		return mv;

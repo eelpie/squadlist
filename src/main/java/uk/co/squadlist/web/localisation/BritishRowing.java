@@ -133,6 +133,22 @@ public class BritishRowing implements GoverningBody {
 		return "http://www.britishrowing.org/competing/points-status";
 	}
 	
+	@Override
+	public Integer getEffectiveAge(List<Date> datesOfBirth) {
+		Integer youngestAge = null;
+		for (Date dateOfBirth : datesOfBirth) {
+			if (dateOfBirth == null) {
+				return null;
+			}
+			
+			int effectiveAge = getEffectiveAge(dateOfBirth);
+			if (youngestAge == null || effectiveAge < youngestAge) {
+				youngestAge = effectiveAge;
+			}
+		}		
+		return youngestAge;
+	}
+
 	private String determineStatusFromCurrentPoints(final int p, int crewSize) {
 		for (String status : statusMaximumPoints.keySet()) {
 			Integer maxPointsForStatus = statusMaximumPoints.get(status);
