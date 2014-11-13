@@ -26,7 +26,8 @@ public class GoverningBodyController {
     public ModelAndView member() throws Exception {
 		final BritishRowing governingBody = new BritishRowing();	// TODO make general
 
-		final ModelAndView mv = viewFactory.getView("governingBody");    	
+		final ModelAndView mv = viewFactory.getView("governingBody");
+		mv.addObject("governingBody", governingBody);
     	mv.addObject("title", governingBody.getName());
 		mv.addObject("ageGrades", governingBody.getAgeGrades());
     	mv.addObject("statuses", governingBody.getStatusPoints());

@@ -14,5 +14,6 @@ public interface GoverningBody {
 	public String checkRegistrationNumber(String registrationNumber);
 	public String getRowingStatus(String totalRowingPoints, int crewSize);
 	public String getScullingStatus(String totalScullingPoints, int crewSize);
+	public String getStatusPointsReference();
 	
 }

@@ -31,7 +31,7 @@ public class BritishRowing implements GoverningBody {
 		statusMaximumPoints.put("Intermediate 2", 4);
 		statusMaximumPoints.put("Intermediate 1", 6);
 		statusMaximumPoints.put("Senior", 9);
-		statusMaximumPoints.put("Elite", Integer.MAX_VALUE);
+		statusMaximumPoints.put("Elite", null);
 		
 		mastersMinimumAges = Maps.newLinkedHashMap();
 		mastersMinimumAges.put("Masters J", 80);
@@ -127,10 +127,20 @@ public class BritishRowing implements GoverningBody {
 		}
 		return "Not in the expected British Rowing format";	
 	}
-
+	
+	@Override
+	public String getStatusPointsReference() {
+		return "http://www.britishrowing.org/competing/points-status";
+	}
+	
 	private String determineStatusFromCurrentPoints(final int p, int crewSize) {
 		for (String status : statusMaximumPoints.keySet()) {
-			if (p <= statusMaximumPoints.get(status) * crewSize) {
+			Integer maxPointsForStatus = statusMaximumPoints.get(status);
+			if (maxPointsForStatus == null) {
+				return status;
+			}
+			final int maxPointsForCrewAtThisStatus = maxPointsForStatus * crewSize;
+			if (p <= maxPointsForCrewAtThisStatus) {
 				return status;
 			}
  		}
