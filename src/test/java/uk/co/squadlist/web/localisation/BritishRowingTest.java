@@ -44,18 +44,14 @@ public class BritishRowingTest {
 	
 	@Test
 	public void canCalculateStatusForDifferentCrewSizes() throws Exception {
-		/*
-		 * assertEquals("Novice", britishRowing.getRowingStatus("0", 4));		
+		assertEquals("Novice", britishRowing.getRowingStatus("0", 4));		
 		assertEquals("Intermediate 3", britishRowing.getRowingStatus("1", 4));
 		assertEquals("Intermediate 2", britishRowing.getRowingStatus("16", 4));
 		assertEquals("Intermediate 1", britishRowing.getRowingStatus("24", 4));
 		assertEquals("Senior", britishRowing.getRowingStatus("25", 4));
-		 */
-		
-		assertEquals("Elite", britishRowing.getRowingStatus("37", 4));		
-		
-	//	assertEquals("Senior", britishRowing.getRowingStatus("72", 8));
-	//	assertEquals("Elite", britishRowing.getRowingStatus("73", 8));
+		assertEquals("Elite", britishRowing.getRowingStatus("37", 4));				
+		assertEquals("Senior", britishRowing.getRowingStatus("72", 8));
+		assertEquals("Elite", britishRowing.getRowingStatus("73", 8));
 	}
 	
 }
