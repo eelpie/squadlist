@@ -14,7 +14,9 @@
 </head>
 <body>
 
-<div class="alert alert-warning">
-	This is a test copy of your data. 
-	Changes made to this copy will not be reflected in your live copy.
-</div>
+#if ($instance.beta)
+	<div class="alert alert-warning">
+		This is a test copy of your data. 
+		Changes made to this copy will not be reflected in your live copy.
+	</div>
+#end
