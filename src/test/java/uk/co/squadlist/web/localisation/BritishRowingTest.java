@@ -37,13 +37,13 @@ public class BritishRowingTest {
 	
 	@Test
 	public void pointsGradesAreBasedOnMaximumPointsAllowed() throws Exception {
-		assertEquals("Novice", britishRowing.getRowingStatus("0"));
-		assertEquals("Intermediate 3", britishRowing.getRowingStatus("1"));
-		assertEquals("Intermediate 3", britishRowing.getRowingStatus("2"));
-		assertEquals("Intermediate 2", britishRowing.getRowingStatus("3"));
-		assertEquals("Intermediate 1", britishRowing.getRowingStatus("5"));
-		assertEquals("Senior", britishRowing.getRowingStatus("9"));
-		assertEquals("Elite", britishRowing.getRowingStatus("10"));
+		assertEquals("Novice", britishRowing.getRowingStatus(Lists.newArrayList("0")));
+		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("1")));
+		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("2")));
+		assertEquals("Intermediate 2", britishRowing.getRowingStatus(Lists.newArrayList("3")));
+		assertEquals("Intermediate 1", britishRowing.getRowingStatus(Lists.newArrayList("5")));
+		assertEquals("Senior", britishRowing.getRowingStatus(Lists.newArrayList("9")));
+		assertEquals("Elite", britishRowing.getRowingStatus(Lists.newArrayList("10")));
 	}
 	
 	@Test

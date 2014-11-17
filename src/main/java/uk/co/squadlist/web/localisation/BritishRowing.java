@@ -62,12 +62,6 @@ public class BritishRowing implements GoverningBody {
 	public Map<String, Integer> getAgeGrades() {
 		return mastersMinimumAges;
 	}
-
-	@Deprecated
-	@Override
-	public String getRowingStatus(String rowingPoints) {		
-		return determineStatusFromCurrentPoints(parsePoints(rowingPoints), 1);
-	}
 	
 	@Override
 	public String getRowingStatus(List<String> rowingPoints) {
