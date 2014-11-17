@@ -2,8 +2,12 @@ package uk.co.squadlist.web.localisation;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class BritishRowingTest {
 	
@@ -43,15 +47,22 @@ public class BritishRowingTest {
 	}
 	
 	@Test
+	public void crewPointsCannotBeInferredIfSomeCrewMembersHaveNotProvidedPointsInformation() throws Exception {
+		List<String> rowingPoints = Lists.newArrayList("0", "1", null, "1");
+
+		assertNull(britishRowing.getRowingStatus(rowingPoints));		
+	}
+	
+	@Test
 	public void canCalculateStatusForDifferentCrewSizes() throws Exception {
-		assertEquals("Novice", britishRowing.getRowingStatus("0", 4));		
-		assertEquals("Intermediate 3", britishRowing.getRowingStatus("1", 4));
-		assertEquals("Intermediate 2", britishRowing.getRowingStatus("16", 4));
-		assertEquals("Intermediate 1", britishRowing.getRowingStatus("24", 4));
-		assertEquals("Senior", britishRowing.getRowingStatus("25", 4));
-		assertEquals("Elite", britishRowing.getRowingStatus("37", 4));				
-		assertEquals("Senior", britishRowing.getRowingStatus("72", 8));
-		assertEquals("Elite", britishRowing.getRowingStatus("73", 8));
+		assertEquals("Novice", britishRowing.getRowingStatus(Lists.newArrayList("0")));
+		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("1", "0","0", "0")));
+		assertEquals("Intermediate 2", britishRowing.getRowingStatus(Lists.newArrayList("16", "0","0", "0")));
+		assertEquals("Intermediate 1", britishRowing.getRowingStatus(Lists.newArrayList("24", "0","0", "0")));
+		assertEquals("Senior", britishRowing.getRowingStatus(Lists.newArrayList("25", "0","0", "0")));
+		assertEquals("Elite", britishRowing.getRowingStatus(Lists.newArrayList("37", "0","0", "0")));				
+		assertEquals("Senior", britishRowing.getRowingStatus(Lists.newArrayList("72", "0", "0", "0", "0", "0", "0", "0")));
+		assertEquals("Elite", britishRowing.getRowingStatus(Lists.newArrayList("73", "0", "0", "0", "0", "0", "0", "0")));
 	}
 	
 }

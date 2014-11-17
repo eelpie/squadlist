@@ -63,26 +63,32 @@ public class BritishRowing implements GoverningBody {
 		return mastersMinimumAges;
 	}
 
+	@Deprecated
 	@Override
 	public String getRowingStatus(String rowingPoints) {		
 		return determineStatusFromCurrentPoints(parsePoints(rowingPoints), 1);
 	}
 	
 	@Override
-	public String getRowingStatus(String totalRowingPoints, int crewSize) {
-		return determineStatusFromCurrentPoints(parsePoints(totalRowingPoints), crewSize);
+	public String getRowingStatus(List<String> rowingPoints) {
+		int totalPoints = 0;
+		for (String string : rowingPoints) {
+			if (string != null) {
+				totalPoints = totalPoints + Integer.parseInt(string);
+			} else {
+				return null;
+			}
+		}
+		
+		int crewSize = rowingPoints.size();
+		return determineStatusFromCurrentPoints(totalPoints, crewSize);
 	}
 	
 	@Override
-	public String getScullingStatus(String scullingPoints) {
-		return determineStatusFromCurrentPoints(parsePoints(scullingPoints), 1);
+	public String getScullingStatus(List<String> scullingPoints) {
+		return getRowingStatus(scullingPoints);
 	}
-	
-	@Override
-	public String getScullingStatus(String totalScullingPoints, int crewSize) {
-		return determineStatusFromCurrentPoints(parsePoints(totalScullingPoints), crewSize);
-	}
-	
+		
 	@Override
 	public int getEffectiveAge(Date dateOfBirth) {
 		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);		

@@ -25,7 +25,6 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.ViewFactory;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -75,15 +74,11 @@ public class EntryDetailsController {
 			selectedMembers.add(api.getMemberDetails(iterator.next().asText()));
 		}
 
-		int rowingPoints = 0;
-		int scullingPoints = 0;
-		for (Member member: selectedMembers) {
-			if (!Strings.isNullOrEmpty(member.getRowingPoints())) {
-				rowingPoints = rowingPoints + Integer.parseInt(member.getRowingPoints());
-			}
-			if (!Strings.isNullOrEmpty(member.getScullingPoints())) {
-				scullingPoints = scullingPoints + Integer.parseInt(member.getScullingPoints());
-			}
+		List<String> rowingPoints = Lists.newArrayList();
+		List<String> scullingPoints = Lists.newArrayList();
+		for (Member member: selectedMembers) {			
+			rowingPoints.add(member.getRowingPoints());
+			scullingPoints.add(member.getScullingPoints());			
 		}
 		
 		final ModelAndView mv = viewFactory.getView("entryDetailsAjax");
@@ -94,11 +89,11 @@ public class EntryDetailsController {
 			final boolean isFullBoat = BOAT_SIZES.contains(crewSize);
 			mv.addObject("ok", isFullBoat);
 			if (isFullBoat) {
-				mv.addObject("rowingPoints", rowingPoints);				
-				mv.addObject("rowingStatus", governingBody.getRowingStatus(Integer.toString(rowingPoints), crewSize));
+				mv.addObject("rowingPoints", rowingPoints);
+				mv.addObject("rowingStatus", governingBody.getRowingStatus(rowingPoints));
 				
 				mv.addObject("scullingPoints", scullingPoints);
-				mv.addObject("scullingStatus", governingBody.getScullingStatus(Integer.toString(scullingPoints), crewSize));
+				mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
 				
 				List<Date> datesOfBirth = Lists.newArrayList();
 				for (Member member: selectedMembers) {
