@@ -1,12 +1,16 @@
 package uk.co.squadlist.web.urls;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -114,6 +118,23 @@ public class UrlBuilder {
 	
 	public String entryDetailsCsv(Squad squad) {
 		return applicationUrl("/entrydetails/" + squad.getId() + ".csv");
+	}
+
+	public String entryDetailsCsv(List<Member> members) {
+		try {
+			final URIBuilder url = new URIBuilder(applicationUrl("/entrydetails/selected.csv"));
+			
+			final List<String> memberIds = Lists.newArrayList();
+			for (Member member : members) {
+				memberIds.add(member.getId());
+			}			
+			url.addParameter("members", Joiner.on(",").join(memberIds));
+			
+			return url.toString();
+			
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public String changePassword() {

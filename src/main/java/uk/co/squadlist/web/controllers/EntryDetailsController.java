@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -25,11 +27,14 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.ViewFactory;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 @Controller
 public class EntryDetailsController {
 		
+	private final static Logger log = Logger.getLogger(EntryDetailsController.class);
+	
 	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
 	
 	private InstanceSpecificApiClient api;
@@ -113,8 +118,29 @@ public class EntryDetailsController {
 	@RequestMapping(value="/entrydetails/{squadId}.csv", method=RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+    	final List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
     	
-		final String output = csvLinePrinter.printAsCSVLine(entryDetailsModelPopulator.getEntryDetailsRows(squadToShow));
+		final String output = csvLinePrinter.printAsCSVLine(entryDetailsModelPopulator.getEntryDetailsRows(squadMembers));
+		
+    	response.setContentType("text/csv");
+    	PrintWriter writer = response.getWriter();
+		writer.print(output);
+		writer.flush();
+		return;
+	}
+	
+	@RequestMapping(value="/entrydetails/selected.csv", method=RequestMethod.GET)
+    public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
+		log.info("Selected members: " + members);
+    	List<Member> selectedMembers = Lists.newArrayList();    	
+		final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
+    	while(iterator.hasNext()) {
+    		final String selectedMemberId = iterator.next();
+    		log.info("Selected member id: " + selectedMemberId);
+			selectedMembers.add(api.getMemberDetails(selectedMemberId));
+    	}
+    	
+		final String output = csvLinePrinter.printAsCSVLine(entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
 		
     	response.setContentType("text/csv");
     	PrintWriter writer = response.getWriter();

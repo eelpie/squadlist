@@ -40,8 +40,12 @@ public class EntryDetailsModelPopulator {
 	
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow) {
+		return getEntryDetailsRows(api.getSquadMembers(squadToShow.getId()));
+	}
+
+	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
 		final List<List<String>> rows = Lists.newArrayList();
-    	for (Member member :api.getSquadMembers(squadToShow.getId())) {			
+		for (Member member : members) {			
     		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), 
     				member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "", 
     				member.getWeight() != null ? member.getWeight().toString() : "",

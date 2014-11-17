@@ -33,7 +33,7 @@
 		
 		<div class="col-xs-2">	
 			<p align="right">
-				<!-- <a href="/entrydetails/15.csv">Export as CSV</a> -->
+				<a href="$urlBuilder.entryDetailsCsv($members)">Export as CSV</a>
 			</p>
 		</div>
 		
