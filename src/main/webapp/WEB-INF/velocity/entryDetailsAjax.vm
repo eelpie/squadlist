@@ -18,11 +18,11 @@
 	#if ($ok)	
 		<div class="col-xs-2">
 			<p>Rowing points: $rowingPoints<br/>
-			$rowingStatus</p>		
+			$!rowingStatus</p>		
 		</div>
 		<div class="col-xs-2">
 			<p>Sculling points: $scullingPoints</br>
-			$scullingStatus</p>
+			$!scullingStatus</p>
 		</div>
 		<div class="col-xs-2">
 			#if($effectiveAge)
