@@ -94,10 +94,10 @@ public class EntryDetailsController {
 			final boolean isFullBoat = BOAT_SIZES.contains(crewSize);
 			mv.addObject("ok", isFullBoat);
 			if (isFullBoat) {
-				mv.addObject("rowingPoints", rowingPoints);
+				mv.addObject("rowingPoints", governingBody.getTotalPoints(rowingPoints));
 				mv.addObject("rowingStatus", governingBody.getRowingStatus(rowingPoints));
 				
-				mv.addObject("scullingPoints", scullingPoints);
+				mv.addObject("scullingPoints", governingBody.getTotalPoints(scullingPoints));
 				mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
 				
 				List<Date> datesOfBirth = Lists.newArrayList();

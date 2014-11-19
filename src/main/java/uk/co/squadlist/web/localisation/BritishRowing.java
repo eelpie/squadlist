@@ -64,7 +64,7 @@ public class BritishRowing implements GoverningBody {
 	}
 	
 	@Override
-	public String getRowingStatus(List<String> rowingPoints) {
+	public Integer getTotalPoints(List<String> rowingPoints) {
 		int totalPoints = 0;
 		for (String points : rowingPoints) {
 			if (points != null) {
@@ -72,6 +72,15 @@ public class BritishRowing implements GoverningBody {
 			} else {
 				return null;
 			}
+		}
+		return totalPoints;
+	}
+	
+	@Override
+	public String getRowingStatus(List<String> rowingPoints) {
+		final Integer totalPoints = getTotalPoints(rowingPoints);
+		if (totalPoints == null) {
+			return null;
 		}
 		
 		final int crewSize = rowingPoints.size();

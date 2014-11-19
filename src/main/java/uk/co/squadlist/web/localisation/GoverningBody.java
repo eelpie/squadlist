@@ -8,6 +8,8 @@ public interface GoverningBody {
 	public String getName();
 	public List<String> getPointsOptions();
 	
+	public Integer getTotalPoints(List<String> rowingPoints);
+
 	public String getRowingStatus(String rowingPoints);
 	public String getRowingStatus(List<String> rowingPoints);
 	
