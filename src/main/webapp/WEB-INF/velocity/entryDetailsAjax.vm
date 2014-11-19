@@ -17,16 +17,16 @@
 	
 	#if ($ok)	
 		<div class="col-xs-2">
-			<p>Total rowing points: $rowingPoints</p>
 			#if($rowingStatus)
+				<p>Total rowing points: $rowingPoints</p>
 				<p>$rowingStatus <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
 			#else
 				<p>Crew members have not entered rowing points</p>
 			#end
 		</div>
 		<div class="col-xs-2">
-			<p>Total sculling points: $scullingPoints</p>
 			#if($scullingStatus)
+				<p>Total sculling points: $scullingPoints</p>
 				<p>$scullingStatus <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
 			#else
 				<p>Some crew members have not entered sculling points</p>
@@ -39,7 +39,7 @@
 					<p>$ageGrade <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p> 
 				#end
 			#else
-				<p>Some crew members not entered a date of birth</p>
+				<p>Some crew members have not entered a date of birth</p>
 			#end
 		</div>
 		
