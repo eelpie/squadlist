@@ -21,7 +21,7 @@
 				<p>Total rowing points: $rowingPoints</p>
 				<p>$rowingStatus <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
 			#else
-				<p>Crew members have not entered rowing points</p>
+				<p>Some crew members have not entered rowing points</p>
 			#end
 		</div>
 		<div class="col-xs-2">
