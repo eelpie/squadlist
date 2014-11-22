@@ -152,8 +152,8 @@ public class OutingsController {
 		
 		try {
 			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, api.getInstance());
-			if (outingDetails.getRepeats() != null && outingDetails.getRepeats()) {
-				api.createOuting(newOuting, 2);
+			if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
+				api.createOuting(newOuting, outingDetails.getRepeatsCount());				
 			} else {
 				api.createOuting(newOuting);
 			}

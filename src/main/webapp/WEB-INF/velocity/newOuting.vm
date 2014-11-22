@@ -32,10 +32,15 @@
 				    <div class="col-sm-5">
 			    		<div class="checkbox">
 							<label>
-								<input type="checkbox" value="true" name="${status.expression}" #if($status.getValue()) CHECKED #end>
-								 	This outing repeats for the next 2 weeks.
-								</input>
+								<input type="checkbox" value="true" name="${status.expression}" #if($status.getValue()) CHECKED #end />
+								This outing repeats for the next
 							</label>
+							<select name="repeatsCount">
+						 		<option value="2">2 weeks
+						 		<option value="4">4 weeks
+						 		<option value="6">4 weeks
+						 		<option value="8">8 weeks
+						 	</select>
 						</div>
 						#foreach($error in $status.errorMessages)<div class="alert alert-warning">$error</div>#end						
 					</div>

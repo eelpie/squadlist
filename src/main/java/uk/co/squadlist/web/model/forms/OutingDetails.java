@@ -10,6 +10,7 @@ public class OutingDetails {
 	private String squad;
 	private String notes;
 	private Boolean repeats;
+	private Integer repeatsCount;
 	
 	public OutingDetails() {
 	}
@@ -90,12 +91,20 @@ public class OutingDetails {
 		this.repeats = repeats;
 	}
 
+	public Integer getRepeatsCount() {
+		return repeatsCount;
+	}
+
+	public void setRepeatsCount(Integer repeatsCount) {
+		this.repeatsCount = repeatsCount;
+	}
+
 	@Override
 	public String toString() {
-		return "OutingDetails [day=" + day + ", hour=" + hour + ", minute="
-				+ minute + ", month=" + month + ", notes=" + notes
-				+ ", repeats=" + repeats + ", squad=" + squad + ", year="
-				+ year + "]";
+		return "OutingDetails [year=" + year + ", month=" + month + ", day="
+				+ day + ", hour=" + hour + ", minute=" + minute + ", squad="
+				+ squad + ", notes=" + notes + ", repeats=" + repeats
+				+ ", repeatsCount=" + repeatsCount + "]";
 	}
 	
 }
