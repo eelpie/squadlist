@@ -23,7 +23,7 @@ public class GoverningBodyController {
 	}
 	
 	@RequestMapping(value="/governing-body/british-rowing", method=RequestMethod.GET)
-    public ModelAndView member() throws Exception {
+    public ModelAndView member() throws Exception {		
 		final BritishRowing governingBody = new BritishRowing();	// TODO make general
 
 		final ModelAndView mv = viewFactory.getView("governingBody");
@@ -31,6 +31,7 @@ public class GoverningBodyController {
     	mv.addObject("title", governingBody.getName());
 		mv.addObject("ageGrades", governingBody.getAgeGrades());
     	mv.addObject("statuses", governingBody.getStatusPoints());
+    	mv.addObject("boatSizes", governingBody.getBoatSizes());
     	return mv;
     }
 	

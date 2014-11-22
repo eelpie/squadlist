@@ -34,9 +34,7 @@ import com.google.common.collect.Lists;
 public class EntryDetailsController {
 		
 	private final static Logger log = Logger.getLogger(EntryDetailsController.class);
-	
-	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
-	
+		
 	private InstanceSpecificApiClient api;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
@@ -91,7 +89,7 @@ public class EntryDetailsController {
 			mv.addObject("members", selectedMembers);
 			
 			int crewSize = selectedMembers.size();
-			final boolean isFullBoat = BOAT_SIZES.contains(crewSize);
+			final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
 			mv.addObject("ok", isFullBoat);
 			if (isFullBoat) {
 				mv.addObject("rowingPoints", governingBody.getTotalPoints(rowingPoints));

@@ -21,5 +21,6 @@ public interface GoverningBody {
 	public String checkRegistrationNumber(String registrationNumber);
 	public String getStatusPointsReference();
 	public Integer getEffectiveAge(List<Date> datesOfBirth);
+	public List<Integer> getBoatSizes();
 	
 }

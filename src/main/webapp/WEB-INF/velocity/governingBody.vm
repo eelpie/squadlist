@@ -20,6 +20,9 @@
 		<div class="col-xs-6">			
 			<h5>Statuses</h5>
 			#table($statuses)
+						
+			<h5>Boat sizes</h5>
+			$boatSizes		
 		</div>
 			
 		<div class="col-xs-6">

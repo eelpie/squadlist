@@ -18,6 +18,7 @@ import com.google.common.collect.Maps;
 @Component
 public class BritishRowing implements GoverningBody {
 
+	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
 	private static final Pattern VALID_REGISTRATION_NUMBER = Pattern.compile("\\d{6}[G|S|J|U|C|B]\\d{7}", Pattern.CASE_INSENSITIVE);	// TODO check with BR about valid codes
 	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");	// TODO N is deprecated - move to 0
 	
@@ -158,6 +159,21 @@ public class BritishRowing implements GoverningBody {
 		return youngestAge;
 	}
 
+	@Override
+	public String getRowingStatus(String rowingPoints) {
+		return getRowingStatus(Lists.newArrayList(rowingPoints));
+	}
+
+	@Override
+	public String getScullingStatus(String scullingPoints) {
+		return getScullingStatus(Lists.newArrayList(scullingPoints));
+	}
+	
+	@Override
+	public List<Integer> getBoatSizes() {
+		return BOAT_SIZES;
+	}
+
 	private String determineStatusFromCurrentPoints(final int p, int crewSize) {
 		for (String status : statusMaximumPoints.keySet()) {
 			Integer maxPointsForStatus = statusMaximumPoints.get(status);
@@ -168,10 +184,10 @@ public class BritishRowing implements GoverningBody {
 			if (p <= maxPointsForCrewAtThisStatus) {
 				return status;
 			}
- 		}
+		}
 		return null;
 	}
-	
+
 	private int parsePoints(String points) {
 		if (Strings.isNullOrEmpty(points)) {
 			return 0;
@@ -181,15 +197,7 @@ public class BritishRowing implements GoverningBody {
 		}
 		return Integer.parseInt(points);
 	}
-
-	@Override
-	public String getRowingStatus(String rowingPoints) {
-		return getRowingStatus(Lists.newArrayList(rowingPoints));
-	}
-
-	@Override
-	public String getScullingStatus(String scullingPoints) {
-		return getScullingStatus(Lists.newArrayList(scullingPoints));
-	}
+	
+	
 
 }
