@@ -38,7 +38,7 @@
 							<select name="repeatsCount">
 						 		<option value="2">2 weeks
 						 		<option value="4">4 weeks
-						 		<option value="6">4 weeks
+						 		<option value="6">6 weeks
 						 		<option value="8">8 weeks
 						 	</select>
 						</div>
