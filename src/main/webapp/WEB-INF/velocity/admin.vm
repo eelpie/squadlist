@@ -17,12 +17,20 @@
 				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
 			</span>
 			
-			<h4>Members ($members.size())</h4>
+			<h4>Members ($activeMembers.size())</h4>			
 			<ul>
-			#foreach( $member in $members )
+			#foreach( $member in $activeMembers )
 				<li>#parse('includes/member.vm')</li>
 			#end
 			</ul>
+			
+			<h4>Inactive members ($inactiveMembers.size())</h4>
+			<ul>
+			#foreach( $member in $inactiveMembers )
+				<li>#parse('includes/member.vm')</li>
+			#end
+			</ul>
+									
 			<a href="/admin/export/members.csv">Export as CSV</a>
 					
 		</div>

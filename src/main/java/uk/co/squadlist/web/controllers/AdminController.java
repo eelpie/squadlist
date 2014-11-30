@@ -51,6 +51,8 @@ public class AdminController {
 
     	final List<Member> members = api.getMembers();
 		mv.addObject("members", members);
+		mv.addObject("activeMembers", extractActive(members));
+		mv.addObject("inactiveMembers", extractInactive(members));		
     	mv.addObject("admins", extractAdminUsersFrom(members));
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);
@@ -85,4 +87,24 @@ public class AdminController {
 		return admins;
 	}
 	
+	private List<Member> extractActive(List<Member> members) {
+		List<Member> selected = Lists.newArrayList();
+		for (Member member : members) {
+			if (member.getInactive() == null || member.getInactive() == false) {
+				selected.add(member);
+			}
+		}
+		return selected;
+	}
+	
+	private List<Member> extractInactive(List<Member> members) {
+		List<Member> selected = Lists.newArrayList();
+		for (Member member : members) {
+			if (member.getInactive() != null && member.getInactive()) {
+				selected.add(member);
+			}
+		}
+		return selected;
+	}
+
 }
