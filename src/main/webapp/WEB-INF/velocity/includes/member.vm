@@ -1,2 +1,1 @@
 <a href="$urlBuilder.applicationUrl("/member/$member.id")" #if ($member.availabilityLastUpdated) title="Availability last updated $dateFormatter.timeSince($!member.availabilityLastUpdated)" #end >$member.displayName</a>
-$!member.inactive
