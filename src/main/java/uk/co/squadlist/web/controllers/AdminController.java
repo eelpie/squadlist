@@ -17,6 +17,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.filters.ActiveUserFilter;
 import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -24,23 +25,25 @@ import com.google.common.collect.Lists;
 
 @Controller
 public class AdminController {
-		
+
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
 	private GoverningBody governingBody;
 	private CSVLinePrinter csvLinePrinter;
-	
+	private ActiveUserFilter activeUserFilter;
+
 	public AdminController() {
 	}
-	
+
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter, ActiveUserFilter activeUserFilter) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
 		this.csvLinePrinter = csvLinePrinter;
+		this.activeUserFilter = activeUserFilter;
 	}
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
@@ -51,15 +54,15 @@ public class AdminController {
 
     	final List<Member> members = api.getMembers();
 		mv.addObject("members", members);
-		mv.addObject("activeMembers", extractActive(members));
-		mv.addObject("inactiveMembers", extractInactive(members));		
+		mv.addObject("activeMembers", activeUserFilter.extractActive(members));
+		mv.addObject("inactiveMembers", activeUserFilter.extractInactive(members));
     	mv.addObject("admins", extractAdminUsersFrom(members));
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);
     	mv.addObject("statistics", api.statistics());
     	return mv;
     }
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin/export/members.csv", method=RequestMethod.GET)
     public void membersCSV(HttpServletResponse response) throws Exception {
@@ -67,16 +70,16 @@ public class AdminController {
     	for (Member member : api.getMembers()) {
     		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), member.getEmailAddress()}));
 		}
-    	
+
     	final String output = csvLinePrinter.printAsCSVLine(rows);
-		
+
     	response.setContentType("text/csv");
     	PrintWriter writer = response.getWriter();
 		writer.print(output);
 		writer.flush();
 		return;
 	}
-	
+
 	private List<Member> extractAdminUsersFrom(List<Member> members) {
 		List<Member> admins = Lists.newArrayList();
 		for (Member member : members) {
@@ -85,26 +88,6 @@ public class AdminController {
 			}
 		}
 		return admins;
-	}
-	
-	private List<Member> extractActive(List<Member> members) {
-		List<Member> selected = Lists.newArrayList();
-		for (Member member : members) {
-			if (member.getInactive() == null || member.getInactive() == false) {
-				selected.add(member);
-			}
-		}
-		return selected;
-	}
-	
-	private List<Member> extractInactive(List<Member> members) {
-		List<Member> selected = Lists.newArrayList();
-		for (Member member : members) {
-			if (member.getInactive() != null && member.getInactive()) {
-				selected.add(member);
-			}
-		}
-		return selected;
 	}
 
 }
