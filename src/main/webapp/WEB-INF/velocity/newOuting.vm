@@ -37,9 +37,15 @@
 							</label>
 							<select name="repeatsCount">
 						 		<option value="2">2 weeks
+						 		<option value="3">3 weeks
 						 		<option value="4">4 weeks
+						 		<option value="5">5 weeks
 						 		<option value="6">6 weeks
+						 		<option value="7">7 weeks
 						 		<option value="8">8 weeks
+						 		<option value="9">9 weeks
+						 		<option value="10">10 weeks
+						 		<option value="11">11 weeks						 		
 						 	</select>
 						</div>
 						#foreach($error in $status.errorMessages)<div class="alert alert-warning">$error</div>#end						
