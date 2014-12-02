@@ -16,17 +16,17 @@ import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class ContactsController {
-		
+
 	private static Logger log = Logger.getLogger(ContactsController.class);
 
 	private InstanceSpecificApiClient api;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
 	private ContactsModelPopulator contactsModelPopulator;
-	
+
 	public ContactsController() {
 	}
-	
+
 	@Autowired
 	public ContactsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, ContactsModelPopulator contactsModelPopulator) {
 		this.api = api;
@@ -34,27 +34,27 @@ public class ContactsController {
 		this.viewFactory = viewFactory;
 		this.contactsModelPopulator = contactsModelPopulator;
 	}
-	
+
 	@RequestMapping("/contacts")
-    public ModelAndView contacts() throws Exception {		
+    public ModelAndView contacts() throws Exception {
     	final ModelAndView mv =  viewFactory.getView("contacts");
     	final List<Squad> allSquads = api.getSquads();
 		mv.addObject("squads", allSquads);
     	return mv;
     }
-	
+
 	@RequestMapping("/contacts/{squadId}")
     public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
 		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-		
+
     	final ModelAndView mv =  viewFactory.getView("contacts");
     	final List<Squad> allSquads = api.getSquads();
 		mv.addObject("squads", allSquads);
     	if (!allSquads.isEmpty()) {
     		log.info("Squad to show: " + squadToShow);
-    		contactsModelPopulator.populateModel(squadToShow, mv);    		
+    		contactsModelPopulator.populateModel(squadToShow, mv);
     	}
     	return mv;
     }
-	
+
 }

@@ -19,6 +19,7 @@ import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -26,41 +27,43 @@ import com.google.common.collect.Maps;
 
 @Controller
 public class AvailabilityController {
-		
+
 	private InstanceSpecificApiClient api;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
-	
+	private ActiveMemberFilter activeMemberFilter;
+
 	@Autowired
-	public AvailabilityController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory) {
+	public AvailabilityController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, ActiveMemberFilter activeMemberFilter) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
+		this.activeMemberFilter = activeMemberFilter;
 	}
-	
+
 	@RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
     	ModelAndView mv = viewFactory.getView("availability");
     	mv.addObject("squads", api.getSquads());
-		return mv;		
+		return mv;
     }
-	
+
 	@RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
     	ModelAndView mv = viewFactory.getView("availability");
     	mv.addObject("squads", api.getSquads());
-    	
+
     	final Squad squad = preferedSquadService.resolveSquad(squadId);
 
     	if (squad != null) {
 			mv.addObject("squad", squad);
 			mv.addObject("title", squad.getName() + " availability");
-	    	mv.addObject("members", api.getSquadMembers(squad.getId()));
-	    	
+	    	mv.addObject("members", activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
+
 			if (api.getSquadMembers(squad.getId()).isEmpty()) {
-				return mv;			
+				return mv;
 			}
-			
+
 	    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 	    	Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
 			if (month != null) {
@@ -68,7 +71,7 @@ public class AvailabilityController {
 	    		startDate = monthDateTime.toDate();
 	    		endDate = monthDateTime.plusMonths(1).toDate();
 	    	}
-			
+
 	    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(squad.getId(), startDate, endDate);
 	    	final List<Outing> outings = api.getSquadOutings(squad.getId(), startDate, endDate);
 
@@ -76,18 +79,18 @@ public class AvailabilityController {
 	    	mv.addObject("outings", outings);
 			mv.addObject("outingMonths", api.getSquadOutingMonths(squad.getId()));
     	}
-		return mv;		
+		return mv;
     }
-	
+
 	private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
 		final Map<String, AvailabilityOption> allAvailability = Maps.newHashMap();
     	for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
 			final Map<String, AvailabilityOption> outingAvailability = outingWithSquadAvailability.getAvailability();
 			for (String member : outingAvailability.keySet()) {
-				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));				
+				allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));
 			}
 		}
 		return allAvailability;
 	}
-	
+
 }
