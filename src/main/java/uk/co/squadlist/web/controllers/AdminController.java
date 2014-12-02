@@ -17,7 +17,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.filters.ActiveUserFilter;
+import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -30,18 +30,18 @@ public class AdminController {
 	private ViewFactory viewFactory;
 	private GoverningBody governingBody;
 	private CSVLinePrinter csvLinePrinter;
-	private ActiveUserFilter activeUserFilter;
+	private ActiveMemberFilter activeMemberFilter;
 
 	public AdminController() {
 	}
 
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter, ActiveUserFilter activeUserFilter) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter, ActiveMemberFilter activeMemberFilter) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
 		this.csvLinePrinter = csvLinePrinter;
-		this.activeUserFilter = activeUserFilter;
+		this.activeMemberFilter = activeMemberFilter;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -54,8 +54,8 @@ public class AdminController {
 
     	final List<Member> members = api.getMembers();
 		mv.addObject("members", members);
-		mv.addObject("activeMembers", activeUserFilter.extractActive(members));
-		mv.addObject("inactiveMembers", activeUserFilter.extractInactive(members));
+		mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
+		mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
     	mv.addObject("admins", extractAdminUsersFrom(members));
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);

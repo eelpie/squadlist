@@ -9,7 +9,7 @@ import uk.co.squadlist.web.model.Member;
 import com.google.common.collect.Lists;
 
 @Component
-public class ActiveUserFilter {	// TODO suggests missing API functionality
+public class ActiveMemberFilter {	// TODO suggests missing API functionality
 
 	public List<Member> extractActive(List<Member> members) {
 		List<Member> selected = Lists.newArrayList();
