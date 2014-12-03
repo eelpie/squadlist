@@ -358,4 +358,16 @@ public class MembersController {
 		return viewFactory.getView("memberPasswordResetPrompt").addObject("member", member);
 	}
 
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/reset", method=RequestMethod.POST)
+    public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
+		final Member member = api.getMemberDetails(id);
+
+		final String newPassword = api.resetMemberPassword(member);
+
+		return viewFactory.getView("memberPasswordReset").
+				addObject("member", member).
+				addObject("password", newPassword);
+	}
+
 }

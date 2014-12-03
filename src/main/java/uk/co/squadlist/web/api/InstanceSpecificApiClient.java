@@ -40,13 +40,13 @@ public class InstanceSpecificApiClient {
 
 	public InstanceSpecificApiClient() {
 	}
-	
+
 	@Autowired
 	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api) {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
 	}
-	
+
 	@Timed
 	public List<Squad> getSquads() {
 		return api.getSquads(instanceConfig.getInstance());
@@ -57,7 +57,7 @@ public class InstanceSpecificApiClient {
 	}
 
 	public List<Member> getMembers() {
-		return api.getMembers(instanceConfig.getInstance());				
+		return api.getMembers(instanceConfig.getInstance());
 	}
 
 	public List<AvailabilityOption> getAvailabilityOptions() throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
@@ -69,9 +69,9 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Member authFacebook(String token) {
-		return api.authFacebook(instanceConfig.getInstance(), token);	
+		return api.authFacebook(instanceConfig.getInstance(), token);
 	}
-	
+
 	public Map<String, Integer> getSquadOutingMonths(String squadId) {
 		return api.getSquadOutingMonths(instanceConfig.getInstance(), squadId);
 	}
@@ -87,7 +87,7 @@ public class InstanceSpecificApiClient {
 	public Squad getSquad(String squadId) throws UnknownSquadException {
 		return api.getSquad(instanceConfig.getInstance(), squadId);
 	}
-	
+
 	public Member getMemberDetails(String id) throws UnknownMemberException {
 		return api.getMemberDetails(instanceConfig.getInstance(), id);
 	}
@@ -96,19 +96,19 @@ public class InstanceSpecificApiClient {
 		return api.getInstance(instanceConfig.getInstance());
 	}
 
-	public Member createMember(String firstName, String lastName, List<Squad> squads, 
+	public Member createMember(String firstName, String lastName, List<Squad> squads,
 			String emailAddress, String initialPassword, Date dateOfBirth, String role) throws InvalidMemberException {
 		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
 	}
 
 	public Member updateMemberDetails(Member member) {
-		return api.updateMemberDetails(instanceConfig.getInstance(), member);		
+		return api.updateMemberDetails(instanceConfig.getInstance(), member);
 	}
-	
+
 	public Member updateMemberProfileImage(Member member, byte[] image) {
 		return api.updateMemberProfileImage(instanceConfig.getInstance(), member, image);
 	}
-	
+
 	public boolean changePassword(String id, String currentPassword, String newPassword) {
 		return api.changePassword(instanceConfig.getInstance(), id, currentPassword, newPassword);
 	}
@@ -118,11 +118,11 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Squad createSquad(String name) throws InvalidSquadException {
-		return api.createSquad(instanceConfig.getInstance(), name);		
+		return api.createSquad(instanceConfig.getInstance(), name);
 	}
 
 	public void resetPassword(String username) throws UnknownMemberException {
-		api.resetPassword(instanceConfig.getInstance(), username);		
+		api.resetPassword(instanceConfig.getInstance(), username);
 	}
 
 	public String confirmResetPassword(String token) {
@@ -140,13 +140,13 @@ public class InstanceSpecificApiClient {
 	public Outing createOuting(Outing newOuting) throws InvalidOutingException {
 		return api.createOuting(instanceConfig.getInstance(), newOuting);
 	}
-	
+
 	public Outing createOuting(Outing newOuting, int repeats) throws InvalidOutingException {
-		return api.createOuting(instanceConfig.getInstance(), newOuting, repeats);		
+		return api.createOuting(instanceConfig.getInstance(), newOuting, repeats);
 	}
-	
+
 	public Outing updateOuting(Outing updatedOuting) throws InvalidOutingException {
-		return api.updateOuting(instanceConfig.getInstance(), updatedOuting);		
+		return api.updateOuting(instanceConfig.getInstance(), updatedOuting);
 	}
 
 	public OutingAvailability setOutingAvailability(Member member, Outing outing, AvailabilityOption availabilityOption) {
@@ -158,11 +158,15 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
-		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);		
+		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);
 	}
 
 	public Map<String, Object> statistics() throws UnknownInstanceException {
 		return api.getInstanceStatistics(instanceConfig.getInstance());
 	}
-	
+
+	public String resetMemberPassword(Member member) throws UnknownMemberException {
+		return api.resetMemberPassword(instanceConfig.getInstance(), member.getId());
+	}
+
 }
