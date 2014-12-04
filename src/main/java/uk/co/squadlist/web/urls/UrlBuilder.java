@@ -86,7 +86,11 @@ public class UrlBuilder {
 	public String outingCloseUrl(Outing outing) {
 		return outingUrl(outing) + "/close";
 	}
-
+	
+	public String deleteOuting(Outing outing) {
+		return outingUrl(outing) + "/delete";
+	}
+	
 	public String outingReopenUrl(Outing outing) {
 		return outingUrl(outing) + "/reopen";
 	}

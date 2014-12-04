@@ -17,6 +17,7 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.annotations.Timed;
+import uk.co.squadlist.web.exceptions.InvalidInstanceException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
@@ -167,6 +168,10 @@ public class InstanceSpecificApiClient {
 
 	public String resetMemberPassword(Member member) throws UnknownMemberException {
 		return api.resetMemberPassword(instanceConfig.getInstance(), member.getId());
+	}
+
+	public void deleteOuting(Outing outing) throws InvalidInstanceException {
+		api.deleteOuting(instanceConfig.getInstance(), outing.getId());	// TODO 404?
 	}
 
 }

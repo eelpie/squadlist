@@ -29,6 +29,7 @@
 					#else
 						| <a href="$urlBuilder.outingCloseUrl($outing)">Close outing</a>
 					#end
+					<a href="$urlBuilder.deleteOuting($outing)">Delete outing</a>
 				#end
 			</span>
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>

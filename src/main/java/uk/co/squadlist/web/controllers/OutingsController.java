@@ -185,7 +185,25 @@ public class OutingsController {
 
     	return renderEditOutingForm(outingDetails, outing);
     }
+	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
+	@RequestMapping(value="/outings/{id}/get", method=RequestMethod.GET)
+    public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
+    	final Outing outing = api.getOuting(id);
+    	return new ModelAndView("deleteOuting").addObject("outing", outing);
+    }
+	
+	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
+	@RequestMapping(value="/outings/{id}/delete", method=RequestMethod.POST)
+    public ModelAndView deleteOuting(@PathVariable String id) throws Exception {
+    	final Outing outing = api.getOuting(id);
 
+    	api.deleteOuting(outing);
+    	
+    	final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
+    	return new ModelAndView(new RedirectView(exitUrl));
+    }
+	
 	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
 	@RequestMapping(value="/outings/{id}/close", method=RequestMethod.GET)
     public ModelAndView closeOuting(@PathVariable String id) throws Exception {
