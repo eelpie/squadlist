@@ -58,7 +58,15 @@ public class UrlBuilder {
 	public String memberUrl(String memberId) {
 		return applicationUrl("/member/" + memberId);
 	}
-
+	
+	public String makeActive(Member member) {
+		return memberUrl(member.getId()) + "/make-active";
+	}
+	
+	public String makeInactive(Member member) {
+		return memberUrl(member.getId()) + "/make-inactive";
+	}
+	
 	public String newMemberUrl() {
 		return applicationUrl("/member/new");
 	}
