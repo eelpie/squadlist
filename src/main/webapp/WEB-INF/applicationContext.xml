@@ -37,7 +37,7 @@
 		<security:intercept-url pattern="/social/facebook/signin/callback" access="IS_AUTHENTICATED_ANONYMOUSLY" />			
 		<security:intercept-url pattern="/**" access="ROLE_USER" />
 		
-		<security:form-login default-target-url="#{squadlist['baseUrl']}/" login-page="#{squadlist['baseUrl']}/login" authentication-failure-url="#{squadlist['baseUrl']}/login?errors=true" />                
+		<security:form-login default-target-url="/" login-page="#{squadlist['baseUrl']}/login" authentication-failure-url="#{squadlist['baseUrl']}/login?errors=true" />                
 		<security:logout logout-success-url="/" />
 		
 		<security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthFilter" />		        	
