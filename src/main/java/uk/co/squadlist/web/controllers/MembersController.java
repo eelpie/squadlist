@@ -279,26 +279,47 @@ public class MembersController {
 		api.updateMemberDetails(member);
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     }
-	
+
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/make-inactive", method=RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		member.setInactive(true);
-		api.updateMemberDetails(member);
-		
 		return new ModelAndView("makeMemberInactivePrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Make member inactive - " + member.getDisplayName());
     }
-	
+
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/make-inactive", method=RequestMethod.POST)
 	public ModelAndView makeInactive(@PathVariable String id) throws Exception {
 		log.info("Making member inactive: " + id);
+		final Member member = api.getMemberDetails(id);
+		member.setInactive(true);
+		api.updateMemberDetails(member);
+
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 	}
-	
+
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/make-active", method=RequestMethod.GET)
+    public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
+		final Member member = api.getMemberDetails(id);
+
+		return new ModelAndView("makeMemberActivePrompt").
+			addObject("member", api.getMemberDetails(id)).
+			addObject("title", "Make member active - " + member.getDisplayName());
+    }
+
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/make-active", method=RequestMethod.POST)
+	public ModelAndView makeActive(@PathVariable String id) throws Exception {
+		log.info("Making member active: " + id);
+		final Member member = api.getMemberDetails(id);
+		member.setInactive(false);
+		api.updateMemberDetails(member);
+		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+	}
+
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit/profileimage", method=RequestMethod.POST)
     public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws Exception {

@@ -30,10 +30,13 @@
 			<h4>Inactive members ($inactiveMembers.size())</h4>
 			<ul>
 			#foreach( $member in $inactiveMembers )
-				<li>#parse('includes/member.vm') | <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a></li>
+				<li>#parse('includes/member.vm') 
+					| <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a>
+					| <a href="$urlBuilder.makeActive($member)">Make active</a>
+				</li>
 			#end
 			</ul>
-									
+								
 			<a href="/admin/export/members.csv">Export as CSV</a>
 					
 		</div>
