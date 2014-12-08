@@ -191,7 +191,7 @@ public class PermissionsService {
 	}
 	
 	public boolean canChangeRoleFor(Member loggedInRower, Member member) {		
-		if (userIsCoach(member)) {
+		if (userIsCoach(loggedInRower)) {
 			return true;
 		}		
 		return false;
