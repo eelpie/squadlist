@@ -74,7 +74,8 @@
 				<li>Time zone: $instance.timeZone</li>
 				<li>Availability visible: $instance.availabilityVisible</li>
 				<li>Governing body: <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
-								
+				<li>Member ordering: $!instance.memberOrdering</li>
+												
 				<h5>Availability options</h5>
 		
 				#if($availabilityOptions && !$availabilityOptions.isEmpty())
