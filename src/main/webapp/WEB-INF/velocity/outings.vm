@@ -42,7 +42,7 @@
 							<td>
 								<div class="pull-right">								
 									#foreach($colour in $outingAvailabilityCounts.get($outing.id).keySet())
-										<span class="badge" style="background-color: $colour" title="$availabilityOption">
+										<span class="badge" style="background-color: $colour">
 											$outingAvailabilityCounts.get($outing.id).get($colour)
 										</span>
 									#end
