@@ -1,10 +1,13 @@
 package uk.co.squadlist.web.controllers;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -37,6 +40,7 @@ import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
@@ -47,10 +51,12 @@ import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 @Controller
 public class OutingsController {
@@ -65,6 +71,7 @@ public class OutingsController {
 	private ViewFactory viewFactory;
 	private OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private ActiveMemberFilter activeMemberFilter;
+	private CSVLinePrinter csvLinePrinter;
 
 	public OutingsController() {
 	}
@@ -72,7 +79,8 @@ public class OutingsController {
 	@Autowired
 	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, UrlBuilder urlBuilder,
 			DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-			OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter) {
+			OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
+			CSVLinePrinter csvLinePrinter) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
@@ -81,6 +89,7 @@ public class OutingsController {
 		this.viewFactory = viewFactory;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.activeMemberFilter = activeMemberFilter;
+		this.csvLinePrinter = csvLinePrinter;
 	}
 
 	@RequestMapping("/outings")
@@ -136,6 +145,34 @@ public class OutingsController {
 		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
     	return mv;
     }
+
+	@RequestMapping("/outings/{id}.csv")
+    public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
+    	final Outing outing = api.getOuting(id);
+    	final List<Member> squadMembers = api.getSquadMembers(outing.getSquad().getId());
+    	final Map<String, AvailabilityOption> outingAvailability = api.getOutingAvailability(outing.getId());
+
+    	final List<List<String>> rows = Lists.newArrayList();
+    	for (Member member : squadMembers) {
+    		rows.add(Arrays.asList(new String[] {
+    				dateFormatter.dayMonthYearTime(outing.getDate()),
+    				outing.getSquad().getName(),
+    				member.getDisplayName(),
+    				outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
+    				}));
+		}
+
+    	renderCsvResponse(response, rows);
+    }
+
+	// TODO deduplicate
+	private void renderCsvResponse(HttpServletResponse response, final List<List<String>> rows) throws IOException {
+		response.setContentType("text/csv");
+    	PrintWriter writer = response.getWriter();
+		writer.print(csvLinePrinter.printAsCSVLine(rows));
+		writer.flush();
+		return;
+	}
 
 	@RequiresPermission(permission=Permission.ADD_OUTING)
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)

@@ -58,15 +58,15 @@ public class UrlBuilder {
 	public String memberUrl(String memberId) {
 		return applicationUrl("/member/" + memberId);
 	}
-	
+
 	public String makeActive(Member member) {
 		return memberUrl(member.getId()) + "/make-active";
 	}
-	
+
 	public String makeInactive(Member member) {
 		return memberUrl(member.getId()) + "/make-inactive";
 	}
-	
+
 	public String newMemberUrl() {
 		return applicationUrl("/member/new");
 	}
@@ -91,14 +91,18 @@ public class UrlBuilder {
 		return outingsUrl() + "/" + outing.getId();
 	}
 
+	public String outingAvailabilityCsv(Outing outing) {
+		return outingUrl(outing) + ".csv";
+	}
+
 	public String outingCloseUrl(Outing outing) {
 		return outingUrl(outing) + "/close";
 	}
-	
+
 	public String deleteOuting(Outing outing) {
 		return outingUrl(outing) + "/delete";
 	}
-	
+
 	public String outingReopenUrl(Outing outing) {
 		return outingUrl(outing) + "/reopen";
 	}

@@ -56,6 +56,14 @@
 		</div>		
 	</div>
 	
+	#if($permissionsHelper.hasOutingPermission($outing, 'EDIT_OUTING'))				
+		<div class="row">
+			<div class="col-xs-12">
+				<p align="right"><a href="$urlBuilder.outingAvailabilityCsv($outing)">Export as CSV</a><p/>
+			</div>
+		</div>
+	#end
+	
 </div>
 <hr/>			
 
