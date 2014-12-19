@@ -174,4 +174,8 @@ public class InstanceSpecificApiClient {
 		api.deleteOuting(instanceConfig.getInstance(), outing.getId());	// TODO 404?
 	}
 
+	public void createAvailabilityOption(String name) {
+		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name));		
+	}
+	
 }

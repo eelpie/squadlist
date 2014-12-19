@@ -230,6 +230,10 @@ public class UrlBuilder {
 	public String staticImage(String filename) {
 		return apiUrl + "/static/" + filename + ".jpg";
 	}
+	
+	public String newAvailabilityOptionUrl() {
+		return applicationUrl("/availability-option/new");
+	}
 
 	private String availabilityUrl() {
 		return applicationUrl("/availability");
