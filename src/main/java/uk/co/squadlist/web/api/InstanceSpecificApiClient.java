@@ -17,6 +17,7 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.annotations.Timed;
+import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.InvalidInstanceException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
@@ -174,7 +175,7 @@ public class InstanceSpecificApiClient {
 		api.deleteOuting(instanceConfig.getInstance(), outing.getId());	// TODO 404?
 	}
 
-	public void createAvailabilityOption(String name) {
+	public void createAvailabilityOption(String name) throws InvalidAvailabilityOptionException {
 		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name));		
 	}
 	

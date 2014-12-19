@@ -13,6 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -52,8 +53,8 @@ public class AvailabilityOptionsController {
 			api.createAvailabilityOption(availabilityOptionDetails.getName());			
 			return redirectToAdmin();
 			
-		} catch (Exception e) {	// TODO
-			result.rejectValue("name", null, "name is already in use");	         
+		} catch (InvalidAvailabilityOptionException e) {
+			result.rejectValue("name", null, e.getMessage());	         
 			return renderNewAvailabilityOptionForm(availabilityOptionDetails);
 		}
     }
