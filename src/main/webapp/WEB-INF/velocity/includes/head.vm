@@ -4,8 +4,13 @@
 <head>
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	
 	<script src="$urlBuilder.staticUrl('/bootstrap/js/bootstrap.js')"></script>
+	<script src="$urlBuilder.staticUrl('/bootstrap-colorselector/bootstrap-colorselector.js')"></script>
+	
 	<link href="$urlBuilder.staticUrl('/bootstrap/css/bootstrap.css')" rel="stylesheet" />
+	<link href="$urlBuilder.staticUrl('/bootstrap-colorselector/bootstrap-colorselector.css')" rel="stylesheet" type="text/css" />
+	
 	<title>Squadlist - $!title</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	#if($rssUrl) 

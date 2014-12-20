@@ -23,6 +23,18 @@
 						#foreach($error in $status.errorMessages)
 							<div class="alert alert-warning">$error</div>
 						#end
+					
+						#springBind("availabilityOptionDetails.colour")
+						<select id="colorselector" name="colour">
+							<option value="green" data-color="green" #if($status.value == 'green') selected="selected" #end>green</option>
+							<option value="red" data-color="red" #if($status.value == 'red') selected="selected" #end>red</option>
+							<option value="yellow" data-color="yellow" #if($status.value == 'yellow') selected="selected" #end>yellow</option>
+						</select>
+						
+						<script>
+							$('#colorselector').colorselector();
+						</script>
+												
 					</div>
 				</div>		
 				

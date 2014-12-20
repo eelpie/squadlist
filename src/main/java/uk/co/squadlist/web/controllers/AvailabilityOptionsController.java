@@ -39,7 +39,9 @@ public class AvailabilityOptionsController {
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
     public ModelAndView availability() throws Exception {
-    	return renderNewAvailabilityOptionForm(new AvailabilityOptionDetails());
+    	AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
+    	availabilityOption.setColour("green");
+		return renderNewAvailabilityOptionForm(availabilityOption);
     }
 	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
