@@ -65,7 +65,17 @@ public class InstanceSpecificApiClient {
 	public List<AvailabilityOption> getAvailabilityOptions() throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
 		return api.getAvailabilityOptions(instanceConfig.getInstance());
 	}
-
+	
+	public AvailabilityOption getAvailabilityOption(String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		List<AvailabilityOption> availabilityOptions = getAvailabilityOptions();
+		for (AvailabilityOption availabilityOption : availabilityOptions) {	// TODO API end point
+			if (availabilityOption.getId().equals(id)) {
+				return availabilityOption;
+			}
+		}
+		return null;
+	}
+	
 	public Member auth(String username, String password) {
 		return api.auth(instanceConfig.getInstance(), username, password);
 	}
@@ -178,5 +188,5 @@ public class InstanceSpecificApiClient {
 	public void createAvailabilityOption(String name, String colour) throws InvalidAvailabilityOptionException {
 		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name, colour));		
 	}
-	
+
 }

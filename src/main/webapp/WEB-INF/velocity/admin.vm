@@ -89,6 +89,7 @@
 						#foreach($availabilityOption in $availabilityOptions )
 							<li>							
 								<span class="label label-info" style="background-color: $cssHelper.classFor($availabilityOption)">$availabilityOption.label</span>
+								<a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">Edit</a>
 							</li>								
 						#end
 					</ul>

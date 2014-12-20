@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -35,7 +37,19 @@ public class AvailabilityOptionsController {
 		this.viewFactory = viewFactory;
 		this.urlBuilder = urlBuilder;
 	}
-
+	
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.GET)
+    public ModelAndView editPrompt(@PathVariable String id) throws Exception {
+		final AvailabilityOption a = api.getAvailabilityOption(id);
+		
+		final AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
+    	availabilityOption.setName(a.getLabel());
+    	availabilityOption.setColour(a.getColour());
+    	
+		return renderEditAvailabilityOptionForm(availabilityOption).addObject("availabilityOption", a);
+    }
+	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
     public ModelAndView availability() throws Exception {
@@ -64,6 +78,10 @@ public class AvailabilityOptionsController {
 
 	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
 		return viewFactory.getView("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
+	}
+	
+	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
+		return viewFactory.getView("editAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
 	}
 	
 	private ModelAndView redirectToAdmin() {

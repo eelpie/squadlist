@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 
 import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -233,6 +234,10 @@ public class UrlBuilder {
 	
 	public String newAvailabilityOptionUrl() {
 		return applicationUrl("/availability-option/new");
+	}
+	
+	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
+		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
 
 	private String availabilityUrl() {
