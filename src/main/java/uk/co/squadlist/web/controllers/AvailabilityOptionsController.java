@@ -66,8 +66,7 @@ public class AvailabilityOptionsController {
 		}
 		
 		try {
-			api.createAvailabilityOption(availabilityOptionDetails.getName(),
-					availabilityOptionDetails.getColour());			
+			api.createAvailabilityOption(availabilityOptionDetails.getName(), availabilityOptionDetails.getColour());			
 			return redirectToAdmin();
 			
 		} catch (InvalidAvailabilityOptionException e) {
@@ -75,7 +74,23 @@ public class AvailabilityOptionsController {
 			return renderNewAvailabilityOptionForm(availabilityOptionDetails);
 		}
     }
-
+	
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.POST)
+    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws Exception {		
+		final AvailabilityOption a = api.getAvailabilityOption(id);
+		if (result.hasErrors()) {
+			return renderEditAvailabilityOptionForm(availabilityOptionDetails);
+		}
+		
+		// TODO validate
+		a.setLabel(availabilityOptionDetails.getName());
+		a.setColour(availabilityOptionDetails.getColour());
+		api.updateAvailabilityOption(a);
+		
+		return redirectToAdmin();		
+    }
+	
 	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
 		return viewFactory.getView("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
 	}

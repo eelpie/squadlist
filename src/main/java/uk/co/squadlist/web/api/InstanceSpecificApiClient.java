@@ -189,4 +189,8 @@ public class InstanceSpecificApiClient {
 		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name, colour));		
 	}
 
+	public void updateAvailabilityOption(AvailabilityOption availabilityOption) {
+		api.updateAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
+	}
+
 }
