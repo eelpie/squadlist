@@ -52,7 +52,8 @@ public class AvailabilityOptionsController {
 		}
 		
 		try {
-			api.createAvailabilityOption(availabilityOptionDetails.getName());			
+			api.createAvailabilityOption(availabilityOptionDetails.getName(),
+					availabilityOptionDetails.getColour());			
 			return redirectToAdmin();
 			
 		} catch (InvalidAvailabilityOptionException e) {

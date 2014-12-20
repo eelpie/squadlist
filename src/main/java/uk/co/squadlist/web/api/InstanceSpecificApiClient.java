@@ -175,8 +175,8 @@ public class InstanceSpecificApiClient {
 		api.deleteOuting(instanceConfig.getInstance(), outing.getId());	// TODO 404?
 	}
 
-	public void createAvailabilityOption(String name) throws InvalidAvailabilityOptionException {
-		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name));		
+	public void createAvailabilityOption(String name, String colour) throws InvalidAvailabilityOptionException {
+		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name, colour));		
 	}
 	
 }
