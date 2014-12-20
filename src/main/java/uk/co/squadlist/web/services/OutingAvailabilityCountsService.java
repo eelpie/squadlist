@@ -36,7 +36,7 @@ public class OutingAvailabilityCountsService {
 			final AtomicLongMap<String> counts = AtomicLongMap.create();			
 			final Map<String, AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
 			for (AvailabilityOption availabilityOption : membersAvailabilityForThisOuting.values()) {
-				if (availabilityOption != null) {	// Should the API persist these?
+				if (availabilityOption != null && availabilityOption.getColour() != null) {	// Should the API persist these?
 					counts.addAndGet(availabilityOption.getColour(), 1);
 				}
 			}
