@@ -15,7 +15,6 @@ public class FacebookOauthStateService {
 
 	public FacebookOauthStateService() {		
 		this.states = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(1, TimeUnit.HOURS).build();
-		
 	}
 	
 	public String registerState() {
