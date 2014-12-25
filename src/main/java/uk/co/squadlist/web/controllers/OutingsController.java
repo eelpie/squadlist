@@ -322,19 +322,17 @@ public class OutingsController {
     	throw new RuntimeException("Outing is closed");	// TODO
 	}
 
-	private AvailabilityOption getAvailabilityOptionById(String availability) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
-		if (Strings.isNullOrEmpty(availability)) {
+	private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		if (Strings.isNullOrEmpty(availabilityId)) {
 			return null;
 		}
 
-		List<AvailabilityOption> availabilityOptions = api.getAvailabilityOptions();
-		for (AvailabilityOption availabilityOption : availabilityOptions) {
-			if (availabilityOption.getId().equals(availability)) {
-				log.info(availability + ": " + availabilityOption);
-				return availabilityOption;
-			}
+		final AvailabilityOption availablityOption = api.getAvailabilityOption(availabilityId);
+		if (availablityOption != null) {
+			return availablityOption;
 		}
-		throw new RuntimeException("Unknown availability option: " + availability);	// TODO
+		
+		throw new RuntimeException("Unknown availability option: " + availabilityId);	// TODO
 	}
 
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
