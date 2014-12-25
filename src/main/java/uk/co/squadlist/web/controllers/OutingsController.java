@@ -342,11 +342,10 @@ public class OutingsController {
 	}
 
 	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
-		final Outing newOuting = new Outing();
-		newOuting.setDate(outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate());
-		newOuting.setSquad(outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null);	// TODO validation step
-		newOuting.setNotes(outingDetails.getNotes());	// TODO flatten these lines into a constructor
-		return newOuting;
+		Date date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate();
+		Squad squad = outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null;	// TODO validation
+		String notes = outingDetails.getNotes();
+		return new Outing(squad, date, notes);
 	}
 
 }
