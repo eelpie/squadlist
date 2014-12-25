@@ -37,7 +37,7 @@ public class ViewFactory {
     	try {
     		mv.addObject("preferredSquad", preferedSquadService.resolvedPreferedSquad(loggedInUser));
     	} catch (Exception e) {
-    		// TODO
+    		throw new RuntimeException(e);
     	}
 		return mv;
 	}
