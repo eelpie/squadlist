@@ -1,6 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
-import uk.co.squadlist.web.views.CSVLinePrinter;
+import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.collect.Lists;
@@ -29,19 +28,19 @@ public class AdminController {
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
 	private GoverningBody governingBody;
-	private CSVLinePrinter csvLinePrinter;
 	private ActiveMemberFilter activeMemberFilter;
+	private CsvOutputRenderer csvOutputRenderer;
 
 	public AdminController() {
 	}
 
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, CSVLinePrinter csvLinePrinter, ActiveMemberFilter activeMemberFilter) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody, ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
-		this.csvLinePrinter = csvLinePrinter;
 		this.activeMemberFilter = activeMemberFilter;
+		this.csvOutputRenderer = csvOutputRenderer;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -70,14 +69,7 @@ public class AdminController {
     	for (Member member : api.getMembers()) {
     		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), member.getEmailAddress()}));
 		}
-
-    	final String output = csvLinePrinter.printAsCSVLine(rows);
-
-    	response.setContentType("text/csv");
-    	PrintWriter writer = response.getWriter();
-		writer.print(output);
-		writer.flush();
-		return;
+    	csvOutputRenderer.renderCsvResponse(response, rows);
 	}
 
 	private List<Member> extractAdminUsersFrom(List<Member> members) {

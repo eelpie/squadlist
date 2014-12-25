@@ -1,6 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +23,7 @@ import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferedSquadService;
-import uk.co.squadlist.web.views.CSVLinePrinter;
+import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.base.Splitter;
@@ -40,20 +39,21 @@ public class EntryDetailsController {
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
 	private GoverningBody governingBody;
-	private CSVLinePrinter csvLinePrinter;
+	private CsvOutputRenderer csvOutputRenderer;
 	
 	public EntryDetailsController() {
 	}
 	
 	@Autowired
 	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, 
-			EntryDetailsModelPopulator entryDetailsModelPopulator, GoverningBody governingBody, CSVLinePrinter csvLinePrinter) {
+			EntryDetailsModelPopulator entryDetailsModelPopulator, GoverningBody governingBody,
+			CsvOutputRenderer csvOutputRenderer) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
 		this.governingBody = governingBody;
-		this.csvLinePrinter = csvLinePrinter;
+		this.csvOutputRenderer = csvOutputRenderer;
 	}
 	
 	@RequestMapping("/entrydetails/{squadId}")
@@ -118,13 +118,8 @@ public class EntryDetailsController {
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     	final List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
     	
-		final String output = csvLinePrinter.printAsCSVLine(entryDetailsModelPopulator.getEntryDetailsRows(squadMembers));
-		
-    	response.setContentType("text/csv");
-    	PrintWriter writer = response.getWriter();
-		writer.print(output);
-		writer.flush();
-		return;
+		List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
+		csvOutputRenderer.renderCsvResponse(response, entryDetailsRows);
 	}
 	
 	@RequestMapping(value="/entrydetails/selected.csv", method=RequestMethod.GET)
@@ -138,13 +133,7 @@ public class EntryDetailsController {
 			selectedMembers.add(api.getMemberDetails(selectedMemberId));
     	}
     	
-		final String output = csvLinePrinter.printAsCSVLine(entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
-		
-    	response.setContentType("text/csv");
-    	PrintWriter writer = response.getWriter();
-		writer.print(output);
-		writer.flush();
-		return;
+		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
 	}
 	
 }

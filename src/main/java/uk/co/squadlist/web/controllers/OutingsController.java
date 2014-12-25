@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +51,7 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CSVLinePrinter;
+import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -71,7 +71,7 @@ public class OutingsController {
 	private ViewFactory viewFactory;
 	private OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private ActiveMemberFilter activeMemberFilter;
-	private CSVLinePrinter csvLinePrinter;
+	private CsvOutputRenderer csvOutputRenderer;
 
 	public OutingsController() {
 	}
@@ -80,7 +80,8 @@ public class OutingsController {
 	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, UrlBuilder urlBuilder,
 			DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
 			OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
-			CSVLinePrinter csvLinePrinter) {
+			CSVLinePrinter csvLinePrinter,
+			CsvOutputRenderer csvOutputRenderer) {
 		this.loggedInUserService = loggedInUserService;
 		this.api = api;
 		this.urlBuilder = urlBuilder;
@@ -89,7 +90,7 @@ public class OutingsController {
 		this.viewFactory = viewFactory;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.activeMemberFilter = activeMemberFilter;
-		this.csvLinePrinter = csvLinePrinter;
+		this.csvOutputRenderer = csvOutputRenderer;
 	}
 
 	@RequestMapping("/outings")
@@ -161,19 +162,9 @@ public class OutingsController {
     				outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
     				}));
 		}
-
-    	renderCsvResponse(response, rows);
+    	csvOutputRenderer.renderCsvResponse(response, rows);
     }
-
-	// TODO deduplicate
-	private void renderCsvResponse(HttpServletResponse response, final List<List<String>> rows) throws IOException {
-		response.setContentType("text/csv");
-    	PrintWriter writer = response.getWriter();
-		writer.print(csvLinePrinter.printAsCSVLine(rows));
-		writer.flush();
-		return;
-	}
-
+	
 	@RequiresPermission(permission=Permission.ADD_OUTING)
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
