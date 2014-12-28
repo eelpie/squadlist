@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,10 +84,16 @@ public class AvailabilityOptionsController {
 			return renderEditAvailabilityOptionForm(availabilityOptionDetails);
 		}
 		
-		// TODO validate
 		a.setLabel(availabilityOptionDetails.getName());
 		a.setColour(availabilityOptionDetails.getColour());
-		api.updateAvailabilityOption(a);
+		
+		try {
+			api.updateAvailabilityOption(a);
+			
+		} catch (InvalidAvailabilityOptionException e) {			
+			result.addError(new ObjectError("availabilityOption", e.getMessage()));			
+			return renderEditAvailabilityOptionForm(availabilityOptionDetails).addObject("availabilityOption", a);
+		}
 		
 		return redirectToAdmin();		
     }
