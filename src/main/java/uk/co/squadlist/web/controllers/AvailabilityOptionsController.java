@@ -91,7 +91,7 @@ public class AvailabilityOptionsController {
 			api.updateAvailabilityOption(a);
 			
 		} catch (InvalidAvailabilityOptionException e) {			
-			result.addError(new ObjectError("availabilityOption", e.getMessage()));			
+			result.rejectValue("name", null, e.getMessage());	         
 			return renderEditAvailabilityOptionForm(availabilityOptionDetails).addObject("availabilityOption", a);
 		}
 		
