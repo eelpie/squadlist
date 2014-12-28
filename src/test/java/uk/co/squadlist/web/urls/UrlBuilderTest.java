@@ -3,6 +3,8 @@ package uk.co.squadlist.web.urls;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,6 +13,8 @@ import org.mockito.MockitoAnnotations;
 import uk.co.squadlist.web.api.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.model.Instance;
+
+import com.google.common.collect.Lists;
 
 public class UrlBuilderTest {
 
@@ -57,6 +61,13 @@ public class UrlBuilderTest {
 	public void canLinkToGoverningBodyPage() throws Exception {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://localhost", instanceConfig, seoLinkBuilder, null);
 		assertEquals("https://localhost/governing-body/british-rowing", urlBuilder.governingBody(new BritishRowing()));
+	}
+	
+	@Test
+	public void canComposeMailtoListUrl() throws Exception {
+		final UrlBuilder urlBuilder = new UrlBuilder("https://localhost", instanceConfig, seoLinkBuilder, null);
+		final List<String> emails = Lists.newArrayList("auser@localhost", "anotheruser@localhost");
+		assertEquals("mailto:auser@localhost,anotheruser@localhost", urlBuilder.mailto(emails));
 	}
 	
 }

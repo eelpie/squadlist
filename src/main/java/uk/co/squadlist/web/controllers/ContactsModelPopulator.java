@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
@@ -65,8 +66,18 @@ public class ContactsModelPopulator {
 		final List<Member> activeMembers = byRoleThenLastName.sortedCopy(activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
 		final List<Member> redactedMembers = redactContentDetailsForMembers(api.getMemberDetails(loggedInUserService.getLoggedInUser()), activeMembers);
 		mv.addObject("members", redactedMembers);
+		
+		final List<String> emails = Lists.newArrayList();
+		for (Member member : redactedMembers) {
+			if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
+				emails.add(member.getEmailAddress());
+			}
+		}
+		if (!emails.isEmpty()) {
+			mv.addObject("emails", emails);
+		}
 	}
-
+	
 	private List<Member> redactContentDetailsForMembers(Member loggedInMember, List<Member> members) {
 		List<Member> redactedMembers = Lists.newArrayList();
 		for (Member member : members) {

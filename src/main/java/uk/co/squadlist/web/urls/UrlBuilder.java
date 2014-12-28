@@ -252,4 +252,11 @@ public class UrlBuilder {
 		return DigestUtils.md5Hex(instance.getId() + userid);
 	}
 
+	public String mailto(List<String> emails) {
+		if (emails.isEmpty()) {
+			return null;
+		}
+		return "mailto:" + Joiner.on(",").join(emails);
+	}
+
 }
