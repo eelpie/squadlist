@@ -71,5 +71,5 @@
 	<hr/>
 	
 </div>
-</body>
-</html>
+
+#parse('includes/footer.vm')

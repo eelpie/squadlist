@@ -1,2 +1,4 @@
+#include('includes/analytics.vm')
+
 </body>
 </html>
