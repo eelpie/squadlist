@@ -92,33 +92,6 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean canSetAdminUsers(Member member) {
-		if (member.getAdmin() != null && member.getAdmin()) {
-			return true;
-		}
-		return userIsCoach(member);
-	}
-
-	public boolean canEditConfig(Member member) {
-		return false;
-	}
-
-	public boolean canAlterSquadMembers(Member member, Squad squad) {
-		if (member.getAdmin() != null && member.getAdmin()) {
-			return true;
-		}
-		return userIsCoach(member) || isSquadRepForThisSquad(member, squad);
-	}
-
-	public boolean canViewOutingsForSquad(Member loggedInRower, Squad squad) {
-		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
-			return true;
-		}
-  		final boolean userIsAMemberOfThisSquad = isMemberOfSquad(loggedInRower, squad);
-   		final boolean memberIsCoach = userIsCoach(loggedInRower);
-  		return memberIsCoach || userIsAMemberOfThisSquad;
-  	}
-
 	public boolean canSeePhoneNumberForRower(Member loggedInMember, Member member) {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
@@ -139,13 +112,6 @@ public class PermissionsService {
 		return userIsCoachOrSquadRep(member);
 	}
 
-	public boolean canResetRowersPassword(Member member) {
-		if (member.getAdmin() != null && member.getAdmin()) {
-			return true;
-		}
-		return userIsCoachOrSquadRep(member);
-	}
-
 	public boolean canSeeAllSquadsAvailability(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
@@ -153,21 +119,49 @@ public class PermissionsService {
 		return userIsCoach(loggedInRower);
 	}
 
-	public boolean canSeeAllSquadsEntryDetails(Member loggedInRower) {
+	public boolean canChangeRoleFor(Member loggedInRower, Member member) {
+		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
+			return true;
+		}
+		if (userIsCoach(loggedInRower)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean canEditOuting(Member member, Outing outing) {
+		if (member.getAdmin() != null && member.getAdmin()) {
+			return true;
+		}
+		return userIsCoach(member) || isSquadRepForOuting(member, outing);
+	}
+
+	public boolean canSeeEntryFormDetailsForSquad(Member member, Squad squad) {
+		if (member.getAdmin() != null && member.getAdmin()) {
+			return true;
+		}
+		return userIsCoach(member) || isSquadRepForThisSquad(member, squad);
+	}
+
+	public boolean canSeeContactDetailsForSquad(Member member, Squad squad) {
+		return true;	// TODO
+	}
+
+	private boolean canSeeAllSquadsEntryDetails(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
 		return canSeeAllSquadsAvailability(loggedInRower);
 	}
 
-	public boolean canAddNewSquad(Member member) {
+	private boolean canAddNewSquad(Member member) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(member);
 	}
 
-	public boolean canDeleteSquad(Member loggedInRower) {
+	private boolean canDeleteSquad(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
@@ -175,7 +169,7 @@ public class PermissionsService {
 	}
 
 	// TODO squad reps should only be able to delete users from their own squads.
-	public boolean canDeleteRower(Member member) {
+	private boolean canDeleteRower(Member member) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
@@ -192,95 +186,101 @@ public class PermissionsService {
 		return isSameRower || isCoach || isSquadRepForRower;
 	}
 
-	public boolean canChangeRoleFor(Member loggedInRower, Member member) {
-		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
-			return true;
-		}
-		if (userIsCoach(loggedInRower)) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean canExportRowerData(Member member) {
+	private boolean canExportRowerData(Member member) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(member);
 	}
 
-	public boolean canCancelOuting(Member member, Outing outing) {
+	private boolean canCancelOuting(Member member, Outing outing) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
       	return userIsCoach(member) || isSquadRepForOuting(member, outing);
    	}
 
-	public boolean canCloseOuting(Member member, Outing outing) {
+	private boolean canCloseOuting(Member member, Outing outing) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(member) || isSquadRepForOuting(member, outing);
 	}
 
-	public boolean canReopenOuting(Member member, Outing outing) {
+	private boolean canReopenOuting(Member member, Outing outing) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(member) || isSquadRepForOuting(member, outing);
 	}
 
-	public boolean canEditOuting(Member member, Outing outing) {
-		if (member.getAdmin() != null && member.getAdmin()) {
-			return true;
-		}
-		return userIsCoach(member) || isSquadRepForOuting(member, outing);
-	}
-
-	public boolean canSendUsersPassword(Member member) {
+	private boolean canSendUsersPassword(Member member) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoachOrSquadRep(member);
 	}
 
-	public boolean canMakeRowerActive(Member loggedInRower) {
+	private boolean canMakeRowerActive(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(loggedInRower) || userIsSquadRep(loggedInRower);
 	}
 
-	public boolean canMakeRowerInactive(Member loggedInRower) {
+	private boolean canMakeRowerInactive(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(loggedInRower) || userIsSquadRep(loggedInRower);
 	}
 
-	public boolean canMakeSquadInactive(Member loggedInRower) {
+	private boolean canMakeSquadInactive(Member loggedInRower) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(loggedInRower);
 	}
 
-	public boolean canSeeEntryFormDetailsForSquad(Member member, Squad squad) {
+	private boolean canResetRowersPassword(Member member) {
+		if (member.getAdmin() != null && member.getAdmin()) {
+			return true;
+		}
+		return userIsCoachOrSquadRep(member);
+	}
+
+	private boolean canSetAdminUsers(Member member) {
+		if (member.getAdmin() != null && member.getAdmin()) {
+			return true;
+		}
+		return userIsCoach(member);
+	}
+
+	private boolean canEditConfig(Member member) {
+		return false;
+	}
+
+	private boolean canAlterSquadMembers(Member member, Squad squad) {
 		if (member.getAdmin() != null && member.getAdmin()) {
 			return true;
 		}
 		return userIsCoach(member) || isSquadRepForThisSquad(member, squad);
 	}
 
-	public boolean canSeeContactDetailsForSquad(Member member, Squad squad) {
-		return true;	// TODO
+	private boolean canViewOutingsForSquad(Member loggedInRower, Squad squad) {
+		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
+			return true;
+		}
+		final boolean userIsAMemberOfThisSquad = isMemberOfSquad(loggedInRower, squad);
+		final boolean memberIsCoach = userIsCoach(loggedInRower);
+		return memberIsCoach || userIsAMemberOfThisSquad;
 	}
 
 	private boolean isMemberOfSquad(Member member, Squad squad) {
 		return member.getSquads().contains(squad);
 	}
 
-	public boolean canSeeOtherSquadMembersAvailability(Member loggedInRower, Squad squad, Instance instance) {
+	private boolean canSeeOtherSquadMembersAvailability(Member loggedInRower, Squad squad, Instance instance) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
