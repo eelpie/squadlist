@@ -314,8 +314,7 @@ public class OutingsController {
     	final Outing outing = api.getOuting(outingId);
 
     	if (!outing.isClosed()) {
-    		final OutingAvailability result = api.setOutingAvailability(api.getMemberDetails(loggedInUserService.getLoggedInUser()),
-    				outing, getAvailabilityOptionById(availability));
+    		final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
     		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailabilityOption());
     	}
 

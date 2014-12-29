@@ -66,7 +66,7 @@ public class ContactsModelPopulator {
 		mv.addObject("squad", squad);
 
 		final List<Member> activeMembers = byRoleThenLastName.sortedCopy(activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
-		final List<Member> redactedMembers = redactContentDetailsForMembers(api.getMemberDetails(loggedInUserService.getLoggedInUser()), activeMembers);
+		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
 		mv.addObject("members", redactedMembers);
 		
 		final Set<String> emails = Sets.newHashSet();

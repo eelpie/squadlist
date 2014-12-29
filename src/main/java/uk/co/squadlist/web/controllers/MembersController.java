@@ -159,7 +159,7 @@ public class MembersController {
 			return renderChangePasswordForm(changePassword);
 		}
 
-		final Member member = api.getMemberDetails(loggedInUserService.getLoggedInUser());
+		final Member member = loggedInUserService.getLoggedInMember();
 
 		log.info("Requesting change password for member: " + member.getId());
     	if (api.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
@@ -265,7 +265,7 @@ public class MembersController {
 		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
 		member.setSweepOarSide(memberDetails.getSweepOarSide());
 
-		final boolean canChangeRole = permissionsService.canChangeRoleFor(api.getMemberDetails(loggedInUserService.getLoggedInUser()), member);
+		final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
 		if (canChangeRole) {
 			member.setRole(memberDetails.getRole());
 		}
@@ -355,8 +355,7 @@ public class MembersController {
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);
 
-		final Member loggedInMember = api.getMemberDetails(loggedInUserService.getLoggedInUser());	// TODO once per request?
-    	final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInMember, member);
+		final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
 		mv.addObject("canChangeRole", canChangeRole);
     	mv.addObject("canChangeSquads", canChangeRole);
 
@@ -366,7 +365,7 @@ public class MembersController {
 
 	private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
 		final ModelAndView mv = viewFactory.getView("changePassword");
-		mv.addObject("member", api.getMemberDetails(loggedInUserService.getLoggedInUser()));
+		mv.addObject("member", loggedInUserService.getLoggedInMember());
     	mv.addObject("changePassword", changePassword);
     	mv.addObject("title", "Change password");
     	return mv;
