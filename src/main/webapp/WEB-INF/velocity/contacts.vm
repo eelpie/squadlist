@@ -22,7 +22,7 @@
 		#else
 		
 			#if($emails)
-				<p><a href="$urlBuilder.mailto($emails)">Mail $squad.name</a></p>
+				<p align="right"><a href="$urlBuilder.mailto($emails)">Email members</a></p>
 			#end
 			
 			<table style="font-size: 14px;" class="table table-striped">
