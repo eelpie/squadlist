@@ -1,15 +1,11 @@
 package uk.co.squadlist.web.controllers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -20,6 +16,12 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
+
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 @Component
 public class ContactsModelPopulator {
@@ -67,14 +69,14 @@ public class ContactsModelPopulator {
 		final List<Member> redactedMembers = redactContentDetailsForMembers(api.getMemberDetails(loggedInUserService.getLoggedInUser()), activeMembers);
 		mv.addObject("members", redactedMembers);
 		
-		final List<String> emails = Lists.newArrayList();
+		final Set<String> emails = Sets.newHashSet();
 		for (Member member : redactedMembers) {
 			if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
 				emails.add(member.getEmailAddress());
 			}
 		}
 		if (!emails.isEmpty()) {
-			mv.addObject("emails", emails);
+			mv.addObject("emails", Lists.newArrayList(emails));
 		}
 	}
 	
