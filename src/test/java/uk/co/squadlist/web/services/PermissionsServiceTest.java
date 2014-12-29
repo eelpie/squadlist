@@ -9,23 +9,26 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
 public class PermissionsServiceTest {
 
 	private static final String ADMIN_ID = "admin-id";
 	private static final String COACH_ID = "coach-id";
+	private static final String ROWER_ID = "auser";
 	
 	@Mock
 	private InstanceSpecificApiClient api;
 
 	private Member admin;
 	private Member coach;
+	private Member rower;
 
 	private PermissionsService permissionsService;
 	
 	@Before
-	public void setup() {
+	public void setup() throws UnknownMemberException {
 		MockitoAnnotations.initMocks(this);
 		
 		this.admin = new Member();
@@ -37,6 +40,11 @@ public class PermissionsServiceTest {
 		coach.setAdmin(false);
 		coach.setRole("Coach");
 		
+		this.rower = new Member();
+		rower.setId(ROWER_ID);
+		rower.setAdmin(false);
+		rower.setRole("Rower");
+				
 		this.permissionsService = new PermissionsService(api);
 	}
 
@@ -44,13 +52,21 @@ public class PermissionsServiceTest {
 	public void adminsCanEditMemberDetails() throws Exception {
 		when(api.getMemberDetails(ADMIN_ID)).thenReturn(admin);
 		
-		assertTrue(permissionsService.hasMemberPermission(ADMIN_ID, Permission.EDIT_MEMBER_DETAILS, "auser"));
+		assertTrue(permissionsService.hasMemberPermission(ADMIN_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
+	
 	@Test
 	public void coachesCanEditMemberDetails() throws Exception {
 		when(api.getMemberDetails(COACH_ID)).thenReturn(coach);
 		
-		assertTrue(permissionsService.hasMemberPermission(COACH_ID, Permission.EDIT_MEMBER_DETAILS, "auser"));
+		assertTrue(permissionsService.hasMemberPermission(COACH_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+	}
+	
+	@Test
+	public void roweerCanEditThereOwnMemberDetails() throws Exception {
+		when(api.getMemberDetails(ROWER_ID)).thenReturn(rower);
+		
+		assertTrue(permissionsService.hasMemberPermission(ROWER_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 }

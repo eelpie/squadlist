@@ -56,7 +56,7 @@ public class PermissionsService {
 		}
 
 		if (permission == Permission.VIEW_MEMBER_DETAILS || permission == Permission.EDIT_MEMBER_DETAILS) {
-			return canEditMembersDetails(loggedInMember, api.getMemberDetails(memberId));
+			return canEditMembersDetails(loggedInMember, memberId);
 		}
 
 		return false;
@@ -176,14 +176,25 @@ public class PermissionsService {
 		return userIsCoachOrSquadRep(member);
 	}
 
-	private boolean canEditMembersDetails(Member loggedInRower, Member member) {
-		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
+	private boolean canEditMembersDetails(Member loggedInRower, String memberId) throws UnknownMemberException {
+		final boolean isAdmin = loggedInRower.getAdmin() != null && loggedInRower.getAdmin();
+		if (isAdmin) {
 			return true;
 		}
-		final boolean isSameRower = loggedInRower.equals(member);
-		final boolean isSquadRepForRower = isSquadRepForRower(loggedInRower, member);
+		
 		final boolean isCoach =  userIsCoach(loggedInRower);
-		return isSameRower || isCoach || isSquadRepForRower;
+		if (isCoach) {
+			return true;
+		}
+		
+		final boolean isSameRower = loggedInRower.getId().equals(memberId);
+		if (isSameRower) {
+			return true;
+		}
+		
+		final Member member = api.getMemberDetails(memberId);
+		final boolean isSquadRepForRower = isSquadRepForRower(loggedInRower, member);
+		return isSquadRepForRower;
 	}
 
 	private boolean canExportRowerData(Member member) {
