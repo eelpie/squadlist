@@ -22,13 +22,14 @@ public class FacebookLinkedAccountsService {
 	
 	public void linkAccount(String memberId, String facebookId) throws UnknownMemberException {
 		log.info("Linking logged in user " + memberId + " to Facebook user: " + facebookId);
-		Member member = api.getMemberDetails(memberId);
-		member.setFacebookId(facebookId);
-		api.updateMemberDetails(member);
+		
+		final Member updateMember = api.getMemberDetails(memberId);		
+		updateMember.setFacebookId(facebookId);
+		api.updateMemberDetails(updateMember);
 	}
 	
-	public boolean isLinked(String memberId) throws UnknownMemberException {
-		return api.getMemberDetails(memberId).getFacebookId() != null;
+	public boolean isLinked(Member member) throws UnknownMemberException {
+		return member.getFacebookId() != null;
 	}
 	
 	public void removeLinkage(String memberId) throws UnknownMemberException {

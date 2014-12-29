@@ -95,7 +95,6 @@ public class MembersController {
 		final Member members = api.getMemberDetails(id);
 
 		final ModelAndView mv = viewFactory.getView("memberDetails");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("member", members);
     	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
     	mv.addObject("governingBody", governingBody);
@@ -335,7 +334,6 @@ public class MembersController {
 
 	private ModelAndView renderNewMemberForm() {
 		final ModelAndView mv = viewFactory.getView("newMember");
-		mv.addObject("loggedInUser", loggedInUserService.getLoggedInUser());
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("title", "Adding a new member");
     	mv.addObject("rolesOptions", ROLES_OPTIONS);

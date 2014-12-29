@@ -28,15 +28,14 @@ public class LoggedInUserService {
 		this.request = request;
 	}
 
-    @Deprecated
-	public String getLoggedInUser() {	// TODO rename - is this an id or username
+	private String getLoggedInUsername() {
 		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final String username = userDetails.getUsername();
         log.debug("Logged in user is: " + username);
 		return username;
 	}
 	
-	public Member getLoggedInMember() throws UnknownMemberException {
+	public Member getLoggedInMember() {
 		Member loggedInMember = (Member) request.getAttribute(LOGGED_IN_MEMBER);
 		if (loggedInMember != null) {
 			log.info("Returning cached logged in member");
@@ -44,9 +43,14 @@ public class LoggedInUserService {
 		}
 
 		log.info("Fetching logged in member");
-		loggedInMember = api.getMemberDetails(getLoggedInUser());
-		request.setAttribute(LOGGED_IN_MEMBER, loggedInMember);
-		return loggedInMember;
+		try {
+			loggedInMember = api.getMemberDetails(getLoggedInUsername());
+			request.setAttribute(LOGGED_IN_MEMBER, loggedInMember);
+			return loggedInMember;
+			
+		} catch (UnknownMemberException e) {
+			throw new RuntimeException(e);
+		}	
 	}
 	
 }

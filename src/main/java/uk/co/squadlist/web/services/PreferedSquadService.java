@@ -41,10 +41,10 @@ public class PreferedSquadService {
     		setPreferedSquad(selectedSquad);
 			return selectedSquad;
     	}
-    	return resolvedPreferedSquad(loggedInUserService.getLoggedInUser());
+    	return resolvedPreferedSquad(loggedInUserService.getLoggedInMember());
 	}
 	
-	public Squad resolvedPreferedSquad(String loggedInUser) throws UnknownMemberException {		
+	public Squad resolvedPreferedSquad(Member loggedInMember) throws UnknownMemberException {		
     	final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
 		if (selectedSquad != null) {
     		try {
@@ -53,8 +53,7 @@ public class PreferedSquadService {
 				clearPreferedSquad();
 			}
     	}
-    	
-		final Member loggedInMember = api.getMemberDetails(loggedInUser);
+		
     	if (!loggedInMember.getSquads().isEmpty()) {
     		return loggedInMember.getSquads().iterator().next();
     	}

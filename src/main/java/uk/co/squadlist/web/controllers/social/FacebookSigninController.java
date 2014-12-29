@@ -81,7 +81,7 @@ public class FacebookSigninController {
 	
 	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
 	public ModelAndView remove() throws UnknownMemberException {
-		facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInUser());
+		facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));	
 	}
 	
@@ -93,7 +93,7 @@ public class FacebookSigninController {
 		log.info("Got access token: " + facebookUserAccessToken);
 		
 		final User facebookUser = getFacebookUserById(facebookUserAccessToken);
-		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInUser(), facebookUser.getId());
+		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInMember().getId(), facebookUser.getId());
 		
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));		
 	}

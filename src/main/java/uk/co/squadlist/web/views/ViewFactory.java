@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferedSquadService;
 
@@ -24,12 +25,12 @@ public class ViewFactory {
 	}
 
 	public ModelAndView getView(String templateName) {
-		final String loggedInUser = loggedInUserService.getLoggedInUser();
+		final Member loggedInUser = loggedInUserService.getLoggedInMember();
 		
 		final ModelAndView mv = new ModelAndView(templateName);
-		mv.addObject("loggedInUser", loggedInUser);
+		mv.addObject("loggedInUser", loggedInUser.getId());
 		
-    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser);	// TODO should be a post handler?
+    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId());	// TODO should be a post handler?
     	if (pendingOutingsCountFor > 0) {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}

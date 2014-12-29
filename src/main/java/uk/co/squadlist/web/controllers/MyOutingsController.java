@@ -59,7 +59,7 @@ public class MyOutingsController {
 	@RequestMapping("/")
     public ModelAndView outings() throws Exception {
     	final ModelAndView mv = viewFactory.getView("myOutings");
-    	final String loggedInUser = loggedInUserService.getLoggedInUser();
+    	final String loggedInUser = loggedInUserService.getLoggedInMember().getId();
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
 		
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
@@ -117,7 +117,7 @@ public class MyOutingsController {
 	@RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
     	final ModelAndView mv = viewFactory.getView("myOutingsAjax");
-    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInUser());
+    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInMember().getId());
     	if (pendingOutingsCountFor > 0) {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}

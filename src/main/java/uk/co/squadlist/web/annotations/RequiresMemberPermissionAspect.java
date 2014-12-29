@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -17,7 +18,7 @@ import uk.co.squadlist.web.services.PermissionsService;
 @Aspect
 public class RequiresMemberPermissionAspect {
 	
-	private static Logger log = Logger.getLogger(RequiresMemberPermissionAspect.class);
+	private final static Logger log = Logger.getLogger(RequiresMemberPermissionAspect.class);
 	
 	private LoggedInUserService loggedInUserService;
 	private PermissionsService permissionsService;
@@ -35,8 +36,9 @@ public class RequiresMemberPermissionAspect {
 			Permission permission = requiresMemberPermissionAnnotation.permission();
 			String memberId = (String) jp.getArgs()[0];
 			
-			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInUserService.getLoggedInMember(), permission, memberId);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInUserService.getLoggedInUser() + ": " + hasPermission);
+			final Member loggedInMember = loggedInUserService.getLoggedInMember();
+			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInMember, permission, memberId);
+			log.info(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();
