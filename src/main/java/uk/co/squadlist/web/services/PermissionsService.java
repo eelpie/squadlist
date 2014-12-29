@@ -182,7 +182,7 @@ public class PermissionsService {
 		return userIsCoachOrSquadRep(member);
 	}
 
-	public boolean canEditMembersDetails(Member loggedInRower, Member member) {
+	private boolean canEditMembersDetails(Member loggedInRower, Member member) {
 		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
 			return true;
 		}
