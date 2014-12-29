@@ -35,7 +35,7 @@ public class RequiresMemberPermissionAspect {
 			Permission permission = requiresMemberPermissionAnnotation.permission();
 			String memberId = (String) jp.getArgs()[0];
 			
-			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInUserService.getLoggedInUser(), permission, memberId);
+			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInUserService.getLoggedInMember(), permission, memberId);
 			log.info(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInUserService.getLoggedInUser() + ": " + hasPermission);
 			
 			if (!hasPermission) {

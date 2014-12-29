@@ -52,21 +52,21 @@ public class PermissionsServiceTest {
 	public void adminsCanEditMemberDetails() throws Exception {
 		when(api.getMemberDetails(ADMIN_ID)).thenReturn(admin);
 		
-		assertTrue(permissionsService.hasMemberPermission(ADMIN_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+		assertTrue(permissionsService.hasMemberPermission(admin, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 	@Test
 	public void coachesCanEditMemberDetails() throws Exception {
 		when(api.getMemberDetails(COACH_ID)).thenReturn(coach);
 		
-		assertTrue(permissionsService.hasMemberPermission(COACH_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+		assertTrue(permissionsService.hasMemberPermission(coach, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 	@Test
 	public void roweerCanEditThereOwnMemberDetails() throws Exception {
 		when(api.getMemberDetails(ROWER_ID)).thenReturn(rower);
 		
-		assertTrue(permissionsService.hasMemberPermission(ROWER_ID, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+		assertTrue(permissionsService.hasMemberPermission(rower, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 }

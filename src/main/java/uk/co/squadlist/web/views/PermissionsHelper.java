@@ -28,25 +28,23 @@ public class PermissionsHelper {
 	
 	public boolean hasPermission(String permissionName) throws UnknownMemberException {
 		final Permission permission = Permission.valueOf(permissionName);
-		final String loggedInUser = loggedInUserService.getLoggedInUser();
-		log.info("Checking view permission " + permission +  " for " + loggedInUser);
-		return permissionsService.hasPermission(loggedInUser, permission);
+		final Member loggedInMember = loggedInUserService.getLoggedInMember();
+		log.info("Checking view permission " + permission +  " for " + loggedInMember.getUsername());
+		return permissionsService.hasPermission(loggedInMember, permission);
 	}
 	
 	public boolean hasOutingPermission(Outing outing, String permissionName) throws UnknownMemberException, UnknownOutingException {
-		Permission.valueOf(permissionName);
-		final String loggedInUser = loggedInUserService.getLoggedInUser();
 		final Permission permission = Permission.valueOf(permissionName);
-		log.info("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInUserService);
-		return permissionsService.hasOutingPermission(loggedInUser, permission, outing.getId());
+		final Member loggedInMember = loggedInUserService.getLoggedInMember();
+		log.info("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInMember.getUsername());
+		return permissionsService.hasOutingPermission(loggedInMember, permission, outing.getId());
 	}
 	
 	public boolean hasMemberPermission(Member member, String permissionName) throws UnknownMemberException, UnknownOutingException {
-		Permission.valueOf(permissionName);
-		final String loggedInUser = loggedInUserService.getLoggedInUser();
 		final Permission permission = Permission.valueOf(permissionName);
-		log.info("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInUserService);
-		return permissionsService.hasMemberPermission(loggedInUser, permission, member.getId());
+		final Member loggedInMember = loggedInUserService.getLoggedInMember();
+		log.info("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInMember.getUsername());
+		return permissionsService.hasMemberPermission(loggedInMember, permission, member.getId());
 	}
 	
 }

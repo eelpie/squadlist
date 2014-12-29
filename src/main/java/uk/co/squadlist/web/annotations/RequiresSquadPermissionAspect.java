@@ -36,8 +36,8 @@ public class RequiresSquadPermissionAspect {
 			Permission permission = requiresSquadPermissionAnnotation.permission();
 			Squad squad = (Squad) jp.getArgs()[0];
 			
-			final boolean hasPermission = permissionsService.hasSquadPermission(loggedInUserService.getLoggedInUser(), permission, squad);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInUserService.getLoggedInUser() + ": " + hasPermission);
+			final boolean hasPermission = permissionsService.hasSquadPermission(loggedInUserService.getLoggedInMember(), permission, squad);
+			log.info(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();

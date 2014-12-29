@@ -27,8 +27,7 @@ public class PermissionsService {
 		this.api = api;
 	}
 
-	public boolean hasPermission(String loggedInMemberId, Permission permission) throws UnknownMemberException {
-		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+	public boolean hasPermission(Member loggedInMember, Permission permission) throws UnknownMemberException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
@@ -49,8 +48,7 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasMemberPermission(String loggedInMemberId, Permission permission, String memberId) throws UnknownMemberException {
-		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+	public boolean hasMemberPermission(Member loggedInMember, Permission permission, String memberId) throws UnknownMemberException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
@@ -62,8 +60,7 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasSquadPermission(String loggedInMemberId, Permission permission, Squad squad) throws UnknownMemberException, UnknownSquadException {
-		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+	public boolean hasSquadPermission(Member loggedInMember, Permission permission, Squad squad) throws UnknownMemberException, UnknownSquadException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
@@ -78,8 +75,7 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasOutingPermission(String loggedInMemberId, Permission permission, String outingId) throws UnknownMemberException, UnknownOutingException {
-		final Member loggedInMember = api.getMemberDetails(loggedInMemberId);	// TODO once per request?
+	public boolean hasOutingPermission(Member loggedInMember, Permission permission, String outingId) throws UnknownMemberException, UnknownOutingException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
