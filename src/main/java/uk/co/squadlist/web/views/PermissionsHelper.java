@@ -27,9 +27,8 @@ public class PermissionsHelper {
 	}
 	
 	public boolean hasPermission(String permissionName) throws UnknownMemberException {
-		Permission.valueOf(permissionName);
-		final String loggedInUser = loggedInUserService.getLoggedInUser();
 		final Permission permission = Permission.valueOf(permissionName);
+		final String loggedInUser = loggedInUserService.getLoggedInUser();
 		log.info("Checking view permission " + permission +  " for " + loggedInUser);
 		return permissionsService.hasPermission(loggedInUser, permission);
 	}
