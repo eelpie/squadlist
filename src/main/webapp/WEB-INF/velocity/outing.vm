@@ -32,6 +32,7 @@
 						| <a href="$urlBuilder.deleteOuting($outing)">Delete outing</a>
 				#end
 			</span>
+			$outing.date
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 			<p>$!outing.notes</p>	
 		
