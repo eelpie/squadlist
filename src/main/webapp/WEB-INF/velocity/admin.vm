@@ -61,7 +61,11 @@
 			#end
 					
 			<hr/>
-				
+
+			<span class="pull-right">
+				<a href="$urlBuilder.editAdmins()"><button class="btn btn-primary" type="button">Edit admins</button></a>
+			</span>
+							
 			<h4>Admins</h4>			
 			<ul>
 			#foreach( $member in $admins )

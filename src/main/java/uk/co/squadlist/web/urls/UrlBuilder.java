@@ -243,6 +243,10 @@ public class UrlBuilder {
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
+	
+	public String editAdmins() {
+		return adminUrl() + "/admins";
+	}
 
 	private String availabilityUrl() {
 		return applicationUrl("/availability");

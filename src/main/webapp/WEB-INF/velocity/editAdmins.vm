@@ -1,0 +1,99 @@
+#parse('includes/head.vm')
+#navTabs('Admin')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>Edit admins</h4>
+		</div>		
+	</div>
+	<hr/>
+
+	<div class="row">			
+		<div class="col-xs-12">
+				
+		<script>
+			$(function() {
+			$( "#sortable1, #sortable2" ).sortable({
+			connectWith: ".connectedSortable"
+			}).disableSelection();
+			});
+		</script>
+				
+		<style>.connectedSortable { background-color: #eee; padding: 20px;}</style>
+		
+		<form id="adminsForm" method="POST" action="$urlBuilder.editAdmins()" class="form-horizontal" accept-charset="UTF-8">
+												
+			<div class="form-group">				
+		   		<label class="col-sm-2 control-label">Admins</label>
+			    <div class="col-sm-10">    
+					
+					<div class="container-fluid">
+					
+						<input id="admins" type="hidden" name="admins" />
+											
+						<div class="row">
+							<div class="col-xs-5">
+								<h5>Existing</h5>								
+							</div>
+							<div class="col-xs-5">
+								<h5>Available</h5>
+							</div>
+						</div>
+													
+						<div class="row">
+						
+							<div class="col-xs-5">
+								<ul id="sortable1" class="connectedSortable">
+									#foreach($member in $admins)
+										<li id="$member.id" class="ui-state-default">$member.displayName</li>
+									#end
+								</ul>
+							</div>
+							
+							<div class="col-xs-5">
+								<ul id="sortable2" class="connectedSortable">										    
+									#foreach($member in $availableMembers)
+										<li id="$member.id" class="ui-state-highlight">$member.displayName</li>
+									#end
+								</ul>
+							</div>
+						
+						</div>
+						
+					</div>
+					
+				</div>
+			</div>		
+
+			<div class="control-group">
+				<div  class="col-sm-2">
+				</div>
+			</div>
+			<div class="controls">
+				<button type="submit" class="btn btn-primary">Set admins</button>
+					#cancel($urlBuilder.editUrls())					
+				</div>
+			</div>
+												
+		</form>				
+	</div>
+	
+	<script>
+		$('#adminsForm').submit(function(event) {
+			var selected = '';		
+			$( "#sortable1 li" ).each(function(index) {
+				if (selected) {
+					selected = selected + ',';
+				}
+				selected = selected + $( this ).attr('id');
+			});
+			$('#admins').val(selected);	
+		});		
+	</script>
+				
+</div>
+<hr/>
+
+#parse('includes/footer.vm')

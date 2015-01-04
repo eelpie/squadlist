@@ -197,4 +197,8 @@ public class InstanceSpecificApiClient {
 		api.deleteMember(instanceConfig.getInstance(), member);
 	}
 
+	public void setAdmins(Set<String> admins) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
+		api.setAdmins(instanceConfig.getInstance(), admins);		
+	}
+
 }
