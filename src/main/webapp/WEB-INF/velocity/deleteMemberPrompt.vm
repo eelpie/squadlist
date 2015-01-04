@@ -1,0 +1,34 @@
+#parse('includes/head.vm')
+#navTabs('')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>$title</h4>
+		</div>
+	</div>
+	<hr/>
+	
+	<div class="row">
+		<div class="col-xs-12">
+		
+			<p>Deleting this member will remove them completely and cannot be undone.</p>
+									
+			<form method="POST" action="$urlBuilder.delete($member)" class="form-horizontal" accept-charset="UTF-8">																	
+				<div class="control-group">
+					<div class="col-sm-2">
+					</div>
+					<div class="controls">
+						<button type="submit" class="btn btn-primary">Delete member</button>
+						#cancel($urlBuilder.adminUrl())
+					</div>
+				</div>				
+			</form>
+		</div>
+	</div>
+	
+</div>
+<hr/>
+
+#parse('includes/footer.vm')

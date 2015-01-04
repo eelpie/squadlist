@@ -289,6 +289,23 @@ public class MembersController {
     }
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/delete", method=RequestMethod.GET)
+    public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
+		final Member member = api.getMemberDetails(id);
+		return new ModelAndView("deleteMemberPrompt").
+			addObject("member", api.getMemberDetails(id)).
+			addObject("title", "Delete member - " + member.getDisplayName());
+    }
+
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value="/member/{id}/delete", method=RequestMethod.POST)
+	public ModelAndView delete(@PathVariable String id) throws Exception {
+		final Member member = api.getMemberDetails(id);
+		api.deleteMember(member);
+		return redirectToAdminScreen();
+	}
+
+	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/make-inactive", method=RequestMethod.POST)
 	public ModelAndView makeInactive(@PathVariable String id) throws Exception {
 		log.info("Making member inactive: " + id);
@@ -296,7 +313,7 @@ public class MembersController {
 		member.setInactive(true);
 		api.updateMemberDetails(member);
 
-		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+		return redirectToAdminScreen();
 	}
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
@@ -316,7 +333,7 @@ public class MembersController {
 		final Member member = api.getMemberDetails(id);
 		member.setInactive(false);
 		api.updateMemberDetails(member);
-		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+		return redirectToAdminScreen();
 	}
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
@@ -405,6 +422,10 @@ public class MembersController {
 		return viewFactory.getView("memberPasswordReset").
 				addObject("member", member).
 				addObject("password", newPassword);
+	}
+
+	private ModelAndView redirectToAdminScreen() {
+		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 	}
 
 }

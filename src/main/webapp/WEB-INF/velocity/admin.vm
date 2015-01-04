@@ -23,6 +23,7 @@
 				<li>#parse('includes/member.vm') 
 					| <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a>
 					| <a href="$urlBuilder.makeInactive($member)">Make inactive</a>
+					| <a href="$urlBuilder.delete($member)">Delete</a>
 				</li>
 			#end
 			</ul>
@@ -33,6 +34,7 @@
 				<li>#parse('includes/member.vm') 
 					| <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a>
 					| <a href="$urlBuilder.makeActive($member)">Make active</a>
+					| <a href="$urlBuilder.delete($member)">Delete</a>					
 				</li>
 			#end
 			</ul>

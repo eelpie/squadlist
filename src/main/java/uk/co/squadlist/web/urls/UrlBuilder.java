@@ -68,6 +68,10 @@ public class UrlBuilder {
 		return memberUrl(member.getId()) + "/make-inactive";
 	}
 
+	public String delete(Member member) {
+		return memberUrl(member.getId()) + "/delete";
+	}
+
 	public String newMemberUrl() {
 		return applicationUrl("/member/new");
 	}
@@ -231,11 +235,11 @@ public class UrlBuilder {
 	public String staticImage(String filename) {
 		return apiUrl + "/static/" + filename + ".jpg";
 	}
-	
+
 	public String newAvailabilityOptionUrl() {
 		return applicationUrl("/availability-option/new");
 	}
-	
+
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
