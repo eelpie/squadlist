@@ -96,6 +96,7 @@
 							<li>							
 								<span class="label label-info" style="background-color: $cssHelper.classFor($availabilityOption)">$availabilityOption.label</span>
 								| <a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">Edit</a>
+								| <a href="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)">Delete</a>
 							</li>
 						#end
 					</ul>

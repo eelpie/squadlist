@@ -240,10 +240,15 @@ public class UrlBuilder {
 		return applicationUrl("/availability-option/new");
 	}
 
+	public String deleteAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
+		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/delete");
+	}
+
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
-	
+
+
 	public String editAdmins() {
 		return adminUrl() + "/admins";
 	}

@@ -1,0 +1,35 @@
+#parse('includes/head.vm')
+#navTabs('Admin')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>Delete availability option</h4>
+		</div>		
+	</div>
+	<hr/>
+
+	<div class="row">			
+		<div class="col-xs-12">
+		
+			<form method="POST" action="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)" class="form-horizontal" accept-charset="UTF-8">		
+				
+				<p>$availabilityOption</p>
+				
+				<div class="control-group">
+					<div  class="col-sm-2">
+					</div>	
+					<div class="controls">
+						<button type="submit" class="btn btn-primary">Delete availability option</button>
+						#cancel($urlBuilder.adminUrl())					
+					</div>
+				</div>
+									
+			</form>				
+		</div>
+	</div>
+</div>
+<hr/>
+
+#parse('includes/footer.vm')

@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,8 @@ import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class AvailabilityOptionsController {
+
+	private final static Logger log = Logger.getLogger(AvailabilityOptionsController.class);
 
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
@@ -49,6 +52,22 @@ public class AvailabilityOptionsController {
 
 		return renderEditAvailabilityOptionForm(availabilityOption, a);
     }
+
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.GET)
+	public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
+		final AvailabilityOption a = api.getAvailabilityOption(id);
+		return new ModelAndView("deleteAvailabilityOption").addObject("availabilityOption", a);
+	}
+
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.POST)
+	public ModelAndView delete(@PathVariable String id) throws Exception {
+		final AvailabilityOption a = api.getAvailabilityOption(id);
+		log.info("Deleting availability option: " + a);
+		return redirectToAdmin();
+	}
+
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
