@@ -83,13 +83,11 @@
 				<li>Member ordering: $!instance.memberOrdering</li>
 				
 				<hr/>
-				
-				<!--
+								
 				<span class="pull-right">
 					<a href="$urlBuilder.newAvailabilityOptionUrl()"><button class="btn btn-primary" type="button">Add option</button></a>
 				</span>
-				-->
-																
+																				
 				<h5>Availability options</h5>
 		
 				#if($availabilityOptions && !$availabilityOptions.isEmpty())
@@ -97,7 +95,7 @@
 						#foreach($availabilityOption in $availabilityOptions )
 							<li>							
 								<span class="label label-info" style="background-color: $cssHelper.classFor($availabilityOption)">$availabilityOption.label</span>
-								<!-- <a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">Edit</a> -->
+								| <a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">Edit</a>
 							</li>
 						#end
 					</ul>
