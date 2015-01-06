@@ -30,26 +30,26 @@ public class AvailabilityOptionsController {
 
 	public AvailabilityOptionsController() {
 	}
-	
+
 	@Autowired
 	public AvailabilityOptionsController(InstanceSpecificApiClient api, ViewFactory viewFactory, UrlBuilder urlBuilder) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.urlBuilder = urlBuilder;
 	}
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.GET)
     public ModelAndView editPrompt(@PathVariable String id) throws Exception {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
-		
+
 		final AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
     	availabilityOption.setName(a.getLabel());
     	availabilityOption.setColour(a.getColour());
-    	
-		return renderEditAvailabilityOptionForm(availabilityOption).addObject("availabilityOption", a);
+
+		return renderEditAvailabilityOptionForm(availabilityOption, a);
     }
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
     public ModelAndView availability() throws Exception {
@@ -57,56 +57,58 @@ public class AvailabilityOptionsController {
     	availabilityOption.setColour("green");
 		return renderNewAvailabilityOptionForm(availabilityOption);
     }
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.POST)
     public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) {
 		if (result.hasErrors()) {
 			return renderNewAvailabilityOptionForm(availabilityOptionDetails);
 		}
-		
+
 		try {
-			api.createAvailabilityOption(availabilityOptionDetails.getName(), availabilityOptionDetails.getColour());			
+			api.createAvailabilityOption(availabilityOptionDetails.getName(), availabilityOptionDetails.getColour());
 			return redirectToAdmin();
-			
+
 		} catch (InvalidAvailabilityOptionException e) {
-			result.rejectValue("name", null, e.getMessage());	         
+			result.rejectValue("name", null, e.getMessage());
 			return renderNewAvailabilityOptionForm(availabilityOptionDetails);
 		}
     }
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws Exception {		
+    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws Exception {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		if (result.hasErrors()) {
-			return renderEditAvailabilityOptionForm(availabilityOptionDetails);
+			return renderEditAvailabilityOptionForm(availabilityOptionDetails, a);
 		}
-		
+
 		a.setLabel(availabilityOptionDetails.getName());
 		a.setColour(availabilityOptionDetails.getColour());
-		
+
 		try {
 			api.updateAvailabilityOption(a);
-			
-		} catch (InvalidAvailabilityOptionException e) {			
-			result.rejectValue("name", null, e.getMessage());	         
-			return renderEditAvailabilityOptionForm(availabilityOptionDetails).addObject("availabilityOption", a);
+
+		} catch (InvalidAvailabilityOptionException e) {
+			result.rejectValue("name", null, e.getMessage());
+			return renderEditAvailabilityOptionForm(availabilityOptionDetails, a);
 		}
-		
-		return redirectToAdmin();		
+
+		return redirectToAdmin();
     }
-	
+
 	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
 		return viewFactory.getView("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
 	}
-	
-	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
-		return viewFactory.getView("editAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
+
+	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) {
+		return viewFactory.getView("editAvailabilityOption").
+				addObject("availabilityOptionDetails", availabilityOptionDetails).
+				addObject("availabilityOption", a);
 	}
-	
+
 	private ModelAndView redirectToAdmin() {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 	}
-	
+
 }
