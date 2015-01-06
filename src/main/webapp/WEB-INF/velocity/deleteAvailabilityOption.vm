@@ -15,8 +15,17 @@
 		
 			<form method="POST" action="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)" class="form-horizontal" accept-charset="UTF-8">		
 				
-				<p>Deleting this availability option ($availabilityOption.label) will remove all member availability decisions which use this option.<br/>
+				<p>Deleting this availability option ($availabilityOption.label) will permanently remove this option.<br/>
 				This cannot be undo.</p>
+				
+				<p>If a member has selected this availability option for an outing what should be done with their existing availability?</p>
+				
+				<select name="alternative" class="form-control">
+					<option value="">Delete</option>																	    				
+					#foreach($alternative in $alternatives)				
+						<option value="$alternative.id">Change to $alternative.label</option>
+					#end
+				</select>
 				
 				<div class="control-group">
 					<div  class="col-sm-2">

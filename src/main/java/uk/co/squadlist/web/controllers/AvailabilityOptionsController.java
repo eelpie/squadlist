@@ -1,8 +1,14 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
+import java.util.List;
+
 import javax.validation.Valid;
 
+import org.apache.http.annotation.Immutable;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -10,9 +16,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
@@ -57,17 +68,25 @@ public class AvailabilityOptionsController {
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.GET)
 	public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
-		return new ModelAndView("deleteAvailabilityOption").addObject("availabilityOption", a);
+		return renderDeleteForm(a);
 	}
-
+	
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.POST)
-	public ModelAndView delete(@PathVariable String id) throws Exception {
+	public ModelAndView delete(@PathVariable String id,
+			@RequestParam(required=false) String alternative) throws Exception {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 
-		log.info("Deleting availability option: " + a);
-		api.deleteAvailabilityOption(a);
-
+		if (!Strings.isNullOrEmpty(alternative)) {
+			final AvailabilityOption alternativeOption = api.getAvailabilityOption(alternative);
+			log.info("Deleting availability option: " + a + " replacing with: " + alternativeOption);			
+			api.deleteAvailabilityOption(a, alternativeOption);
+			
+		} else {
+			log.info("Deleting availability option: " + a);
+			api.deleteAvailabilityOption(a);
+		}
+		
 		return redirectToAdmin();
 	}
 
@@ -130,6 +149,15 @@ public class AvailabilityOptionsController {
 
 	private ModelAndView redirectToAdmin() {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+	}
+	
+	private ModelAndView renderDeleteForm(final AvailabilityOption a) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+		final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
+		alternatives.remove(a);
+		
+		return new ModelAndView("deleteAvailabilityOption").
+			addObject("availabilityOption", a).
+			addObject("alternatives", alternatives);
 	}
 
 }

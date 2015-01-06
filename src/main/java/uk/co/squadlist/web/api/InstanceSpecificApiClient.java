@@ -197,6 +197,10 @@ public class InstanceSpecificApiClient {
 		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
 	}
 
+	public void deleteAvailabilityOption(AvailabilityOption availabilityOption, AvailabilityOption alternativeOption) {
+		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
+	}
+	
 	public void deleteMember(Member member) {
 		api.deleteMember(instanceConfig.getInstance(), member);
 	}
