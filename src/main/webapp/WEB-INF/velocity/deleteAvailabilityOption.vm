@@ -15,7 +15,8 @@
 		
 			<form method="POST" action="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)" class="form-horizontal" accept-charset="UTF-8">		
 				
-				<p>$availabilityOption</p>
+				<p>Deleting this availability option ($availabilityOption.label) will remove all member availability decisions which use this option.<br/>
+				This cannot be undo.</p>
 				
 				<div class="control-group">
 					<div  class="col-sm-2">

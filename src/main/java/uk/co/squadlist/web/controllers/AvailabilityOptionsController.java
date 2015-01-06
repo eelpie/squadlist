@@ -64,10 +64,12 @@ public class AvailabilityOptionsController {
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.POST)
 	public ModelAndView delete(@PathVariable String id) throws Exception {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
+
 		log.info("Deleting availability option: " + a);
+		api.deleteAvailabilityOption(a);
+
 		return redirectToAdmin();
 	}
-
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
