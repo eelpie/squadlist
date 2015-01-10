@@ -82,7 +82,7 @@ public class MyOutingsController {
 		
 		final Member member = api.getMemberDetails(user);
 				
-		final Calendar calendar = outingCalendarService.buildCalendarFor(api.getAvailabilityFor(member.getUsername(), 
+		final Calendar calendar = outingCalendarService.buildCalendarFor(api.getAvailabilityFor(member.getId(), 
 				DateHelper.startOfCurrentOutingPeriod().toDate(),
 				DateHelper.oneYearFromNow().toDate()),
 				api.getInstance());
