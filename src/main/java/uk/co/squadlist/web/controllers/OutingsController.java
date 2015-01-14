@@ -159,6 +159,7 @@ public class OutingsController {
     				dateFormatter.dayMonthYearTime(outing.getDate()),
     				outing.getSquad().getName(),
     				member.getDisplayName(),
+    				member.getRole(),
     				outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
     				}));
 		}
