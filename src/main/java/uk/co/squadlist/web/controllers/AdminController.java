@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
 
 @Controller
 public class AdminController {
-	
+
 	private final static Logger log = Logger.getLogger(AdminController.class);
 
 	private final static Splitter COMMA_SPLITTER = Splitter.on(",");
@@ -57,35 +57,7 @@ public class AdminController {
 		this.csvOutputRenderer = csvOutputRenderer;
 		this.urlBuilder = urlBuilder;
 	}
-	
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/admins", method=RequestMethod.POST)
-	public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
-	    log.info("Setting admins request: " + admins);	    
-		final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
-		
-		log.info("Setting admins to: " + updatedAdmins);
-		api.setAdmins(updatedAdmins);
-		
-		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
-	}
-	
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/admins", method=RequestMethod.GET)
-	public ModelAndView setAdminsPrompt() throws Exception {				
-		List<Member> adminMembers = Lists.newArrayList();
-		List<Member> availableMembers = Lists.newArrayList();
-		for (Member member : api.getMembers()) {
-			if (member.getAdmin()) {
-				adminMembers.add(member);
-			} else {
-				availableMembers.add(member);
-			}
-		}
-		
-		return new ModelAndView("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
-	}
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
@@ -104,6 +76,34 @@ public class AdminController {
     	mv.addObject("statistics", api.statistics());
     	return mv;
     }
+
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/admin/admins", method=RequestMethod.GET)
+	public ModelAndView setAdminsPrompt() throws Exception {
+		List<Member> adminMembers = Lists.newArrayList();
+		List<Member> availableMembers = Lists.newArrayList();
+		for (Member member : api.getMembers()) {
+			if (member.getAdmin()) {
+				adminMembers.add(member);
+			} else {
+				availableMembers.add(member);
+			}
+		}
+
+		return new ModelAndView("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
+	}
+
+	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
+	@RequestMapping(value="/admin/admins", method=RequestMethod.POST)
+	public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
+	    log.info("Setting admins request: " + admins);
+		final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
+
+		log.info("Setting admins to: " + updatedAdmins);
+		api.setAdmins(updatedAdmins);
+
+		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin/export/members.csv", method=RequestMethod.GET)
