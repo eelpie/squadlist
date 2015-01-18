@@ -18,10 +18,10 @@ public class LoggedInUserService {
 	private final static Logger log = Logger.getLogger(LoggedInUserService.class);
 
 	private static final String LOGGED_IN_MEMBER = "loggedInMember";
-    
+
     private final InstanceSpecificApiClient api;
 	private final HttpServletRequest request;
-        
+
     @Autowired
 	public LoggedInUserService(InstanceSpecificApiClient api, HttpServletRequest request) {
 		this.api = api;
@@ -34,23 +34,23 @@ public class LoggedInUserService {
         log.debug("Logged in user is: " + username);
 		return username;
 	}
-	
+
 	public Member getLoggedInMember() {
 		Member loggedInMember = (Member) request.getAttribute(LOGGED_IN_MEMBER);
 		if (loggedInMember != null) {
-			log.info("Returning cached logged in member");
+			log.debug("Returning cached logged in member");
 			return loggedInMember;
 		}
 
-		log.info("Fetching logged in member");
+		log.debug("Fetching logged in member");
 		try {
 			loggedInMember = api.getMemberDetails(getLoggedInUsername());
 			request.setAttribute(LOGGED_IN_MEMBER, loggedInMember);
 			return loggedInMember;
-			
+
 		} catch (UnknownMemberException e) {
 			throw new RuntimeException(e);
-		}	
+		}
 	}
-	
+
 }
