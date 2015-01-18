@@ -188,9 +188,9 @@ public class MembersController {
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
-		memberDetails.setRowingPoints(member.getRowingPoints());
+		memberDetails.setRowingPoints(member.getRowingPoints());	// Ensure null rather than empty string
 		memberDetails.setSculling(member.getSculling());
-		memberDetails.setScullingPoints(member.getScullingPoints());
+		memberDetails.setScullingPoints(member.getScullingPoints());	// Ensure null rather than empty string
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
 
 		log.info(member.getSquads());
