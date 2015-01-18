@@ -200,9 +200,13 @@ public class InstanceSpecificApiClient {
 	public void deleteAvailabilityOption(AvailabilityOption availabilityOption, AvailabilityOption alternativeOption) {
 		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
 	}
-	
+
 	public void deleteMember(Member member) {
 		api.deleteMember(instanceConfig.getInstance(), member);
+	}
+
+	public void deleteSquad(Squad squad) {
+		api.deleteSquad(instanceConfig.getInstance(), squad);
 	}
 
 	public void setAdmins(Set<String> admins) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {

@@ -53,7 +53,9 @@
 			#if($squads && !$squads.isEmpty())
 				<ul>
 					#foreach( $squad in $squads )
-						<li><a href="$urlBuilder.editSquadUrl($squad)">$squad.name</a></li>
+						<li><a href="$urlBuilder.editSquadUrl($squad)">$squad.name</a>
+						| <a href="$urlBuilder.delete($squad)">Delete</a>						
+						</li>
 					#end
 				</ul>
 			#else
@@ -68,7 +70,7 @@
 							
 			<h4>Admins</h4>			
 			<ul>
-			#foreach( $member in $admins )
+			#foreach($member in $admins)
 				<li>#parse('includes/member.vm')</li>
 			#end
 			</ul>

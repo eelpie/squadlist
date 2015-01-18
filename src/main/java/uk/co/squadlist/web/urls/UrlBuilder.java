@@ -72,6 +72,10 @@ public class UrlBuilder {
 		return memberUrl(member.getId()) + "/delete";
 	}
 
+	public String delete(Squad squad) {
+		return applicationUrl("/squad/" + squad.getId() + "/delete");
+	}
+
 	public String newMemberUrl() {
 		return applicationUrl("/member/new");
 	}
