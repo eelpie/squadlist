@@ -165,7 +165,7 @@ public class OutingsController {
 		}
     	csvOutputRenderer.renderCsvResponse(response, rows);
     }
-	
+
 	@RequiresPermission(permission=Permission.ADD_OUTING)
 	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
     public ModelAndView newOuting() throws Exception {
@@ -219,7 +219,7 @@ public class OutingsController {
 	@RequestMapping(value="/outings/{id}/delete", method=RequestMethod.GET)
     public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
     	final Outing outing = api.getOuting(id);
-    	return new ModelAndView("deleteOuting").addObject("outing", outing);
+    	return viewFactory.getView("deleteOuting").addObject("outing", outing);
     }
 
 	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
@@ -331,7 +331,7 @@ public class OutingsController {
 		if (availablityOption != null) {
 			return availablityOption;
 		}
-		
+
 		throw new RuntimeException("Unknown availability option: " + availabilityId);	// TODO
 	}
 

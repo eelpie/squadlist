@@ -89,8 +89,7 @@ public class AdminController {
 				availableMembers.add(member);
 			}
 		}
-
-		return new ModelAndView("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
+		return viewFactory.getView("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)

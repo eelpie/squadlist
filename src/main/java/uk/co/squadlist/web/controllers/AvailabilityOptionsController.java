@@ -70,7 +70,7 @@ public class AvailabilityOptionsController {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		return renderDeleteForm(a);
 	}
-	
+
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.POST)
 	public ModelAndView delete(@PathVariable String id,
@@ -79,14 +79,14 @@ public class AvailabilityOptionsController {
 
 		if (!Strings.isNullOrEmpty(alternative)) {
 			final AvailabilityOption alternativeOption = api.getAvailabilityOption(alternative);
-			log.info("Deleting availability option: " + a + " replacing with: " + alternativeOption);			
+			log.info("Deleting availability option: " + a + " replacing with: " + alternativeOption);
 			api.deleteAvailabilityOption(a, alternativeOption);
-			
+
 		} else {
 			log.info("Deleting availability option: " + a);
 			api.deleteAvailabilityOption(a);
 		}
-		
+
 		return redirectToAdmin();
 	}
 
@@ -150,12 +150,12 @@ public class AvailabilityOptionsController {
 	private ModelAndView redirectToAdmin() {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 	}
-	
+
 	private ModelAndView renderDeleteForm(final AvailabilityOption a) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
 		final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
 		alternatives.remove(a);
-		
-		return new ModelAndView("deleteAvailabilityOption").
+
+		return viewFactory.getView("deleteAvailabilityOption").
 			addObject("availabilityOption", a).
 			addObject("alternatives", alternatives);
 	}

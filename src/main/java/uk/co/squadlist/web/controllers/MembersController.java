@@ -130,7 +130,7 @@ public class MembersController {
 
 			sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
 
-			return new ModelAndView("memberAdded").
+			return viewFactory.getView("memberAdded").
 				addObject("member", newMember).
 				addObject("initialPassword", initialPassword).
 				addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
@@ -283,7 +283,7 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/make-inactive", method=RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		return new ModelAndView("makeMemberInactivePrompt").
+		return viewFactory.getView("makeMemberInactivePrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Make member inactive - " + member.getDisplayName());
     }
@@ -292,7 +292,7 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/delete", method=RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		return new ModelAndView("deleteMemberPrompt").
+		return viewFactory.getView("deleteMemberPrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Delete member - " + member.getDisplayName());
     }
@@ -321,7 +321,7 @@ public class MembersController {
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
 
-		return new ModelAndView("makeMemberActivePrompt").
+		return viewFactory.getView("makeMemberActivePrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Make member active - " + member.getDisplayName());
     }
