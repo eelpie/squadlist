@@ -12,6 +12,10 @@
 
 	<div class="row">			
 		<div class="col-xs-12">
+		
+			<div class="alert alert-warning">
+				To make a member an admin drag them into the admins column and press the set admins button.
+			</div>
 				
 		<script>
 			$(function() {
@@ -26,7 +30,8 @@
 		<form id="adminsForm" method="POST" action="$urlBuilder.editAdmins()" class="form-horizontal" accept-charset="UTF-8">
 												
 			<div class="form-group">				
-		   		<label class="col-sm-2 control-label">Admins</label>
+			    <div class="col-sm-2">
+			    </div>  
 			    <div class="col-sm-10">    
 					
 					<div class="container-fluid">
@@ -35,10 +40,10 @@
 											
 						<div class="row">
 							<div class="col-xs-5">
-								<h5>Existing</h5>								
+								<h5>Admins</h5>								
 							</div>
 							<div class="col-xs-5">
-								<h5>Available</h5>
+								<h5>Members</h5>
 							</div>
 						</div>
 													

@@ -46,16 +46,21 @@
 						<input id="members" type="hidden" name="members" />
 											
 						<div class="row">
+						
+									<div class="alert alert-warning">
+				To add a member to this squad drag them into squad members column and press the update squad button.
+			</div>
+			
+			
 							<div class="col-xs-5">
-								<h5>Existing</h5>								
+								<h5>Squad members</h5>								
 							</div>
 							<div class="col-xs-5">
-								<h5>Available</h5>
+								<h5>Available members</h5>
 							</div>
 						</div>
 													
-						<div class="row">
-						
+						<div class="row">			
 							<div class="col-xs-5">
 								<ul id="sortable1" class="connectedSortable">
 									#foreach($member in $squadMembers)
