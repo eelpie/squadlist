@@ -21,7 +21,7 @@ public class BritishRowing implements GoverningBody {
 	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
 	private static final Pattern VALID_REGISTRATION_NUMBER = Pattern.compile("\\d{6}[G|S|J|U|C|B]\\d{7}", Pattern.CASE_INSENSITIVE);	// TODO check with BR about valid codes
 	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");	// TODO N is deprecated - move to 0
-	
+
 	private final Map<String, Integer> statusMaximumPoints;
 	private final Map<String, Integer> mastersMinimumAges;
 
@@ -33,7 +33,7 @@ public class BritishRowing implements GoverningBody {
 		statusMaximumPoints.put("Intermediate 1", 6);
 		statusMaximumPoints.put("Senior", 9);
 		statusMaximumPoints.put("Elite", null);
-		
+
 		mastersMinimumAges = Maps.newLinkedHashMap();
 		mastersMinimumAges.put("Masters J", 80);
 		mastersMinimumAges.put("Masters I", 75);
@@ -46,16 +46,16 @@ public class BritishRowing implements GoverningBody {
 		mastersMinimumAges.put("Masters B", 36);
 		mastersMinimumAges.put("Masters A", 27);
 	}
-	
+
 	@Override
 	public String getName() {
 		return "British Rowing";
 	}
-	
+
 	public List<String> getPointsOptions() {
 		return POINTS_OPTIONS;
 	}
-	
+
 	public Map<String, Integer> getStatusPoints() {
 		return statusMaximumPoints;
 	}
@@ -63,12 +63,15 @@ public class BritishRowing implements GoverningBody {
 	public Map<String, Integer> getAgeGrades() {
 		return mastersMinimumAges;
 	}
-	
+
 	@Override
 	public Integer getTotalPoints(List<String> rowingPoints) {
-		int totalPoints = 0;
+		Integer totalPoints = null;
 		for (String points : rowingPoints) {
-			if (points != null) {
+			if (!Strings.isNullOrEmpty(points)) {
+				if (totalPoints == null) {
+					totalPoints = 0;
+				}
 				totalPoints = totalPoints + parsePoints(points);
 			} else {
 				return null;
@@ -76,73 +79,73 @@ public class BritishRowing implements GoverningBody {
 		}
 		return totalPoints;
 	}
-	
+
 	@Override
 	public String getRowingStatus(List<String> rowingPoints) {
 		final Integer totalPoints = getTotalPoints(rowingPoints);
 		if (totalPoints == null) {
 			return null;
 		}
-		
+
 		final int crewSize = rowingPoints.size();
 		return determineStatusFromCurrentPoints(totalPoints, crewSize);
 	}
-	
+
 	@Override
 	public String getScullingStatus(List<String> scullingPoints) {
 		return getRowingStatus(scullingPoints);
 	}
-		
+
 	@Override
 	public int getEffectiveAge(Date dateOfBirth) {
-		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);		
+		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
 		final LocalDate localEndOfYear = new LocalDate(new DateTime().withDate(DateTime.now().getYear(), 12, 31).toDate());
-		
+
 		final Years age = Years.yearsBetween(localDateOfBirth, localEndOfYear);
 		return age.getYears();
 	}
-	
+
 	@Override
 	public String getAgeGrade(int age) {
-		/* TODO The age restriction is the lower limit for the average age of the crew (excluding coxswain), 
-		 * measured in whole years attained during the current "calendar" year 
-		 * i.e. if you are 40 on 1 June 2010 then you would be deemed to be 40 (or Masters B) 
+		/* TODO The age restriction is the lower limit for the average age of the crew (excluding coxswain),
+		 * measured in whole years attained during the current "calendar" year
+		 * i.e. if you are 40 on 1 June 2010 then you would be deemed to be 40 (or Masters B)
 		 * for all events between 1 Jan and 31 Dec 2010.
 		 */
-		 
+
 		for (String mastersGrade : mastersMinimumAges.keySet()) {
 			if (age >= mastersMinimumAges.get(mastersGrade)) {
 				return mastersGrade;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public String checkRegistrationNumber(String registrationNumber) {
 		if (Strings.isNullOrEmpty(registrationNumber)) {
 			return null;
 		}
-		
-		if (VALID_REGISTRATION_NUMBER.matcher(registrationNumber).matches()) {			
+
+		if (VALID_REGISTRATION_NUMBER.matcher(registrationNumber).matches()) {
 			final String dateString = registrationNumber.substring(0, 6);
-			
-			final DateTime parse = ISODateTimeFormat.basicDate().parseDateTime(dateString + "01");			
-			final DateTime endOfRegistrationDate = parse.plusMonths(1);			
+
+			final DateTime parse = ISODateTimeFormat.basicDate().parseDateTime(dateString + "01");
+			final DateTime endOfRegistrationDate = parse.plusMonths(1);
 			if (endOfRegistrationDate.isBefore(DateTime.now())) {
 				return "Expired registration";
-			}			
+			}
 			return null;
 		}
-		return "Not in the expected British Rowing format";	
+		return "Not in the expected British Rowing format";
 	}
-	
+
 	@Override
 	public String getStatusPointsReference() {
 		return "http://www.britishrowing.org/competing/points-status";
 	}
-	
+
 	@Override
 	public Integer getEffectiveAge(List<Date> datesOfBirth) {
 		Integer youngestAge = null;
@@ -150,12 +153,12 @@ public class BritishRowing implements GoverningBody {
 			if (dateOfBirth == null) {
 				return null;
 			}
-			
+
 			int effectiveAge = getEffectiveAge(dateOfBirth);
 			if (youngestAge == null || effectiveAge < youngestAge) {
 				youngestAge = effectiveAge;
 			}
-		}		
+		}
 		return youngestAge;
 	}
 
@@ -168,7 +171,7 @@ public class BritishRowing implements GoverningBody {
 	public String getScullingStatus(String scullingPoints) {
 		return getScullingStatus(Lists.newArrayList(scullingPoints));
 	}
-	
+
 	@Override
 	public List<Integer> getBoatSizes() {
 		return BOAT_SIZES;
@@ -197,7 +200,7 @@ public class BritishRowing implements GoverningBody {
 		}
 		return Integer.parseInt(points);
 	}
-	
-	
+
+
 
 }

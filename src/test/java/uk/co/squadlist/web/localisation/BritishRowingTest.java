@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.localisation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -44,6 +45,11 @@ public class BritishRowingTest {
 		assertEquals("Intermediate 1", britishRowing.getRowingStatus(Lists.newArrayList("5")));
 		assertEquals("Senior", britishRowing.getRowingStatus(Lists.newArrayList("9")));
 		assertEquals("Elite", britishRowing.getRowingStatus(Lists.newArrayList("10")));
+	}
+
+	@Test
+	public void nullPointsImpliesUnknownStatus() throws Exception {
+		assertEquals(null, britishRowing.getRowingStatus(""));
 	}
 
 	@Test
