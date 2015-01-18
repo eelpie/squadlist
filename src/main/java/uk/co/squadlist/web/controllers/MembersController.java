@@ -188,9 +188,9 @@ public class MembersController {
 		memberDetails.setEmailAddress(member.getEmailAddress());
 		memberDetails.setContactNumber(member.getContactNumber());
 		memberDetails.setRegistrationNumber(member.getRegistrationNumber());
-		memberDetails.setRowingPoints(member.getRowingPoints());	// Ensure null rather than empty string
+		memberDetails.setRowingPoints(member.getRowingPoints());
 		memberDetails.setSculling(member.getSculling());
-		memberDetails.setScullingPoints(member.getScullingPoints());	// Ensure null rather than empty string
+		memberDetails.setScullingPoints(member.getScullingPoints());
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
 
 		log.info(member.getSquads());
@@ -256,9 +256,9 @@ public class MembersController {
 		member.setWeight(!Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null);	// TODO validate
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
-		member.setRowingPoints(memberDetails.getRowingPoints());
+		member.setRowingPoints(!Strings.isNullOrEmpty(memberDetails.getRowingPoints()) ?memberDetails.getRowingPoints() : null);
 		member.setSculling(memberDetails.getSculling());
-		member.setScullingPoints(memberDetails.getScullingPoints());
+		member.setScullingPoints(!Strings.isNullOrEmpty(memberDetails.getScullingPoints()) ?memberDetails.getScullingPoints() : null);
 		member.setRegistrationNumber(memberDetails.getRegistrationNumber());
 		member.setEmergencyContactName(memberDetails.getEmergencyContactName());
 		member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
