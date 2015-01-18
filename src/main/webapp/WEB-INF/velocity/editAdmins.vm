@@ -73,7 +73,7 @@
 			</div>
 			<div class="controls">
 				<button type="submit" class="btn btn-primary">Set admins</button>
-					#cancel($urlBuilder.editUrls())					
+					#cancel($urlBuilder.adminUrl())					
 				</div>
 			</div>
 												
