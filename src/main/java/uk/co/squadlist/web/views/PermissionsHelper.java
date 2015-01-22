@@ -29,21 +29,21 @@ public class PermissionsHelper {
 	public boolean hasPermission(String permissionName) throws UnknownMemberException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
-		log.info("Checking view permission " + permission +  " for " + loggedInMember.getUsername());
+		log.debug("Checking view permission " + permission +  " for " + loggedInMember.getUsername());
 		return permissionsService.hasPermission(loggedInMember, permission);
 	}
 	
 	public boolean hasOutingPermission(Outing outing, String permissionName) throws UnknownMemberException, UnknownOutingException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
-		log.info("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInMember.getUsername());
+		log.debug("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInMember.getUsername());
 		return permissionsService.hasOutingPermission(loggedInMember, permission, outing.getId());
 	}
 	
 	public boolean hasMemberPermission(Member member, String permissionName) throws UnknownMemberException, UnknownOutingException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
-		log.info("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInMember.getUsername());
+		log.debug("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInMember.getUsername());
 		return permissionsService.hasMemberPermission(loggedInMember, permission, member.getId());
 	}
 	
