@@ -1,1 +1,19 @@
-<h1>500</h1>
+#parse('includes/head.vm')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-2">
+		</div>	
+		<div class="col-xs-8">
+			<h4>#fail</h4>
+			<img src="/static/sunk.jpg" width="100%">
+			<p>An unexpected error has occured. Pressing the browser back button may take you back to the screen you were on.</p>
+			<p>This cause of this error has been recorded and will be brought to the attention of the developers.</p>
+		</div>
+		<div class="col-xs-2">
+		</div>	
+	</div>
+</div>		
+
+#parse('includes/footer.vm')
