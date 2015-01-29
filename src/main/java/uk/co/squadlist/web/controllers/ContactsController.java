@@ -39,7 +39,7 @@ public class ContactsController {
     public ModelAndView contacts() throws Exception {
     	final ModelAndView mv =  viewFactory.getView("contacts");
     	final List<Squad> allSquads = api.getSquads();
-		mv.addObject("squads", allSquads);
+		mv.addObject("squads", allSquads);	// TODO leaves squad null on view
     	return mv;
     }
 
