@@ -36,7 +36,7 @@ public class RequiresPermissionAspect {
 			Permission permission = requiresPermissionAnnotation.permission();
 	
 			final boolean hasPermission = permissionsService.hasPermission(loggedInUserService.getLoggedInMember(), permission);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
+			log.debug(methodSignature.getName() + " requires permission: "  + permission + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();
