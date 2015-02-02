@@ -63,9 +63,10 @@
 				#inputRow("member.emailAddress", "Email address")
 				#inputRow("member.contactNumber", "Contact number")
 				#inputRow("member.emergencyContactName", "Emergency contact name")
-				#inputRow("member.emergencyContactNumber", "Emergency contact number")
+				#inputRow("member.emergencyContactNumber", "Emergency contact number")								
+				
+				#selectRowMap('Weight', 'member.weight', $governingBody.weights)				
 								
-				#inputRow("member.weight", "Weight")				
 				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
 															
 				#inputRow('member.registrationNumber', 'Registration number')				

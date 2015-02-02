@@ -105,6 +105,21 @@
 	</div>
 #end
 
+#macro(selectRowMap $label $field $options)
+	#springBind($field)
+	<div class="form-group">
+	    <label for="${status.expression}" class="col-sm-2 control-label">$label</label>
+	    <div class="col-sm-10">					
+			<select name="${status.expression}" class="form-control">
+				<option value=""></option>																	    				
+				#foreach($option in $options.keySet())				
+					<option value="$option" #if($status.getValue() == $option) SELECTED #end>$options.get($option)</option>
+				#end
+			</select>
+		</div>
+	</div>
+#end
+
 #macro(squadsCheckboxGroup)
 	<div class="form-group">
 	    <label for="${status.expression}" class="col-sm-2 control-label">Squads</label>
@@ -138,7 +153,7 @@
 			</button>
 			<ul class="dropdown-menu pull-right" role="menu">
 				#foreach($availableSquad in $squads) 
-					<li><a href="$urlBuilder.applicationUrl($action)$availableSquad.id">$availableSquad.name</a></li>
+					<li><a href="$urlBuilder.applicationUrl($action)$!availableSquad.id">$!availableSquad.name</a></li>
 				#end
 			</ul>
 		</div>

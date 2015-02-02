@@ -252,13 +252,13 @@ public class MembersController {
 		member.setGender(memberDetails.getGender());
 
 		member.setDateOfBirth(updatedDateOfBirth);
-		
+
 		try {
 			member.setWeight(!Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null);	// TODO validate
 		} catch (IllegalArgumentException iae) {
 			log.warn(iae);
 		}
-		
+
 		member.setEmailAddress(memberDetails.getEmailAddress());
 		member.setContactNumber(memberDetails.getContactNumber());
 		member.setRowingPoints(!Strings.isNullOrEmpty(memberDetails.getRowingPoints()) ?memberDetails.getRowingPoints() : null);
@@ -368,6 +368,7 @@ public class MembersController {
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());
+    	mv.addObject("governingBody", governingBody);
 
     	mv.addObject("genderOptions", GENDER_OPTIONS);
     	mv.addObject("pointsOptions", governingBody.getPointsOptions());
