@@ -177,6 +177,15 @@ public class BritishRowing implements GoverningBody {
 		return BOAT_SIZES;
 	}
 
+	@Override
+	public Map<Integer, String> getWeights() {
+		Map<Integer, String> weights  = Maps.newLinkedHashMap();
+		for(int i = 40; i<= 200; i++) {
+			weights.put(i, i + "kg");
+		}
+		return weights;
+	}
+
 	private String determineStatusFromCurrentPoints(final int p, int crewSize) {
 		for (String status : statusMaximumPoints.keySet()) {
 			Integer maxPointsForStatus = statusMaximumPoints.get(status);
