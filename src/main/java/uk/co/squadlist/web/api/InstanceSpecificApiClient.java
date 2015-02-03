@@ -22,6 +22,7 @@ import uk.co.squadlist.web.exceptions.InvalidInstanceException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
+import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -66,14 +67,14 @@ public class InstanceSpecificApiClient {
 		return api.getAvailabilityOptions(instanceConfig.getInstance());
 	}
 
-	public AvailabilityOption getAvailabilityOption(String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+	public AvailabilityOption getAvailabilityOption(String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		List<AvailabilityOption> availabilityOptions = getAvailabilityOptions();
 		for (AvailabilityOption availabilityOption : availabilityOptions) {	// TODO API end point
 			if (availabilityOption.getId().equals(id)) {
 				return availabilityOption;
 			}
 		}
-		return null;
+		throw new UnknownAvailabilityOptionException();
 	}
 
 	public Member auth(String username, String password) {
