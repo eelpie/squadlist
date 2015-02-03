@@ -35,6 +35,7 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
+import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
@@ -322,17 +323,11 @@ public class OutingsController {
     	throw new RuntimeException("Outing is closed");	// TODO
 	}
 
-	private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+	private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		if (Strings.isNullOrEmpty(availabilityId)) {
 			return null;
 		}
-
-		final AvailabilityOption availablityOption = api.getAvailabilityOption(availabilityId);
-		if (availablityOption != null) {
-			return availablityOption;
-		}
-
-		throw new RuntimeException("Unknown availability option: " + availabilityId);	// TODO
+		return api.getAvailabilityOption(availabilityId);
 	}
 
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
