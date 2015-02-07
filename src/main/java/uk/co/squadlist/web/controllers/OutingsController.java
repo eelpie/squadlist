@@ -35,6 +35,7 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
+import uk.co.squadlist.web.exceptions.OutingClosedException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
@@ -319,7 +320,7 @@ public class OutingsController {
     		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailabilityOption());
     	}
 
-    	throw new RuntimeException("Outing is closed");	// TODO
+    	throw new OutingClosedException();
 	}
 
 	private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
