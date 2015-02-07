@@ -18,6 +18,7 @@ import com.google.common.base.Throwables;
 
 import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
+import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -43,6 +44,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
 		log.info("Handling exception of type: " + e.getClass());
 
+		if (e instanceof UnknownAvailabilityOptionException) {
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return new ModelAndView("404");
+		}
 		if (e instanceof UnknownInstanceException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");

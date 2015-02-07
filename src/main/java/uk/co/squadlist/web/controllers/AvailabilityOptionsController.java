@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.http.annotation.Immutable;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -20,18 +19,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
+
+import com.google.common.base.Strings;
 
 @Controller
 public class AvailabilityOptionsController {
@@ -54,7 +53,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView editPrompt(@PathVariable String id) throws Exception {
+    public ModelAndView editPrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 
 		final AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
@@ -66,15 +65,14 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.GET)
-	public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
+	public ModelAndView deletePrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		return renderDeleteForm(a);
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.POST)
-	public ModelAndView delete(@PathVariable String id,
-			@RequestParam(required=false) String alternative) throws Exception {
+	public ModelAndView delete(@PathVariable String id, @RequestParam(required=false) String alternative) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 
 		if (!Strings.isNullOrEmpty(alternative)) {
@@ -92,7 +90,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
-    public ModelAndView availability() throws Exception {
+    public ModelAndView availability() {
     	AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
     	availabilityOption.setColour("green");
 		return renderNewAvailabilityOptionForm(availabilityOption);
@@ -117,7 +115,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws Exception {
+    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		if (result.hasErrors()) {
 			return renderEditAvailabilityOptionForm(availabilityOptionDetails, a);
