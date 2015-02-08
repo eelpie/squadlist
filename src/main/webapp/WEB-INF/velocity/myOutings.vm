@@ -100,14 +100,17 @@
 		updateUrl = "$urlBuilder.applicationUrl('/availability/ajax')";
 		postData = { outing: outingId, availability: newAvailability };
     	redrawPendingOutingBadge = function(data) {$("#pendingOutings").html(data)};
-    	    			    	    							
+		pendingOutingsCountUrl = '$urlBuilder.applicationUrl('/myoutings/ajax')';
+		    	    
+	    redrawCurrentOutingAvailabilityAndPendingOutingBadge = function(data) {
+			$("#currentAvailability" + outingId).html(data);    		
+			$.post(pendingOutingsCountUrl, {}, redrawPendingOutingBadge);
+		};
+							    	    			    	    							
     	$.post(updateUrl, 
     		postData,
-    		function(data) {
-    			$("#currentAvailability" + outingId).html(data);    		
-    			$.post("$urlBuilder.applicationUrl('/myoutings/ajax')", {}, redrawPendingOutingBadge
-			);
-		});
+    		redrawCurrentOutingAvailabilityAndPendingOutingBadge
+		);
 		
   	});
 </script>
