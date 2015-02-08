@@ -117,11 +117,7 @@
     					redrawCurrentOutingAvailabilityAndPendingOutingBadge(data);
     				},
     				error(xhr, status, error) {
-    					if (status === 403) {    						
-	    					$("#currentAvailability" + outingId).html("Not allowed to be changed; outing may by closed");
-	    				} else {
-	    					$("#currentAvailability" + outingId).html("Error: could not be updated");
-	    				}
+    					$("#currentAvailability" + outingId).html("Error: could not be updated");	    				
     				}
     			}
     	);
