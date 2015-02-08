@@ -18,6 +18,7 @@ import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.annotations.Timed;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidInstanceException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
@@ -118,7 +119,7 @@ public class InstanceSpecificApiClient {
 		return api.updateMemberDetails(instanceConfig.getInstance(), member);
 	}
 
-	public Member updateMemberProfileImage(Member member, byte[] image) {
+	public Member updateMemberProfileImage(Member member, byte[] image) throws InvalidImageException {
 		return api.updateMemberProfileImage(instanceConfig.getInstance(), member, image);
 	}
 

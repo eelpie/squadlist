@@ -122,7 +122,14 @@
 		    		<div class="col-sm-10">		    			
 		    			#if($member.profileImage) 
 		    				<img src="$urlBuilder.staticImage($member.profileImage)" width="200px" /><br/>
-		    			#end		    				
+		    			#end
+		    			
+		    			#if($invalidImage) 
+		    				<div class="alert alert-warning">
+		    					Invalid image file
+		    				</div>
+		    			#end
+		    			    				
 						<input type="file" name="image" />
 						<button type="submit" class="btn btn-primary">Update profile image</button>							
 	        	      </div>

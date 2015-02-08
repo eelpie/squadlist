@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,6 +30,7 @@ import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -171,7 +174,8 @@ public class MembersController {
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView updateMember(@PathVariable String id) throws Exception {
+    public ModelAndView updateMember(@PathVariable String id,
+    		@RequestParam(required=false) Boolean invalidImage) throws Exception {
 		final Member member = api.getMemberDetails(id);
 
 		final MemberDetails memberDetails = new MemberDetails();
@@ -206,7 +210,9 @@ public class MembersController {
 		memberDetails.setRole(member.getRole());
 		memberDetails.setProfileImage(member.getProfileImage());
 
-		return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
+		ModelAndView mv = renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
+		mv.addObject("invalidImage", invalidImage);
+		return mv;
     }
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
@@ -343,14 +349,19 @@ public class MembersController {
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit/profileimage", method=RequestMethod.POST)
-    public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws Exception {
+    public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws UnknownMemberException, IOException {
 		log.info("Received update member profile image request: " + id);
 		final Member member = api.getMemberDetails(id);
 
 		final MultipartFile file = request.getFile("image");
 
 		log.info("Submitting updated member: " + member);
-		api.updateMemberProfileImage(member, file.getBytes());
+		try {
+			api.updateMemberProfileImage(member, file.getBytes());
+		} catch (InvalidImageException e) {
+			log.warn("Invalid image file submitted");
+			return new ModelAndView(new RedirectView(urlBuilder.editMemberUrl(member) + "?invalidImage=true"));
+		}
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     }
 

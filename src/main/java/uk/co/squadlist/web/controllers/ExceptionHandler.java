@@ -1,8 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.base.Throwables;
-
 import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
@@ -23,6 +18,8 @@ import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+
+import com.google.common.base.Throwables;
 
 @Component
 public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
