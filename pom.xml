@@ -166,6 +166,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.kohsuke</groupId>
+			<artifactId>github-api</artifactId>
+			<version>1.59</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>uk.co.eelpieconsulting.common</groupId>
 			<artifactId>common-dates</artifactId>
 		</dependency>

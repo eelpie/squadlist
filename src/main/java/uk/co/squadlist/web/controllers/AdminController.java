@@ -21,6 +21,7 @@ import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
+import uk.co.squadlist.web.services.github.GithubService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -42,6 +43,7 @@ public class AdminController {
 	private ActiveMemberFilter activeMemberFilter;
 	private CsvOutputRenderer csvOutputRenderer;
 	private UrlBuilder urlBuilder;
+	private GithubService githubService;
 
 	public AdminController() {
 	}
@@ -49,13 +51,14 @@ public class AdminController {
 	@Autowired
 	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody,
 			ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-			UrlBuilder urlBuilder) {
+			UrlBuilder urlBuilder, GithubService githubService) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
 		this.activeMemberFilter = activeMemberFilter;
 		this.csvOutputRenderer = csvOutputRenderer;
 		this.urlBuilder = urlBuilder;
+		this.githubService = githubService;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -74,6 +77,9 @@ public class AdminController {
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);
     	mv.addObject("statistics", api.statistics());
+    	
+    	mv.addObject("openIssues", githubService.getOpenIssues());
+    	mv.addObject("closedIssues", githubService.getClosedIssues());
     	return mv;
     }
 
