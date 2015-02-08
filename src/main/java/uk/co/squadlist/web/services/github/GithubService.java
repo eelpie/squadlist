@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GitHub;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,16 +24,12 @@ public class GithubService {
 	
 	private static final String GITHUB_REPO = "tonytw1/squadlist";
 	
-	@Value("#{squadlist['github.username']}")
-	private String username;
-	@Value("#{squadlist['github.token']}")
-	private String token;
-
 	private GitHub github;
 	
 	private Cache<GHIssueState, List<GHIssue>> cache;
 	
-	public GithubService() {
+	@Autowired
+	public GithubService(@Value("#{squadlist['github.username']}") String username, @Value("#{squadlist['github.token']}") String token) {
 		this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 		try {
 			log.info("Github config: " + username + "/" + token);
