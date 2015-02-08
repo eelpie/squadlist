@@ -33,11 +33,14 @@ public class GithubService {
 	private Cache<GHIssueState, List<GHIssue>> cache;
 	
 	public GithubService() {
+		this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 		try {
+			log.info("Github config: " + username + "/" + token);
 			if (!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(token)) {
 				this.github = GitHub.connect(username, token);
+			} else {
+				log.warn("Github service non configured");
 			}
-			this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 			
 		} catch (IOException e) {
 			log.error(e);
