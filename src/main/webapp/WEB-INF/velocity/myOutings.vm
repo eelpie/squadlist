@@ -22,7 +22,13 @@
 		<p>You are not currently assigned to any squads and therefore do not having any outings scheduled.</p>
 			
 	#else
-									
+	
+		<p>
+		<div class="alert alert-warning">		
+			9/Feb - the availability updating issue seen today in Safari and Chrome browsers today has been resolved.
+		</div>
+		</p>
+		
 		#if($outings.isEmpty())
 		   <div class="row">
 		   		<div class="col-md-12">	   
