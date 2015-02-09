@@ -113,10 +113,10 @@
     				type: 'POST',
     				data: postData,
     				dataType: 'text',    				
-    				success(data, status, xhr) {    				
+    				success: function(data, status, xhr) {    				
     					redrawCurrentOutingAvailabilityAndPendingOutingBadge(data);
     				},
-    				error(xhr, status, error) {
+    				error: function(xhr, status, error) {
     					$("#currentAvailability" + outingId).html("Error: could not be updated");	    				
     				}
     			}
