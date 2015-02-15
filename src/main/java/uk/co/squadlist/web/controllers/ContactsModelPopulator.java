@@ -10,7 +10,9 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
@@ -36,6 +38,13 @@ public class ContactsModelPopulator {
 	public ContactsModelPopulator() {
 	}
 
+	private static Function<Member, String> firstName = new Function<Member, String>() {
+		@Override
+		public String apply(Member obj) {
+			return obj.getFirstName();
+		}
+	};
+
 	private static Function<Member, String> lastName = new Function<Member, String>() {
 		@Override
 		public String apply(Member obj) {
@@ -44,8 +53,10 @@ public class ContactsModelPopulator {
 	};
 
 	private final static Ordering<Member> byLastName = Ordering.natural().nullsLast().onResultOf(lastName);
+	private final static Ordering<Member> byFirstName = Ordering.natural().nullsLast().onResultOf(firstName);
 	private final static Ordering<Member> byRole = Ordering.natural().nullsLast().onResultOf(roleName);
-	private final static Ordering<Member> byRoleThenLastName =byRole.compound(byLastName);
+	private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
+	private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
 	private InstanceSpecificApiClient api;
 	private LoggedInUserService loggedInUserService;
@@ -61,11 +72,14 @@ public class ContactsModelPopulator {
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_CONTACT_DETAILS)
-	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException {
+	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException, UnknownInstanceException {
 		mv.addObject("title", squad.getName() + " contacts");
 		mv.addObject("squad", squad);
 
-		final List<Member> activeMembers = byRoleThenLastName.sortedCopy(activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
+		Instance instance = api.getInstance();
+		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName; 
+		
+		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
 		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
 		mv.addObject("members", redactedMembers);
 		
