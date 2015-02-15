@@ -131,7 +131,10 @@ public class MembersController {
 				null,
 				memberDetails.getRole());
 
-			sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
+			final boolean emailAddressSupplied = !Strings.isNullOrEmpty(memberDetails.getEmailAddress());	// TODO validate
+			if (emailAddressSupplied) {
+				sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
+			}
 
 			return viewFactory.getView("memberAdded").
 				addObject("member", newMember).
