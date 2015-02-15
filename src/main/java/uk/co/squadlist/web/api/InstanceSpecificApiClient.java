@@ -215,4 +215,8 @@ public class InstanceSpecificApiClient {
 		api.setAdmins(instanceConfig.getInstance(), admins);
 	}
 
+	public void updateInstance(Instance instance) {
+		api.updateInstance(instance);
+	}
+
 }

@@ -136,6 +136,9 @@ public class UrlBuilder {
 		return availability(squad) + "?month=" + month;
 	}
 
+	public String editInstanceSettings() {
+		return adminUrl() + "/instance";
+	}
 
 	public String editMemberUrl(Member member) {
 		return memberUrl(member) + "/edit";

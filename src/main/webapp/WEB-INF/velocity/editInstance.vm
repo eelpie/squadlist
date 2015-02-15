@@ -1,0 +1,50 @@
+#parse('includes/head.vm')
+#navTabs('Admin')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>Edit instance settings</h4>
+		</div>
+	</div>
+	<hr/>
+
+	<div class="row">
+		<div class="col-xs-12">
+
+			<form id="instanceDetails" method="POST" action="$urlBuilder.editInstanceSettings()" class="form-horizontal" accept-charset="UTF-8">							
+				<div class="form-group">				
+					#springBind("instanceDetails.memberOrdering")				
+			   		<label for="squad" class="col-sm-2 control-label">Member ordering</label>
+				    <div class="col-sm-10">					
+						<select name="${status.expression}" class="form-control">						
+							#foreach($memberOrdering in $memberOrderings)
+								<option value="$memberOrdering" #if($memberOrdering == ${status.value}) SELECTED #end>$memberOrdering
+							#end
+						</select>
+				
+						#foreach($error in $status.errorMessages)
+							<div class="alert alert-warning">$error</div>
+						#end
+					</div>
+				</div>
+				
+				<div class="control-group">				
+					<div  class="col-sm-2">
+					</div>
+				</div>
+				
+				<div class="controls">
+					<button type="submit" class="btn btn-primary">Update settings</button>
+						#cancel($urlBuilder.adminUrl())					
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</div>
+					
+<hr/>
+
+#parse('includes/footer.vm')
