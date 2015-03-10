@@ -71,7 +71,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 		log.error("Returning 500 error", e);
 
 		try {
-			emailService.sendPlaintextEmail("Squadlist website 500 error", "www@hampton.eelpieconsulting.co.uk", "tony@eelpieconsulting.co.uk", Throwables.getStackTraceAsString(e));
+			StringBuilder body = new StringBuilder(request.getServerName() + " " + request.getRequestURI() + "\n");
+			body.append(Throwables.getStackTraceAsString(e));		
+			emailService.sendPlaintextEmail("Squadlist website 500 error", "www@hampton.eelpieconsulting.co.uk", "tony@eelpieconsulting.co.uk", body.toString());
+			
 		} catch (Exception me) {
 			log.error("Exception while trying to mail exception report", me);
 		}
