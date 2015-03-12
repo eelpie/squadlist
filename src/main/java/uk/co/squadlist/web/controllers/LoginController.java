@@ -21,7 +21,7 @@ public class LoginController {
 		this.api = api;
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)	// TODO SEO this onto the root url
+	@RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})	// TODO SEO this onto the root url
 	public ModelAndView member(@RequestParam(value = "errors", required = false) Boolean errors) throws Exception {
 		final ModelAndView mv = new ModelAndView("login");
 		final Instance instance = getInstance();
