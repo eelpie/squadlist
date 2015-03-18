@@ -14,7 +14,7 @@ public class ActiveMemberFilter {	// TODO suggests missing API functionality
 	public List<Member> extractActive(List<Member> members) {
 		List<Member> selected = Lists.newArrayList();
 		for (Member member : members) {
-			if (member.getInactive() == null || member.getInactive() == false) {
+			if (member.getInactive() == false) {
 				selected.add(member);
 			}
 		}
@@ -24,7 +24,7 @@ public class ActiveMemberFilter {	// TODO suggests missing API functionality
 	public List<Member> extractInactive(List<Member> members) {
 		List<Member> selected = Lists.newArrayList();
 		for (Member member : members) {
-			if (member.getInactive() != null && member.getInactive()) {
+			if (member.getInactive()) {
 				selected.add(member);
 			}
 		}
