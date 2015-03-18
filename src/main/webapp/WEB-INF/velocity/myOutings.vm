@@ -77,12 +77,6 @@
 							#end
 						</table>
 					</form>
-										
-					<div class="alert alert-warning">
-						Your availability changes are recorded when you change the drop downs and see the status change on screen.
-						The update button is no longer required and has been removed.
-					</div>
-				  
 				</div>				
 			</div>
 		#end
