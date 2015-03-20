@@ -42,13 +42,7 @@
 				<p>Some crew members have not entered a date of birth</p>
 			#end
 		</div>
-		
-		<div class="col-xs-2">	
-			<p align="right">
-				<a href="$urlBuilder.entryDetailsCsv($members)">Export as CSV</a>
-			</p>
-		</div>
-		
+						
 	#else
 		<div class="col-xs-3">	
 			<p>Not a complete boat</p>
