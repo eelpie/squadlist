@@ -1,11 +1,11 @@
 #if($members)
 <div class="row">
 	<div class="col-xs-3">
-		<ul>
+		<p>
 		#foreach($member in $members)
-			<li>$member.displayName</li>
+			$member.displayName<br/>
 		#end
-		</ul>
+		</p>
 		
 		<span class="badge #if($ok) alert-success #end">$members.size()</span>
 		#if ($ok) 
