@@ -1,6 +1,6 @@
 #if($members)
 <div class="row">
-	<div class="col-xs-3">
+	<div class="col-xs-2">
 		<ul>
 		#foreach($member in $members)
 			<li>$member.displayName</li>
@@ -16,7 +16,7 @@
 	</div>
 	
 	#if ($ok)	
-		<div class="col-xs-2">
+		<div class="col-xs-3">
 			#if($rowingStatus)
 				<p>Total rowing points: $rowingPoints</p>
 				<p>$rowingStatus <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
@@ -24,7 +24,7 @@
 				<p>Some crew members have not entered rowing points</p>
 			#end
 		</div>
-		<div class="col-xs-2">
+		<div class="col-xs-3">
 			#if($scullingStatus)
 				<p>Total sculling points: $scullingPoints</p>
 				<p>$scullingStatus <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
@@ -32,7 +32,7 @@
 				<p>Some crew members have not entered sculling points</p>
 			#end	
 		</div>
-		<div class="col-xs-2">
+		<div class="col-xs-3">
 			#if($effectiveAge)
 				<p>Effective age: $effectiveAge</p>
 				#if($ageGrade)
@@ -42,7 +42,7 @@
 				<p>Some crew members have not entered a date of birth</p>
 			#end
 		</div>
-						
+		
 	#else
 		<div class="col-xs-3">	
 			<p>Not a complete boat</p>
