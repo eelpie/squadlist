@@ -7,7 +7,7 @@
 	
 		<div class="row">
 			<div class="col-xs-8">
-				<h4>$squad.name contacts</h4>
+				<h4>Contacts</h4>
 			</div>
 			<div class="col-xs-4">
 				<div class="pull-right">
