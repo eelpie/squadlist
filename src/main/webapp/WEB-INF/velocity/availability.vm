@@ -55,14 +55,26 @@
 						<p>No matching outings</p>
 										
 					#else
+					
+						<style>
+							.table-nowrap {
+								table-layout:fixed;
+							}
+							.table-nowrap td {
+								white-space: nowrap;
+								overflow: hidden;
+								text-overflow: ellipsis;
+							}
+						</style>					
 								
-						<table style="font-size: 14px;" class="table table-striped">
+						<table class="table table-striped table-nowrap">
 							<thead>
 								<th></th>
 								#foreach($outing in $outings) 
-									<th>
+									<td>
 										#parse('includes/outing-header.vm')
-									</th>
+										<br/>$!outing.notes
+									</td>
 								#end
 							</thead>
 					
@@ -80,6 +92,7 @@
 								</tr>
 							#end
 						</table>
+						
 					#end			
 				#end
 			</div>
