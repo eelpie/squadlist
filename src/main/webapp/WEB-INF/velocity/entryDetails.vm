@@ -30,7 +30,6 @@
 					<tr>
 						<th></th>					
 						<th></th>
-						<th>Date of birth</th>
 						<th>Effective age</th>
 						<th>Weight</th>
 						<th>Rowing pts</th>
@@ -40,22 +39,18 @@
 				</thead>
 									
 				<form>
-					#foreach( $member in $members )
-						
+					#foreach( $member in $members )						
 						<tr>
 							<td><input type="checkbox" class="selected" value="$member.id" /></td>
 					    	<td>#parse('includes/member.vm')</td>
-					    	<td>
+					    	<td>					    
 					    		#if($member.dateOfBirth)
 					    			$dateFormatter.dayMonthYear($member.dateOfBirth)
-					    		#end
-					    	</td>
-					    	<td>
-					    		#if($member.dateOfBirth)
+					    			</br>
 					    			#set($ageGrade = "")				    		
 					    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth))) 
 					    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($member.dateOfBirth)</span>
-					    			<br/>#if($ageGrade) $ageGrade #end
+					    			#if($ageGrade) <br/> $ageGrade #end
 					    		#end
 					    	</td>
 					    	<td>$!member.weight</td>
