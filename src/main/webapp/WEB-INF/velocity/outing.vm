@@ -20,8 +20,10 @@
 			#outingsNav()
 		</div>
 		
-		<div class="col-xs-9">
-			<span class="pull-right">
+		<div class="col-xs-9">			
+			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
+			
+			<span>
 				#if($permissionsHelper.hasOutingPermission($outing, 'EDIT_OUTING'))				
 					<a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a>
 					#if($outing.closed) 
@@ -32,7 +34,7 @@
 						| <a href="$urlBuilder.deleteOuting($outing)">Delete outing</a>
 				#end
 			</span>
-			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
+			
 			<p>$!outing.notes</p>	
 		
 			#if($outing.closed)
