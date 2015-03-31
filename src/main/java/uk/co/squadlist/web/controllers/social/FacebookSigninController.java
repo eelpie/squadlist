@@ -24,6 +24,7 @@ import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.DefaultWebRequestor;
@@ -105,6 +106,10 @@ public class FacebookSigninController {
 
 	@RequestMapping(value="/social/facebook/signin/callback", method=RequestMethod.GET)
 	public ModelAndView facebookSigninCallback(@RequestParam(required=true) String code, @RequestParam(required=true) String state) throws IOException {
+		if (Strings.isNullOrEmpty(code) || Strings.isNullOrEmpty(state)) {
+			return redirectToSignin();
+		}
+		
 		log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
 
 		com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.facebookSigninCallbackUrl());
@@ -121,7 +126,7 @@ public class FacebookSigninController {
 
 		return new ModelAndView(new RedirectView(urlBuilder.applicationUrl("/")));	// TODO can get normal redirect to wanted page?
 	}
-
+	
 	private void setLoggedInSpringUser(final Member linkedMember) {	// TODO this is abit of a grey area.
 		log.info("Authenticating user: " + linkedMember);
 		Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
@@ -146,6 +151,10 @@ public class FacebookSigninController {
 	private com.restfb.types.User getFacebookUserById(com.restfb.FacebookClient.AccessToken facebookUserAccessToken) {
          final FacebookClient facebookClient = new DefaultFacebookClient(facebookUserAccessToken.getAccessToken());
          return facebookClient.fetchObject("me", com.restfb.types.User.class);
+	}
+	
+	private ModelAndView redirectToSignin() {
+		return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
 	}
 
 	private ModelAndView redirectToSocialSettings() {
