@@ -147,7 +147,7 @@ public class AdminController {
     	for (Member member : api.getMembers()) {
     		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), member.getEmailAddress()}));
 		}
-    	csvOutputRenderer.renderCsvResponse(response, rows);
+		csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Email"), rows);
 	}
 
 	private List<Member> extractAdminUsersFrom(List<Member> members) {

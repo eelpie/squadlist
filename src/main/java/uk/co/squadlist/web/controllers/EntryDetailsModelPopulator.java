@@ -70,4 +70,8 @@ public class EntryDetailsModelPopulator {
 		return rows;
 	}
 
+	public List<String> getEntryDetailsHeaders() {
+		return Lists.newArrayList("Date of birth", "Effective age", "Weight", "Rowing points", "Rowing status", "Sculling points", "Sculling status", "Registration number");
+	}
+
 }

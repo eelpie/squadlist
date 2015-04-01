@@ -165,7 +165,7 @@ public class OutingsController {
     				outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
     				}));
 		}
-    	csvOutputRenderer.renderCsvResponse(response, rows);
+    	csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("Date", "Squad", "Member", "Role", "Availability"), rows);
     }
 
 	@RequiresPermission(permission=Permission.ADD_OUTING)

@@ -31,21 +31,21 @@ import com.google.common.collect.Lists;
 
 @Controller
 public class EntryDetailsController {
-		
+
 	private final static Logger log = Logger.getLogger(EntryDetailsController.class);
-		
+
 	private InstanceSpecificApiClient api;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
 	private GoverningBody governingBody;
 	private CsvOutputRenderer csvOutputRenderer;
-	
+
 	public EntryDetailsController() {
 	}
-	
+
 	@Autowired
-	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, 
+	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
 			EntryDetailsModelPopulator entryDetailsModelPopulator, GoverningBody governingBody,
 			CsvOutputRenderer csvOutputRenderer) {
 		this.api = api;
@@ -55,22 +55,22 @@ public class EntryDetailsController {
 		this.governingBody = governingBody;
 		this.csvOutputRenderer = csvOutputRenderer;
 	}
-	
+
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getView("entryDetails");
     	mv.addObject("squads", api.getSquads());
     	mv.addObject("governingBody", governingBody);
-    	
+
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 		entryDetailsModelPopulator.populateModel(squadToShow, mv);
     	return mv;
     }
-	
+
 	@RequestMapping("/entrydetails/ajax")
 	public ModelAndView ajax(@RequestBody String json) throws Exception {
 		List<Member> selectedMembers = Lists.newArrayList();
-		
+
 		JsonNode readTree = new ObjectMapper().readTree(json);
 		Iterator<JsonNode> iterator = readTree.iterator();
 		while (iterator.hasNext()) {
@@ -79,30 +79,30 @@ public class EntryDetailsController {
 
 		List<String> rowingPoints = Lists.newArrayList();
 		List<String> scullingPoints = Lists.newArrayList();
-		for (Member member: selectedMembers) {			
+		for (Member member: selectedMembers) {
 			rowingPoints.add(member.getRowingPoints());
-			scullingPoints.add(member.getScullingPoints());			
+			scullingPoints.add(member.getScullingPoints());
 		}
-		
+
 		final ModelAndView mv = viewFactory.getView("entryDetailsAjax");
 		if (!selectedMembers.isEmpty()) {
 			mv.addObject("members", selectedMembers);
-			
+
 			int crewSize = selectedMembers.size();
 			final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
 			mv.addObject("ok", isFullBoat);
 			if (isFullBoat) {
 				mv.addObject("rowingPoints", governingBody.getTotalPoints(rowingPoints));
 				mv.addObject("rowingStatus", governingBody.getRowingStatus(rowingPoints));
-				
+
 				mv.addObject("scullingPoints", governingBody.getTotalPoints(scullingPoints));
 				mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
-				
+
 				List<Date> datesOfBirth = Lists.newArrayList();
 				for (Member member: selectedMembers) {
 					datesOfBirth.add(member.getDateOfBirth());
 				}
-				
+
 				Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
 				if (effectiveAge != null) {
 					mv.addObject("effectiveAge", effectiveAge);
@@ -112,28 +112,28 @@ public class EntryDetailsController {
 		}
 		return mv;
 	}
-	
+
 	@RequestMapping(value="/entrydetails/{squadId}.csv", method=RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     	final List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
-    	
+
 		List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
-		csvOutputRenderer.renderCsvResponse(response, entryDetailsRows);
+		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
 	}
-	
+
 	@RequestMapping(value="/entrydetails/selected.csv", method=RequestMethod.GET)
     public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
 		log.info("Selected members: " + members);
-    	List<Member> selectedMembers = Lists.newArrayList();    	
+    	List<Member> selectedMembers = Lists.newArrayList();
 		final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
     	while(iterator.hasNext()) {
     		final String selectedMemberId = iterator.next();
     		log.info("Selected member id: " + selectedMemberId);
 			selectedMembers.add(api.getMemberDetails(selectedMemberId));
     	}
-    	
-		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
+
+		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
 	}
-	
+
 }

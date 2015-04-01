@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CsvOutputRenderer {
-	
+
 	private CSVLinePrinter csvLinePrinter;
-	
+
 	@Autowired
 	public CsvOutputRenderer(CSVLinePrinter csvLinePrinter) {
 		this.csvLinePrinter = csvLinePrinter;
 	}
-	
-	public void renderCsvResponse(HttpServletResponse response, final List<List<String>> rows) throws IOException {
+
+	public void renderCsvResponse(HttpServletResponse response, final List<String> headings, final List<List<String>> rows) throws IOException {
 		final String output = csvLinePrinter.printAsCSVLine(rows);
     	response.setContentType("text/csv");
     	PrintWriter writer = response.getWriter();
@@ -27,5 +27,5 @@ public class CsvOutputRenderer {
 		writer.flush();
 		return;
 	}
-	
+
 }
