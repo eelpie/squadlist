@@ -20,7 +20,7 @@ public class CsvOutputRenderer {
 	}
 
 	public void renderCsvResponse(HttpServletResponse response, final List<String> headings, final List<List<String>> rows) throws IOException {
-		final String output = csvLinePrinter.printAsCSVLine(rows);
+		final String output = csvLinePrinter.printAsCSV(rows, headings);
     	response.setContentType("text/csv");
     	PrintWriter writer = response.getWriter();
 		writer.print(output);

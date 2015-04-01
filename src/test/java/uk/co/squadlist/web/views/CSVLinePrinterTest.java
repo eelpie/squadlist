@@ -12,14 +12,16 @@ import com.google.common.collect.Lists;
 public class CSVLinePrinterTest {
 
 	@Test
-	public void canRenderCSVLine() throws Exception {		
+	public void canRenderCSVWithHeaders() throws Exception {
 		final String[] fields = {"a", "b,c", "c"};
 		final List<List<String>> rows = Lists.newArrayList();
 		rows.add(Lists.newArrayList(Arrays.asList(fields)));
-		
-		final String cvs = new CSVLinePrinter().printAsCSVLine(rows);
-		
-		assertTrue(cvs.contains("a,\"b,c\",c"));
+
+		List<String> headers = Lists.newArrayList("h1", "h2", "h3");
+		final String csv = new CSVLinePrinter().printAsCSV(rows, headers);
+
+		assertTrue(csv.startsWith("h1,h2,h3"));
+		assertTrue(csv.contains("a,\"b,c\",c"));
 	}
 
 }
