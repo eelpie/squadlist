@@ -124,8 +124,7 @@ public class MyOutingsController {
     	return mv;
     }
 
-	private List<RssOuting> buildRssItemsFor(
-			final List<OutingAvailability> availabilityFor) {
+	private List<RssOuting> buildRssItemsFor(final List<OutingAvailability> availabilityFor) {
 		List<RssOuting> outings = Lists.newArrayList();
 		for (OutingAvailability outingAvailability : availabilityFor) {
 			outings.add(new RssOuting(outingAvailability.getOuting(), urlBuilder.outingUrl(outingAvailability.getOuting())));					
