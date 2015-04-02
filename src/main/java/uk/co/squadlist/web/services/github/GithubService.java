@@ -22,7 +22,7 @@ public class GithubService {
 	
 	private final static Logger log = Logger.getLogger(GithubService.class);
 	
-	private static final String GITHUB_REPO = "tonytw1/squadlist";
+	private static final String GITHUB_REPO = "eelpie/squadlist";
 	
 	private GitHub github;
 	
