@@ -71,7 +71,9 @@ public class EntryDetailsModelPopulator {
 	}
 
 	public List<String> getEntryDetailsHeaders() {
-		return Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Weight", "Rowing points", "Rowing status", "Sculling points", "Sculling status", "Registration number");
+		return Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Age grade", 
+				"Weight", "Rowing points", "Rowing status",
+				"Sculling points", "Sculling status", "Registration number");
 	}
 
 }
