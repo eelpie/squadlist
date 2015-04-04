@@ -13,6 +13,7 @@ public class MemberDetails {
 	private String weight;	// TODO validate
 	private List<MemberSquad> squads;
 	private String profileImage;
+	private String postcode;
 	
 	public String getFirstName() {
 		return firstName;
@@ -166,7 +167,14 @@ public class MemberDetails {
 	public void setProfileImage(String profileImage) {
 		this.profileImage = profileImage;
 	}
-
+	
+	public String getPostcode() {
+		return postcode;
+	}
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
+	}
+	
 	@Override
 	public String toString() {
 		return "MemberDetails [firstName=" + firstName + ", lastName="

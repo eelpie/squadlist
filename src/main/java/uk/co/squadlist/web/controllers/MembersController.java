@@ -200,8 +200,8 @@ public class MembersController {
 		memberDetails.setScullingPoints(member.getScullingPoints());
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
 
-		log.info(member.getSquads());
-
+		memberDetails.setPostcode(member.getAddress() != null ? member.getAddress().get("postcode") : null);
+		
 		List<MemberSquad> memberSquads = Lists.newArrayList();
 		for(Squad squad : member.getSquads()) {
 			memberSquads.add(new MemberSquad(squad.getId()));
@@ -288,6 +288,8 @@ public class MembersController {
 			member.setSquads(squads);
 		}
 
+		member.getAddress().put("postcode", memberDetails.getPostcode());
+		
 		log.info("Submitting updated member: " + member);
 		api.updateMemberDetails(member);
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
