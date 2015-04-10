@@ -61,7 +61,18 @@
 			#else
 				<p>No squads have been added.</p>
 			#end
-					
+			
+			<h4>Boats</h4>		
+			#if($boats && !$boats.isEmpty())
+				<ul>
+					#foreach( $squad in $squads )
+						<li><$boat.name</a></li>
+					#end
+				</ul>
+			#else
+				<p>No boats have been added.</p>
+			#end
+								
 			<hr/>
 
 			<span class="pull-right">

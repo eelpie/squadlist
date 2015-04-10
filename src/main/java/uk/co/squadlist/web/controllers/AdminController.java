@@ -83,6 +83,7 @@ public class AdminController {
     	mv.addObject("instance", api.getInstance());
     	mv.addObject("governingBody", governingBody);
     	mv.addObject("statistics", api.statistics());
+    	mv.addObject("boats", api.getBoats());
 
     	mv.addObject("openIssues", githubService.getOpenIssues());
     	mv.addObject("closedIssues", githubService.getClosedIssues());

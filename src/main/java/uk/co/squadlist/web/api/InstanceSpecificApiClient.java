@@ -16,7 +16,6 @@ import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
-import uk.co.squadlist.web.annotations.Timed;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidInstanceException;
@@ -29,6 +28,7 @@ import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
+import uk.co.squadlist.web.model.Boat;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -50,8 +50,11 @@ public class InstanceSpecificApiClient {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
 	}
-
-	@Timed
+	
+	public List<Boat> getBoats() {
+		return api.getBoats(instanceConfig.getInstance());
+	}
+	
 	public List<Squad> getSquads() {
 		return api.getSquads(instanceConfig.getInstance());
 	}
@@ -218,5 +221,5 @@ public class InstanceSpecificApiClient {
 	public void updateInstance(Instance instance) {
 		api.updateInstance(instance);
 	}
-
+	
 }
