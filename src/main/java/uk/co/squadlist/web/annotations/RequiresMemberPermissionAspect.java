@@ -17,33 +17,33 @@ import uk.co.squadlist.web.services.PermissionsService;
 @Component
 @Aspect
 public class RequiresMemberPermissionAspect {
-	
+
 	private final static Logger log = Logger.getLogger(RequiresMemberPermissionAspect.class);
-	
+
 	private LoggedInUserService loggedInUserService;
 	private PermissionsService permissionsService;
 
 	@Autowired
-	public RequiresMemberPermissionAspect(LoggedInUserService loggedInUserService, PermissionsService permissionsService) {		
+	public RequiresMemberPermissionAspect(LoggedInUserService loggedInUserService, PermissionsService permissionsService) {
 		this.loggedInUserService = loggedInUserService;
 		this.permissionsService = permissionsService;
 	}
-	
+
 	@Before("@annotation( requiresMemberPermissionAnnotation ) ")
-	public void processSystemRequest(final JoinPoint jp, RequiresMemberPermission requiresMemberPermissionAnnotation) throws Throwable {		
-		try {						
-			MethodSignature methodSignature = (MethodSignature) jp.getSignature();	
+	public void processSystemRequest(final JoinPoint jp, RequiresMemberPermission requiresMemberPermissionAnnotation) throws Throwable {
+		try {
+			MethodSignature methodSignature = (MethodSignature) jp.getSignature();
 			Permission permission = requiresMemberPermissionAnnotation.permission();
 			String memberId = (String) jp.getArgs()[0];
-			
+
 			final Member loggedInMember = loggedInUserService.getLoggedInMember();
 			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInMember, permission, memberId);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
-			
+			log.debug(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
+
 			if (!hasPermission) {
 				throw new PermissionDeniedException();
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e);
 			throw e;
