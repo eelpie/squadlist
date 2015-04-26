@@ -33,7 +33,7 @@
 	
 	<p>Registration number: $!member.registrationNumber</p>
 	#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber)) 		
-	#if($registrationNumberProblems != '')
+	#if($registrationNumberProblems && $registrationNumberProblems != '')
 		<div class="alert alert-danger">
 			$registrationNumberProblems
 		</div>
