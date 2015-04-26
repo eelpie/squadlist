@@ -46,6 +46,7 @@
 						 		<option value="9">9 weeks
 						 		<option value="10">10 weeks
 						 		<option value="11">11 weeks						 		
+						 		<option value="12">12 weeks						 		
 						 	</select>
 						</div>
 						#foreach($error in $status.errorMessages)<div class="alert alert-warning">$error</div>#end						
