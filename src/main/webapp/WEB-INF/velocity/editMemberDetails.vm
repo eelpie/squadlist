@@ -70,6 +70,13 @@
 				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
 															
 				#inputRow('member.registrationNumber', 'Registration number')				
+				#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber)) 		
+	    		#if($registrationNumberProblems != '')
+		    		<div class="alert alert-danger">
+		    			$registrationNumberProblems
+		    		</div>
+		    	#end
+		    			    											
 				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)				
 				#selectRow('Sculling', 'member.sculling', $yesNoOptions)
 				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)

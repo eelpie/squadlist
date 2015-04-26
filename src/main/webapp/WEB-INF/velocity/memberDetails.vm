@@ -32,6 +32,13 @@
 	<p>Weight: $!member.weight</p>
 	
 	<p>Registration number: $!member.registrationNumber</p>
+	#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber)) 		
+	#if($registrationNumberProblems != '')
+		<div class="alert alert-danger">
+			$registrationNumberProblems
+		</div>
+	#end
+		
 	<p>Rowing points: $!member.rowingPoints
 		#if($member.rowingPoints && $governingBody.getRowingStatus($member.rowingPoints)) 
 			($governingBody.getRowingStatus($member.rowingPoints))
