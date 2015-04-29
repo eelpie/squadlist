@@ -62,18 +62,13 @@
 					    	</td>
 					    	<td>
 					    		#set($registrationNumberProblems = '')
-					    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))
-					    	
-					    		
-					    		#if($registrationNumberProblems != '')
+					    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))				    		
+					    		#if($registrationNumberProblems && $registrationNumberProblems != '')
+						    		$!member.registrationNumber
 						    		<div class="alert alert-danger">
-						    			$!member.registrationNumber<br/>
 						    			$registrationNumberProblems
-						    		</div>
-						    	#else				    	
-				    				$!member.registrationNumber
-						    	#end
-						    					    		
+						    		</div>						    	
+						    	#end						    					    		
 					    	</td>
 					    </tr>   
 					    
