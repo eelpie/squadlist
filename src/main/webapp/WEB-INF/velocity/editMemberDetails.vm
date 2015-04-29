@@ -103,9 +103,7 @@
 	        	      	</div>
 					</div>
 				#end
-				
-				#inputRow("member.postcode", "Postcode")
-																							
+																											
 				<div class="control-group">
 					<div class="col-sm-2">
 					</div>
