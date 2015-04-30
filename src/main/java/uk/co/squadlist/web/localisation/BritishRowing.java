@@ -209,7 +209,5 @@ public class BritishRowing implements GoverningBody {
 		}
 		return Integer.parseInt(points);
 	}
-
-
-
+	
 }
