@@ -27,7 +27,10 @@
 			
 		<div class="col-xs-6">
 			<h5>Age grades</h5>		
-			#table($ageGrades)		
+			#table($ageGrades)
+			
+			<h5>Effective age</h5>
+			<p>$governingBody.effectiveAgeDescription</p>			
 		</div>
 	</div>
 	

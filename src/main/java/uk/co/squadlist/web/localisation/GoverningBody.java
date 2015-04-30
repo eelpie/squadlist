@@ -18,6 +18,8 @@ public interface GoverningBody {
 	public String getScullingStatus(List<String> scullingPoints);
 
 	public int getEffectiveAge(Date dateOfBirth);
+	public String getEffectiveAgeDescription();
+	
 	public String getAgeGrade(int age);
 	public String checkRegistrationNumber(String registrationNumber);
 	public String getStatusPointsReference();
