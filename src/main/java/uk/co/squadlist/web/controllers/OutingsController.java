@@ -37,6 +37,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.OutingClosedException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.AvailabilityOption;
@@ -169,7 +170,7 @@ public class OutingsController {
     }
 
 	@RequiresPermission(permission=Permission.ADD_OUTING)
-	@RequestMapping(value="/outings/new", method=RequestMethod.GET)
+	@RequestMapping(value="/outings/new", method=RequestMethod.GET)	// TODO fails hard if no squads are available
     public ModelAndView newOuting() throws Exception {
 		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
 		final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
@@ -289,13 +290,14 @@ public class OutingsController {
 		return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
 	}
 
-	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException {
+	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
 		final ModelAndView mv = viewFactory.getView("newOuting");
 		mv.addObject("squads", api.getSquads());
 		final Squad squad = preferedSquadService.resolveSquad(null);
 		mv.addObject("squad", squad);
 		mv.addObject("outingMonths", getOutingMonthsFor(squad));
 		mv.addObject("outing", outingDetails);
+		mv.addObject("instance", api.getInstance());
 		return mv;
 	}
 
