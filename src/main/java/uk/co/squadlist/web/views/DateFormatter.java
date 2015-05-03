@@ -19,7 +19,7 @@ public class DateFormatter {
 	}
 	
 	public String timeSince(Date date) {
-		return dateFormatter.timeSince(date);
+		return getDateFormatter().timeSince(date);
 	}
 	
 	public String month(String month) {
@@ -32,15 +32,19 @@ public class DateFormatter {
 	}
 
 	public String dayMonthYear(Date date) {
-		return dateFormatter.dayMonthYear(date);
+		return getDateFormatter().dayMonthYear(date);
 	}
 
 	public String dayMonthYearTime(Date date) {
-		return dateFormatter.dayMonthYearTime(date);
+		return getDateFormatter().dayMonthYearTime(date);
 	}
 
 	public String fullMonthYear(Date date) {
 		return fullMonthYear(date);
+	}
+	
+	private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
+		return dateFormatter;
 	}
 
 }
