@@ -8,19 +8,16 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
+import uk.co.squadlist.web.Context;
 
 @Component
 public class DateFormatter {
-
-	private static DateTimeZone timeZone = DateTimeZone.forID("Europe/London");	// TODO needs to be aware of instance timezone
 	
-	private final InstanceSpecificApiClient api;
+	private final Context context;
 	
 	@Autowired
-	public DateFormatter(InstanceSpecificApiClient api) {
-		this.api = api;
+	public DateFormatter(Context context) {
+		this.context = context;
 	}
 	
 	public String timeSince(Date date) {
@@ -33,9 +30,9 @@ public class DateFormatter {
 	}
 	
 	public String dayMonthTime(Date date) {
-		return new DateTime(date, timeZone).toString("EEE dd MMM kk:mm");
+		return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
 	}
-
+	
 	public String dayMonthYear(Date date) {
 		return getDateFormatter().dayMonthYear(date);
 	}
@@ -49,11 +46,7 @@ public class DateFormatter {
 	}
 	
 	private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
-		try {
-			return new uk.co.eelpieconsulting.common.dates.DateFormatter(api.getInstance().getTimeZone());
-		} catch (UnknownInstanceException e) {
-			throw new RuntimeException(e);
-		}
+		return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());
 	}
-
+	
 }
