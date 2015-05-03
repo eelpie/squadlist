@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
@@ -55,6 +54,7 @@ import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CSVLinePrinter;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
+import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 

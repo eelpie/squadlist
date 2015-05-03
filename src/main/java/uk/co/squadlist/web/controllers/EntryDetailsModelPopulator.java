@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -15,6 +14,7 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
+import uk.co.squadlist.web.views.DateFormatter;
 
 import com.google.common.collect.Lists;
 
@@ -52,7 +52,6 @@ public class EntryDetailsModelPopulator {
 	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
 		final List<List<String>> rows = Lists.newArrayList();
 		for (Member member : members) {
-
     		final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;
     		final String ageGrade = effectiveAge != null ? governingBody.getAgeGrade(effectiveAge) : null;
 
