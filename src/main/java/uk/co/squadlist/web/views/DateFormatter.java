@@ -7,11 +7,18 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
 
-// TODO needs to be aware of instance timezone
 @Component
 public class DateFormatter extends uk.co.eelpieconsulting.common.dates.DateFormatter {
 
-	private static DateTimeZone timeZone = DateTimeZone.forID("Europe/London");
+	private static DateTimeZone timeZone = DateTimeZone.forID("Europe/London");	// TODO needs to be aware of instance timezone
+	
+	public DateFormatter() {
+		super(timeZone);
+	}
+	
+	public DateFormatter(DateTimeZone timeZone) {
+		super(timeZone);
+	}
 
 	public static String month(String month) {
 		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);
