@@ -5,17 +5,22 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 
 @Component
 public class DateFormatter {
 
 	private static DateTimeZone timeZone = DateTimeZone.forID("Europe/London");	// TODO needs to be aware of instance timezone
 	
-	private uk.co.eelpieconsulting.common.dates.DateFormatter dateFormatter;
+	private final InstanceSpecificApiClient api;
 	
-	public DateFormatter() {
-		this.dateFormatter = new uk.co.eelpieconsulting.common.dates.DateFormatter(timeZone);
+	@Autowired
+	public DateFormatter(InstanceSpecificApiClient api) {
+		this.api = api;
 	}
 	
 	public String timeSince(Date date) {
@@ -40,11 +45,15 @@ public class DateFormatter {
 	}
 
 	public String fullMonthYear(Date date) {
-		return fullMonthYear(date);
+		return getDateFormatter().fullMonthYear(date);
 	}
 	
 	private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
-		return dateFormatter;
+		try {
+			return new uk.co.eelpieconsulting.common.dates.DateFormatter(api.getInstance().getTimeZone());
+		} catch (UnknownInstanceException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
