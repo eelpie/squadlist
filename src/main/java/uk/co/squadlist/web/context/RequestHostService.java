@@ -1,4 +1,4 @@
-package uk.co.squadlist.web.api;
+package uk.co.squadlist.web.context;
 
 import javax.servlet.http.HttpServletRequest;
 

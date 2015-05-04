@@ -8,7 +8,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.co.squadlist.web.Context;
+import uk.co.squadlist.web.context.Context;
 
 @Component
 public class DateFormatter {

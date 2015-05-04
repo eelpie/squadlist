@@ -1,4 +1,4 @@
-package uk.co.squadlist.web;
+package uk.co.squadlist.web.context;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

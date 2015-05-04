@@ -1,4 +1,4 @@
-package uk.co.squadlist.web.api;
+package uk.co.squadlist.web.context;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -7,6 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import uk.co.squadlist.web.context.InstanceConfig;
+import uk.co.squadlist.web.context.RequestHostService;
 
 public class InstanceConfigTest {
 
