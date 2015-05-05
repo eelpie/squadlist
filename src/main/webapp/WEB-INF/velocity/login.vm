@@ -13,9 +13,9 @@
 		<div class="col-xs-12">					
 		   	<form action="$urlBuilder.applicationUrl('/j_spring_security_check')" method="POST" class="form-horizontal" accept-charset="UTF-8">		   	   		      							
 				<div class="form-group">
-				    <label for="currentPassword" class="col-sm-2 control-label">Username</label>
+				    <label for="currentPassword" class="col-sm-2 control-label">$text.text('username')</label>
 				    <div class="col-sm-6">					
-				        <input type="text" class="form-control" name="j_username" placeholder="Username">				      				      					   				
+				        <input type="text" class="form-control" name="j_username" placeholder="$text.text('username')">				      				      					   				
 				    </div>
 				</div>
 				        
