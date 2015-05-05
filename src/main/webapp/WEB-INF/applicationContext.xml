@@ -90,7 +90,7 @@
 				<entry key="loggedInUserService" value-ref="loggedInUserService" />
 				<entry key="permissionsHelper" value-ref="permissionsHelper" />
 				<entry key="squadNamesHelper" value-ref="squadNamesHelper" />
-				<entry key="textHelper" value-ref="textHelper" />
+				<entry key="text" value-ref="textHelper" />
 				<entry key="urlBuilder" value-ref="urlBuilder" />
 			</map>
 		</property>
