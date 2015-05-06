@@ -33,7 +33,7 @@ public class TextHelperTest {
 
 		final String text = textHelper.text("require.access", "Twickenham");
 		
-		assertEquals("If you are a Twickenham member who requires access to this copy of Squadlist please contact your coach", text);
+		assertEquals("If you are a Twickenham member who requires access to this copy of Squadlist please contact your coach.", text);
 	}
 	
 }
