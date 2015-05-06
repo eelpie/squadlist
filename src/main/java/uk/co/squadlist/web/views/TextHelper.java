@@ -58,7 +58,7 @@ public class TextHelper {
 	}
 	
 	private String language() {
-		if ("France/Paris".equals(context.getTimeZone())) {
+		if ("Europe/Paris".equals(context.getTimeZone())) {
 			return FRENCH;
 		}
 		return ENGLISH;

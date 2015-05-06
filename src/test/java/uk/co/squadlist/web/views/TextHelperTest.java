@@ -51,7 +51,7 @@ public class TextHelperTest {
 	
 	@Test
 	public void shouldUseFrenchTextForFrenchContexts() throws Exception {	
-		when(context.getTimeZone()).thenReturn("France/Paris");
+		when(context.getTimeZone()).thenReturn("Europe/Paris");
 		
 		final String text = textHelper.text("login");
 		
