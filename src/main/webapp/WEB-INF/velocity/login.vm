@@ -63,7 +63,7 @@
 		<div class="col-sm-6">
 			<p>
 			<br/>				
-			<p>$text.text('require.access')</p>
+			<p>$text.text('require.access', $instance.name)</p>
 		</div>					
 	</div>				
 	<hr/>
