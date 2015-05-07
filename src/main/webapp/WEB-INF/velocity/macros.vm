@@ -43,23 +43,23 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">		     
 		    		<li #if($selectedTab == 'My outings') class="active" #end>
-		    			<a href="$urlBuilder.applicationUrl('/')">My outings
+		    			<a href="$urlBuilder.applicationUrl('/')">$text.text('my.outings')
 		    				<span id="pendingOutings" class="badge">$!pendingOutingsCount</span>
 		 	 	  		</a>		    	
 			    	</li>			    				    	
 			    	<li>
-			    		<a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}/edit">My details
+			    		<a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}/edit">$text.text('my.details')
 			    			<span id="memberDetailsProblems" class="badge">$!memberDetailsProblems</span>
 			    		</a>		    	
 			    	</li>			    	
-			    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.outingsUrl($preferredSquad)">Outings</a></li>	
-					<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.availabilityUrl($preferredSquad)">Availability</a></li>
-					<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.contactsUrl($preferredSquad)">Contacts</a></li>	
+			    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.outingsUrl($preferredSquad)">$text.text('outings')</a></li>	
+					<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.availabilityUrl($preferredSquad)">$text.text('availability')</a></li>
+					<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.contactsUrl($preferredSquad)">$text.text('contacts')</a></li>	
 					#if($permissionsHelper.hasPermission('VIEW_ENTRY_DETAILS'))
-						<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl("/entrydetails/$preferredSquad.id")">Entry details</a></li>
+						<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl("/entrydetails/$preferredSquad.id")">$text.text('entry.details')</a></li>
 					#end
 					#if($permissionsHelper.hasPermission('VIEW_ADMIN_SCREEN'))				
-						<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">Admin</a></li>
+						<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">$text.text('admin')</a></li>
 					#end					
 			   	</ul>
 			   	<ul class="nav navbar-nav navbar-right">
@@ -69,9 +69,9 @@
 	    			   			<b class="caret"></b>
 	    			   	</a>
 	    			   	<ul class="dropdown-menu">
-							<li><a href="$urlBuilder.changePassword()">Change password</a></li>				
-							<li><a href="$urlBuilder.socialMediaAccounts()">Social accounts</a></li>				
-							<li><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">Logout</a></li>
+							<li><a href="$urlBuilder.changePassword()">$text.text('change.password')</a></li>				
+							<li><a href="$urlBuilder.socialMediaAccounts()">$text.text('social.accounts')</a></li>				
+							<li><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">$text.text('logout')</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -125,7 +125,7 @@
 
 #macro(squadsCheckboxGroup)
 	<div class="form-group">
-	    <label for="${status.expression}" class="col-sm-2 control-label">Squads</label>
+	    <label for="${status.expression}" class="col-sm-2 control-label">$text.text('squads')</label>
 		<div class="col-sm-10">		    				
 			#foreach($squad in $squads)
 				<div class="checkbox">				
@@ -164,5 +164,5 @@
 #end
 
 #macro(cancel $action)
-	<a href="$action"><button class="btn" type="button">Cancel</button></a>
+	<a href="$action"><button class="btn" type="button">$text.text('cancel')</button></a>
 #end

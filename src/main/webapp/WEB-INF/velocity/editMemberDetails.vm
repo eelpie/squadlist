@@ -19,14 +19,14 @@
 			#end
 									
 			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal" accept-charset="UTF-8">				
-				#inputRow("member.firstName", "First name")
-				#inputRow("member.lastName", "Last name")
-				#inputRow("member.knownAs", "Known as")
+				#inputRow("member.firstName", $text.text('first.name'))
+				#inputRow("member.lastName",  $text.text('last.name'))
+				#inputRow("member.knownAs",  $text.text('known.as'))
 				
-				#selectRow('Gender', 'member.gender', $genderOptions)
+				#selectRow($text.text('gender'), 'member.gender', $genderOptions)
 								
 				<div class="form-group">
-				    <label for="inputEmail3" class="col-sm-2 control-label">Date of birth</label>
+				    <label for="inputEmail3" class="col-sm-2 control-label"> $text.text('date.of.birth')</label>
 				    <div class="col-sm-2">
 				    	#springBind("member.dateOfBirthDay")   			
 						<select name="${status.expression}" class="form-control">						
@@ -60,16 +60,16 @@
 					</div>
 				</div>
 				
-				#inputRow("member.emailAddress", "Email address")
-				#inputRow("member.contactNumber", "Contact number")
-				#inputRow("member.emergencyContactName", "Emergency contact name")
-				#inputRow("member.emergencyContactNumber", "Emergency contact number")								
-				
-				#selectRowMap('Weight', 'member.weight', $governingBody.weights)				
+				#inputRow("member.emailAddress", $text.text('email.address'))
+				#inputRow("member.contactNumber", $text.text('contact.number'))
+				#inputRow("member.emergencyContactName", $text.text('emergency.contact.name'))
+				#inputRow("member.emergencyContactNumber", $text.text('emergency.contact.number'))
+												
+				#selectRowMap($text.text('weight'), 'member.weight', $governingBody.weights)				
 								
-				#selectRow('Sweep oar side', 'member.sweepOarSide', $sweepOarSideOptions)
+				#selectRow($text.text('sweep.oar.side'), 'member.sweepOarSide', $sweepOarSideOptions)
 															
-				#inputRow('member.registrationNumber', 'Registration number')				
+				#inputRow('member.registrationNumber', $text.text('registration.number'))				
 				#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber)) 		
 	    		#if($registrationNumberProblems)
 		    		<div class="alert alert-danger">
@@ -77,15 +77,15 @@
 		    		</div>
 		    	#end
 		    			    											
-				#selectRow('Rowing points', 'member.rowingPoints', $pointsOptions)				
-				#selectRow('Sculling', 'member.sculling', $yesNoOptions)
-				#selectRow('Sculling points', 'member.scullingPoints', $pointsOptions)
+				#selectRow($text.text('rowing.points'), 'member.rowingPoints', $pointsOptions)				
+				#selectRow($text.text('sculling'), 'member.sculling', $yesNoOptions)
+				#selectRow($text.text('sculling.points'), 'member.scullingPoints', $pointsOptions)
 					
 				#if($canChangeRole)			
-					#selectRow('Role', 'member.role', $rolesOptions)
+					#selectRow($text.text('role'), 'member.role', $rolesOptions)
 				#else
 					<div  class="form-group">
-					    <label class="col-sm-2 control-label">Role</label>
+					    <label class="col-sm-2 control-label">$text.text('role')</label>
 		    			<div class="col-sm-10">					
 	    	  				$!member.role	
 	        	      	</div>
@@ -95,9 +95,9 @@
 				#if($canChangeSquads)				
 					#springBind("member.squads")															
 					#squadsCheckboxGroup				
-				#else				
-					<div  class="form-group">
-					    <label class="col-sm-2 control-label">Squads</label>
+				#else
+					<div class="form-group">
+					    <label class="col-sm-2 control-label">$text.text('squads')</label>
 		    			<div class="col-sm-10">					
 	    	  				$squadNamesHelper.list($memberSquads)
 	        	      	</div>
@@ -108,7 +108,7 @@
 					<div class="col-sm-2">
 					</div>
 					<div class="controls">
-						<button type="submit" class="btn btn-primary">Update details</button>
+						<button type="submit" class="btn btn-primary">$text.text('update.details')</button>
 						#cancel($urlBuilder.memberUrl($memberId))			
 					</div>
 				</div>				
@@ -123,7 +123,7 @@
 			<form class="form-horizontal" method="POST" action="$urlBuilder.editMemberUrl($memberId)/profileimage"  enctype="multipart/form-data" />
 				<div class="control-group">
 					<div class="col-sm-2">
-					    <label class="col-sm-2 control-label">Profile image</label>
+					    <label class="col-sm-2 control-label">$text.text('profile.image')</label>
 					</div>
 					
 		    		<div class="col-sm-10">		    			
@@ -138,7 +138,7 @@
 		    			#end
 		    			    				
 						<input type="file" name="image" />
-						<button type="submit" class="btn btn-primary">Update profile image</button>							
+						<button type="submit" class="btn btn-primary">$text.text('update.profile.image')</button>							
 	        	      </div>
 				</div>	
 			</form>			
