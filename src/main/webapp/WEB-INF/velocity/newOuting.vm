@@ -9,7 +9,7 @@
 		</div>
 		<div class="col-xs-4">
 			<div class="pull-right">
-				#squadSelect('/outings', 'Outings')
+				#squadSelect('/outings', $text.text('outings'))
 			</div>
 		</div>
 	</div>
@@ -21,7 +21,7 @@
 		</div>
 		
 		<div class="col-xs-10">		
-			<h4>Adding a new outing</h4>
+			<h4>$text.text('adding.a.new.outing')</h4>
 					
 			<form class="form-horizontal" role="form" action="$urlBuilder.applicationUrl('/outings/new')" method="POST" accept-charset="UTF-8">			
 				#parse('includes/outingForm.vm')
@@ -33,20 +33,20 @@
 			    		<div class="checkbox">
 							<label>
 								<input type="checkbox" value="true" name="${status.expression}" #if($status.getValue()) CHECKED #end />
-								This outing repeats for the next
+								$text.text('this.outing.repeats.for.the.next')
 							</label>
 							<select name="repeatsCount">
-						 		<option value="2">2 weeks
-						 		<option value="3">3 weeks
-						 		<option value="4">4 weeks
-						 		<option value="5">5 weeks
-						 		<option value="6">6 weeks
-						 		<option value="7">7 weeks
-						 		<option value="8">8 weeks
-						 		<option value="9">9 weeks
-						 		<option value="10">10 weeks
-						 		<option value="11">11 weeks						 		
-						 		<option value="12">12 weeks						 		
+						 		<option value="2">2 $text.text('weeks')
+						 		<option value="3">3 $text.text('weeks')
+						 		<option value="4">4 $text.text('weeks')
+						 		<option value="5">5 $text.text('weeks')
+						 		<option value="6">6 $text.text('weeks')
+						 		<option value="7">7 $text.text('weeks')
+						 		<option value="8">8 $text.text('weeks')
+						 		<option value="9">9 $text.text('weeks')
+						 		<option value="10">10 $text.text('weeks')
+						 		<option value="11">11 $text.text('weeks')						 		
+						 		<option value="12">12 $text.text('weeks')						 		
 						 	</select>
 						</div>
 						#foreach($error in $status.errorMessages)<div class="alert alert-warning">$error</div>#end						
@@ -58,7 +58,7 @@
 					<div  class="col-sm-2">
 					</div>	
 					<div class="controls">
-						<button type="submit" class="btn btn-primary">Add outing</button>
+						<button type="submit" class="btn btn-primary">$text.text('add.outing')</button>
 						#cancel($urlBuilder.applicationUrl('/outings'))						
 					</div>
 				</div>

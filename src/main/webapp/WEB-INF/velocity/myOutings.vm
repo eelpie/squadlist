@@ -18,16 +18,16 @@
 	<hr/>
 	
 	#if($member.squads.isEmpty()) 
-		<h5>You are not assigned to any squads</h5>	
-		<p>You are not currently assigned to any squads and therefore do not having any outings scheduled.</p>
+		<h5>$text.text('not.assigned.to.any.squads')</h5>	
+		<p>$text.text('no.outing.because.not.assigned.to.any.squads')</p>
 			
 	#else
 	
 		#if($outings.isEmpty())
 		   <div class="row">
 		   		<div class="col-md-12">	   
-					<h5>No current outings</h5>
-					<p>There are no outings scheduled for your squads.</p>			
+					<h5>$text.text('no.current.outings')</h5>
+					<p>$text.text('no.current.outings.for.your.squads')</p>			
 				</div>
 			</div>
 	
