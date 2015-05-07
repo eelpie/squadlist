@@ -12,7 +12,7 @@
 	
 	<div class="row">
 		<div class="col-xs-12">				
-			<p>This copy of Squadlist is localised for <a href="$governingBody.statusPointsReference">$governingBody.name</a> rules.</p>		
+			<p>$text.text('localised.for.governing.body', $governingBody.statusPointsReference, $governingBody.name)</p>		
 		</div>
 	</div>
 		
@@ -29,7 +29,7 @@
 			<h5>Age grades</h5>		
 			#table($ageGrades)
 			
-			<h5>Effective age</h5>
+			<h5>$text.text('effective.age')</h5>
 			<p>$governingBody.effectiveAgeDescription</p>			
 		</div>
 	</div>
