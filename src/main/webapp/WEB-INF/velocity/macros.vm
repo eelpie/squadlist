@@ -3,7 +3,7 @@
 		<ul class="nav nav-pills nav-stacked">
 			<li>
 				#if($permissionsHelper.hasPermission('ADD_OUTING'))			
-					<a href="$urlBuilder.applicationUrl('/outings/new')">Add outing</a>
+					<a href="$urlBuilder.applicationUrl('/outings/new')">$text.text('add.outing')</a>
 				#end				
 			</li>		
 			#if($outingMonths && !$outingMonths.keySet().isEmpty())		
@@ -12,7 +12,7 @@
 					#if($current)
 						<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
 					#end
-					Current</a>
+					$text.text('current')</a>
 				</li>
 				#foreach($outingMonth in $outingMonths.keySet())
 					<li><a href="$urlBuilder.outings($squad, $outingMonth)">															
