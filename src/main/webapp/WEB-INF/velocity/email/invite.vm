@@ -1,4 +1,3 @@
-The $instance.name Availability system can be accessed at:
-$instanceUrl
+$text.text('system.location', $instance.name, $instanceUrl)
 
-Your username is ($member.username) and your initial password is ($initialPassword)
+$text.text('initial.username.and.password', $member.username, $initialPassword)
