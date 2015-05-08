@@ -14,16 +14,16 @@
 		<div class="col-xs-6">				
 			
 			<span class="pull-right">			
-				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">Add member</button></a>
+				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">$text.text('add.member')</button></a>
 			</span>
 			
 			<h4>Members ($activeMembers.size())</h4>			
 			<ul>
 			#foreach( $member in $activeMembers )
 				<li>#parse('includes/member.vm') 
-					| <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a>
+					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
 					| <a href="$urlBuilder.makeInactive($member)">Make inactive</a>
-					| <a href="$urlBuilder.delete($member)">Delete</a>
+					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>
 				</li>
 			#end
 			</ul>
@@ -32,9 +32,9 @@
 			<ul>
 			#foreach( $member in $inactiveMembers )
 				<li>#parse('includes/member.vm') 
-					| <a href="$urlBuilder.memberResetPasswordUrl($member)">Reset password</a>
+					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
 					| <a href="$urlBuilder.makeActive($member)">Make active</a>
-					| <a href="$urlBuilder.delete($member)">Delete</a>					
+					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>					
 				</li>
 			#end
 			</ul>
@@ -54,7 +54,7 @@
 				<ul>
 					#foreach( $squad in $squads )
 						<li><a href="$urlBuilder.editSquadUrl($squad)">$squad.name</a>
-						| <a href="$urlBuilder.delete($squad)">Delete</a>						
+						| <a href="$urlBuilder.delete($squad)">$text.text('delete')</a>						
 						</li>
 					#end
 				</ul>
@@ -97,7 +97,7 @@
 				<li>Club name: $instance.name</li>
 				<li>Time zone: $instance.timeZone</li>
 				<li>Availability visible: $instance.availabilityVisible</li>
-				<li>Governing body: <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
+				<li>$text.text('governing.body'): <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
 				<li>Member ordering: $!instance.memberOrdering</li>
 				
 				<hr/>
