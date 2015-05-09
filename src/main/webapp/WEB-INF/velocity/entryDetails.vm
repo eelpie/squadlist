@@ -89,7 +89,7 @@
 			<p>$text.text('governing.body'): <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a><p/>			
 		</div>
 		<div class="col-xs-6">				
-			<p align="right"><a href="$urlBuilder.entryDetailsCsv($squad)">Export all as CSV</a><p/>
+			<p align="right"><a href="$urlBuilder.entryDetailsCsv($squad)">$text.text('export.all.as.csv')</a><p/>
 		</div>
 	</div>
 	

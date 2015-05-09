@@ -5,7 +5,7 @@
 
 	<div class="row">
 		<div class="col-xs-8">
-			<h4>Admin</h4>
+			<h4>$text.text('admin')</h4>
 		</div>	
 	</div>
 	<hr/>
@@ -17,36 +17,36 @@
 				<a href="$urlBuilder.newMemberUrl()"><button class="btn btn-primary" type="button">$text.text('add.member')</button></a>
 			</span>
 			
-			<h4>Members ($activeMembers.size())</h4>			
+			<h4>$text.text('members') ($activeMembers.size())</h4>			
 			<ul>
 			#foreach( $member in $activeMembers )
 				<li>#parse('includes/member.vm') 
 					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
-					| <a href="$urlBuilder.makeInactive($member)">Make inactive</a>
+					| <a href="$urlBuilder.makeInactive($member)">$text.text('make.inactive')</a>
 					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>
 				</li>
 			#end
 			</ul>
 			
-			<h4>Inactive members ($inactiveMembers.size())</h4>
+			<h4>$text.text('inactive.members') ($inactiveMembers.size())</h4>
 			<ul>
 			#foreach( $member in $inactiveMembers )
-				<li>#parse('includes/member.vm') 
+				<li>#parse('includes/member.vm')
 					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
-					| <a href="$urlBuilder.makeActive($member)">Make active</a>
+					| <a href="$urlBuilder.makeActive($member)">$text.text('make.active')</a>
 					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>					
 				</li>
 			#end
 			</ul>
 								
-			<a href="/admin/export/members.csv">Export as CSV</a>
+			<a href="/admin/export/members.csv">$text.text('export.all.as.csv')</a>
 					
 		</div>
 			
 		<div class="col-xs-6">
 							
 			<span class="pull-right">
-				<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">Add squad</button></a>
+				<a href="$urlBuilder.newSquadUrl()"><button class="btn btn-primary" type="button">$text.text('add.squad')</button></a>
 			</span>
 					
 			<h4>Squads</h4>		
@@ -77,10 +77,10 @@
 			<hr/>
 
 			<span class="pull-right">
-				<a href="$urlBuilder.editAdmins()"><button class="btn btn-primary" type="button">Edit admins</button></a>
+				<a href="$urlBuilder.editAdmins()"><button class="btn btn-primary" type="button">$text.text('edit.admins')</button></a>
 			</span>
 							
-			<h4>Admins</h4>			
+			<h4>$text.text('admins')</h4>			
 			<ul>
 			#foreach($member in $admins)
 				<li>#parse('includes/member.vm')</li>
@@ -113,8 +113,8 @@
 						#foreach($availabilityOption in $availabilityOptions )
 							<li>							
 								<span class="label label-info" style="background-color: $cssHelper.classFor($availabilityOption)">$availabilityOption.label</span>
-								| <a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">Edit</a>
-								| <a href="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)">Delete</a>
+								| <a href="$urlBuilder.editAvailabilityOptionUrl($availabilityOption)">$text.text('edit')</a>
+								| <a href="$urlBuilder.deleteAvailabilityOptionUrl($availabilityOption)">$text.text('delete')</a>
 							</li>
 						#end
 					</ul>

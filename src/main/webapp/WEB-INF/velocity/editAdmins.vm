@@ -5,7 +5,7 @@
 
 	<div class="row">
 		<div class="col-xs-8">
-			<h4>Edit admins</h4>
+			<h4>$text.text('edit.admins')</h4>
 		</div>		
 	</div>
 	<hr/>
@@ -40,15 +40,14 @@
 											
 						<div class="row">
 							<div class="col-xs-5">
-								<h5>Admins</h5>								
+								<h5>$text.text('admins')</h5>								
 							</div>
 							<div class="col-xs-5">
-								<h5>Members</h5>
+								<h5>$text.text('members')</h5>
 							</div>
 						</div>
 													
-						<div class="row">
-						
+						<div class="row">						
 							<div class="col-xs-5">
 								<ul id="sortable1" class="connectedSortable">
 									#foreach($member in $admins)

@@ -25,13 +25,13 @@
 						
 			<span>
 				#if($permissionsHelper.hasOutingPermission($outing, 'EDIT_OUTING'))				
-					<a href="$urlBuilder.outingEditUrl($outing)">Edit outing</a>
+					<a href="$urlBuilder.outingEditUrl($outing)">$text.text('edit.outing')</a>
 					#if($outing.closed) 
-						| <a href="$urlBuilder.outingReopenUrl($outing)">Reopen outing</a> 
+						| <a href="$urlBuilder.outingReopenUrl($outing)">$text.text('reopen.outing')</a> 
 					#else
-						| <a href="$urlBuilder.outingCloseUrl($outing)">Close outing</a>
+						| <a href="$urlBuilder.outingCloseUrl($outing)">$text.text('close.outing')</a>
 					#end
-						| <a href="$urlBuilder.deleteOuting($outing)">Delete outing</a>
+						| <a href="$urlBuilder.deleteOuting($outing)">$text.text('delete.outing')</a>
 				#end
 			</span>
 			
