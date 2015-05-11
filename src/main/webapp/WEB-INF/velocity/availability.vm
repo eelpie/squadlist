@@ -29,7 +29,7 @@
 						#if($current)
 							<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
 						#end
-						Current</a>
+						$text.text('current')</a>
 					</li>
 					#foreach($outingMonth in $outingMonths.keySet())
 						<li><a href="$urlBuilder.availability($squad, $outingMonth)">															
