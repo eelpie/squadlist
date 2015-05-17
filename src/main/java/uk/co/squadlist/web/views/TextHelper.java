@@ -16,6 +16,7 @@ import com.google.common.collect.Maps;
 @Component
 public class TextHelper {
 	
+	private static final String DUTCH = "nl";
 	private static final String ENGLISH = "en";
 	private static final String FRENCH = "fr";
 	
@@ -28,7 +29,7 @@ public class TextHelper {
 		this.context = context;
 		
 		this.text = Maps.newHashMap();
-		for (String availableLanguage : Lists.newArrayList(ENGLISH, FRENCH)) {
+		for (String availableLanguage : Lists.newArrayList(DUTCH, ENGLISH, FRENCH)) {
 			text.put(availableLanguage, propertiesFileParser.readTextPropertiesFromFile(availableLanguage + ".properties"));
 		}
 	}
@@ -57,7 +58,10 @@ public class TextHelper {
 		return key;
 	}
 	
-	private String language() {
+	private String language() {		
+		if ("Europe/Amsterdam".equals(context.getTimeZone())) {
+			return DUTCH;
+		}
 		if ("Europe/Paris".equals(context.getTimeZone())) {
 			return FRENCH;
 		}

@@ -32,6 +32,10 @@ public class TextHelperTest {
 		englishKeys.put("require.access", "If you are a {} member who requires access to this copy of Squadlist please contact your coach.");
 		when(propertiesFileParser.readTextPropertiesFromFile("en.properties")).thenReturn(englishKeys);
 		
+		Map<String, String> dutchKeys = Maps.newHashMap();
+		dutchKeys.put("username", "Gebruikersnaam");
+		when(propertiesFileParser.readTextPropertiesFromFile("nl.properties")).thenReturn(dutchKeys);
+		
 		Map<String, String> frenchKeys = Maps.newHashMap();
 		frenchKeys.put("login", "Connexion");
 		when(propertiesFileParser.readTextPropertiesFromFile("fr.properties")).thenReturn(frenchKeys);
@@ -50,12 +54,17 @@ public class TextHelperTest {
 	}
 	
 	@Test
+	public void shouldUseDutchTextForDutchContexts() throws Exception {	
+		when(context.getTimeZone()).thenReturn("Europe/Amsterdam");
+		
+		assertEquals("Gebruikersnaam", textHelper.text("username"));		
+	}
+	
+	@Test
 	public void shouldUseFrenchTextForFrenchContexts() throws Exception {	
 		when(context.getTimeZone()).thenReturn("Europe/Paris");
 		
-		final String text = textHelper.text("login");
-		
-		assertEquals("Connexion", text);		
+		assertEquals("Connexion", textHelper.text("login"));		
 	}
 	
 }
