@@ -70,6 +70,8 @@ public class AvailabilityController {
 	    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
 	    		startDate = monthDateTime.toDate();
 	    		endDate = monthDateTime.plusMonths(1).toDate();
+	    	} else {
+	    		mv.addObject("current", true);
 	    	}
 
 	    	final List<OutingWithSquadAvailability> squadAvailability = api.getSquadAvailability(squad.getId(), startDate, endDate);
