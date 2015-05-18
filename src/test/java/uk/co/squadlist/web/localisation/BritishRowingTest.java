@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.localisation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -33,17 +32,27 @@ public class BritishRowingTest {
 	public void shouldReturnNullProblemsForValidRegistrationNumbers() throws Exception {
 		assertNull("Expired registration", britishRowing.checkRegistrationNumber("201805G1020791"));
 	}
-	
+
 	@Test
 	public void shouldReturnNullProblemsForNonSetRegistrationNumber() throws Exception {
 		assertNull("Expired registration", britishRowing.checkRegistrationNumber(null));
 	}
-	
+
 	@Test
 	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() throws Exception {
 		assertEquals(40, britishRowing.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
 		assertEquals(40, britishRowing.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
 		assertEquals(40, britishRowing.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
+	}
+
+	@Test
+	public void canDetermineAgeGradeFromEffectiveAge() throws Exception {
+		assertEquals("Masters B", britishRowing.getAgeGrade(40));
+	}
+
+	@Test
+	public void canDetermineAgeGradeFromDateOfBirth() throws Exception {
+		assertEquals("Masters B", britishRowing.getAgeGrade(new DateTime(1975, 2, 1, 0, 0, 0, 0).toDate()));
 	}
 
 	@Test

@@ -95,13 +95,13 @@ public class BritishRowing implements GoverningBody {
 	public String getScullingStatus(List<String> scullingPoints) {
 		return getRowingStatus(scullingPoints);
 	}
-	
+
 	@Override
-	public String getEffectiveAgeDescription() {		
+	public String getEffectiveAgeDescription() {
 		return "Effective age is measured in whole years attained during the current calendar year.\n" +
 				"ie. if you are 40 on 1 June 2010 then you would be deemed to be 40 (or Masters B) for all events between 1 Jan and 31 Dec 2010.";
 	}
-	
+
 	@Override
 	public int getEffectiveAge(Date dateOfBirth) {
 		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
@@ -110,7 +110,7 @@ public class BritishRowing implements GoverningBody {
 		final Years age = Years.yearsBetween(localDateOfBirth, localEndOfYear);
 		return age.getYears();
 	}
-	
+
 	@Override
 	public String getAgeGrade(int age) {
 		for (String mastersGrade : mastersMinimumAges.keySet()) {
@@ -120,6 +120,11 @@ public class BritishRowing implements GoverningBody {
 		}
 
 		return null;
+	}
+
+	@Override
+	public String getAgeGrade(Date dateOfBirth) {
+		return getAgeGrade(getEffectiveAge(dateOfBirth));
 	}
 
 	@Override
@@ -209,5 +214,5 @@ public class BritishRowing implements GoverningBody {
 		}
 		return Integer.parseInt(points);
 	}
-	
+
 }

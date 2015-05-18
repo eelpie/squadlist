@@ -19,8 +19,10 @@ public interface GoverningBody {
 
 	public int getEffectiveAge(Date dateOfBirth);
 	public String getEffectiveAgeDescription();
-	
+
 	public String getAgeGrade(int age);
+	public String getAgeGrade(Date dateOfBirth);
+
 	public String checkRegistrationNumber(String registrationNumber);
 	public String getStatusPointsReference();
 	public Integer getEffectiveAge(List<Date> datesOfBirth);
