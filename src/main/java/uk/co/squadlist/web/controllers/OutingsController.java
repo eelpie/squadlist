@@ -301,7 +301,7 @@ public class OutingsController {
 		return mv;
 	}
 
-	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException {
+	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
     	final ModelAndView mv = viewFactory.getView("editOuting");
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("squad", outing.getSquad());
@@ -309,6 +309,7 @@ public class OutingsController {
     	mv.addObject("outingObject", outing);
     	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
+		mv.addObject("instance", api.getInstance());
 		return mv;
 	}
 
