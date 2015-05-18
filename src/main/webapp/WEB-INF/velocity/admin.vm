@@ -97,11 +97,15 @@
 				<li>Club name: $instance.name</li>
 				<li>Time zone: $instance.timeZone</li>
 				<li>Availability visible: $instance.availabilityVisible</li>
-				<li>$text.text('governing.body'): <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
 				<li>Member ordering: $!instance.memberOrdering</li>
-				
-				<hr/>
-								
+			</ul>
+			<ul>				
+				<li>$text.text('governing.body'): <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
+				<li>Language: $language</li>
+			</ul>
+			<p>Please contact us if you are interested in localising for a different language or governing body.</p>			
+			<hr/>
+											
 				<span class="pull-right">
 					<a href="$urlBuilder.newAvailabilityOptionUrl()"><button class="btn btn-primary" type="button">Add option</button></a>
 				</span>

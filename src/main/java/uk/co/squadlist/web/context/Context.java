@@ -14,9 +14,12 @@ import uk.co.squadlist.web.model.Instance;
 public class Context {
 
 	private static final String INSTANCE = "instance";
+	private static final String DUTCH = "nl";
+	private static final String ENGLISH = "en";
+	private static final String FRENCH = "fr";
 
 	private final static Logger log = Logger.getLogger(Context.class);
-	
+
 	private InstanceSpecificApiClient api;
 
 	private final HttpServletRequest request;
@@ -46,5 +49,15 @@ public class Context {
 		request.setAttribute(INSTANCE, instance);
 		return instance;
 	}
-	
+
+	public String getLanguage() {
+		if ("Europe/Amsterdam".equals(getTimeZone())) {
+			return DUTCH;
+		}
+		if ("Europe/Paris".equals(getTimeZone())) {
+			return FRENCH;
+		}
+		return ENGLISH;
+	}
+
 }

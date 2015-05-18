@@ -20,6 +20,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -50,6 +51,7 @@ public class AdminController {
 	private CsvOutputRenderer csvOutputRenderer;
 	private UrlBuilder urlBuilder;
 	private GithubService githubService;
+	private Context context;
 
 	public AdminController() {
 	}
@@ -57,7 +59,8 @@ public class AdminController {
 	@Autowired
 	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody,
 			ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-			UrlBuilder urlBuilder, GithubService githubService) {
+			UrlBuilder urlBuilder, GithubService githubService,
+			Context context) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
@@ -65,6 +68,7 @@ public class AdminController {
 		this.csvOutputRenderer = csvOutputRenderer;
 		this.urlBuilder = urlBuilder;
 		this.githubService = githubService;
+		this.context = context;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -87,6 +91,7 @@ public class AdminController {
 
     	mv.addObject("openIssues", githubService.getOpenIssues());
     	mv.addObject("closedIssues", githubService.getClosedIssues());
+    	mv.addObject("language", context.getLanguage());
     	return mv;
     }
 
