@@ -78,6 +78,7 @@ public class AvailabilityController {
 	    	mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
 	    	mv.addObject("outings", outings);
 			mv.addObject("outingMonths", api.getSquadOutingMonths(squad.getId()));
+			mv.addObject("month", month);
     	}
 		return mv;
     }
