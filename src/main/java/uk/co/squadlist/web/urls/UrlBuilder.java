@@ -198,6 +198,9 @@ public class UrlBuilder {
 	}
 
 	public String getBaseUrl() {
+		if ("twickenham".equals(instanceConfig.getVhost())) {
+			return "https://avail.twickenhamrc.net";
+		}
 		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());
 	}
 
