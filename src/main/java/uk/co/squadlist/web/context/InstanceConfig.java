@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-
 import com.google.common.base.Strings;
 
 @Component
@@ -13,14 +12,18 @@ public class InstanceConfig {
 
 	private final static Logger log = Logger.getLogger(InstanceConfig.class);
 
-	private final String manuallyConfiguredInstanceToUseForAllRequests;
 
 	private final RequestHostService requestHostService;
+	private CustomInstanceUrls customInstanceUrls;
+
+	private final String manuallyConfiguredInstanceToUseForAllRequests;
 
 	@Autowired
-	public InstanceConfig(RequestHostService requestHostService, @Value("#{squadlist['instance']}") String manuallyConfiguredInstanceToUseForAllRequests) {
+	public InstanceConfig(RequestHostService requestHostService, @Value("#{squadlist['instance']}") String manuallyConfiguredInstanceToUseForAllRequests,
+			CustomInstanceUrls customInstanceUrls) {
 		this.requestHostService = requestHostService;
 		this.manuallyConfiguredInstanceToUseForAllRequests = manuallyConfiguredInstanceToUseForAllRequests;
+		this.customInstanceUrls = customInstanceUrls;
 	}
 
 	public String getInstance() {
@@ -40,8 +43,9 @@ public class InstanceConfig {
 		final String requestHost = requestHostService.getRequestHost();
 		log.debug("Request host is: " + requestHost);
 
-		if ("avail.twickenhamrc.net".equals(requestHost)) {
-			return "twickenham";
+		final String customUrl = customInstanceUrls.customUrl(requestHost);
+		if (customUrl != null) {
+			return customUrl;
 		}
 
 		final String vhostName = requestHost.split("\\.")[0];

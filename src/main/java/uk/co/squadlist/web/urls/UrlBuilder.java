@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
+import uk.co.squadlist.web.context.CustomInstanceUrls;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.AvailabilityOption;
@@ -27,13 +28,16 @@ public class UrlBuilder {
 	private final String baseUrl;
 	private final InstanceConfig instanceConfig;
 	private final SeoLinkBuilder seoLinkBuilder;
+	private final CustomInstanceUrls customInstanceUrls;
 	private String apiUrl;
 
 	@Autowired
-	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder, @Value("#{squadlist['apiUrl']}") String apiUrl) {
+	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder,
+			CustomInstanceUrls customInstanceUrls, @Value("#{squadlist['apiUrl']}") String apiUrl) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
 		this.seoLinkBuilder = seoLinkBuilder;
+		this.customInstanceUrls = customInstanceUrls;
 		this.apiUrl = apiUrl;
 	}
 
@@ -202,8 +206,8 @@ public class UrlBuilder {
 	}
 
 	public String getBaseUrl() {
-		if ("twickenham".equals(instanceConfig.getVhost())) {
-			return "https://avail.twickenhamrc.net";
+		if (customInstanceUrls.hasCustomUrl(instanceConfig.getInstance())) {
+			return "https://" + customInstanceUrls.customUrlForInstance(instanceConfig.getInstance());
 		}
 		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());
 	}

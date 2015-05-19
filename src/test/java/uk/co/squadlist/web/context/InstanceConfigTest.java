@@ -16,12 +16,15 @@ public class InstanceConfigTest {
 	@Mock
 	private RequestHostService requestHostService;
 
+	private CustomInstanceUrls customInstanceUrls;
+
 	private InstanceConfig instanceConfig;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		instanceConfig = new InstanceConfig(requestHostService, null);
+		customInstanceUrls = new CustomInstanceUrls();
+		instanceConfig = new InstanceConfig(requestHostService, null, customInstanceUrls);
 	}
 
 	@Test
@@ -33,7 +36,7 @@ public class InstanceConfigTest {
 
 	@Test
 	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() throws Exception {
-		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance");
+		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance", customInstanceUrls);
 
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 
