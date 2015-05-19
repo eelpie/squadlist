@@ -3,6 +3,8 @@ package uk.co.squadlist.web.context;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
@@ -13,8 +15,8 @@ public class CustomInstanceUrls {
 
 	private final Map<String, String> customInstanceUrls;
 
-	public CustomInstanceUrls() {
-		final String customUrls = "avail.twickenhamrc.net|twickenham";
+	@Autowired
+	public CustomInstanceUrls( @Value("#{squadlist['customUrls']}") String customUrls) {
 		customInstanceUrls = parseConfig(customUrls);
 	}
 

@@ -23,7 +23,7 @@ public class InstanceConfigTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		customInstanceUrls = new CustomInstanceUrls();
+		customInstanceUrls = new CustomInstanceUrls("avail.twickenhamrc.net|twickenham");
 		instanceConfig = new InstanceConfig(requestHostService, null, customInstanceUrls);
 	}
 

@@ -31,7 +31,7 @@ public class UrlBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
-		customInstanceUrls = new CustomInstanceUrls();
+		customInstanceUrls = new CustomInstanceUrls("");
 
 		instance = new Instance("aninstance", "An instance", null, true);
 	}
