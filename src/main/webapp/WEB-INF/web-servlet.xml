@@ -37,5 +37,9 @@
 	</mvc:interceptors>
 	
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-				  	  	          	
+	
+	<error-page>
+		<location>/error.html</location>
+	</error-page>
+					  	  	          	
 </beans>
