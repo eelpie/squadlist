@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.UnknownBoatException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -45,6 +46,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
 		}
+		if (e instanceof UnknownBoatException) {
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return new ModelAndView("404");
+		}
 		if (e instanceof UnknownInstanceException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
@@ -72,9 +77,9 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
 		try {
 			StringBuilder body = new StringBuilder(request.getServerName() + " " + request.getRequestURI() + "\n");
-			body.append(Throwables.getStackTraceAsString(e));		
+			body.append(Throwables.getStackTraceAsString(e));
 			emailService.sendPlaintextEmail("Squadlist website 500 error", "www@hampton.eelpieconsulting.co.uk", "tony@eelpieconsulting.co.uk", body.toString());
-			
+
 		} catch (Exception me) {
 			log.error("Exception while trying to mail exception report", me);
 		}

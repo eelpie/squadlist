@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.AvailabilityOption;
+import uk.co.squadlist.web.model.Boat;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
@@ -48,6 +49,9 @@ public class UrlBuilder {
 		return applicationUrl("/static/") + uri;
 	}
 
+	public String boatUrl(Boat boat) {
+		return applicationUrl("/boats/" + boat.getId());
+	}
 	public String memberUrl(Member member) {
 		return memberUrl(member.getId());
 	}
@@ -257,7 +261,6 @@ public class UrlBuilder {
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
-
 
 	public String editAdmins() {
 		return adminUrl() + "/admins";

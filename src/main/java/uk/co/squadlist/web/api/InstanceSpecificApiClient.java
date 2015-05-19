@@ -24,6 +24,7 @@ import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.InvalidOutingException;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.UnknownBoatException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
@@ -51,11 +52,11 @@ public class InstanceSpecificApiClient {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
 	}
-	
+
 	public List<Boat> getBoats() {
 		return api.getBoats(instanceConfig.getInstance());
 	}
-	
+
 	public List<Squad> getSquads() {
 		return api.getSquads(instanceConfig.getInstance());
 	}
@@ -222,5 +223,9 @@ public class InstanceSpecificApiClient {
 	public void updateInstance(Instance instance) {
 		api.updateInstance(instance);
 	}
-	
+
+	public Boat getBoat(String id) throws UnknownSquadException, UnknownBoatException {
+		return api.getBoat(instanceConfig.getInstance(), id);
+	}
+
 }

@@ -67,7 +67,7 @@
 			#if($boats && !$boats.isEmpty())
 				<ul>
 					#foreach( $boat in $boats )
-						<li>$boat.name</li>
+						<li><a href="$urlBuilder.boatUrl($boat)">$boat.name</a></li>					
 					#end
 				</ul>
 			#else
