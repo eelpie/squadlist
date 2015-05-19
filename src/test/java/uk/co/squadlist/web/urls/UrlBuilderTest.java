@@ -73,4 +73,11 @@ public class UrlBuilderTest {
 		assertEquals("mailto:auser@localhost,anotheruser@localhost", urlBuilder.mailto(emails));
 	}
 
+	@Test
+	public void shouldUseCustomUrlsWhereSpecificed() throws Exception {
+		when(instanceConfig.getInstance()).thenReturn("twickenham");
+		final UrlBuilder urlBuilder = new UrlBuilder("https://localhost", instanceConfig, seoLinkBuilder, new CustomInstanceUrls("avail.twickenhamrc.net|twickenham"), null);
+		assertEquals("https://avail.twickenhamrc.net", urlBuilder.getBaseUrl());
+	}
+
 }

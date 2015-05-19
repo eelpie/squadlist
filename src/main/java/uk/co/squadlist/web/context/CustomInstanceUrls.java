@@ -32,7 +32,12 @@ public class CustomInstanceUrls {
 	}
 
 	public String customUrlForInstance(String instance) {
-		return customInstanceUrls.get(instance);
+		for (String key : customInstanceUrls.keySet()) {
+			if (customInstanceUrls.get(key).equals(instance)) {
+				return key;
+			}
+		}
+		return null;
 	}
 
 	private Map<String, String> parseConfig(final String customUrls) {
