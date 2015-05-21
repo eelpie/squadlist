@@ -14,7 +14,7 @@
 		<div class="col-xs-12">
 
 			<p>$text.text('user.has.been.added') $member.firstName $member.lastName</p>
-			<p>$text.text('user.has.been.send.invite.email', $member.emailAddress)</p>
+			<p>$text.text('user.has.been.send.invite', $member.emailAddress)</p>
 			
 			<pre>$inviteMessage</pre>
 		
