@@ -26,6 +26,13 @@
 				       	<p><a href="$urlBuilder.applicationUrl('/reset-password')">$text.text('forgotten.your.password')</a></p>				     				       	
 				    </div>
 				</div>
+
+			        <div class="form-group">
+				    <div class="col-sm-2"></div>
+                                    <div class="col-sm-6">
+                                        <input type="checkbox" name="remember" > Keep me signed in
+                                    </div>
+                                </div>
 								
 				<div class="row">	
 					<div class="col-sm-2">
