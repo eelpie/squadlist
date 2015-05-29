@@ -39,7 +39,7 @@
 		
 		<security:form-login default-target-url="/" login-page="/login" authentication-failure-url="/login?errors=true" />                
 		<security:logout logout-success-url="/" />
-		
+		<security:remember-me key="remember" token-validity-seconds="864000" />
 		<security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthFilter" />		        	
 	</security:http>
 	

@@ -30,7 +30,8 @@
 			        <div class="form-group">
 				    <div class="col-sm-2"></div>
                                     <div class="col-sm-6">
-                                        <input type="checkbox" name="remember" > Keep me signed in
+                                        <input type="checkbox" name="_spring_security_remember_me" id="j_remember">                                        
+                                        <label for="j_remember">Keep me signed in</label>
                                     </div>
                                 </div>
 								
