@@ -14,6 +14,7 @@ import uk.co.squadlist.web.context.CustomInstanceUrls;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.model.Tariff;
 
 import com.google.common.collect.Lists;
 
@@ -33,7 +34,7 @@ public class UrlBuilderTest {
 		seoLinkBuilder = new SeoLinkBuilder();
 		customInstanceUrls = new CustomInstanceUrls("");
 
-		instance = new Instance("aninstance", "An instance", null, true);
+		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015);
 	}
 
 	@Test
