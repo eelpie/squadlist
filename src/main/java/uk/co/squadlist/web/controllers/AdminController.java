@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
@@ -31,6 +30,7 @@ import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.services.github.GithubService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
+import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import com.google.common.base.Splitter;
