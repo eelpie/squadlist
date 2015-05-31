@@ -39,7 +39,7 @@
 			#end
 			</ul>
 								
-			<a href="/admin/export/members.csv">$text.text('export.all.as.csv')</a>
+			<a href="$urlBuilder.adminExportMembersAsCSV()">$text.text('export.all.as.csv')</a>
 					
 		</div>
 			

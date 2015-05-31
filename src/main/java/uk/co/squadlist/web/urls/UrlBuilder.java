@@ -270,6 +270,10 @@ public class UrlBuilder {
 		return adminUrl() + "/admins";
 	}
 
+	public String adminExportMembersAsCSV() {
+		return adminUrl() + "/export/members.csv";
+	}
+
 	private String availabilityUrl() {
 		return applicationUrl("/availability");
 	}
