@@ -104,8 +104,12 @@
 				<li>Language: $language</li>
 			</ul>
 			<p>Please contact us if you are interested in localising for a different language or governing body.</p>			
+			
+			<ul>
+				<li>Tariff: $instance.tariff</li>
+			</ul>			
 			<hr/>
-											
+														
 				<span class="pull-right">
 					<a href="$urlBuilder.newAvailabilityOptionUrl()"><button class="btn btn-primary" type="button">Add option</button></a>
 				</span>
