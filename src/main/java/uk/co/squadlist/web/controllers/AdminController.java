@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
@@ -52,6 +53,7 @@ public class AdminController {
 	private UrlBuilder urlBuilder;
 	private GithubService githubService;
 	private Context context;
+	private DateFormatter dateFormatter;
 
 	public AdminController() {
 	}
@@ -60,7 +62,7 @@ public class AdminController {
 	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody,
 			ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
 			UrlBuilder urlBuilder, GithubService githubService,
-			Context context) {
+			Context context, DateFormatter dateFormatter) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.governingBody = governingBody;
@@ -69,6 +71,7 @@ public class AdminController {
 		this.urlBuilder = urlBuilder;
 		this.githubService = githubService;
 		this.context = context;
+		this.dateFormatter = dateFormatter;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -151,9 +154,27 @@ public class AdminController {
     public void membersCSV(HttpServletResponse response) throws Exception {
 		final List<List<String>> rows = Lists.newArrayList();
     	for (Member member : api.getMembers()) {
-    		rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(), member.getEmailAddress()}));
+    		rows.add(Arrays.asList(new String[] {member.getFirstName(),
+    				member.getLastName(),
+    				member.getKnownAs(),
+    				member.getEmailAddress(),
+    				member.getGender(),
+    				member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
+    				member.getEmergencyContactName(),
+    				member.getEmergencyContactNumber(),
+    				member.getWeight() != null ? member.getWeight().toString() : "",
+    				member.getSweepOarSide(),
+    				member.getSculling(),
+    				member.getRegistrationNumber(),
+    				member.getRowingPoints(),
+    				member.getScullingPoints(),
+    				member.getRole()
+    		}));
 		}
-		csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Email"), rows);
+
+		csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
+				"Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
+				"Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
 	}
 
 	private List<Member> extractAdminUsersFrom(List<Member> members) {
