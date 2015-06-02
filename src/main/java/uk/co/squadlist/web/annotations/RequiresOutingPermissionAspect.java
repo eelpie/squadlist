@@ -36,7 +36,7 @@ public class RequiresOutingPermissionAspect {
 			String outingId = (String) jp.getArgs()[0];
 			
 			final boolean hasPermission = permissionsService.hasOutingPermission(loggedInUserService.getLoggedInMember(), permission, outingId);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for outing " + outingId + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
+			log.debug(methodSignature.getName() + " requires permission: "  + permission + " for outing " + outingId + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();
