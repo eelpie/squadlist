@@ -14,6 +14,7 @@ import uk.co.squadlist.web.context.CustomInstanceUrls;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.model.Subscription;
 import uk.co.squadlist.web.model.Tariff;
 
 import com.google.common.collect.Lists;
@@ -33,10 +34,10 @@ public class UrlBuilderTest {
 		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
 		customInstanceUrls = new CustomInstanceUrls("");
-
-		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015);
+		
+		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015, Lists.<Subscription>newArrayList());
 	}
-
+	
 	@Test
 	public void canInsertInstanceIntoBaseUrl() throws Exception {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, customInstanceUrls, null);
