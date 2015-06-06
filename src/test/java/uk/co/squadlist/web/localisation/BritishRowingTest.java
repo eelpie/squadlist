@@ -15,7 +15,7 @@ public class BritishRowingTest {
 
 	@Test
 	public void canRecogniseValidBRRegistrationNumbers() throws Exception {
-		assertNull(britishRowing.checkRegistrationNumber("201505G1020791"));
+		assertNull(britishRowing.checkRegistrationNumber("201605G1020791"));
 	}
 
 	@Test
