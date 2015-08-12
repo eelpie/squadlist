@@ -134,7 +134,18 @@
 			#if($instance.subscriptions && !$instance.subscriptions.isEmtpy())
 				<ul>
 					#foreach($subscription in $instance.subscriptions)
-						<li>$subscription</li>
+						<li>
+							<span class="label label-info" style="background-color: green">$subscription.tariff</span>							
+							#if($subscription.expires)
+								<br/>Expires in <span title="$dateFormatter.dayMonthYear($subscription.expires)">$dateFormatter.timeSince($subscription.expires)</span>
+							#end
+							</span>
+							
+							#if($subscription.tariff == 'PRE_JUNE_2015')
+								<p>Your club was using Squadlist before paid subscriptions where introduced in June 2015.
+								Your free usage will continue for at least 2 years after this date.</p>
+							#end
+						</li>
 					#end
 				</ul>			
 			#else
