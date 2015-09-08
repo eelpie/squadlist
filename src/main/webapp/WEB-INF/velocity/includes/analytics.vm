@@ -6,4 +6,5 @@
 
   ga('create', 'UA-58076188-1', 'auto');
   ga('send', 'pageview');
+  #if($instance) ga('set', 'dimension1', '$instance.id'); #end
 </script>
