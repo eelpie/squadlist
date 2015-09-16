@@ -297,7 +297,6 @@ public class OutingsController {
 		mv.addObject("squad", squad);
 		mv.addObject("outingMonths", getOutingMonthsFor(squad));
 		mv.addObject("outing", outingDetails);
-		mv.addObject("instance", api.getInstance());
 		return mv;
 	}
 
@@ -309,7 +308,6 @@ public class OutingsController {
     	mv.addObject("outingObject", outing);
     	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
 		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
-		mv.addObject("instance", api.getInstance());
 		return mv;
 	}
 

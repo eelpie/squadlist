@@ -20,7 +20,6 @@ public class BoatsController {
 
 	@Autowired
 	public BoatsController(InstanceSpecificApiClient api, ViewFactory viewFactory) {
-		super();
 		this.api = api;
 		this.viewFactory = viewFactory;
 	}

@@ -28,7 +28,6 @@ public class ResetPasswordController {
 	@RequestMapping(value = "/reset-password", method = RequestMethod.GET)
 	public ModelAndView resetPasswordPrompt() throws Exception {
 		final ModelAndView mv = new ModelAndView("resetPassword");
-		mv.addObject("instance", api.getInstance());
 		mv.addObject("title", "Reset password");
 		return mv;
 	}
@@ -37,7 +36,6 @@ public class ResetPasswordController {
 	public ModelAndView resetPassword(@RequestParam(value = "username", required = false) String username) throws Exception {
 		if (Strings.isNullOrEmpty(username)) {
 			final ModelAndView mv = new ModelAndView("resetPassword");
-			mv.addObject("instance", api.getInstance());
 			mv.addObject("errors", true);
 			mv.addObject("title", "Reset password");
 			return mv;
@@ -48,13 +46,11 @@ public class ResetPasswordController {
 			api.resetPassword(username);	// TODO errors	
 			log.info("Reset password call successful for: " + username);
 			final ModelAndView mv = new ModelAndView("resetPasswordSent");
-			mv.addObject("instance", api.getInstance());
 			mv.addObject("title", "Reset password");
 			return mv;
 			
 		} catch (UnknownMemberException e) {
 			final ModelAndView mv = new ModelAndView("resetPassword");
-			mv.addObject("instance", api.getInstance());
 			mv.addObject("title", "Reset password");
 			mv.addObject("errors", true);
 			return mv;
@@ -67,14 +63,11 @@ public class ResetPasswordController {
 			final String newPassword = api.confirmResetPassword(token);
 			
 			final ModelAndView mv = new ModelAndView("resetPasswordConfirm");
-			mv.addObject("instance", api.getInstance());
 			mv.addObject("newPassword", newPassword);
 			return mv;
 			
 		} catch (Exception e) {
-			final ModelAndView mv = new ModelAndView("resetPasswordInvalidToken");
-			mv.addObject("instance", api.getInstance());
-			return mv;
+			return new ModelAndView("resetPasswordInvalidToken");
 		}
 	}
 	
