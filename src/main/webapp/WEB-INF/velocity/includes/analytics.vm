@@ -5,6 +5,6 @@
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-58076188-1', 'auto');
-  ga('send', 'pageview');
   #if($instance) ga('set', 'dimension1', '$instance.id'); #end
+  ga('send', 'pageview');
 </script>
