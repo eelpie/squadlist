@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.model.Instance;
 
 public class InstanceHandler extends HandlerInterceptorAdapter {
 	
@@ -19,7 +20,10 @@ public class InstanceHandler extends HandlerInterceptorAdapter {
 	}
 	
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {		
-    	mv.addObject("instance", api.getInstance());	// TODO limit to HTML requests
+    	final Instance instance = api.getInstance();
+    	if (instance != null) {
+    		mv.addObject("instance", instance);	// TODO limit to HTML requests
+    	}
 	}
 
 }
