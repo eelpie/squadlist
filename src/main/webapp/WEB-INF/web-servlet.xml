@@ -32,11 +32,11 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
-			<bean class="uk.co.squadlist.web.views.NoCacheHandler" />
+			<bean class="uk.co.squadlist.web.views.interceptors.NoCacheHandler" />
 		</mvc:interceptor>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
-			<bean class="uk.co.squadlist.web.views.InstanceHandler" />
+			<bean class="uk.co.squadlist.web.views.interceptors.InstanceHandler" />
 		</mvc:interceptor>
 	</mvc:interceptors>
 	
