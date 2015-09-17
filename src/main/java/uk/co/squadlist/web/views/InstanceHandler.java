@@ -19,11 +19,13 @@ public class InstanceHandler extends HandlerInterceptorAdapter {
 		this.api = api;
 	}
 	
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {		
-    	final Instance instance = api.getInstance();
-    	if (instance != null) {
-    		mv.addObject("instance", instance);	// TODO limit to HTML requests
-    	}
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {
+		if (mv != null) {
+			final Instance instance = api.getInstance();
+			if (instance != null) {
+				mv.addObject("instance", instance);	// TODO limit to HTML requests
+			}
+		}
 	}
 
 }
