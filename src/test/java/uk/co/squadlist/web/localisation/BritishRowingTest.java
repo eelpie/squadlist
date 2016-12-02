@@ -30,12 +30,12 @@ public class BritishRowingTest {
 
 	@Test
 	public void shouldReturnNullProblemsForValidRegistrationNumbers() throws Exception {
-		assertNull("Expired registration", britishRowing.checkRegistrationNumber("201805G1020791"));
+		assertNull(britishRowing.checkRegistrationNumber("201805G1020791"));
 	}
 
 	@Test
 	public void shouldReturnNullProblemsForNonSetRegistrationNumber() throws Exception {
-		assertNull("Expired registration", britishRowing.checkRegistrationNumber(null));
+		assertNull(britishRowing.checkRegistrationNumber(null));
 	}
 
 	@Test
