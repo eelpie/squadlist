@@ -14,6 +14,11 @@ public class RowingIrelandTest {
 	private final RowingIreland rowingIreland = new RowingIreland();
 
 	@Test
+	public void officialNameIsRowingSpaceIreland() throws Exception {
+		assertEquals("Rowing Ireland", rowingIreland.getName());
+	}
+
+	@Test
 	public void rowingIrelandRegisterationNumbersumbersAreNumbersWithUptoFiveDigits() throws Exception {
 		assertNull(rowingIreland.checkRegistrationNumber("99999"));
 		assertNull(rowingIreland.checkRegistrationNumber("12345"));

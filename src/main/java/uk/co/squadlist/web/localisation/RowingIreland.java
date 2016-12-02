@@ -47,7 +47,7 @@ public class RowingIreland implements GoverningBody {
 
 	@Override
 	public String getName() {
-		return "British Rowing";
+		return "Rowing Ireland";
 	}
 
 	public List<String> getPointsOptions() {
@@ -134,7 +134,7 @@ public class RowingIreland implements GoverningBody {
 		if (VALID_REGISTRATION_NUMBER.matcher(registrationNumber).matches()) {
 			return null;
 		}
-		return "Not in the expected Rowing Ireland format";
+		return "Not in the expected " + getName() + " format";
 	}
 
 	@Override
