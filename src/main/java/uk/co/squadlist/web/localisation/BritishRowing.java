@@ -1,21 +1,18 @@
 package uk.co.squadlist.web.localisation;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.Years;
-import org.joda.time.format.ISODateTimeFormat;
-import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-@Component
 public class BritishRowing implements GoverningBody {
 
 	private static final List<Integer> BOAT_SIZES = Lists.newArrayList(1, 2, 4, 8);
