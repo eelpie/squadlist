@@ -1,11 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.Valid;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -15,26 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-
 import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -48,8 +39,10 @@ import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 public class MembersController {
@@ -69,8 +62,8 @@ public class MembersController {
 	private EmailMessageComposer emailMessageComposer;
 	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
-	private GoverningBody governingBody;
 	private PermissionsService permissionsService;
+	private InstanceConfig instanceConfig;
 
 	public MembersController() {
 	}
@@ -79,8 +72,8 @@ public class MembersController {
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
-			PasswordGenerator passwordGenerator, GoverningBody governingBody,
-			PermissionsService permissionsService) {
+			PasswordGenerator passwordGenerator,
+			PermissionsService permissionsService, InstanceConfig instanceConfig) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
@@ -88,8 +81,8 @@ public class MembersController {
 		this.emailMessageComposer = emailMessageComposer;
 		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
-		this.governingBody = governingBody;
 		this.permissionsService = permissionsService;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
@@ -100,7 +93,7 @@ public class MembersController {
 		final ModelAndView mv = viewFactory.getView("memberDetails");
 		mv.addObject("member", members);
     	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
-    	mv.addObject("governingBody", governingBody);
+    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
     	return mv;
     }
 
@@ -226,12 +219,12 @@ public class MembersController {
 
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
 		if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
-			if (!governingBody.getPointsOptions().contains(memberDetails.getScullingPoints())) {
+			if (!instanceConfig.getGoverningBody().getPointsOptions().contains(memberDetails.getScullingPoints())) {
 				result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));
 			}
 		}
 		if (!Strings.isNullOrEmpty(memberDetails.getRowingPoints())) {
-			if (!governingBody.getPointsOptions().contains(memberDetails.getRowingPoints())) {
+			if (!instanceConfig.getGoverningBody().getPointsOptions().contains(memberDetails.getRowingPoints())) {
 				result.addError(new ObjectError("member.rowingPoints", "Invalid points option"));
 			}
 		}
@@ -384,10 +377,10 @@ public class MembersController {
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());
-    	mv.addObject("governingBody", governingBody);
+    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
 
     	mv.addObject("genderOptions", GENDER_OPTIONS);
-    	mv.addObject("pointsOptions", governingBody.getPointsOptions());
+    	mv.addObject("pointsOptions", instanceConfig.getGoverningBody().getPointsOptions());
     	mv.addObject("rolesOptions", ROLES_OPTIONS);
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);
