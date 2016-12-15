@@ -29,4 +29,7 @@ public interface GoverningBody {
 	public List<Integer> getBoatSizes();
 	public Map<Integer, String> getWeights();
 
+	public Map<String, Integer> getStatusPoints();
+	public Map<String, Integer> getAgeGrades();
+
 }
