@@ -6,15 +6,12 @@ import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.Years;
-import org.joda.time.format.ISODateTimeFormat;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-@Component
 public class RowingIreland extends BaseGoverningBody implements GoverningBody {
 
 	private static final Pattern VALID_REGISTRATION_NUMBER = Pattern.compile("\\d{1,5}");
