@@ -3,9 +3,8 @@ package uk.co.squadlist.web.views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferedSquadService;
@@ -16,15 +15,15 @@ public class ViewFactory {
 	private final LoggedInUserService loggedInUserService;
 	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private final PreferedSquadService preferedSquadService;
-	private final GoverningBody governingBody;
-	
+	private final InstanceConfig instanceConfig;
+
 	@Autowired
 	public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
-			PreferedSquadService preferedSquadService, GoverningBody governingBody) {
+			PreferedSquadService preferedSquadService, InstanceConfig instanceConfig) {
 		this.loggedInUserService = loggedInUserService;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.preferedSquadService = preferedSquadService;
-		this.governingBody = governingBody;
+		this.instanceConfig = instanceConfig;
 	}
 
 	public ModelAndView getView(String templateName) {
@@ -38,7 +37,7 @@ public class ViewFactory {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}
     	
-    	final int memberDetailsProblems = governingBody.checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+    	final int memberDetailsProblems = instanceConfig.getGoverningBody().checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
     	if (memberDetailsProblems > 0) {
     		mv.addObject("memberDetailsProblems", memberDetailsProblems);
     	}
