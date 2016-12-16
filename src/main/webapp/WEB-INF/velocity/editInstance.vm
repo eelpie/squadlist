@@ -23,13 +23,27 @@
 								<option value="$memberOrdering" #if($memberOrdering == ${status.value}) SELECTED #end>$memberOrdering
 							#end
 						</select>
-				
 						#foreach($error in $status.errorMessages)
 							<div class="alert alert-warning">$error</div>
 						#end
 					</div>
 				</div>
-				
+
+                <div class="form-group">
+                    #springBind("instanceDetails.governingBody")
+                    <label for="squad" class="col-sm-2 control-label">Governing body</label>
+                    <div class="col-sm-10">
+                        <select name="${status.expression}" class="form-control">
+                            #foreach($governingBody in $governingBodies)
+                                <option value="$governingBody" #if($governingBody == ${status.value}) SELECTED #end>$governingBody
+                            #end
+                        </select>
+                        #foreach($error in $status.errorMessages)
+                            <div class="alert alert-warning">$error</div>
+                        #end
+                    </div>
+                </div>
+
 				<div class="control-group">				
 					<div  class="col-sm-2">
 					</div>

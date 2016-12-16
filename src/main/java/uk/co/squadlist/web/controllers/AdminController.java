@@ -40,6 +40,8 @@ public class AdminController {
 	private final static Logger log = Logger.getLogger(AdminController.class);
 
 	private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
+	private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");
+
 	private final static Splitter COMMA_SPLITTER = Splitter.on(",");
 
 	private InstanceSpecificApiClient api;
@@ -99,6 +101,7 @@ public class AdminController {
 	public ModelAndView instance() throws Exception {
 		final InstanceDetails instanceDetails = new InstanceDetails();
 		instanceDetails.setMemberOrdering(api.getInstance().getMemberOrdering());
+		instanceDetails.setGoverningBody(api.getInstance().getGoverningBody());
 		return renderEditInstanceDetailsForm(instanceDetails);
 	}
 
@@ -111,7 +114,7 @@ public class AdminController {
 
 		Instance instance = api.getInstance();
 		instance.setMemberOrdering(instanceDetails.getMemberOrdering());	// TODO validate
-		instanceDetails.setMemberOrdering(api.getInstance().getMemberOrdering());
+		instance.setGoverningBody(instanceDetails.getGoverningBody());	// TODO validate
 
 		api.updateInstance(instance);
 
@@ -188,7 +191,10 @@ public class AdminController {
 	}
 
 	private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) {
-		return viewFactory.getView("editInstance").addObject("instanceDetails",instanceDetails).addObject("memberOrderings", MEMBER_ORDERINGS);
+		return viewFactory.getView("editInstance").
+				addObject("instanceDetails",instanceDetails).
+				addObject("memberOrderings", MEMBER_ORDERINGS).
+				addObject("governingBodies", GOVERNING_BODIES);
 	}
 
 }
