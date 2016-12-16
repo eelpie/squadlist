@@ -29,7 +29,7 @@ public class RowingIreland extends BaseGoverningBody implements GoverningBody {
 		statusMaximumPoints.put("Club 2", 250);
 		statusMaximumPoints.put("Club 1", 500);
 		statusMaximumPoints.put("Intermediate", 750);
-		statusMaximumPoints.put("Senior", 1000);
+		statusMaximumPoints.put("Senior", Integer.MAX_VALUE);
 
 		mastersMinimumAges = Maps.newLinkedHashMap();	// TODO check
 		mastersMinimumAges.put("Masters J", 80);
