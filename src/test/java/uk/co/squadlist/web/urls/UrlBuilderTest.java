@@ -35,7 +35,7 @@ public class UrlBuilderTest {
 		seoLinkBuilder = new SeoLinkBuilder();
 		customInstanceUrls = new CustomInstanceUrls("");
 		
-		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015, Lists.<Subscription>newArrayList());
+		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015, Lists.<Subscription>newArrayList(), "british-rowing");
 	}
 	
 	@Test
