@@ -1,12 +1,8 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
-import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
@@ -33,9 +28,11 @@ import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.ViewFactory;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 public class AdminController {
@@ -47,31 +44,31 @@ public class AdminController {
 
 	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
-	private GoverningBody governingBody;
 	private ActiveMemberFilter activeMemberFilter;
 	private CsvOutputRenderer csvOutputRenderer;
 	private UrlBuilder urlBuilder;
 	private GithubService githubService;
 	private Context context;
 	private DateFormatter dateFormatter;
+	private InstanceConfig instanceConfig;
 
 	public AdminController() {
 	}
 
 	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory, GoverningBody governingBody,
-			ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-			UrlBuilder urlBuilder, GithubService githubService,
-			Context context, DateFormatter dateFormatter) {
+	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
+						   ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
+						   UrlBuilder urlBuilder, GithubService githubService,
+						   Context context, DateFormatter dateFormatter, InstanceConfig instanceConfig) {
 		this.api = api;
 		this.viewFactory = viewFactory;
-		this.governingBody = governingBody;
 		this.activeMemberFilter = activeMemberFilter;
 		this.csvOutputRenderer = csvOutputRenderer;
 		this.urlBuilder = urlBuilder;
 		this.githubService = githubService;
 		this.context = context;
 		this.dateFormatter = dateFormatter;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -87,7 +84,7 @@ public class AdminController {
 		mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
 		mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
     	mv.addObject("admins", extractAdminUsersFrom(members));
-    	mv.addObject("governingBody", governingBody);
+    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
     	mv.addObject("statistics", api.statistics());
     	mv.addObject("boats", api.getBoats());
 

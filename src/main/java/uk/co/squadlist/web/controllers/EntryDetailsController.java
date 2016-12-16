@@ -1,24 +1,16 @@
 package uk.co.squadlist.web.controllers;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -26,8 +18,10 @@ import uk.co.squadlist.web.services.PreferedSquadService;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @Controller
 public class EntryDetailsController {
@@ -38,29 +32,29 @@ public class EntryDetailsController {
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
-	private GoverningBody governingBody;
 	private CsvOutputRenderer csvOutputRenderer;
+	private InstanceConfig instanceConfig;
 
 	public EntryDetailsController() {
 	}
 
 	@Autowired
 	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-			EntryDetailsModelPopulator entryDetailsModelPopulator, GoverningBody governingBody,
-			CsvOutputRenderer csvOutputRenderer) {
+			EntryDetailsModelPopulator entryDetailsModelPopulator,
+			CsvOutputRenderer csvOutputRenderer, InstanceConfig instanceConfig) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
-		this.governingBody = governingBody;
 		this.csvOutputRenderer = csvOutputRenderer;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getView("entryDetails");
     	mv.addObject("squads", api.getSquads());
-    	mv.addObject("governingBody", governingBody);
+    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
 
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 		entryDetailsModelPopulator.populateModel(squadToShow, mv);
@@ -87,6 +81,8 @@ public class EntryDetailsController {
 		final ModelAndView mv = viewFactory.getView("entryDetailsAjax");
 		if (!selectedMembers.isEmpty()) {
 			mv.addObject("members", selectedMembers);
+
+			final GoverningBody governingBody = instanceConfig.getGoverningBody();
 
 			int crewSize = selectedMembers.size();
 			final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);

@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -23,18 +24,18 @@ public class EntryDetailsModelPopulator {
 
 	private InstanceSpecificApiClient api;
 	private DateFormatter dateFormatter;
-	private GoverningBody governingBody;
 	private ActiveMemberFilter activeMemberFilter;
+	private InstanceConfig instanceConfig;
 
 	public EntryDetailsModelPopulator() {
 	}
 
 	@Autowired
-	public EntryDetailsModelPopulator(InstanceSpecificApiClient api, DateFormatter dateFormatter, GoverningBody governingBody, ActiveMemberFilter activeMemberFilter) {
+	public EntryDetailsModelPopulator(InstanceSpecificApiClient api, DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter, InstanceConfig instanceConfig) {
 		this.api = api;
 		this.dateFormatter = dateFormatter;
-		this.governingBody = governingBody;
 		this.activeMemberFilter = activeMemberFilter;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
@@ -50,6 +51,8 @@ public class EntryDetailsModelPopulator {
 	}
 
 	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
+		final GoverningBody governingBody = instanceConfig.getGoverningBody();
+
 		final List<List<String>> rows = Lists.newArrayList();
 		for (Member member : members) {
     		final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;
