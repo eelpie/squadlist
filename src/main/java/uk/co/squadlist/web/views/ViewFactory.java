@@ -3,8 +3,14 @@ package uk.co.squadlist.web.views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
+import uk.co.squadlist.web.localisation.BritishRowing;
+import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.localisation.RowingIreland;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferedSquadService;
@@ -15,15 +21,15 @@ public class ViewFactory {
 	private final LoggedInUserService loggedInUserService;
 	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private final PreferedSquadService preferedSquadService;
-	private final InstanceConfig instanceConfig;
+	private final GoverningBodyFactory governingBodyFactory;
 
 	@Autowired
 	public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
-			PreferedSquadService preferedSquadService, InstanceConfig instanceConfig) {
+			PreferedSquadService preferedSquadService, GoverningBodyFactory governingBodyFactory) {
 		this.loggedInUserService = loggedInUserService;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.preferedSquadService = preferedSquadService;
-		this.instanceConfig = instanceConfig;
+		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	public ModelAndView getView(String templateName) {
@@ -36,8 +42,8 @@ public class ViewFactory {
     	if (pendingOutingsCountFor > 0) {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}
-    	
-    	final int memberDetailsProblems = instanceConfig.getGoverningBody().checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
+		final int memberDetailsProblems = governingBodyFactory.getGoverningBody().checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
     	if (memberDetailsProblems > 0) {
     		mv.addObject("memberDetailsProblems", memberDetailsProblems);
     	}

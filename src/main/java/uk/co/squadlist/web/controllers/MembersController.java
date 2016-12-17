@@ -21,6 +21,7 @@ import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
@@ -63,7 +64,7 @@ public class MembersController {
 	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
 	private PermissionsService permissionsService;
-	private InstanceConfig instanceConfig;
+	private GoverningBodyFactory governingBodyFactory;
 
 	public MembersController() {
 	}
@@ -82,7 +83,7 @@ public class MembersController {
 		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
 		this.permissionsService = permissionsService;
-		this.instanceConfig = instanceConfig;
+		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
@@ -93,7 +94,7 @@ public class MembersController {
 		final ModelAndView mv = viewFactory.getView("memberDetails");
 		mv.addObject("member", members);
     	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
-    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
+    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
     	return mv;
     }
 
@@ -219,12 +220,12 @@ public class MembersController {
 
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
 		if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
-			if (!instanceConfig.getGoverningBody().getPointsOptions().contains(memberDetails.getScullingPoints())) {
+			if (!governingBodyFactory.getGoverningBody().getPointsOptions().contains(memberDetails.getScullingPoints())) {
 				result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));
 			}
 		}
 		if (!Strings.isNullOrEmpty(memberDetails.getRowingPoints())) {
-			if (!instanceConfig.getGoverningBody().getPointsOptions().contains(memberDetails.getRowingPoints())) {
+			if (!governingBodyFactory.getGoverningBody().getPointsOptions().contains(memberDetails.getRowingPoints())) {
 				result.addError(new ObjectError("member.rowingPoints", "Invalid points option"));
 			}
 		}
@@ -377,10 +378,10 @@ public class MembersController {
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
     	mv.addObject("squads", api.getSquads());
-    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
+    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
 
     	mv.addObject("genderOptions", GENDER_OPTIONS);
-    	mv.addObject("pointsOptions", instanceConfig.getGoverningBody().getPointsOptions());
+    	mv.addObject("pointsOptions", governingBodyFactory.getGoverningBody().getPointsOptions());
     	mv.addObject("rolesOptions", ROLES_OPTIONS);
     	mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
     	mv.addObject("yesNoOptions", YES_NO_OPTIONS);

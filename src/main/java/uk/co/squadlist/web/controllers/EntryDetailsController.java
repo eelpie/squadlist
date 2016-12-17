@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
@@ -33,7 +34,7 @@ public class EntryDetailsController {
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
 	private CsvOutputRenderer csvOutputRenderer;
-	private InstanceConfig instanceConfig;
+	private GoverningBodyFactory governingBodyFactory;
 
 	public EntryDetailsController() {
 	}
@@ -41,20 +42,20 @@ public class EntryDetailsController {
 	@Autowired
 	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
 			EntryDetailsModelPopulator entryDetailsModelPopulator,
-			CsvOutputRenderer csvOutputRenderer, InstanceConfig instanceConfig) {
+			CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
 		this.csvOutputRenderer = csvOutputRenderer;
-		this.instanceConfig = instanceConfig;
+		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getView("entryDetails");
     	mv.addObject("squads", api.getSquads());
-    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
+    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
 
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 		entryDetailsModelPopulator.populateModel(squadToShow, mv);
@@ -82,7 +83,7 @@ public class EntryDetailsController {
 		if (!selectedMembers.isEmpty()) {
 			mv.addObject("members", selectedMembers);
 
-			final GoverningBody governingBody = instanceConfig.getGoverningBody();
+			final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
 
 			int crewSize = selectedMembers.size();
 			final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -52,7 +53,7 @@ public class AdminController {
 	private GithubService githubService;
 	private Context context;
 	private DateFormatter dateFormatter;
-	private InstanceConfig instanceConfig;
+	private GoverningBodyFactory governingBodyFactory;
 
 	public AdminController() {
 	}
@@ -61,7 +62,7 @@ public class AdminController {
 	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
 						   ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
 						   UrlBuilder urlBuilder, GithubService githubService,
-						   Context context, DateFormatter dateFormatter, InstanceConfig instanceConfig) {
+						   Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.viewFactory = viewFactory;
 		this.activeMemberFilter = activeMemberFilter;
@@ -70,7 +71,7 @@ public class AdminController {
 		this.githubService = githubService;
 		this.context = context;
 		this.dateFormatter = dateFormatter;
-		this.instanceConfig = instanceConfig;
+		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -86,7 +87,7 @@ public class AdminController {
 		mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
 		mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
     	mv.addObject("admins", extractAdminUsersFrom(members));
-    	mv.addObject("governingBody", instanceConfig.getGoverningBody());
+    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
     	mv.addObject("statistics", api.statistics());
     	mv.addObject("boats", api.getBoats());
 

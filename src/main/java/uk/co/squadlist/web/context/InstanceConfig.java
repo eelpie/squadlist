@@ -53,8 +53,4 @@ public class InstanceConfig {
 		return vhostName;
 	}
 
-	public GoverningBody getGoverningBody() {
-		return new BritishRowing();	// TODO localise by instance
-	}
-
 }

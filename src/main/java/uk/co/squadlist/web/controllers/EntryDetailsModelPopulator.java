@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
@@ -25,17 +26,17 @@ public class EntryDetailsModelPopulator {
 	private InstanceSpecificApiClient api;
 	private DateFormatter dateFormatter;
 	private ActiveMemberFilter activeMemberFilter;
-	private InstanceConfig instanceConfig;
+	private GoverningBodyFactory governingBodyFactory;
 
 	public EntryDetailsModelPopulator() {
 	}
 
 	@Autowired
-	public EntryDetailsModelPopulator(InstanceSpecificApiClient api, DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter, InstanceConfig instanceConfig) {
+	public EntryDetailsModelPopulator(InstanceSpecificApiClient api, DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
-		this.instanceConfig = instanceConfig;
+		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
@@ -51,7 +52,7 @@ public class EntryDetailsModelPopulator {
 	}
 
 	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
-		final GoverningBody governingBody = instanceConfig.getGoverningBody();
+		final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
 
 		final List<List<String>> rows = Lists.newArrayList();
 		for (Member member : members) {
