@@ -74,7 +74,7 @@ public class MembersController {
 			ViewFactory viewFactory,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
 			PasswordGenerator passwordGenerator,
-			PermissionsService permissionsService, InstanceConfig instanceConfig) {
+			PermissionsService permissionsService, InstanceConfig instanceConfig, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
