@@ -22,7 +22,6 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
@@ -74,7 +73,7 @@ public class MembersController {
 			ViewFactory viewFactory,
 			EmailMessageComposer emailMessageComposer, EmailService emailService,
 			PasswordGenerator passwordGenerator,
-			PermissionsService permissionsService, InstanceConfig instanceConfig, GoverningBodyFactory governingBodyFactory) {
+			PermissionsService permissionsService, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
