@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class BritishRowing extends BaseGoverningBody implements GoverningBody {
 
 	private static final Pattern VALID_REGISTRATION_NUMBER = Pattern.compile("\\d{6}[G|S|J|U|C|B]\\d{7}", Pattern.CASE_INSENSITIVE);	// TODO check with BR about valid codes
-	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("N", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");	// TODO N is deprecated - move to 0
+	private static final List<String> POINTS_OPTIONS = Lists.newArrayList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 
 	private final Map<String, Integer> statusMaximumPoints;
 	private final Map<String, Integer> mastersMinimumAges;
