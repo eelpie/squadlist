@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -39,7 +42,8 @@ import java.util.Map;
 @Configuration
 @EnableWebMvc
 @EnableScheduling
-public class Main extends WebMvcConfigurerAdapter {
+@EnableWebSecurity
+public class Main extends WebSecurityConfigurerAdapter {
 	
 	private final static Logger log = Logger.getLogger(Main.class);
 			  
@@ -49,7 +53,19 @@ public class Main extends WebMvcConfigurerAdapter {
     	ctx = SpringApplication.run(Main.class, args);     
     }
 
-    @Bean
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.antMatchers("/favicon.ico", "/static/**", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
+					"/social/facebook/signin", "/social/facebook/signin/callback").permitAll()
+			.anyRequest().authenticated()
+			.and()
+			.formLogin().loginPage("/login").failureUrl("/login?errors=true").permitAll()
+			.and()
+			.logout().permitAll();
+	}
+
+	@Bean
     public CommonsMultipartResolver multipartResolver(@Value("${maximum.upload}") Long maxUploadSize) throws IOException {
     	final CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
     	multipartResolver.setMaxUploadSize(maxUploadSize);
