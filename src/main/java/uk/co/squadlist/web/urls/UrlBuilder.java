@@ -32,8 +32,8 @@ public class UrlBuilder {
 	private String apiUrl;
 
 	@Autowired
-	public UrlBuilder(@Value("#{squadlist['baseUrl']}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder,
-			CustomInstanceUrls customInstanceUrls, @Value("#{squadlist['apiUrl']}") String apiUrl) {
+	public UrlBuilder(@Value("${baseUrl}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder,
+			CustomInstanceUrls customInstanceUrls, @Value("${apiUrl}") String apiUrl) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
 		this.seoLinkBuilder = seoLinkBuilder;

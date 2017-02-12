@@ -50,8 +50,8 @@ public class FacebookSigninController {
 	public FacebookSigninController(UrlBuilder urlBuilder, FacebookOauthStateService facebookOauthStateService,
 			LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService,
 			InstanceSpecificApiClient api,
-			 @Value("#{squadlist['facebook.clientId']}") String facebookClientId,
-			 @Value("#{squadlist['facebook.clientSecret']}") String facebookClientSecret) {
+			 @Value("${facebook.clientId}") String facebookClientId,
+			 @Value("${facebook.clientSecret}") String facebookClientSecret) {
 		this.urlBuilder = urlBuilder;
 		this.facebookOauthStateService = facebookOauthStateService;
 		this.loggedInUserService = loggedInUserService;

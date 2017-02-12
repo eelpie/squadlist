@@ -29,7 +29,7 @@ public class GithubService {
 	private Cache<GHIssueState, List<GHIssue>> cache;
 	
 	@Autowired
-	public GithubService(@Value("#{squadlist['github.username']}") String username, @Value("#{squadlist['github.token']}") String token) {
+	public GithubService(@Value("${github.username}") String username, @Value("${github.token}") String token) {
 		this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 		try {
 			log.info("Github config: " + username + "/" + token);

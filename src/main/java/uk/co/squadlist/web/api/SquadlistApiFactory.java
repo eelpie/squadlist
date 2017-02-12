@@ -11,8 +11,8 @@ public class SquadlistApiFactory {
 	private final String apiAccessToken;
 	
 	@Autowired
-	public SquadlistApiFactory(@Value("#{squadlist['apiUrl']}") String apiUrl,
-			@Value("#{squadlist['apiAccessToken']}") String apiAccessToken) {
+	public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
+			@Value("${apiAccessToken}") String apiAccessToken) {
 		this.apiUrl = apiUrl;
 		this.apiAccessToken = apiAccessToken;		
 	}

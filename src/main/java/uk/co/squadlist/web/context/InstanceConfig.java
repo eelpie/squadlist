@@ -19,7 +19,7 @@ public class InstanceConfig {
 	private final String manuallyConfiguredInstanceToUseForAllRequests;
 
 	@Autowired
-	public InstanceConfig(RequestHostService requestHostService, @Value("#{squadlist['instance']}") String manuallyConfiguredInstanceToUseForAllRequests,
+	public InstanceConfig(RequestHostService requestHostService, @Value("${instance}") String manuallyConfiguredInstanceToUseForAllRequests,
 			CustomInstanceUrls customInstanceUrls) {
 		this.requestHostService = requestHostService;
 		this.manuallyConfiguredInstanceToUseForAllRequests = manuallyConfiguredInstanceToUseForAllRequests;

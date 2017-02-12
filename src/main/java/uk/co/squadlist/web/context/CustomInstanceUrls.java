@@ -16,7 +16,7 @@ public class CustomInstanceUrls {
 	private final Map<String, String> customInstanceUrls;
 
 	@Autowired
-	public CustomInstanceUrls( @Value("#{squadlist['customUrls']}") String customUrls) {
+	public CustomInstanceUrls( @Value("${customUrls}") String customUrls) {
 		customInstanceUrls = parseConfig(customUrls);
 	}
 
