@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.co.squadlist.web.localisation.BritishRowing;
-import uk.co.squadlist.web.localisation.GoverningBody;
 
 @Component
 public class InstanceConfig {
@@ -14,16 +12,13 @@ public class InstanceConfig {
 	private final static Logger log = Logger.getLogger(InstanceConfig.class);
 
 	private final RequestHostService requestHostService;
-	private CustomInstanceUrls customInstanceUrls;
 
 	private final String manuallyConfiguredInstanceToUseForAllRequests;
 
 	@Autowired
-	public InstanceConfig(RequestHostService requestHostService, @Value("${instance}") String manuallyConfiguredInstanceToUseForAllRequests,
-			CustomInstanceUrls customInstanceUrls) {
+	public InstanceConfig(RequestHostService requestHostService, @Value("${instance}") String manuallyConfiguredInstanceToUseForAllRequests) {
 		this.requestHostService = requestHostService;
 		this.manuallyConfiguredInstanceToUseForAllRequests = manuallyConfiguredInstanceToUseForAllRequests;
-		this.customInstanceUrls = customInstanceUrls;
 	}
 
 	public String getInstance() {
@@ -42,11 +37,6 @@ public class InstanceConfig {
 
 		final String requestHost = requestHostService.getRequestHost();
 		log.debug("Request host is: " + requestHost);
-
-		final String customUrl = customInstanceUrls.customUrl(requestHost);
-		if (customUrl != null) {
-			return customUrl;
-		}
 
 		final String vhostName = requestHost.split("\\.")[0];
 		log.debug("Request vhost is: " + vhostName);

@@ -16,15 +16,12 @@ public class InstanceConfigTest {
 	@Mock
 	private RequestHostService requestHostService;
 
-	private CustomInstanceUrls customInstanceUrls;
-
 	private InstanceConfig instanceConfig;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		customInstanceUrls = new CustomInstanceUrls("avail.twickenhamrc.net|twickenham");
-		instanceConfig = new InstanceConfig(requestHostService, null, customInstanceUrls);
+		instanceConfig = new InstanceConfig(requestHostService, null);
 	}
 
 	@Test
@@ -36,7 +33,7 @@ public class InstanceConfigTest {
 
 	@Test
 	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() throws Exception {
-		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance", customInstanceUrls);
+		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance");
 
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 
@@ -48,13 +45,6 @@ public class InstanceConfigTest {
 		when(requestHostService.getRequestHost()).thenReturn("coach-demo.squadlist.co.uk");
 
 		assertEquals("demo", instanceConfig.getInstance());
-	}
-
-	@Test
-	public void twickenhamHasALegacyUrlWhichNeedsToBeSupported() throws Exception {
-		when(requestHostService.getRequestHost()).thenReturn("avail.twickenhamrc.net");
-
-		assertEquals("twickenham", instanceConfig.getInstance());
 	}
 
 }

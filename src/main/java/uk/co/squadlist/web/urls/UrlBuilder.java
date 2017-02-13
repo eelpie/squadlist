@@ -1,26 +1,18 @@
 package uk.co.squadlist.web.urls;
 
-import java.net.URISyntaxException;
-import java.util.List;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-
-import uk.co.squadlist.web.context.CustomInstanceUrls;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.AvailabilityOption;
-import uk.co.squadlist.web.model.Boat;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
-import uk.co.squadlist.web.model.Squad;
+import uk.co.squadlist.web.model.*;
+
+import java.net.URISyntaxException;
+import java.util.List;
 
 @Component("urlBuilder")
 public class UrlBuilder {
@@ -28,16 +20,13 @@ public class UrlBuilder {
 	private final String baseUrl;
 	private final InstanceConfig instanceConfig;
 	private final SeoLinkBuilder seoLinkBuilder;
-	private final CustomInstanceUrls customInstanceUrls;
 	private String apiUrl;
 
 	@Autowired
-	public UrlBuilder(@Value("${baseUrl}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder,
-			CustomInstanceUrls customInstanceUrls, @Value("${apiUrl}") String apiUrl) {
+	public UrlBuilder(@Value("${baseUrl}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder, @Value("${apiUrl}") String apiUrl) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
 		this.seoLinkBuilder = seoLinkBuilder;
-		this.customInstanceUrls = customInstanceUrls;
 		this.apiUrl = apiUrl;
 	}
 
@@ -206,9 +195,6 @@ public class UrlBuilder {
 	}
 
 	public String getBaseUrl() {
-		if (customInstanceUrls.hasCustomUrl(instanceConfig.getInstance())) {
-			return "https://" + customInstanceUrls.customUrlForInstance(instanceConfig.getInstance());
-		}
 		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());
 	}
 
