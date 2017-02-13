@@ -22,7 +22,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import uk.co.eelpieconsulting.common.email.EmailService;
@@ -40,12 +39,12 @@ import javax.servlet.MultipartConfigElement;
 import java.io.IOException;
 import java.util.Map;
 
-@EnableAutoConfiguration
 @ComponentScan(basePackages="uk.co.squadlist.web")
 @Configuration
 @EnableWebMvc
 @EnableScheduling
 @EnableWebSecurity
+@EnableAutoConfiguration
 public class Main extends WebSecurityConfigurerAdapter {
 	
 	private final static Logger log = Logger.getLogger(Main.class);
@@ -63,11 +62,26 @@ public class Main extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 			.antMatchers("/favicon.ico", "/static/**", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
 					"/social/facebook/signin", "/social/facebook/signin/callback").permitAll()
-			.anyRequest().authenticated()
-			.and()
-			.formLogin().loginPage("/login").failureUrl("/login?errors=true").permitAll()
-			.and()
+				.anyRequest().authenticated()
+				.and()
+			.formLogin()
+				.loginPage("/login")
+				.failureUrl("/login?errors=true")
+				.permitAll()
+				.and()
 			.logout().permitAll();
+	}
+
+	@Autowired
+	private ApiBackedAuthenticationProvider apiBackedAuthenticationProvider;
+
+	@Autowired
+	private ApiBackedUserDetailsService apiBackedUserDetailsService;
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(apiBackedAuthenticationProvider);
+		auth.userDetailsService(apiBackedUserDetailsService);
 	}
 
 	@Bean
