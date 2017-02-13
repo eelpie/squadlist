@@ -69,7 +69,7 @@
 	    			   	<ul class="dropdown-menu">
 							<li><a href="$urlBuilder.changePassword()">$text.text('change.password')</a></li>				
 							<li><a href="$urlBuilder.socialMediaAccounts()">$text.text('social.accounts')</a></li>				
-							<li><a href="$urlBuilder.applicationUrl('/j_spring_security_logout')">$text.text('logout')</a></li>
+							<li><a href="$urlBuilder.applicationUrl('/logout')">$text.text('logout')</a></li>
 						</ul>
 					</li>
 				</ul>
