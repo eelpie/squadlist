@@ -8,6 +8,7 @@ spec:
     app: squadlist
   ports:
   - port: 8080
+    nodePort: 32200
     name: squadlist
 ---
 apiVersion: extensions/v1beta1
