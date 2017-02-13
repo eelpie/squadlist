@@ -55,6 +55,8 @@ public class Main extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable();
+
 		http.authorizeRequests()
 			.antMatchers("/favicon.ico", "/static/**", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
 					"/social/facebook/signin", "/social/facebook/signin/callback").permitAll()
