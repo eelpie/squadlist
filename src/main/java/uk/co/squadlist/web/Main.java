@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -28,6 +30,8 @@ import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.auth.ApiBackedAuthenticationProvider;
+import uk.co.squadlist.web.auth.ApiBackedUserDetailsService;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.*;
@@ -38,7 +42,6 @@ import java.util.Map;
 
 @EnableAutoConfiguration
 @ComponentScan(basePackages="uk.co.squadlist.web")
-
 @Configuration
 @EnableWebMvc
 @EnableScheduling

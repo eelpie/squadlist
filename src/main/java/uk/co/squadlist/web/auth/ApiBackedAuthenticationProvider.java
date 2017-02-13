@@ -19,9 +19,9 @@ import com.google.common.collect.Lists;
 
 @Component("authenticationProvider")
 public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
-	
-	private static final Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
-	
+
+	private final static Logger log = Logger.getLogger(ApiBackedAuthenticationProvider.class);
+
     private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
     
     private final InstanceSpecificApiClient api;
@@ -36,7 +36,9 @@ public class ApiBackedAuthenticationProvider extends AbstractUserDetailsAuthenti
     }
 
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException { 
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authToken) throws AuthenticationException {
+		log.info("User details requested for: " + username);
+
     	final String password = authToken.getCredentials().toString();
     	log.info("Attempting to auth user: " + username);
     	

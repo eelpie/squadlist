@@ -30,6 +30,7 @@ public class ApiBackedUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		log.info("Loading user details for: " + username);
 		try {
 			final Member preAuthenticatedMember = api.getMemberDetails(username);
 			log.info("Pre authed user: " + preAuthenticatedMember);
