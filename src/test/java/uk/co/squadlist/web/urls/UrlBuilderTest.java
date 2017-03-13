@@ -35,8 +35,8 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canInsertInstanceIntoBaseUrl() throws Exception {
-		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
-		assertEquals("https://twrcbeta.squadlist.co.uk/meh", urlBuilder.applicationUrl("/meh"));
+		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCE.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
+		assertEquals("https://twrc.squadlist.co.uk/meh", urlBuilder.applicationUrl("/meh"));
 	}
 
 	@Test
@@ -47,14 +47,14 @@ public class UrlBuilderTest {
 
 	@Test
 	public void webcalFeedsAreHttpEvenIfTheMainSiteIsHttps() throws Exception {
-		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
-		assertEquals("webcal://twrcbeta.squadlist.co.uk/ical?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsIcal("a-user", instance));
+		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCE.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
+		assertEquals("webcal://twrc.squadlist.co.uk/ical?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsIcal("a-user", instance));
 	}
 
 	@Test
 	public void canComposeRssFeedUrlFromBaseUrl() throws Exception {
-		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCEbeta.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
-		assertEquals("https://twrcbeta.squadlist.co.uk/rss?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsRss("a-user", instance));
+		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCE.squadlist.co.uk", instanceConfig, seoLinkBuilder, null);
+		assertEquals("https://twrc.squadlist.co.uk/rss?user=a-user&key=9329bb2beff6556bf2698163732bb9a2", urlBuilder.outingsRss("a-user", instance));
 	}
 
 	@Test
