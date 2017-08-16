@@ -33,6 +33,7 @@ public class EmailMessageComposer {
 		velocityEngine = velocityEngineFactory.createVelocityEngine();
 	}
 
+	@Deprecated //TODO inline into new user view
 	public String composeNewMemberInviteMessage(Instance instance, Member member, String initialPassword) {
 		try {
 			Template template = velocityEngine.getTemplate("email/invite.vm");

@@ -24,7 +24,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
-import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.squadlist.web.api.SquadlistApi;
@@ -107,11 +106,6 @@ public class Main extends WebSecurityConfigurerAdapter {
 	@Bean
 	public SquadlistApi squadlistApi(SquadlistApiFactory squadlistApiFactory) {
 		return squadlistApiFactory.create();
-	}
-
-	@Bean
-	public EmailService emailService(@Value("${smtp.host}") String smtpHost, @Value("${smtp.port}") Integer smtpPort) {
-		return new EmailService(smtpHost, smtpPort);
 	}
 
 	@Bean

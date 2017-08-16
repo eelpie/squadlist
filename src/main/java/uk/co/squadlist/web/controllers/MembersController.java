@@ -2,7 +2,6 @@ package uk.co.squadlist.web.controllers;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.commons.mail.EmailException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.co.eelpieconsulting.common.email.EmailService;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -26,7 +24,6 @@ import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -60,7 +57,6 @@ public class MembersController {
 	private UrlBuilder urlBuilder;
 	private ViewFactory viewFactory;
 	private EmailMessageComposer emailMessageComposer;
-	private EmailService emailService;
 	private PasswordGenerator passwordGenerator;
 	private PermissionsService permissionsService;
 	private GoverningBodyFactory governingBodyFactory;
@@ -71,7 +67,7 @@ public class MembersController {
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory,
-			EmailMessageComposer emailMessageComposer, EmailService emailService,
+			EmailMessageComposer emailMessageComposer,
 			PasswordGenerator passwordGenerator,
 			PermissionsService permissionsService, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
@@ -79,7 +75,6 @@ public class MembersController {
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
 		this.emailMessageComposer = emailMessageComposer;
-		this.emailService = emailService;
 		this.passwordGenerator = passwordGenerator;
 		this.permissionsService = permissionsService;
 		this.governingBodyFactory = governingBodyFactory;
@@ -122,12 +117,8 @@ public class MembersController {
 				memberDetails.getEmailAddress(),
 				initialPassword,
 				null,
-				memberDetails.getRole());
-
-			final boolean emailAddressSupplied = !Strings.isNullOrEmpty(memberDetails.getEmailAddress());	// TODO validate
-			if (emailAddressSupplied) {
-				sendNewMemberInvite(api.getInstance(), newMember, initialPassword);
-			}
+				memberDetails.getRole()
+			);
 
 			return viewFactory.getView("memberAdded").
 				addObject("member", newMember).
@@ -139,11 +130,6 @@ public class MembersController {
 			result.addError(new ObjectError("memberDetails", e.getMessage()));
 			return renderNewMemberForm();
 		}
-	}
-
-	private void sendNewMemberInvite(final Instance instance, final Member member, String initialPassword) throws EmailException {
-		final String body = emailMessageComposer.composeNewMemberInviteMessage(instance, member, initialPassword);
-		emailService.sendPlaintextEmail(instance.getName() + " availability invite", NOREPLY_SQUADLIST_CO_UK, member.getEmailAddress(), body);
 	}
 
 	@RequestMapping(value="/change-password", method=RequestMethod.GET)
