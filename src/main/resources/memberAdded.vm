@@ -16,7 +16,11 @@
 			<p>$text.text('user.has.been.added') $member.firstName $member.lastName</p>
 			<p>$text.text('user.has.been.sent.invite', $member.emailAddress)</p>
 			
-			<pre>$inviteMessage</pre>
+<pre>
+$text.text('system.location', $instance.name, $urlBuilder.baseUrl)
+
+$text.text('initial.username.and.password', $member.username, $initialPassword)
+</pre>
 		
 			<div class="control-group">
 				<div class="col-sm-2">

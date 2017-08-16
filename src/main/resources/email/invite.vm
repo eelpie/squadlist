@@ -1,3 +1,0 @@
-$text.text('system.location', $instance.name, $instanceUrl)
-
-$text.text('initial.username.and.password', $member.username, $initialPassword)

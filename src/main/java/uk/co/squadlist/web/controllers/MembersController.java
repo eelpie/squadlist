@@ -32,7 +32,6 @@ import uk.co.squadlist.web.model.forms.MemberSquad;
 import uk.co.squadlist.web.services.PasswordGenerator;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
-import uk.co.squadlist.web.services.email.EmailMessageComposer;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -56,7 +55,6 @@ public class MembersController {
 	private LoggedInUserService loggedInUserService;
 	private UrlBuilder urlBuilder;
 	private ViewFactory viewFactory;
-	private EmailMessageComposer emailMessageComposer;
 	private PasswordGenerator passwordGenerator;
 	private PermissionsService permissionsService;
 	private GoverningBodyFactory governingBodyFactory;
@@ -67,14 +65,12 @@ public class MembersController {
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
 			ViewFactory viewFactory,
-			EmailMessageComposer emailMessageComposer,
 			PasswordGenerator passwordGenerator,
 			PermissionsService permissionsService, GoverningBodyFactory governingBodyFactory) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
-		this.emailMessageComposer = emailMessageComposer;
 		this.passwordGenerator = passwordGenerator;
 		this.permissionsService = permissionsService;
 		this.governingBodyFactory = governingBodyFactory;
@@ -122,8 +118,7 @@ public class MembersController {
 
 			return viewFactory.getView("memberAdded").
 				addObject("member", newMember).
-				addObject("initialPassword", initialPassword).
-				addObject("inviteMessage", emailMessageComposer.composeNewMemberInviteMessage(api.getInstance(), newMember, initialPassword));
+				addObject("initialPassword", initialPassword);
 
 		} catch (InvalidMemberException e) {
 			log.warn("Invalid member exception: " + e.getMessage());
