@@ -10,8 +10,8 @@
 	</div>
 	<hr/>
 		
-	#if($member.profileImage) 
-		<img src="$urlBuilder.staticImage($member.profileImage)" width="200px" align="right"/><br/>
+	#if($member.profileImage)
+		<img src="$urlBuilder.profileImage($member.profileImage)" width="200px" align="right"/><br/>
 	#end	
 
 	<p>$text.text('known.as'): $!member.knownAs</p>

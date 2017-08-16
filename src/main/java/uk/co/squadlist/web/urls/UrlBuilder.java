@@ -20,14 +20,19 @@ public class UrlBuilder {
 	private final String baseUrl;
 	private final InstanceConfig instanceConfig;
 	private final SeoLinkBuilder seoLinkBuilder;
-	private String apiUrl;
+	private final String apiUrl;
+	private final String profilePicturesUrl;
 
 	@Autowired
-	public UrlBuilder(@Value("${baseUrl}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder, @Value("${apiUrl}") String apiUrl) {
+	public UrlBuilder(@Value("${baseUrl}") String baseUrl, InstanceConfig instanceConfig, SeoLinkBuilder seoLinkBuilder,
+										@Value("${apiUrl}") String apiUrl,
+										@Value("${profilePicturesUrl}") String profilePicturesUrl
+										) {
 		this.baseUrl = baseUrl;
 		this.instanceConfig = instanceConfig;
 		this.seoLinkBuilder = seoLinkBuilder;
 		this.apiUrl = apiUrl;
+		this.profilePicturesUrl = profilePicturesUrl;
 	}
 
 	public String applicationUrl(String uri) {
@@ -238,6 +243,10 @@ public class UrlBuilder {
 
 	public String staticImage(String filename) {
 		return apiUrl + "/static/" + filename + ".jpg";
+	}
+
+	public String profileImage(String filename) {
+		return profilePicturesUrl + "/" + filename + ".jpg";	// TODO ideally all of this would be provided by the API
 	}
 
 	public String newAvailabilityOptionUrl() {
