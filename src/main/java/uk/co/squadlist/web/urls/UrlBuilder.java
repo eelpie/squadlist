@@ -44,7 +44,7 @@ public class UrlBuilder {
 	}
 
 	public String staticUrl(String uri) {
-		return applicationUrl("/static/") + uri;
+		return applicationUrl("/assets/") + uri;
 	}
 
 	public String boatUrl(Boat boat) {
