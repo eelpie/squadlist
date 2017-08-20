@@ -30,8 +30,6 @@ public class InstanceConfig {
 	}
 
 	public String getVhost() {
-		requestHostService.getRequestHost();	// TODO force this even in test - doesn't work in a container?
-
 		if (!Strings.isNullOrEmpty(manuallyConfiguredInstanceToUseForAllRequests)) {
 			log.debug("Using manually configured instance: " + manuallyConfiguredInstanceToUseForAllRequests);
 			return manuallyConfiguredInstanceToUseForAllRequests;
