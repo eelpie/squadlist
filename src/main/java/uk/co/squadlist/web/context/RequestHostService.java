@@ -1,11 +1,10 @@
 package uk.co.squadlist.web.context;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class RequestHostService {
@@ -14,10 +13,14 @@ public class RequestHostService {
 
 	private static final String X_FORWARDED_HOST = "x-forwarded-host";
 
-	public String getRequestHost() {
-		final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
+	private final HttpServletRequest request;
 
+	@Autowired
+	public RequestHostService(HttpServletRequest request) {
+		this.request = request;
+	}
+
+	public String getRequestHost() {
 		final String serverName = request.getHeader(X_FORWARDED_HOST);
 		log.debug("Request host is: " + serverName);
 		return serverName;
