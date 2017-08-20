@@ -1,7 +1,7 @@
 #parse('includes/head.vm')
 #navTabs('My outings')
 
-<span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('/wait30.gif')"></span>
+<span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('wait30.gif')"></span>
 												
 <div class="container-fluid">
 
