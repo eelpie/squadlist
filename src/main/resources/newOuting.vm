@@ -9,7 +9,7 @@
 		</div>
 		<div class="col-xs-4">
 			<div class="pull-right">
-				#squadSelect('/outings', $text.text('outings'))
+				#squadSelect('/outings?squad=', $text.text('outings'))
 			</div>
 		</div>
 	</div>
