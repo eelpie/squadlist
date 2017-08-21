@@ -2,6 +2,8 @@ package uk.co.squadlist.web.views;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -39,11 +41,7 @@ public class DateHelper {
 	}
 	
 	public static List<String> getHours() {
-		final List<String> hours = Lists.newArrayList();
-		for (int i = 1; i <= 23; i = i + 1) {
-			hours.add(Integer.toString(i));
-		}
-		return hours;
+		return IntStream.rangeClosed(1, 23).boxed().map(i -> i.toString()).collect(Collectors.toList());
 	}
 	
 	public static List<String> getMinutes() {
