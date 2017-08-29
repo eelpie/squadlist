@@ -34,6 +34,11 @@ public class BritishRowingTest {
 	}
 
 	@Test
+	public void shouldRecogniseLifeMembershipsAsValidRegistrationNumbers() throws Exception {
+		assertNull(britishRowing.checkRegistrationNumber("206509P1012345"));
+	}
+
+	@Test
 	public void shouldReturnNullProblemsForNonSetRegistrationNumber() throws Exception {
 		assertNull(britishRowing.checkRegistrationNumber(null));
 	}
