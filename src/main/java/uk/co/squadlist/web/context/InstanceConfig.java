@@ -36,7 +36,7 @@ public class InstanceConfig {
 		}
 
 		final String requestHost = requestHostService.getRequestHost();
-		log.info("Request host is: " + requestHost);
+		log.debug("Request host is: " + requestHost);
 
 		final String vhostName = requestHost.split("\\.")[0];
 		log.debug("Request vhost is: " + vhostName);
