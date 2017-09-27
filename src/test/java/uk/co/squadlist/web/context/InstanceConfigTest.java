@@ -32,19 +32,19 @@ public class InstanceConfigTest {
 	}
 
 	@Test
+	public void shouldHandleHyphensInIds() throws Exception {
+		when(requestHostService.getRequestHost()).thenReturn("an-instance.squadlist.co.uk");
+
+		assertEquals("an-instance", instanceConfig.getInstance());
+	}
+
+	@Test
 	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() throws Exception {
 		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance");
 
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 
 		assertEquals("manuallyconfiguredinstance", instanceConfig.getInstance());
-	}
-
-	@Test
-	public void stripTheLoggedInUserHintFromDemoSites() throws Exception {
-		when(requestHostService.getRequestHost()).thenReturn("coach-demo.squadlist.co.uk");
-
-		assertEquals("demo", instanceConfig.getInstance());
 	}
 
 }

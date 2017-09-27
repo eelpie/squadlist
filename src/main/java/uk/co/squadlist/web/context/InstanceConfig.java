@@ -22,11 +22,7 @@ public class InstanceConfig {
 	}
 
 	public String getInstance() {
-		final String vhostName = getVhost();
-
-		final String nonPrefixed = vhostName.replaceAll(".*-(.*)$", "$1");
-		log.debug("Non prefixed vhost is: " + nonPrefixed);
-		return nonPrefixed;
+		return getVhost();
 	}
 
 	public String getVhost() {
