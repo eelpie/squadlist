@@ -1,1 +1,20 @@
-<h1>404</h1>
+#parse('includes/head.vm')
+
+<div class="container-fluid">
+    <div class="row">
+		<div class="col-xs-8">
+			<h3>Squadlist</h3>
+		</div>
+	</div>
+	<hr/>
+
+	<div class="row">
+		<div class="col-xs-12">
+		   	<h3>This page could not be found</h3>
+            <p>If you have signed in you should be able to <a href="/">access your availability here</a>.</p>
+		</div>
+	</div>
+    <hr/>
+</div>
+
+#parse('includes/footer.vm')
