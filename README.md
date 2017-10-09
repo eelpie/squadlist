@@ -13,3 +13,11 @@ To provide and alternative translation, copy the file [en.properties](src/main/w
 
 To implement a different governing bodies points and ranking system, provide an alternative implementation of the GoverningBody interface.
 
+
+## Running locally
+
+This is a Spring Boot application. It can be run locally using the Maven plugin.
+
+```
+mvn spring-boot:run
+```
