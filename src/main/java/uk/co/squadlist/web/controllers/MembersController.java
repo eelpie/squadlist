@@ -81,7 +81,7 @@ public class MembersController {
     public ModelAndView member(@PathVariable String id) throws Exception {
 		final Member members = api.getMemberDetails(id);
 
-		final ModelAndView mv = viewFactory.getView("memberDetails");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("memberDetails");
 		mv.addObject("member", members);
     	mv.addObject("title", members.getFirstName() + " " + members.getLastName());
     	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
@@ -116,7 +116,7 @@ public class MembersController {
 				memberDetails.getRole()
 			);
 
-			return viewFactory.getView("memberAdded").
+			return viewFactory.getViewForLoggedInUser("memberAdded").
 				addObject("member", newMember).
 				addObject("initialPassword", initialPassword);
 
@@ -273,7 +273,7 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/make-inactive", method=RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		return viewFactory.getView("makeMemberInactivePrompt").
+		return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Make member inactive - " + member.getDisplayName());
     }
@@ -282,7 +282,7 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/delete", method=RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		return viewFactory.getView("deleteMemberPrompt").
+		return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Delete member - " + member.getDisplayName());
     }
@@ -311,7 +311,7 @@ public class MembersController {
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
 
-		return viewFactory.getView("makeMemberActivePrompt").
+		return viewFactory.getViewForLoggedInUser("makeMemberActivePrompt").
 			addObject("member", api.getMemberDetails(id)).
 			addObject("title", "Make member active - " + member.getDisplayName());
     }
@@ -345,7 +345,7 @@ public class MembersController {
     }
 
 	private ModelAndView renderNewMemberForm() {
-		final ModelAndView mv = viewFactory.getView("newMember");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("newMember");
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("title", "Adding a new member");
     	mv.addObject("rolesOptions", ROLES_OPTIONS);
@@ -353,7 +353,7 @@ public class MembersController {
 	}
 
 	private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member) throws UnknownMemberException {
-		final ModelAndView mv = viewFactory.getView("editMemberDetails");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("editMemberDetails");
     	mv.addObject("member", memberDetails);
     	mv.addObject("memberId", memberId);
     	mv.addObject("title", title);
@@ -375,7 +375,7 @@ public class MembersController {
 	}
 
 	private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
-		final ModelAndView mv = viewFactory.getView("changePassword");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("changePassword");
 		mv.addObject("member", loggedInUserService.getLoggedInMember());
     	mv.addObject("changePassword", changePassword);
     	mv.addObject("title", "Change password");
@@ -405,7 +405,7 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/reset", method=RequestMethod.GET)
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		return viewFactory.getView("memberPasswordResetPrompt").addObject("member", member);
+		return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").addObject("member", member);
 	}
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
@@ -415,7 +415,7 @@ public class MembersController {
 
 		final String newPassword = api.resetMemberPassword(member);
 
-		return viewFactory.getView("memberPasswordReset").
+		return viewFactory.getViewForLoggedInUser("memberPasswordReset").
 				addObject("member", member).
 				addObject("password", newPassword);
 	}

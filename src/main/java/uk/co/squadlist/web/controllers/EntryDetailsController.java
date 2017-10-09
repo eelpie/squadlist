@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -53,7 +52,7 @@ public class EntryDetailsController {
 
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
-    	final ModelAndView mv = viewFactory.getView("entryDetails");
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails");
     	mv.addObject("squads", api.getSquads());
     	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
 
@@ -79,7 +78,7 @@ public class EntryDetailsController {
 			scullingPoints.add(member.getScullingPoints());
 		}
 
-		final ModelAndView mv = viewFactory.getView("entryDetailsAjax");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax");
 		if (!selectedMembers.isEmpty()) {
 			mv.addObject("members", selectedMembers);
 

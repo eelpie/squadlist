@@ -17,7 +17,6 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
@@ -77,7 +76,7 @@ public class AdminController {
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/admin", method=RequestMethod.GET)
     public ModelAndView member() throws Exception {
-    	final ModelAndView mv = viewFactory.getView("admin");
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("admin");
     	mv.addObject("squads", api.getSquads());
     	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
     	mv.addObject("title", "Admin");
@@ -134,7 +133,7 @@ public class AdminController {
 				availableMembers.add(member);
 			}
 		}
-		return viewFactory.getView("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
+		return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -192,7 +191,7 @@ public class AdminController {
 	}
 
 	private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) {
-		return viewFactory.getView("editInstance").
+		return viewFactory.getViewForLoggedInUser("editInstance").
 				addObject("instanceDetails",instanceDetails).
 				addObject("memberOrderings", MEMBER_ORDERINGS).
 				addObject("governingBodies", GOVERNING_BODIES);

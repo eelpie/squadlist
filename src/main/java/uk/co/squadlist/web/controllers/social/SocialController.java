@@ -26,7 +26,7 @@ public class SocialController {
 	
 	@RequestMapping(value="/social", method=RequestMethod.GET)
     public ModelAndView social() throws Exception {
-    	final ModelAndView mv = viewFactory.getView("social"); 
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("social");
     	mv.addObject("hasLinkedFacebook", facebookLinkedAccountsService.isLinked(loggedInUserService.getLoggedInMember()));
     	return mv;
     }

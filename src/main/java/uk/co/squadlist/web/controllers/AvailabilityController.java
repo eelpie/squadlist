@@ -43,14 +43,14 @@ public class AvailabilityController {
 
 	@RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
-    	ModelAndView mv = viewFactory.getView("availability");
+    	ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
     	mv.addObject("squads", api.getSquads());
 		return mv;
     }
 
 	@RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
-    	ModelAndView mv = viewFactory.getView("availability");
+    	ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
     	mv.addObject("squads", api.getSquads());
 
     	final Squad squad = preferedSquadService.resolveSquad(squadId);

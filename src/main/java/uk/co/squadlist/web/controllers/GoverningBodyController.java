@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -31,7 +29,7 @@ public class GoverningBodyController {
     public ModelAndView member() throws Exception {		
 		final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
 
-		final ModelAndView mv = viewFactory.getView("governingBody");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("governingBody");
 		mv.addObject("governingBody", governingBody);
     	mv.addObject("title", governingBody.getName());
 		mv.addObject("ageGrades", governingBody.getAgeGrades());

@@ -136,11 +136,11 @@ public class AvailabilityOptionsController {
     }
 
 	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
-		return viewFactory.getView("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
+		return viewFactory.getViewForLoggedInUser("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
 	}
 
 	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) {
-		return viewFactory.getView("editAvailabilityOption").
+		return viewFactory.getViewForLoggedInUser("editAvailabilityOption").
 				addObject("availabilityOptionDetails", availabilityOptionDetails).
 				addObject("availabilityOption", a);
 	}
@@ -153,7 +153,7 @@ public class AvailabilityOptionsController {
 		final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
 		alternatives.remove(a);
 
-		return viewFactory.getView("deleteAvailabilityOption").
+		return viewFactory.getViewForLoggedInUser("deleteAvailabilityOption").
 			addObject("availabilityOption", a).
 			addObject("alternatives", alternatives);
 	}

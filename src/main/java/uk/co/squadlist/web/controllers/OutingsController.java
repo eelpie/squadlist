@@ -100,7 +100,7 @@ public class OutingsController {
     public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId,
     		@RequestParam(value = "month", required = false) String month) throws Exception {
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-    	final ModelAndView mv = viewFactory.getView("outings");
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
     	if (squadToShow == null) {
     		mv.addObject("title", "Outings");
     		return mv;
@@ -138,7 +138,7 @@ public class OutingsController {
     public ModelAndView outing(@PathVariable String id) throws Exception {
     	final Outing outing = api.getOuting(id);
 
-    	final ModelAndView mv = viewFactory.getView("outing");
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing");
     	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
 		mv.addObject("outing", outing);
 		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
@@ -222,7 +222,7 @@ public class OutingsController {
 	@RequestMapping(value="/outings/{id}/delete", method=RequestMethod.GET)
     public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
     	final Outing outing = api.getOuting(id);
-    	return viewFactory.getView("deleteOuting").addObject("outing", outing);
+    	return viewFactory.getViewForLoggedInUser("deleteOuting").addObject("outing", outing);
     }
 
 	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
@@ -291,7 +291,7 @@ public class OutingsController {
 	}
 
 	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
-		final ModelAndView mv = viewFactory.getView("newOuting");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("newOuting");
 		mv.addObject("squads", api.getSquads());
 		final Squad squad = preferedSquadService.resolveSquad(null);
 		mv.addObject("squad", squad);
@@ -301,7 +301,7 @@ public class OutingsController {
 	}
 
 	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
-    	final ModelAndView mv = viewFactory.getView("editOuting");
+    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("editOuting");
 		mv.addObject("squads", api.getSquads());
 		mv.addObject("squad", outing.getSquad());
 		mv.addObject("outing", outingDetails);
@@ -319,7 +319,7 @@ public class OutingsController {
 
     	if (!outing.isClosed()) {
     		final OutingAvailability result = api.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
-    		return viewFactory.getView("includes/availability").addObject("availability", result.getAvailabilityOption());
+    		return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
     	}
 
     	throw new OutingClosedException();

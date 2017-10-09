@@ -85,7 +85,7 @@ public class SquadsController {
 	@RequestMapping(value="/squad/{id}/delete", method=RequestMethod.GET)
 	public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException {
 		final Squad squad = api.getSquad(id);
-		return viewFactory.getView("deleteSquadPrompt").addObject("squad", squad).addObject("title", "Delete squad");
+		return viewFactory.getViewForLoggedInUser("deleteSquadPrompt").addObject("squad", squad).addObject("title", "Delete squad");
 	}
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
@@ -125,11 +125,11 @@ public class SquadsController {
     }
 
 	private ModelAndView renderNewSquadForm(SquadDetails squadDetails) {
-		return viewFactory.getView("newSquad").addObject("squadDetails", squadDetails);
+		return viewFactory.getViewForLoggedInUser("newSquad").addObject("squadDetails", squadDetails);
 	}
 
 	private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails) {
-		final ModelAndView mv = viewFactory.getView("editSquad");
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("editSquad");
 		mv.addObject("squad", squad);
 		mv.addObject("squadDetails", squadDetails);
 

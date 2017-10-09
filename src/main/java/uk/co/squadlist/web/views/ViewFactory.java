@@ -32,7 +32,7 @@ public class ViewFactory {
 		this.governingBodyFactory = governingBodyFactory;
 	}
 
-	public ModelAndView getView(String templateName) {
+	public ModelAndView getViewForLoggedInUser(String templateName) {
 		final Member loggedInUser = loggedInUserService.getLoggedInMember();
 		
 		final ModelAndView mv = new ModelAndView(templateName);

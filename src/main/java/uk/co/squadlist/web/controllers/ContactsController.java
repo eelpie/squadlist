@@ -37,7 +37,7 @@ public class ContactsController {
 
 	@RequestMapping("/contacts")
     public ModelAndView contacts() throws Exception {
-    	final ModelAndView mv =  viewFactory.getView("contacts");
+    	final ModelAndView mv =  viewFactory.getViewForLoggedInUser("contacts");
     	final List<Squad> allSquads = api.getSquads();
 		mv.addObject("squads", allSquads);	// TODO leaves squad null on view
     	return mv;
@@ -47,7 +47,7 @@ public class ContactsController {
     public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
 		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
 
-    	final ModelAndView mv =  viewFactory.getView("contacts");
+    	final ModelAndView mv =  viewFactory.getViewForLoggedInUser("contacts");
     	final List<Squad> allSquads = api.getSquads();
 		mv.addObject("squads", allSquads);
     	if (!allSquads.isEmpty()) {

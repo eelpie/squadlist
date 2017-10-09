@@ -25,8 +25,8 @@ public class BoatsController {
 	}
 
 	@RequestMapping("/boats/{id}")
-    public ModelAndView outing(@PathVariable String id) throws Exception {
-    	return viewFactory.getView("boat").addObject("boat", api.getBoat(id));
-    }
+	public ModelAndView outing(@PathVariable String id) throws Exception {
+		return viewFactory.getViewForLoggedInUser("boat").addObject("boat", api.getBoat(id));
+	}
 
 }
