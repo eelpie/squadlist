@@ -92,8 +92,8 @@ public class InstanceSpecificApiClient {
 		return api.authFacebook(instanceConfig.getInstance(), token);
 	}
 
-	public Map<String, Integer> getSquadOutingMonths(String squadId) {
-		return api.getSquadOutingMonths(instanceConfig.getInstance(), squadId);
+	public Map<String, Integer> getOutingMonths(Squad squad) {
+		return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad));
 	}
 
 	public List<OutingWithSquadAvailability> getSquadAvailability(String squadId, Date startDate, Date endDate) {

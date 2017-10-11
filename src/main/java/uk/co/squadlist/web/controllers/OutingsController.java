@@ -333,7 +333,7 @@ public class OutingsController {
 	}
 
 	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
-		return api.getSquadOutingMonths(squad.getId());
+		return api.getOutingMonths(squad);
 	}
 
 	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
