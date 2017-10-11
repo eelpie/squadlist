@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -99,8 +100,8 @@ public class InstanceSpecificApiClient {
 		return api.getSquadAvailability(instanceConfig.getInstance(), squadId, startDate, endDate);
 	}
 
-	public List<Outing> getSquadOutings(String squadId, Date startDate, Date endDate) {
-		return api.getSquadOutings(instanceConfig.getInstance(), squadId, startDate, endDate);
+	public List<Outing> getSquadOutings(Squad squad, Date startDate, Date endDate) {
+		return api.getOutings(instanceConfig.getInstance(), Lists.newArrayList(squad), startDate, endDate);
 	}
 
 	public Squad getSquad(String squadId) throws UnknownSquadException {
