@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,7 +94,7 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Map<String, Integer> getOutingMonths(Squad squad) {
-		return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad));
+		return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad), DateTime.now().toDateMidnight().minusDays(1).toDate(), DateTime.now().plusYears(20).toDate());
 	}
 
 	public List<OutingWithSquadAvailability> getSquadAvailability(String squadId, Date startDate, Date endDate) {
