@@ -1,0 +1,21 @@
+#parse('includes/head.vm')
+
+<div class="container-fluid">
+    <div class="row">
+		<div class="col-xs-8">
+			<h3>Squadlist</h3>
+		</div>
+	</div>
+	<hr/>
+	<div class="row">
+		<div class="col-xs-12">
+		   	<h3>Unknown club</h3>
+            <p>A copy of Squadlist could not be found for this club. This probably means the club name is spelt incorrectly in the URL.<br/>
+            Your coach should be able to confirm what the correct URL is.
+            </p>
+		</div>
+	</div>
+    <hr/>
+</div>
+
+#parse('includes/footer.vm')

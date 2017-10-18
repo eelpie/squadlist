@@ -24,6 +24,11 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
 		log.info("Handling exception of type: " + e.getClass());
 
+		if (e instanceof UnknownInstanceException) {
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return new ModelAndView("unknownInstance");
+		}
+
 		if (e instanceof UnknownAvailabilityOptionException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 
 @Controller
@@ -24,7 +23,7 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})	// TODO SEO this onto the root url
 	public ModelAndView member(@RequestParam(value = "errors", required = false) Boolean errors) throws Exception {
 		final ModelAndView mv = new ModelAndView("login");
-		final Instance instance = getInstance();
+		final Instance instance = api.getInstance();
 		mv.addObject("title", instance.getName());
 		mv.addObject("instance", instance);
 		if (errors != null && errors) {
@@ -32,9 +31,5 @@ public class LoginController {
 		}
 		return mv;
 	}
-	
-	private Instance getInstance() throws UnknownInstanceException {
-		return api.getInstance();
-	}
-	
+
 }
