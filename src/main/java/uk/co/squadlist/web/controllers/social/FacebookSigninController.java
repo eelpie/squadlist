@@ -64,12 +64,7 @@ public class FacebookSigninController {
 
 	@RequestMapping(value="/social/facebook/link", method=RequestMethod.GET)
 	public ModelAndView link() {
-		ScopeBuilder scopeBuilder = new ScopeBuilder();
-		scopeBuilder.addPermission(UserDataPermissions.USER_ABOUT_ME);
-
-		FacebookClient client = new DefaultFacebookClient(FACEBOOK_API_VERSION);
-		String facebookLoginDialogUrl = client.getLoginDialogUrl(facebookClientId, urlBuilder.getLinkFacebookCallbackUrl(), scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
-
+		String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.getLinkFacebookCallbackUrl());
 		log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
 		return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
 	}
@@ -95,12 +90,7 @@ public class FacebookSigninController {
 
 	@RequestMapping(value="/social/facebook/signin", method=RequestMethod.GET)
 	public ModelAndView signin() {
-		ScopeBuilder scopeBuilder = new ScopeBuilder();
-		scopeBuilder.addPermission(UserDataPermissions.USER_ABOUT_ME);
-
-		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
-		String facebookLoginDialogUrl = client.getLoginDialogUrl(facebookClientId, urlBuilder.facebookSigninCallbackUrl(), scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
-
+		String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.facebookSigninCallbackUrl());
 		log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
 		return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
 	}
@@ -132,6 +122,14 @@ public class FacebookSigninController {
 	public ModelAndView remove() throws UnknownMemberException {
 		facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());	// TODO Should tell Facebook to invalidate the token as well
 		return redirectToSocialSettings();
+	}
+
+	private String buildFacebookLoginRedirectUrl(String redirectUrl) {
+		ScopeBuilder scopeBuilder = new ScopeBuilder();
+		scopeBuilder.addPermission(UserDataPermissions.USER_ABOUT_ME);
+
+		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
+		return client.getLoginDialogUrl(facebookClientId, redirectUrl, scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
 	}
 
 	private FacebookClient.AccessToken getFacebookUserToken(String code, String redirectUrl) throws IOException {
