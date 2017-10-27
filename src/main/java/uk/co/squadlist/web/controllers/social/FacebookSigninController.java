@@ -6,7 +6,6 @@ import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
 import com.restfb.scope.ScopeBuilder;
-import com.restfb.scope.UserDataPermissions;
 import com.restfb.types.User;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,14 +125,12 @@ public class FacebookSigninController {
 
 	private String buildFacebookLoginRedirectUrl(String redirectUrl) {
 		ScopeBuilder scopeBuilder = new ScopeBuilder();
-		scopeBuilder.addPermission(UserDataPermissions.USER_ABOUT_ME);
-
-		FacebookClient client = new DefaultFacebookClient(Version.VERSION_2_6);
+		FacebookClient client = new DefaultFacebookClient(FACEBOOK_API_VERSION);
 		return client.getLoginDialogUrl(facebookClientId, redirectUrl, scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
 	}
 
 	private FacebookClient.AccessToken getFacebookUserToken(String code, String redirectUrl) throws IOException {
-		FacebookClient.AccessToken accessToken = new DefaultFacebookClient(Version.VERSION_2_6).obtainUserAccessToken(facebookClientId, facebookClientSecret, redirectUrl, code);
+		FacebookClient.AccessToken accessToken = new DefaultFacebookClient(FACEBOOK_API_VERSION).obtainUserAccessToken(facebookClientId, facebookClientSecret, redirectUrl, code);
 		return accessToken;
 	}
 
