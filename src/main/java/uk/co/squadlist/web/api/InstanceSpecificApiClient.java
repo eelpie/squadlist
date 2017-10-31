@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.api;
 
 import com.google.common.collect.Lists;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -12,6 +13,7 @@ import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
+import uk.co.squadlist.web.auth.ApiBackedAuthenticationProvider;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.*;
@@ -24,6 +26,8 @@ import java.util.Set;
 
 @Component
 public class InstanceSpecificApiClient {
+
+	private final static Logger log = Logger.getLogger(InstanceSpecificApiClient.class);
 
 	private InstanceConfig instanceConfig;
 	private SquadlistApi api;
@@ -74,7 +78,8 @@ public class InstanceSpecificApiClient {
 			String usersAccessToken = (String) api.requestAccessToken(instanceConfig.getInstance(), username, password, "squadlist-users", "Hajoo9ie").get("access_token");
 			return api.verify(usersAccessToken);
 		} catch (Exception e) {
-			throw new RuntimeException(e);	// TODO
+			log.error("Uncaught error", e);	// TODO
+			return null;
 		}
 	}
 
