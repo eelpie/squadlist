@@ -75,8 +75,12 @@ public class InstanceSpecificApiClient {
 
 	public Member auth(String username, String password) {
 		try {
-			String usersAccessToken = (String) api.requestAccessToken(instanceConfig.getInstance(), username, password, "squadlist-users", "Hajoo9ie").get("access_token");
-			return api.verify(usersAccessToken);
+			String usersAccessToken = api.requestAccessToken(instanceConfig.getInstance(), username, password, "squadlist-users", "Hajoo9ie");
+			if (usersAccessToken != null) {
+				return api.verify(usersAccessToken);
+			}
+			return null;
+
 		} catch (Exception e) {
 			log.error("Uncaught error", e);	// TODO
 			return null;
