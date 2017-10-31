@@ -30,7 +30,7 @@ public class UrlBuilderTest {
 		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
 
-		instance = new Instance("aninstance", "An instance", null, true, Tariff.PRE_JUNE_2015, Lists.<Subscription>newArrayList(), "british-rowing");
+		instance = new Instance("aninstance", "An instance", null, true, Lists.<Subscription>newArrayList(), "british-rowing");
 	}
 	
 	@Test

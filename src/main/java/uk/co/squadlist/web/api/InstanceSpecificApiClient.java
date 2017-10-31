@@ -12,12 +12,15 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
+import uk.co.squadlist.client.swagger.ApiException;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
@@ -45,14 +48,16 @@ public class InstanceSpecificApiClient {
 
 	private InstanceConfig instanceConfig;
 	private SquadlistApi api;
+	private String apiUrl;
 
 	public InstanceSpecificApiClient() {
 	}
 
 	@Autowired
-	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api) {
+	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api, @Value("${apiUrl}") String apiUrl) {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
+		this.apiUrl = apiUrl;
 	}
 
 	public List<Boat> getBoats() {
@@ -86,7 +91,12 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Member auth(String username, String password) {
-		return api.auth(instanceConfig.getInstance(), username, password);
+		try {
+			String usersAccessToken = (String) api.requestAccessToken(instanceConfig.getInstance(), username, password, "squadlist-users", "Hajoo9ie").get("access_token");
+			return api.verify(usersAccessToken);
+		} catch (Exception e) {
+			throw new RuntimeException(e);	// TODO
+		}
 	}
 
 	public Member authFacebook(String token) {
