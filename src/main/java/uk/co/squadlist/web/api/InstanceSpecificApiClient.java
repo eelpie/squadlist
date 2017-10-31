@@ -38,8 +38,8 @@ public class InstanceSpecificApiClient {
 
 	@Autowired
 	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api,
-									 @Value("${clientId}") String clientId,
-									 @Value("${clientSecret}") String clientSecret) {
+									 @Value("${client.id}") String clientId,
+									 @Value("${client.secret}") String clientSecret) {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
 		this.clientId = clientId;
