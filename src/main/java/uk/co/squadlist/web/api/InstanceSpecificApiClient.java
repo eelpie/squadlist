@@ -1,11 +1,5 @@
 package uk.co.squadlist.web.api;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
@@ -14,34 +8,19 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
-import uk.co.squadlist.client.swagger.ApiException;
-import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
-import uk.co.squadlist.web.exceptions.InvalidImageException;
-import uk.co.squadlist.web.exceptions.InvalidInstanceException;
-import uk.co.squadlist.web.exceptions.InvalidMemberException;
-import uk.co.squadlist.web.exceptions.InvalidOutingException;
-import uk.co.squadlist.web.exceptions.InvalidSquadException;
-import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
-import uk.co.squadlist.web.exceptions.UnknownBoatException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.exceptions.UnknownOutingException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.AvailabilityOption;
-import uk.co.squadlist.web.model.Boat;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
-import uk.co.squadlist.web.model.OutingAvailability;
-import uk.co.squadlist.web.model.OutingWithSquadAvailability;
-import uk.co.squadlist.web.model.Squad;
+import uk.co.squadlist.web.exceptions.*;
+import uk.co.squadlist.web.model.*;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class InstanceSpecificApiClient {
