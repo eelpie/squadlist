@@ -13,7 +13,6 @@ import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
-import uk.co.squadlist.web.auth.ApiBackedAuthenticationProvider;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.*;
@@ -31,16 +30,20 @@ public class InstanceSpecificApiClient {
 
 	private InstanceConfig instanceConfig;
 	private SquadlistApi api;
-	private String apiUrl;
+	private String clientId;
+	private String clientSecret;
 
 	public InstanceSpecificApiClient() {
 	}
 
 	@Autowired
-	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api, @Value("${apiUrl}") String apiUrl) {
+	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api,
+									 @Value("${clientId}") String clientId,
+									 @Value("${clientSecret}") String clientSecret) {
 		this.instanceConfig = instanceConfig;
 		this.api = api;
-		this.apiUrl = apiUrl;
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
 	}
 
 	public List<Boat> getBoats() {
@@ -75,7 +78,7 @@ public class InstanceSpecificApiClient {
 
 	public Member auth(String username, String password) {
 		try {
-			String usersAccessToken = api.requestAccessToken(instanceConfig.getInstance(), username, password, "squadlist-users", "Hajoo9ie");
+			String usersAccessToken = api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
 			if (usersAccessToken != null) {
 				return api.verify(usersAccessToken);
 			}
