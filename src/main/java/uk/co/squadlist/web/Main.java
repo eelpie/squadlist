@@ -61,7 +61,7 @@ public class Main extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 
 		http.authorizeRequests()
-			.antMatchers("/favicon.ico", "apple-touch-icon*", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
+			.antMatchers("/favicon.ico", "apple-touch-icon**", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
 					"/social/facebook/signin", "/social/facebook/signin/callback", "/assets/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
