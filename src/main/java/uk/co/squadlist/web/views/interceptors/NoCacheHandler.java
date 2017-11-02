@@ -14,7 +14,7 @@ public class NoCacheHandler extends HandlerInterceptorAdapter {
 	private final static Logger log = Logger.getLogger(NoCacheHandler.class);
 
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		String path = request.getRequestURI();
+		String path = request.getPathInfo();
 		boolean cachable = path.startsWith("/assets/");
 		if (!cachable) {
 			log.info("Path is not cachable; adding no cache headers: " + path);
