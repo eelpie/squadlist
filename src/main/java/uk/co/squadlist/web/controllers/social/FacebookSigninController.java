@@ -82,7 +82,7 @@ public class FacebookSigninController {
 		log.info("Got access token: " + facebookUserAccessToken);
 
 		final User facebookUser = getFacebookUserById(facebookUserAccessToken);
-		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInMember().getId(), facebookUser.getId());
+		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInMember().getId(), facebookUser.getId());		// TODO Persist the access token as well to permit us to tell the user which Facebook account they are linked to
 
 		return redirectToSocialSettings();
 	}
