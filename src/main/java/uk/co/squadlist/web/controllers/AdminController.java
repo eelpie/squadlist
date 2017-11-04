@@ -37,164 +37,164 @@ import java.util.Set;
 @Controller
 public class AdminController {
 
-	private final static Logger log = Logger.getLogger(AdminController.class);
+  private final static Logger log = Logger.getLogger(AdminController.class);
 
-	private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
-	private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");
+  private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
+  private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");
 
-	private final static Splitter COMMA_SPLITTER = Splitter.on(",");
+  private final static Splitter COMMA_SPLITTER = Splitter.on(",");
 
-	private InstanceSpecificApiClient api;
-	private ViewFactory viewFactory;
-	private ActiveMemberFilter activeMemberFilter;
-	private CsvOutputRenderer csvOutputRenderer;
-	private UrlBuilder urlBuilder;
-	private GithubService githubService;
-	private Context context;
-	private DateFormatter dateFormatter;
-	private GoverningBodyFactory governingBodyFactory;
+  private InstanceSpecificApiClient api;
+  private ViewFactory viewFactory;
+  private ActiveMemberFilter activeMemberFilter;
+  private CsvOutputRenderer csvOutputRenderer;
+  private UrlBuilder urlBuilder;
+  private GithubService githubService;
+  private Context context;
+  private DateFormatter dateFormatter;
+  private GoverningBodyFactory governingBodyFactory;
 
-	public AdminController() {
-	}
+  public AdminController() {
+  }
 
-	@Autowired
-	public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
-						   ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-						   UrlBuilder urlBuilder, GithubService githubService,
-						   Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory) {
-		this.api = api;
-		this.viewFactory = viewFactory;
-		this.activeMemberFilter = activeMemberFilter;
-		this.csvOutputRenderer = csvOutputRenderer;
-		this.urlBuilder = urlBuilder;
-		this.githubService = githubService;
-		this.context = context;
-		this.dateFormatter = dateFormatter;
-		this.governingBodyFactory = governingBodyFactory;
-	}
+  @Autowired
+  public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
+                         ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
+                         UrlBuilder urlBuilder, GithubService githubService,
+                         Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory) {
+    this.api = api;
+    this.viewFactory = viewFactory;
+    this.activeMemberFilter = activeMemberFilter;
+    this.csvOutputRenderer = csvOutputRenderer;
+    this.urlBuilder = urlBuilder;
+    this.githubService = githubService;
+    this.context = context;
+    this.dateFormatter = dateFormatter;
+    this.governingBodyFactory = governingBodyFactory;
+  }
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin", method=RequestMethod.GET)
-    public ModelAndView member() throws Exception {
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("admin");
-    	mv.addObject("squads", api.getSquads());
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
-    	mv.addObject("title", "Admin");
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin", method = RequestMethod.GET)
+  public ModelAndView member() throws Exception {
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("admin");
+    mv.addObject("squads", api.getSquads());
+    mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+    mv.addObject("title", "Admin");
 
-    	final List<Member> members = api.getMembers();
-		mv.addObject("members", members);
-		mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
-		mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
-    	mv.addObject("admins", extractAdminUsersFrom(members));
-    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
-    	mv.addObject("statistics", api.statistics());
-    	mv.addObject("boats", api.getBoats());
+    final List<Member> members = api.getMembers();
+    mv.addObject("members", members);
+    mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
+    mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
+    mv.addObject("admins", extractAdminUsersFrom(members));
+    mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
+    mv.addObject("statistics", api.statistics());
+    mv.addObject("boats", api.getBoats());
 
-    	mv.addObject("openIssues", githubService.getOpenIssues());
-    	mv.addObject("closedIssues", githubService.getClosedIssues());
-    	mv.addObject("language", context.getLanguage());
-    	return mv;
+    mv.addObject("openIssues", githubService.getOpenIssues());
+    mv.addObject("closedIssues", githubService.getClosedIssues());
+    mv.addObject("language", context.getLanguage());
+    return mv;
+  }
+
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin/instance", method = RequestMethod.GET)
+  public ModelAndView instance() throws Exception {
+    final InstanceDetails instanceDetails = new InstanceDetails();
+    instanceDetails.setMemberOrdering(api.getInstance().getMemberOrdering());
+    instanceDetails.setGoverningBody(api.getInstance().getGoverningBody());
+    return renderEditInstanceDetailsForm(instanceDetails);
+  }
+
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin/instance", method = RequestMethod.POST)
+  public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
+    if (result.hasErrors()) {
+      return renderEditInstanceDetailsForm(instanceDetails);
     }
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/instance", method=RequestMethod.GET)
-	public ModelAndView instance() throws Exception {
-		final InstanceDetails instanceDetails = new InstanceDetails();
-		instanceDetails.setMemberOrdering(api.getInstance().getMemberOrdering());
-		instanceDetails.setGoverningBody(api.getInstance().getGoverningBody());
-		return renderEditInstanceDetailsForm(instanceDetails);
-	}
+    Instance instance = api.getInstance();
+    instance.setMemberOrdering(instanceDetails.getMemberOrdering());  // TODO validate
+    instance.setGoverningBody(instanceDetails.getGoverningBody());  // TODO validate
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/instance", method=RequestMethod.POST)
-	public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
-		if (result.hasErrors()) {
-			return renderEditInstanceDetailsForm(instanceDetails);
-		}
+    api.updateInstance(instance);
 
-		Instance instance = api.getInstance();
-		instance.setMemberOrdering(instanceDetails.getMemberOrdering());	// TODO validate
-		instance.setGoverningBody(instanceDetails.getGoverningBody());	// TODO validate
+    return redirectToAdminScreen();
+  }
 
-		api.updateInstance(instance);
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
+  public ModelAndView setAdminsPrompt() throws Exception {
+    List<Member> adminMembers = Lists.newArrayList();
+    List<Member> availableMembers = Lists.newArrayList();
+    for (Member member : api.getMembers()) {
+      if (member.getAdmin()) {
+        adminMembers.add(member);
+      } else {
+        availableMembers.add(member);
+      }
+    }
+    return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
+  }
 
-		return redirectToAdminScreen();
-	}
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin/admins", method = RequestMethod.POST)
+  public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
+    log.info("Setting admins request: " + admins);
+    final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/admins", method=RequestMethod.GET)
-	public ModelAndView setAdminsPrompt() throws Exception {
-		List<Member> adminMembers = Lists.newArrayList();
-		List<Member> availableMembers = Lists.newArrayList();
-		for (Member member : api.getMembers()) {
-			if (member.getAdmin()) {
-				adminMembers.add(member);
-			} else {
-				availableMembers.add(member);
-			}
-		}
-		return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
-	}
+    log.info("Setting admins to: " + updatedAdmins);
+    api.setAdmins(updatedAdmins);
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/admins", method=RequestMethod.POST)
-	public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
-	    log.info("Setting admins request: " + admins);
-		final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
+    return redirectToAdminScreen();
+  }
 
-		log.info("Setting admins to: " + updatedAdmins);
-		api.setAdmins(updatedAdmins);
+  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+  @RequestMapping(value = "/admin/export/members.csv", method = RequestMethod.GET)
+  public void membersCSV(HttpServletResponse response) throws Exception {
+    final List<List<String>> rows = Lists.newArrayList();
+    for (Member member : api.getMembers()) {
+      rows.add(Arrays.asList(member.getFirstName(),
+              member.getLastName(),
+              member.getKnownAs(),
+              member.getEmailAddress(),
+              member.getGender(),
+              member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
+              member.getEmergencyContactName(),
+              member.getEmergencyContactNumber(),
+              member.getWeight() != null ? member.getWeight().toString() : "",
+              member.getSweepOarSide(),
+              member.getSculling(),
+              member.getRegistrationNumber(),
+              member.getRowingPoints(),
+              member.getScullingPoints(),
+              member.getRole()
+      ));
+    }
 
-		return redirectToAdminScreen();
-	}
+    csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
+            "Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
+            "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
+  }
 
-	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
-	@RequestMapping(value="/admin/export/members.csv", method=RequestMethod.GET)
-    public void membersCSV(HttpServletResponse response) throws Exception {
-		final List<List<String>> rows = Lists.newArrayList();
-    	for (Member member : api.getMembers()) {
-    		rows.add(Arrays.asList(new String[] {member.getFirstName(),
-    				member.getLastName(),
-    				member.getKnownAs(),
-    				member.getEmailAddress(),
-    				member.getGender(),
-    				member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
-    				member.getEmergencyContactName(),
-    				member.getEmergencyContactNumber(),
-    				member.getWeight() != null ? member.getWeight().toString() : "",
-    				member.getSweepOarSide(),
-    				member.getSculling(),
-    				member.getRegistrationNumber(),
-    				member.getRowingPoints(),
-    				member.getScullingPoints(),
-    				member.getRole()
-    		}));
-		}
+  private List<Member> extractAdminUsersFrom(List<Member> members) {
+    List<Member> admins = Lists.newArrayList();
+    for (Member member : members) {
+      if (member.getAdmin() != null && member.getAdmin()) {  // TODO should be boolean is the API knows that it is always present.
+        admins.add(member);
+      }
+    }
+    return admins;
+  }
 
-		csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
-				"Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
-				"Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
-	}
+  private ModelAndView redirectToAdminScreen() {
+    return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+  }
 
-	private List<Member> extractAdminUsersFrom(List<Member> members) {
-		List<Member> admins = Lists.newArrayList();
-		for (Member member : members) {
-			if (member.getAdmin() != null && member.getAdmin()) {	// TODO should be boolean is the API knows that it is always present.
-				admins.add(member);
-			}
-		}
-		return admins;
-	}
-
-	private ModelAndView redirectToAdminScreen() {
-		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
-	}
-
-	private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) {
-		return viewFactory.getViewForLoggedInUser("editInstance").
-				addObject("instanceDetails",instanceDetails).
-				addObject("memberOrderings", MEMBER_ORDERINGS).
-				addObject("governingBodies", GOVERNING_BODIES);
-	}
+  private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) {
+    return viewFactory.getViewForLoggedInUser("editInstance").
+            addObject("instanceDetails", instanceDetails).
+            addObject("memberOrderings", MEMBER_ORDERINGS).
+            addObject("governingBodies", GOVERNING_BODIES);
+  }
 
 }
