@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
+import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
@@ -55,41 +56,42 @@ public class MyOutingsController {
 		this.squadNamesHelper = squadNamesHelper;
 		this.outingCalendarService = outingCalendarService;
 	}
-	
+
+	@RequiresSignedInMember
 	@RequestMapping("/")
-    public ModelAndView outings() throws Exception {
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutings");
-    	final String loggedInUser = loggedInUserService.getLoggedInMember().getId();
+	public ModelAndView outings() throws Exception {
+		final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutings");
+		final String loggedInUser = loggedInUserService.getLoggedInMember().getId();
 		mv.addObject("member", api.getMemberDetails(loggedInUser));
-		
+
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		final Date endDate = DateHelper.oneYearFromNow().toDate();
-		
+
 		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
-		
-		mv.addObject("title", "My outings");		
-    	mv.addObject("availabilityOptions", api.getAvailabilityOptions());
-    	mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, api.getInstance()));
-    	mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, api.getInstance()));
-    	return mv;
-    }
-	
+
+		mv.addObject("title", "My outings");
+		mv.addObject("availabilityOptions", api.getAvailabilityOptions());
+		mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, api.getInstance()));
+		mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, api.getInstance()));
+		return mv;
+	}
+
 	@RequestMapping("/ical")
     public void outingsIcal(@RequestParam(value="user", required=false) String user, HttpServletResponse response) throws Exception {
 		if (Strings.isNullOrEmpty(user)) {
 			throw new UnknownMemberException();
 		}
-		
+
 		final Member member = api.getMemberDetails(user);
-				
-		final Calendar calendar = outingCalendarService.buildCalendarFor(api.getAvailabilityFor(member.getId(), 
+
+		final Calendar calendar = outingCalendarService.buildCalendarFor(api.getAvailabilityFor(member.getId(),
 				DateHelper.startOfCurrentOutingPeriod().toDate(),
 				DateHelper.oneYearFromNow().toDate()),
 				api.getInstance());
-				
+
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/calendar");
-		
+
 		final PrintWriter writer = response.getWriter();
 		writer.println(calendar.toString());
 		writer.flush();
@@ -114,6 +116,7 @@ public class MyOutingsController {
 		return mv;
     }
 
+	@RequiresSignedInMember
 	@RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
     	final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutingsAjax");

@@ -41,4 +41,8 @@ public class LoggedInUserService {
 		request.getSession().setAttribute(SIGNED_IN_USER_ACCESS_TOKEN, token);
 	}
 
+	public void cleanSignedIn() {
+		request.getSession().removeAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+	}
+
 }
