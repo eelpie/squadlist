@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 public class SquadlistApiFactory {
 
 	private final String apiUrl;
-	private final String apiAccessToken;
+	private final String clientAccessToken;
 	
 	@Autowired
 	public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
-			@Value("${apiAccessToken}") String apiAccessToken) {
+			@Value("${apiAccessToken}") String clientAccessToken) {
 		this.apiUrl = apiUrl;
-		this.apiAccessToken = apiAccessToken;		
+		this.clientAccessToken = clientAccessToken;
 	}
 	
 	public SquadlistApi createClient() {
-		return new SquadlistApi(apiUrl, apiAccessToken);
+		return new SquadlistApi(apiUrl, clientAccessToken);
 	}
-	
+
 }
