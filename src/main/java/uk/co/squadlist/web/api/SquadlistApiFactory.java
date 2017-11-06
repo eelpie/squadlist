@@ -18,7 +18,11 @@ public class SquadlistApiFactory {
 	}
 	
 	public SquadlistApi createClient() {
-		return new SquadlistApi(apiUrl, clientAccessToken);
+		return createForToken(clientAccessToken);
+	}
+
+	public SquadlistApi createForToken(String token) {
+		return new SquadlistApi(apiUrl, token);
 	}
 
 }
