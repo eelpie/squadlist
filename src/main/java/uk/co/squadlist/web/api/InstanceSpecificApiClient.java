@@ -73,18 +73,19 @@ public class InstanceSpecificApiClient {
 		throw new UnknownAvailabilityOptionException();
 	}
 
-	public Member auth(String username, String password) {
+	public String auth(String username, String password) {
 		try {
 			String usersAccessToken = api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
-			if (usersAccessToken != null) {
-				return api.verify(usersAccessToken);
-			}
-			return null;
+			return usersAccessToken;
 
 		} catch (Exception e) {
 			log.error("Uncaught error", e);	// TODO
 			return null;
 		}
+	}
+
+	public Member verify(String token) {
+		return api.verify(token);
 	}
 
 	public Member authFacebook(String token) {

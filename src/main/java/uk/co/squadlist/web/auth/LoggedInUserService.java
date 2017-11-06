@@ -28,13 +28,6 @@ public class LoggedInUserService {
 		this.request = request;
 	}
 
-	private String getLoggedInUsername() {
-		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final String username = userDetails.getUsername();
-        log.debug("Logged in user is: " + username);
-		return username;
-	}
-
 	public Member getLoggedInMember() {
 		Member loggedInMember = (Member) request.getAttribute(LOGGED_IN_MEMBER);
 		if (loggedInMember != null) {
@@ -51,6 +44,13 @@ public class LoggedInUserService {
 		} catch (UnknownMemberException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private String getLoggedInUsername() {
+		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		final String username = userDetails.getUsername();
+		log.debug("Logged in user is: " + username);
+		return username;
 	}
 
 }
