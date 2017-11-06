@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,10 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -28,8 +23,6 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
-import uk.co.squadlist.web.auth.ApiBackedAuthenticationProvider;
-import uk.co.squadlist.web.auth.ApiBackedUserDetailsService;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.*;
@@ -42,9 +35,8 @@ import java.util.Map;
 @Configuration
 @EnableWebMvc
 @EnableScheduling
-@EnableWebSecurity
 @EnableAutoConfiguration
-public class Main extends WebSecurityConfigurerAdapter {
+public class Main {
 	
 	private final static Logger log = Logger.getLogger(Main.class);
 			  
@@ -53,35 +45,6 @@ public class Main extends WebSecurityConfigurerAdapter {
     public static void main(String[] args) throws Exception {
     	ctx = SpringApplication.run(Main.class, args);     
     }
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable();
-
-		http.authorizeRequests()
-			.antMatchers("/favicon.ico", "/apple-touch-icon*", "login**", "/reset-password/**", "/reset-password", "/ical", "/rss",
-					"/social/facebook/signin", "/social/facebook/signin/callback", "/assets/**").permitAll()
-				.anyRequest().authenticated()
-				.and()
-			.formLogin()
-				.loginPage("/login")
-				.failureUrl("/login?errors=true")
-				.permitAll()
-				.and()
-			.logout().permitAll();
-	}
-
-	@Autowired
-	private ApiBackedAuthenticationProvider apiBackedAuthenticationProvider;
-
-	@Autowired
-	private ApiBackedUserDetailsService apiBackedUserDetailsService;
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(apiBackedAuthenticationProvider);
-		auth.userDetailsService(apiBackedUserDetailsService);
-	}
 
 	@Bean
     public CommonsMultipartResolver multipartResolver(@Value("${maximum.upload}") Long maxUploadSize) throws IOException {

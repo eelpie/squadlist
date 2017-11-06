@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.controllers.social;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
@@ -10,11 +9,6 @@ import com.restfb.types.User;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +22,6 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
 import java.io.IOException;
-import java.util.Collection;
 
 @Controller
 public class FacebookSigninController {
@@ -112,9 +105,9 @@ public class FacebookSigninController {
 			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));	// TODO specific error
 		}
 
-		setLoggedInSpringUser(linkedMember);
+		setLoggedInSpringUser(null);	// TODO Facebook auth API method needs to return an access token
 
-		return new ModelAndView(new RedirectView(urlBuilder.applicationUrl("/")));	// TODO can get normal redirect to wanted page?
+		return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));	// TODO can get normal redirect to wanted page?
 	}
 
 	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
@@ -147,13 +140,8 @@ public class FacebookSigninController {
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));
 	}
 
-	private void setLoggedInSpringUser(final Member linkedMember) {	// TODO this is abit of a grey area; why are we missing with native Spring?
-		log.info("Authenticating user: " + linkedMember);
-		Collection<SimpleGrantedAuthority> authorities = Lists.newArrayList();
-		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-		UserDetails userDetail = new org.springframework.security.core.userdetails.User(linkedMember.getId(), "unknown", authorities);
-		Authentication authentication = new PreAuthenticatedAuthenticationToken(userDetail, null, authorities);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+	private void setLoggedInSpringUser(String token) {
+		loggedInUserService.setSignedIn(token);
 	}
 
 }

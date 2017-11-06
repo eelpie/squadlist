@@ -88,8 +88,8 @@ public class InstanceSpecificApiClient {
 		return api.verify(token);
 	}
 
-	public Member authFacebook(String token) {
-		return api.authFacebook(instanceConfig.getInstance(), token);
+	public Member authFacebook(String facebookToken) {
+		return api.authFacebook(instanceConfig.getInstance(), facebookToken);
 	}
 
 	public Map<String, Integer> getOutingMonths(Squad squad) {
