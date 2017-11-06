@@ -17,7 +17,7 @@ public class SquadlistApiFactory {
 		this.apiAccessToken = apiAccessToken;		
 	}
 	
-	public SquadlistApi create() {
+	public SquadlistApi createClient() {
 		return new SquadlistApi(apiUrl, apiAccessToken);
 	}
 	

@@ -28,22 +28,19 @@ public class InstanceSpecificApiClient {
 
 	private final static Logger log = Logger.getLogger(InstanceSpecificApiClient.class);
 
-	private InstanceConfig instanceConfig;
-	private SquadlistApi api;
-	private String clientId;
-	private String clientSecret;
-
-	public InstanceSpecificApiClient() {
-	}
+	private final InstanceConfig instanceConfig;
+	private final SquadlistApi api;
+	private final String clientId;
+	private final String clientSecret;
 
 	@Autowired
-	public InstanceSpecificApiClient(InstanceConfig instanceConfig, SquadlistApi api,
-									 @Value("${client.id}") String clientId,
+	public InstanceSpecificApiClient(InstanceConfig instanceConfig,
+									 SquadlistApiFactory squadlistApiFactory, @Value("${client.id}") String clientId,
 									 @Value("${client.secret}") String clientSecret) {
 		this.instanceConfig = instanceConfig;
-		this.api = api;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
+		this.api = squadlistApiFactory.createClient();
 	}
 
 	public List<Boat> getBoats() {

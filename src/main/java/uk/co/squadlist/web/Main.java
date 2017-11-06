@@ -28,8 +28,6 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
-import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.ApiBackedAuthenticationProvider;
 import uk.co.squadlist.web.auth.ApiBackedUserDetailsService;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -104,11 +102,6 @@ public class Main extends WebSecurityConfigurerAdapter {
     public ViewFactory viewFactory() throws IOException {
     	return new ViewFactory(new EtagGenerator());
     }
-
-	@Bean
-	public SquadlistApi squadlistApi(SquadlistApiFactory squadlistApiFactory) {
-		return squadlistApiFactory.create();
-	}
 
 	@Bean
 	public FilterRegistrationBean filterRegistrationBean() {
