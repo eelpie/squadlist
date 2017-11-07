@@ -97,7 +97,7 @@ public class FacebookSigninController {
 		facebookOauthStateService.clearState(state);
 
 		FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.facebookSigninCallbackUrl());
-		log.info("Got access token: " + facebookUserAccessToken);
+		log.info("Got Facebook access token: " + facebookUserAccessToken);
 
 		final String authenticatedUsersAccessToken = api.authWithFacebook(facebookUserAccessToken.getAccessToken());
 		if (authenticatedUsersAccessToken == null) {
