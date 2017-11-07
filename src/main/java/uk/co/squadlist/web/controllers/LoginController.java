@@ -30,8 +30,7 @@ public class LoginController {
         this.urlBuilder = urlBuilder;
     }
 
-    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})
-    // TODO SEO this onto the root url
+    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})     // TODO SEO this onto the root url
     public ModelAndView login(@RequestParam(value = "errors", required = false) Boolean errors) throws Exception {
         final ModelAndView mv = new ModelAndView("login");
         final Instance instance = api.getInstance();

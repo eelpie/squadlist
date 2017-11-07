@@ -75,8 +75,18 @@ public class InstanceSpecificApiClient {
 
 	public String auth(String username, String password) {
 		try {
-			String usersAccessToken = api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
-			return usersAccessToken;
+			return api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
+
+		} catch (Exception e) {
+			log.error("Uncaught error", e);	// TODO
+			return null;
+		}
+	}
+
+	public String authWithFacebook(String facebookAccessToken) {
+		try {
+			// String usersAccessToken = api.requestAccessTokenWithFacebook(instanceConfig.getInstance(), facebookAccessToken, clientId, clientSecret);
+			return null;	// TODO implement
 
 		} catch (Exception e) {
 			log.error("Uncaught error", e);	// TODO

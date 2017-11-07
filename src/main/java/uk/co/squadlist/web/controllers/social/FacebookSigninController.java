@@ -99,15 +99,21 @@ public class FacebookSigninController {
 		FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.facebookSigninCallbackUrl());
 		log.info("Got access token: " + facebookUserAccessToken);
 
-		final Member linkedMember = api.authFacebook(facebookUserAccessToken.getAccessToken());
-		if (linkedMember == null) {
+		final String authenticatedUsersAccessToken = api.authWithFacebook(facebookUserAccessToken.getAccessToken());
+		if (authenticatedUsersAccessToken == null) {
 			log.warn("No linked Facebook account");
 			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));	// TODO specific error
 		}
 
-		setLoggedInSpringUser(null);	// TODO Facebook auth API method needs to return an access token
+		Member authenticatedMember = api.verify(authenticatedUsersAccessToken);
+		if (authenticatedMember != null) {
+			log.info("Auth successful for user: " + authenticatedMember.getId());
+			loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
+			return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));  // TODO can get normal redirect to wanted page?
 
-		return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));	// TODO can get normal redirect to wanted page?
+		} else {
+			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));  // TODO specific error
+		}
 	}
 
 	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
@@ -138,10 +144,6 @@ public class FacebookSigninController {
 
 	private ModelAndView redirectToSocialSettings() {
 		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));
-	}
-
-	private void setLoggedInSpringUser(String token) {
-		loggedInUserService.setSignedIn(token);
 	}
 
 }
