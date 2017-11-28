@@ -58,7 +58,7 @@ public class LoginController {
             }
         }
 
-        return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));    // TODO errors
+        return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "&errors=true"));
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
