@@ -67,9 +67,9 @@ public class RowingIrelandTest {
 
 	@Test
 	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() throws Exception {
-		assertEquals(42, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
-		assertEquals(42, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
-		assertEquals(42, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
+		assertEquals(43, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
+		assertEquals(43, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
+		assertEquals(43, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class RowingIrelandTest {
 
 	@Test
 	public void canDetermineAgeGradeFromDateOfBirth() throws Exception {
-		assertEquals("Masters B", rowingIreland.getAgeGrade(new DateTime(1975, 2, 1, 0, 0, 0, 0).toDate()));
+		assertEquals("Masters C", rowingIreland.getAgeGrade(new DateTime(1975, 2, 1, 0, 0, 0, 0).toDate()));
 	}
 
 }
