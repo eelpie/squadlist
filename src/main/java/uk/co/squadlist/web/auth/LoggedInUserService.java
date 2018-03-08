@@ -27,13 +27,13 @@ public class LoggedInUserService {
 	public Member getLoggedInMember() {
 		String token = (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
 		if (token != null) {
-			log.info("Found signed in user token; need to verify: " + token);
+			log.debug("Found signed in user token; need to verify: " + token);
 			Member verifiedMember = api.verify(token);
-			log.info("Verified member: "+ verifiedMember);
+			log.debug("Verified member: "+ verifiedMember);
 			return verifiedMember;
 		}
 
-		log.info("No signed in user token found; returning null");
+		log.debug("No signed in user token found; returning null");
 		return null;
 	}
 
