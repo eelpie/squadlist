@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -31,15 +32,8 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})     // TODO SEO this onto the root url
-    public ModelAndView login(@RequestParam(value = "errors", required = false) Boolean errors) throws Exception {
-        final ModelAndView mv = new ModelAndView("login");
-        final Instance instance = api.getInstance();
-        mv.addObject("title", instance.getName());
-        mv.addObject("instance", instance);
-        if (errors != null && errors) {
-            mv.addObject("errors", true);
-        }
-        return mv;
+    public ModelAndView login() throws Exception {
+       return renderLoginScreen(false);
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
@@ -58,13 +52,22 @@ public class LoginController {
             }
         }
 
-        return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "&errors=true"));
+        return renderLoginScreen(true);
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
     public ModelAndView logout() throws Exception {
         loggedInUserService.cleanSignedIn();
         return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
+    }
+
+    private ModelAndView renderLoginScreen(boolean errors) throws UnknownInstanceException {
+        final ModelAndView mv = new ModelAndView("login");
+        final Instance instance = api.getInstance();
+        mv.addObject("title", instance.getName());
+        mv.addObject("instance", instance);
+        mv.addObject("errors", errors);
+        return mv;
     }
 
 }
