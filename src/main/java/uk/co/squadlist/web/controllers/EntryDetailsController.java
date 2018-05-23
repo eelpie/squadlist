@@ -111,6 +111,8 @@ public class EntryDetailsController {
 
 	@RequestMapping(value="/entrydetails/{squadId}.csv", method=RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
+		viewFactory.getViewForLoggedInUser("entryDetails");	// TODO
+
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     	final List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
 
