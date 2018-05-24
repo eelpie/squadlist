@@ -44,4 +44,4 @@ Inactive is taked to mean no member signins during the last 6 months and no pend
 <p>Members availability for a given outing is automatically deleted 1 month after the date of the outing.</p>
 
 <p>If deletion of a member is requested (such as by pressing the delete member link on the admin page), 
-then that member's data is immediatly removed from the database.</p>
+then that member's data is immediately removed from the database.</p>
