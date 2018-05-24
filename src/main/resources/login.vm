@@ -77,7 +77,10 @@
 
 
 	<div class="row">
-		#parse('data.vm')
+        <div class="col-xs-12">
+            <hr/>
+            #parse('data.vm')
+		</div>
 	</div>				
 	<hr/>
 	
