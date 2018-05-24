@@ -8,7 +8,7 @@
 <p>We pass the name of the club to Google Analytics for each page view. This is to allow us to identify active and inactive copies of the system.</p>
 
 
-<h4>Personally identifiable information</h4>
+<h4>User of personally identifiable information</h4>
 
 <p>This system is intended to assist in the facilitation of a team activity; as such the use of some personally identifiable information is unavoidable.
 Personally identifiable information is requested from members for the reasons detailed below. This information 
@@ -20,12 +20,18 @@ may be shared with other members of your club.</p>
 <h5>Email address</h5>
 <p>Used to provide other club members, such as coaches with a means to contact this member.
 Shared within your club only. May be visible to your coaches and other club members.
+
 Squadlist will only send email to a member's email address in response to a direct request from that member (for example a member requesting a password reset email).
+Delivering an email to a member may require that member's email address to the provided to a third party email service.
 </p>
 
+<h5>Phone number</h5>
+This optional information is only shared within your club and is intended to facilitate communication between members.
+
 <h5>Date of birth, gender and weight</h5>
-<p>This (optional) information allows members to be correctly classified as per a governing bodies rules or racing.
-The rules of racing may require competiors to be classified by age, gender and weight.</p>
+<p>The rules of racing may require competitors to be classified by age, gender or weight.
+<p>This (optional) information allows members to be correctly classified as per a governing bodies rules of racing. This information
+may be visible to other members of your club (such as coaches) to facilitate this classification.</p>
 
 
 <h4>Data retention</h4>
