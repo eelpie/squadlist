@@ -73,6 +73,11 @@
 			<br/>				
 			<p>$text.text('require.access', $instance.name)</p>
 		</div>					
+	</div>
+
+
+	<div class="row">
+		#parse('data.vm')
 	</div>				
 	<hr/>
 	

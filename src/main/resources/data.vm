@@ -1,0 +1,41 @@
+<h4>Cookies</h4>
+
+<h5>Our cookies</h5>
+<p>We use a cookie to control access to the system; this cookie is only shared with your club's copy of Squadlist.</p>
+
+<h5>Third party cookies</h5>
+<p>We use Google Analytics to monitor usage of the system. Google set their own cookies to facilitate the analytics service.</p>
+<p>We pass the name of the club to Google Analytics for each page view. This is to allow us to identify active and inactive copies of the system.</p>
+
+
+<h4>Personally identifiable information</h4>
+
+<p>This system is intended to assist in the facilitation of a team activity; as such the use of some personally identifiable information is unavoidable.
+Personally identifiable information is requested from members for the reasons detailed below. This information 
+may be shared with other members of your club.</p>
+
+<h5>First and last name</h5>
+<p>Used to identify the member to other members.</p>
+
+<h5>Email address</h5>
+<p>Used to provide other club members, such as coaches with a means to contact this member.
+Shared within your club only. May be visible to your coaches and other club members.
+Squadlist will only send email to a member's email address in response to a direct request from that member (for example a member requesting a password reset email).
+</p>
+
+<h5>Date of birth, gender and weight</h5>
+<p>This (optional) information allows members to be correctly classified as per a governing bodies rules or racing.
+The rules of racing may require competiors to be classified by age, gender and weight.</p>
+
+
+<h4>Data retention</h4>
+
+<p>We endeavour to not accumulate data which is no longer in use or relevant.</p>
+
+<p>If a copy of the system is been inactive for more than 6 months, that copy and all of the member data contained within is automatcially deleted.
+Inactive is taked to mean no member signins during the last 6 months and no pending outings.</p>
+
+<p>Members availability for a given outing is automatically deleted 1 month after the date of the outing.</p>
+
+<p>If deletion of a member is requested (such as by pressing the delete member link on the admin page), 
+then that member's data is immediatly removed from the database.</p>
