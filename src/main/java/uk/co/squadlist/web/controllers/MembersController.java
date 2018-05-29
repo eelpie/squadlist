@@ -302,7 +302,7 @@ public class MembersController {
 	public ModelAndView delete(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
 
-		String token = loggedInUserService.getLoggedInMembersAccessToken();
+		String token = loggedInUserService.getLoggedInMembersToken();
 		SquadlistApi membersApi = squadlistApiFactory.createForToken(token);
 
 		membersApi.deleteMember(instanceConfig.getInstance(), member);

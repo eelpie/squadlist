@@ -25,7 +25,7 @@ public class LoggedInUserService {
 	}
 
 	public Member getLoggedInMember() {
-		String token = (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+		String token = getLoggedInMembersToken();
 		if (token != null) {
 			log.debug("Found signed in user token; need to verify: " + token);
 			Member verifiedMember = api.verify(token);
@@ -35,6 +35,10 @@ public class LoggedInUserService {
 
 		log.debug("No signed in user token found; returning null");
 		return null;
+	}
+
+	public String getLoggedInMembersToken() {
+		return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
 	}
 
 	public void setSignedIn(String token) {
