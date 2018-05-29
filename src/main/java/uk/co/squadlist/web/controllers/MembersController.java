@@ -18,8 +18,11 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidImageException;
 import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
@@ -58,15 +61,20 @@ public class MembersController {
 	private PasswordGenerator passwordGenerator;
 	private PermissionsService permissionsService;
 	private GoverningBodyFactory governingBodyFactory;
+	private SquadlistApiFactory squadlistApiFactory;
+	private InstanceConfig instanceConfig;
 
 	public MembersController() {
 	}
 
 	@Autowired
 	public MembersController(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
-			ViewFactory viewFactory,
-			PasswordGenerator passwordGenerator,
-			PermissionsService permissionsService, GoverningBodyFactory governingBodyFactory) {
+							 ViewFactory viewFactory,
+							 PasswordGenerator passwordGenerator,
+							 PermissionsService permissionsService,
+							 GoverningBodyFactory governingBodyFactory,
+							 SquadlistApiFactory squadlistApiFactory,
+							 InstanceConfig instanceConfig) {
 		this.api = api;
 		this.loggedInUserService = loggedInUserService;
 		this.urlBuilder = urlBuilder;
@@ -74,6 +82,8 @@ public class MembersController {
 		this.passwordGenerator = passwordGenerator;
 		this.permissionsService = permissionsService;
 		this.governingBodyFactory = governingBodyFactory;
+		this.squadlistApiFactory = squadlistApiFactory;
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequiresMemberPermission(permission=Permission.VIEW_MEMBER_DETAILS)
@@ -291,7 +301,11 @@ public class MembersController {
 	@RequestMapping(value="/member/{id}/delete", method=RequestMethod.POST)
 	public ModelAndView delete(@PathVariable String id) throws Exception {
 		final Member member = api.getMemberDetails(id);
-		api.deleteMember(member);
+
+		String token = loggedInUserService.getLoggedInMembersAccessToken();
+		SquadlistApi membersApi = squadlistApiFactory.createForToken(token);
+
+		membersApi.deleteMember(instanceConfig.getInstance(), member);
 		return redirectToAdminScreen();
 	}
 
