@@ -9,8 +9,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -23,32 +24,33 @@ import com.google.common.collect.Lists;
 @Component
 public class EntryDetailsModelPopulator {
 
-	private InstanceSpecificApiClient api;
 	private DateFormatter dateFormatter;
 	private ActiveMemberFilter activeMemberFilter;
 	private GoverningBodyFactory governingBodyFactory;
+	private SquadlistApi squadlistApi;
 
 	public EntryDetailsModelPopulator() {
 	}
 
 	@Autowired
-	public EntryDetailsModelPopulator(InstanceSpecificApiClient api, DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter, GoverningBodyFactory governingBodyFactory) {
-		this.api = api;
+	public EntryDetailsModelPopulator(DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter,
+									  GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
 		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
 		this.governingBodyFactory = governingBodyFactory;
+		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public void populateModel(final Squad squadToShow, final ModelAndView mv) {
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
-    	mv.addObject("members", activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId())));
+    	mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow) {
-		return getEntryDetailsRows(activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId())));
+		return getEntryDetailsRows(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
 	}
 
 	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
@@ -59,7 +61,7 @@ public class EntryDetailsModelPopulator {
     		final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;
     		final String ageGrade = effectiveAge != null ? governingBody.getAgeGrade(effectiveAge) : null;
 
-			rows.add(Arrays.asList(new String[] {member.getFirstName(), member.getLastName(),
+			rows.add(Arrays.asList(member.getFirstName(), member.getLastName(),
     				member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
     				effectiveAge != null ? effectiveAge.toString() : "",
     				ageGrade != null ? ageGrade : "",
@@ -68,7 +70,7 @@ public class EntryDetailsModelPopulator {
     				governingBody.getRowingStatus(member.getRowingPoints()),
     				member.getScullingPoints(),
     				governingBody.getScullingStatus(member.getScullingPoints()),
-    				member.getRegistrationNumber()}));
+    				member.getRegistrationNumber()));
 		}
 		return rows;
 	}

@@ -118,7 +118,7 @@ public class EntryDetailsController {
 		viewFactory.getViewForLoggedInUser("entryDetails");	// TODO
 
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-    	final List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squadToShow.getId());
+    	final List<Member> squadMembers = squadlistApi.getSquadMembers(squadToShow.getId());
 
 		List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
 		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);

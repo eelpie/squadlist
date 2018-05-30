@@ -45,10 +45,6 @@ public class InstanceSpecificApiClient {
 		return api.getSquads(instanceConfig.getInstance());
 	}
 
-	public List<Member> getSquadMembers(String squadId) {
-		return api.getSquadMembers(instanceConfig.getInstance(), squadId);
-	}
-
 	public List<Member> getMembers() {
 		return api.getMembers(instanceConfig.getInstance());
 	}
@@ -95,16 +91,8 @@ public class InstanceSpecificApiClient {
 		return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad), DateTime.now().toDateMidnight().minusDays(1).toDate(), DateTime.now().plusYears(20).toDate());
 	}
 
-	public List<OutingWithSquadAvailability> getSquadAvailability(String squadId, Date startDate, Date endDate) {
-		return api.getSquadAvailability(instanceConfig.getInstance(), squadId, startDate, endDate);
-	}
-
 	public List<Outing> getSquadOutings(Squad squad, Date startDate, Date endDate) {
 		return api.getOutings(instanceConfig.getInstance(), Lists.newArrayList(squad), startDate, endDate);
-	}
-
-	public Squad getSquad(String squadId) throws UnknownSquadException {
-		return api.getSquad(instanceConfig.getInstance(), squadId);
 	}
 
 	public Instance getInstance() throws UnknownInstanceException {
@@ -152,14 +140,6 @@ public class InstanceSpecificApiClient {
 		return api.setOutingAvailability(instanceConfig.getInstance(), member, outing, availabilityOption);
 	}
 
-	public Squad updateSquad(Squad squad) {
-		return api.updateSquad(instanceConfig.getInstance(), squad);
-	}
-
-	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws IOException, HttpFetchException {
-		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);
-	}
-
 	public Map<String, Object> statistics() throws UnknownInstanceException {
 		return api.getInstanceStatistics(instanceConfig.getInstance());
 	}
@@ -186,10 +166,6 @@ public class InstanceSpecificApiClient {
 
 	public void deleteAvailabilityOption(AvailabilityOption availabilityOption, AvailabilityOption alternativeOption) {
 		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
-	}
-
-	public void deleteSquad(Squad squad) {
-		api.deleteSquad(instanceConfig.getInstance(), squad);
 	}
 
 	public void setAdmins(Set<String> admins) throws IOException, HttpFetchException {

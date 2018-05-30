@@ -9,6 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
@@ -58,17 +60,20 @@ public class ContactsModelPopulator {
 	private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
 	private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
-	private InstanceSpecificApiClient api;
+	private InstanceSpecificApiClient instanceSpecificApiClient;
 	private LoggedInUserService loggedInUserService;
 	private PermissionsService permissionsService;
 	private ActiveMemberFilter activeMemberFilter;
+	private SquadlistApi squadlistApi;
 
 	@Autowired
-	public ContactsModelPopulator(InstanceSpecificApiClient api, LoggedInUserService loggedInUserService, PermissionsService permissionsService, ActiveMemberFilter activeMemberFilter) {
-		this.api = api;
+	public ContactsModelPopulator(InstanceSpecificApiClient instanceSpecificApiClient, LoggedInUserService loggedInUserService, PermissionsService permissionsService,
+								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) {
+		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.loggedInUserService = loggedInUserService;
 		this.permissionsService = permissionsService;
 		this.activeMemberFilter = activeMemberFilter;
+		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_CONTACT_DETAILS)
@@ -76,10 +81,10 @@ public class ContactsModelPopulator {
 		mv.addObject("title", squad.getName() + " contacts");
 		mv.addObject("squad", squad);
 
-		Instance instance = api.getInstance();
+		Instance instance = instanceSpecificApiClient.getInstance();
 		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName; 
 		
-		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(api.getSquadMembers(squad.getId())));
+		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squad.getId())));
 		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
 		mv.addObject("members", redactedMembers);
 		

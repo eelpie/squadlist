@@ -402,7 +402,7 @@ public class MembersController {
 		for (MemberSquad requestedSquad : memberDetails.getSquads()) {
 			log.info("Requested squad: " + requestedSquad);
 			try {
-				squads.add(instanceSpecificApiClient.getSquad(requestedSquad.getId()));
+				squads.add(squadlistApi.getSquad(requestedSquad.getId()));	// TODO Validate instance
 			} catch (UnknownSquadException e) {
 				log.warn("Rejecting unknown squad: " + requestedSquad);
 				result.addError(new ObjectError("memberDetails.squad", "Unknown squad"));

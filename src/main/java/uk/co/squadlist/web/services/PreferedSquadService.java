@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -24,20 +26,22 @@ public class PreferedSquadService {
 	
 	private static final String SELECTED_SQUAD = "selectedSquad";
 	
-	private final InstanceSpecificApiClient api;
+	private final InstanceSpecificApiClient instanceSpecificApiClient;
+	private final SquadlistApi squadlistApi;
 	private final HttpServletRequest request;
 	private final LoggedInUserService loggedInUserService;
 	
 	@Autowired
-	public PreferedSquadService(InstanceSpecificApiClient api, HttpServletRequest request, LoggedInUserService loggedInUserService) {
-		this.api = api;
+	public PreferedSquadService(InstanceSpecificApiClient instanceSpecificApiClient, HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) {
+		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.request = request;
 		this.loggedInUserService = loggedInUserService;
+		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 	
 	public Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
     	if(!Strings.isNullOrEmpty(squadId)) {    		
-    		final Squad selectedSquad = api.getSquad(squadId);
+    		final Squad selectedSquad = squadlistApi.getSquad(squadId);
     		setPreferedSquad(selectedSquad);
 			return selectedSquad;
     	}
@@ -48,7 +52,7 @@ public class PreferedSquadService {
     	final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
 		if (selectedSquad != null) {
     		try {
-				return api.getSquad(selectedSquad);
+				return squadlistApi.getSquad(selectedSquad);
 			} catch (UnknownSquadException e) {
 				clearPreferedSquad();
 			}
@@ -58,7 +62,7 @@ public class PreferedSquadService {
     		return loggedInMember.getSquads().iterator().next();
     	}
     	    	
-    	final List<Squad> allSquads = api.getSquads();
+    	final List<Squad> allSquads = instanceSpecificApiClient.getSquads();
     	if (!allSquads.isEmpty()) {
     		return allSquads.iterator().next();
     	}
