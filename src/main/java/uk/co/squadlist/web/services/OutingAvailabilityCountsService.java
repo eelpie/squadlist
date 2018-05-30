@@ -1,32 +1,31 @@
 package uk.co.squadlist.web.services;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AtomicLongMap;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
 import uk.co.squadlist.web.views.DateHelper;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AtomicLongMap;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class OutingAvailabilityCountsService {
 	
-	private final InstanceSpecificApiClient api;
+	private final SquadlistApi api;
 
 	@Autowired
-	public OutingAvailabilityCountsService(InstanceSpecificApiClient api) {
-		this.api = api;
+	public OutingAvailabilityCountsService(SquadlistApiFactory squadlistApiFactory) {
+		this.api = squadlistApiFactory.createClient();
 	}
 
 	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(List<OutingWithSquadAvailability> squadOutings) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {

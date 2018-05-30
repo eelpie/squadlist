@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
@@ -28,32 +30,34 @@ public class EntryDetailsController {
 
 	private final static Logger log = Logger.getLogger(EntryDetailsController.class);
 
-	private InstanceSpecificApiClient api;
+	private InstanceSpecificApiClient instanceSpecificApiClient;
 	private PreferedSquadService preferedSquadService;
 	private ViewFactory viewFactory;
 	private EntryDetailsModelPopulator entryDetailsModelPopulator;
 	private CsvOutputRenderer csvOutputRenderer;
 	private GoverningBodyFactory governingBodyFactory;
+	private SquadlistApi squadlistApi;
 
 	public EntryDetailsController() {
 	}
 
 	@Autowired
-	public EntryDetailsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-			EntryDetailsModelPopulator entryDetailsModelPopulator,
-			CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory) {
-		this.api = api;
+	public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+																EntryDetailsModelPopulator entryDetailsModelPopulator,
+																CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
+		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;
 		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
 		this.csvOutputRenderer = csvOutputRenderer;
 		this.governingBodyFactory = governingBodyFactory;
+		this.squadlistApi  = squadlistApiFactory.createClient();
 	}
 
 	@RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
     	final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails");
-    	mv.addObject("squads", api.getSquads());
+    	mv.addObject("squads", instanceSpecificApiClient.getSquads());
     	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
 
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
@@ -68,7 +72,7 @@ public class EntryDetailsController {
 		JsonNode readTree = new ObjectMapper().readTree(json);
 		Iterator<JsonNode> iterator = readTree.iterator();
 		while (iterator.hasNext()) {
-			selectedMembers.add(api.getMemberDetails(iterator.next().asText()));
+			selectedMembers.add(squadlistApi.getMember(iterator.next().asText()));
 		}
 
 		List<String> rowingPoints = Lists.newArrayList();
@@ -114,7 +118,7 @@ public class EntryDetailsController {
 		viewFactory.getViewForLoggedInUser("entryDetails");	// TODO
 
     	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-    	final List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
+    	final List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squadToShow.getId());
 
 		List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
 		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
@@ -128,7 +132,7 @@ public class EntryDetailsController {
     	while(iterator.hasNext()) {
     		final String selectedMemberId = iterator.next();
     		log.info("Selected member id: " + selectedMemberId);
-			selectedMembers.add(api.getMemberDetails(selectedMemberId));
+			selectedMembers.add(squadlistApi.getMember(selectedMemberId));
     	}
 
 		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));

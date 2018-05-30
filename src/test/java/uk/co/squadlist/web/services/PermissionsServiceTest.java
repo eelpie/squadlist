@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
@@ -19,7 +21,11 @@ public class PermissionsServiceTest {
 	private static final String ROWER_ID = "auser";
 	
 	@Mock
-	private InstanceSpecificApiClient api;
+	private InstanceSpecificApiClient instanceSpecificApiClient;
+	@Mock
+	private SquadlistApiFactory squadlistApiFactory;
+	@Mock
+	private SquadlistApi squadlistApi;
 
 	private Member admin;
 	private Member coach;
@@ -44,27 +50,29 @@ public class PermissionsServiceTest {
 		rower.setId(ROWER_ID);
 		rower.setAdmin(false);
 		rower.setRole("Rower");
+
+		when(squadlistApiFactory.createClient()).thenReturn(squadlistApi);
 				
-		this.permissionsService = new PermissionsService(api);
+		this.permissionsService = new PermissionsService(instanceSpecificApiClient, squadlistApiFactory);
 	}
 
 	@Test
 	public void adminsCanEditMemberDetails() throws Exception {
-		when(api.getMemberDetails(ADMIN_ID)).thenReturn(admin);
+		when(squadlistApi.getMember(ADMIN_ID)).thenReturn(admin);
 		
 		assertTrue(permissionsService.hasMemberPermission(admin, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 	@Test
 	public void coachesCanEditMemberDetails() throws Exception {
-		when(api.getMemberDetails(COACH_ID)).thenReturn(coach);
+		when(squadlistApi.getMember(COACH_ID)).thenReturn(coach);
 		
 		assertTrue(permissionsService.hasMemberPermission(coach, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}
 	
 	@Test
 	public void roweerCanEditThereOwnMemberDetails() throws Exception {
-		when(api.getMemberDetails(ROWER_ID)).thenReturn(rower);
+		when(squadlistApi.getMember(ROWER_ID)).thenReturn(rower);
 		
 		assertTrue(permissionsService.hasMemberPermission(rower, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
 	}

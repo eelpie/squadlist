@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -19,11 +21,13 @@ public class PermissionsService {
 	private static final String REP = "Rep";
 	private static final String COACH = "Coach";	// TODO push to an enum
 
-	private InstanceSpecificApiClient api;
+	private InstanceSpecificApiClient instanceSpecificApiClient;
+	private SquadlistApi squadlistApi;
 
 	@Autowired
-	public PermissionsService(InstanceSpecificApiClient api) {
-		this.api = api;
+	public PermissionsService(InstanceSpecificApiClient instanceSpecificApiClient, SquadlistApiFactory squadlistApiFactory) {
+		this.instanceSpecificApiClient = instanceSpecificApiClient;
+		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
 	public boolean hasPermission(Member loggedInMember, Permission permission) throws UnknownMemberException {
@@ -79,7 +83,7 @@ public class PermissionsService {
 			return true;
 		}
 
-		final Outing outing = api.getOuting(outingId);
+		final Outing outing = instanceSpecificApiClient.getOuting(outingId);
 		if (permission == Permission.EDIT_OUTING) {
 			return canEditOuting(loggedInMember, outing);
 		}
@@ -158,7 +162,7 @@ public class PermissionsService {
 			return true;
 		}
 		
-		final Member member = api.getMemberDetails(memberId);
+		final Member member = squadlistApi.getMember(memberId);
 		final boolean isSquadRepForRower = isSquadRepForRower(loggedInRower, member);
 		return isSquadRepForRower;
 	}
@@ -220,7 +224,7 @@ public class PermissionsService {
 	}
 
 	private boolean canSeeEntryFormDetails(Member loggedInMember) {
-		List<Squad> squads = api.getSquads();
+		List<Squad> squads = instanceSpecificApiClient.getSquads();
 		for (Squad squad : squads) {
 			if (canSeeEntryFormDetailsForSquad(loggedInMember, squad)) {
 				return true;

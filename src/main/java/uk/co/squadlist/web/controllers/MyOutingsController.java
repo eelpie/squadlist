@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.views.EtagGenerator;
 import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
@@ -36,25 +38,27 @@ import com.google.common.collect.Lists;
 public class MyOutingsController {
 	
 	private final LoggedInUserService loggedInUserService;
-	private final InstanceSpecificApiClient api;
+	private final InstanceSpecificApiClient instanceSpecificApiClient;
 	private final ViewFactory viewFactory;
 	private final OutingAvailabilityCountsService outingAvailabilityCountsService;
 	private final UrlBuilder urlBuilder;
 	private final SquadNamesHelper squadNamesHelper;
 	private final OutingCalendarService outingCalendarService;
-	
+	private final SquadlistApi squadlistApi;
+
 	@Autowired
-	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient api, ViewFactory viewFactory,
-			OutingAvailabilityCountsService outingAvailabilityCountsService, UrlBuilder urlBuilder,
-			SquadNamesHelper squadNamesHelper,
-			OutingCalendarService outingCalendarService) {
+	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, ViewFactory viewFactory,
+														 OutingAvailabilityCountsService outingAvailabilityCountsService, UrlBuilder urlBuilder,
+														 SquadNamesHelper squadNamesHelper,
+														 OutingCalendarService outingCalendarService, SquadlistApiFactory squadlistApiFactory) {
 		this.loggedInUserService = loggedInUserService;
-		this.api = api;
+		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.viewFactory = viewFactory;
 		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
 		this.urlBuilder = urlBuilder;
 		this.squadNamesHelper = squadNamesHelper;
 		this.outingCalendarService = outingCalendarService;
+		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
 	@RequiresSignedInMember
@@ -62,17 +66,17 @@ public class MyOutingsController {
 	public ModelAndView outings() throws Exception {
 		final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutings");
 		final String loggedInUser = loggedInUserService.getLoggedInMember().getId();
-		mv.addObject("member", api.getMemberDetails(loggedInUser));
+		mv.addObject("member", squadlistApi.getMember(loggedInUser));
 
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		final Date endDate = DateHelper.oneYearFromNow().toDate();
 
-		mv.addObject("outings", api.getAvailabilityFor(loggedInUser, startDate, endDate));
+		mv.addObject("outings", squadlistApi.getAvailabilityFor(loggedInUser, startDate, endDate));
 
 		mv.addObject("title", "My outings");
-		mv.addObject("availabilityOptions", api.getAvailabilityOptions());
-		mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, api.getInstance()));
-		mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, api.getInstance()));
+		mv.addObject("availabilityOptions", instanceSpecificApiClient.getAvailabilityOptions());
+		mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, instanceSpecificApiClient.getInstance()));
+		mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, instanceSpecificApiClient.getInstance()));
 		return mv;
 	}
 
@@ -82,12 +86,12 @@ public class MyOutingsController {
 			throw new UnknownMemberException();
 		}
 
-		final Member member = api.getMemberDetails(user);
+		final Member member = squadlistApi.getMember(user);
 
-		final Calendar calendar = outingCalendarService.buildCalendarFor(api.getAvailabilityFor(member.getId(),
+		final Calendar calendar = outingCalendarService.buildCalendarFor(squadlistApi.getAvailabilityFor(member.getId(),
 				DateHelper.startOfCurrentOutingPeriod().toDate(),
 				DateHelper.oneYearFromNow().toDate()),
-				api.getInstance());
+				instanceSpecificApiClient.getInstance());
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/calendar");
@@ -103,13 +107,13 @@ public class MyOutingsController {
 			throw new UnknownMemberException();
 		}
 		
-		final Member member = api.getMemberDetails(user);
+		final Member member = squadlistApi.getMember(user);
 				
-		final List<OutingAvailability> availabilityFor = api.getAvailabilityFor(member.getId(),
+		final List<OutingAvailability> availabilityFor = squadlistApi.getAvailabilityFor(member.getId(),
 				DateHelper.startOfCurrentOutingPeriod().toDate(),
 				DateHelper.oneYearFromNow().toDate());
 				
-		final String title = api.getInstance().getName() + " outings";
+		final String title = instanceSpecificApiClient.getInstance().getName() + " outings";
 		final ModelAndView mv = new ModelAndView(new uk.co.eelpieconsulting.common.views.ViewFactory(new EtagGenerator()).getRssView(title, urlBuilder.getBaseUrl(), 
 				squadNamesHelper.list(member.getSquads()) + " outings"));
 		mv.addObject("data", buildRssItemsFor(availabilityFor));

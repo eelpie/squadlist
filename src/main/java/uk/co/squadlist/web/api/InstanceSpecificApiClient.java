@@ -2,17 +2,11 @@ package uk.co.squadlist.web.api;
 
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
-import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
-import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.*;
@@ -59,11 +53,11 @@ public class InstanceSpecificApiClient {
 		return api.getMembers(instanceConfig.getInstance());
 	}
 
-	public List<AvailabilityOption> getAvailabilityOptions() throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+	public List<AvailabilityOption> getAvailabilityOptions() throws HttpFetchException, IOException {
 		return api.getAvailabilityOptions(instanceConfig.getInstance());
 	}
 
-	public AvailabilityOption getAvailabilityOption(String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
+	public AvailabilityOption getAvailabilityOption(String id) throws HttpFetchException, IOException, UnknownAvailabilityOptionException {
 		List<AvailabilityOption> availabilityOptions = getAvailabilityOptions();
 		for (AvailabilityOption availabilityOption : availabilityOptions) {	// TODO API end point
 			if (availabilityOption.getId().equals(id)) {
@@ -113,10 +107,6 @@ public class InstanceSpecificApiClient {
 		return api.getSquad(instanceConfig.getInstance(), squadId);
 	}
 
-	public Member getMemberDetails(String id) throws UnknownMemberException {
-		return api.getMember(id);
-	}
-
 	public Instance getInstance() throws UnknownInstanceException {
 		return api.getInstance(instanceConfig.getInstance());
 	}
@@ -124,22 +114,6 @@ public class InstanceSpecificApiClient {
 	public Member createMember(String firstName, String lastName, List<Squad> squads,
 			String emailAddress, String initialPassword, Date dateOfBirth, String role) throws InvalidMemberException {
 		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
-	}
-
-	public Member updateMemberDetails(Member member) {
-		return api.updateMemberDetails(instanceConfig.getInstance(), member);
-	}
-
-	public Member updateMemberProfileImage(Member member, byte[] image) throws InvalidImageException {
-		return api.updateMemberProfileImage(instanceConfig.getInstance(), member, image);
-	}
-
-	public boolean changePassword(String id, String currentPassword, String newPassword) {
-		return api.changePassword(instanceConfig.getInstance(), id, currentPassword, newPassword);
-	}
-
-	public List<OutingAvailability> getAvailabilityFor(String loggedInUser, Date startDate, Date endDate) {
-		return api.getAvailabilityFor(instanceConfig.getInstance(), loggedInUser, startDate, endDate);
 	}
 
 	public Squad createSquad(String name) throws InvalidSquadException {
@@ -182,7 +156,7 @@ public class InstanceSpecificApiClient {
 		return api.updateSquad(instanceConfig.getInstance(), squad);
 	}
 
-	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
+	public Squad setSquadMembers(Squad squad, Set<String> updatedSquadMembers) throws IOException, HttpFetchException {
 		return api.setSquadMembers(instanceConfig.getInstance(), squad.getId(), updatedSquadMembers);
 	}
 
@@ -214,15 +188,11 @@ public class InstanceSpecificApiClient {
 		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
 	}
 
-	public void deleteMember(Member member) {
-		api.deleteMember(instanceConfig.getInstance(), member);
-	}
-
 	public void deleteSquad(Squad squad) {
 		api.deleteSquad(instanceConfig.getInstance(), squad);
 	}
 
-	public void setAdmins(Set<String> admins) throws JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
+	public void setAdmins(Set<String> admins) throws IOException, HttpFetchException {
 		api.setAdmins(instanceConfig.getInstance(), admins);
 	}
 
