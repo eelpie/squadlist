@@ -114,7 +114,7 @@ public class InstanceSpecificApiClient {
 	}
 
 	public Member getMemberDetails(String id) throws UnknownMemberException {
-		return api.getMemberDetails(instanceConfig.getInstance(), id);
+		return api.getMember(id);
 	}
 
 	public Instance getInstance() throws UnknownInstanceException {
