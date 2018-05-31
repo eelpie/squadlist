@@ -156,11 +156,12 @@ public class MembersController {
     	}
     }
 
-	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
-	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView updateMember(@PathVariable String id,
-    		@RequestParam(required=false) Boolean invalidImage) throws Exception {
-		final Member member = squadlistApi.getMember(id);
+	@RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
+	@RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
+	public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
+		SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+		final Member member = loggedInUserApi.getMember(id);
 
 		final MemberDetails memberDetails = new MemberDetails();
 		memberDetails.setFirstName(member.getFirstName());
@@ -182,9 +183,9 @@ public class MembersController {
 		memberDetails.setSweepOarSide(member.getSweepOarSide());
 
 		memberDetails.setPostcode(member.getAddress() != null ? member.getAddress().get("postcode") : null);
-		
+
 		List<MemberSquad> memberSquads = Lists.newArrayList();
-		for(Squad squad : member.getSquads()) {
+		for (Squad squad : member.getSquads()) {
 			memberSquads.add(new MemberSquad(squad.getId()));
 		}
 
@@ -197,13 +198,15 @@ public class MembersController {
 		ModelAndView mv = renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member);
 		mv.addObject("invalidImage", invalidImage);
 		return mv;
-    }
+	}
 
 	@RequiresMemberPermission(permission=Permission.EDIT_MEMBER_DETAILS)
 	@RequestMapping(value="/member/{id}/edit", method=RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
 		log.info("Received edit member request: " + memberDetails);
-		final Member member = squadlistApi.getMember(id);
+		SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+		final Member member = loggedInUserApi.getMember(id);
 
 		final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
 		if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
@@ -272,7 +275,7 @@ public class MembersController {
 		member.getAddress().put("postcode", memberDetails.getPostcode());
 		
 		log.info("Submitting updated member: " + member);
-		squadlistApi.updateMemberDetails(member);
+		loggedInUserApi.updateMemberDetails(member);
 		return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
     }
 
