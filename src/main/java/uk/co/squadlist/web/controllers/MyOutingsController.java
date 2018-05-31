@@ -66,14 +66,16 @@ public class MyOutingsController {
 	@RequiresSignedInMember
 	@RequestMapping("/")
 	public ModelAndView outings() throws Exception {
-		final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutings");
 		final String loggedInUser = loggedInUserService.getLoggedInMember().getId();
-		mv.addObject("member", squadlistApi.getMember(loggedInUser));
+    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutings");
+    mv.addObject("member", loggedInUserApi.getMember(loggedInUser));
 
 		final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
 		final Date endDate = DateHelper.oneYearFromNow().toDate();
 
-		mv.addObject("outings", squadlistApi.getAvailabilityFor(loggedInUser, startDate, endDate));
+		mv.addObject("outings", loggedInUserApi.getAvailabilityFor(loggedInUser, startDate, endDate));
 
 		mv.addObject("title", "My outings");
 		mv.addObject("availabilityOptions", instanceSpecificApiClient.getAvailabilityOptions());
