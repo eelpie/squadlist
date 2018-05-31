@@ -116,14 +116,6 @@ public class InstanceSpecificApiClient {
 		return api.confirmResetPassword(instanceConfig.getInstance(), token);
 	}
 
-	public Outing getOuting(String id) throws UnknownOutingException {
-		return api.getOuting(instanceConfig.getInstance(), id);
-	}
-
-	public Map<String, AvailabilityOption> getOutingAvailability(String id) throws UnknownOutingException {
-		return api.getOutingAvailability(instanceConfig.getInstance(), id);
-	}
-
 	public Outing createOuting(Outing newOuting) throws InvalidOutingException {
 		return api.createOuting(instanceConfig.getInstance(), newOuting);
 	}
@@ -132,24 +124,12 @@ public class InstanceSpecificApiClient {
 		return api.createOuting(instanceConfig.getInstance(), newOuting, repeats);
 	}
 
-	public Outing updateOuting(Outing updatedOuting) throws InvalidOutingException {
-		return api.updateOuting(instanceConfig.getInstance(), updatedOuting);
-	}
-
-	public OutingAvailability setOutingAvailability(Member member, Outing outing, AvailabilityOption availabilityOption) {
-		return api.setOutingAvailability(instanceConfig.getInstance(), member, outing, availabilityOption);
-	}
-
 	public Map<String, Object> statistics() throws UnknownInstanceException {
 		return api.getInstanceStatistics(instanceConfig.getInstance());
 	}
 
 	public String resetMemberPassword(Member member) throws UnknownMemberException {
 		return api.resetMemberPassword(instanceConfig.getInstance(), member.getId());
-	}
-
-	public void deleteOuting(Outing outing) throws InvalidInstanceException {
-		api.deleteOuting(instanceConfig.getInstance(), outing.getId());	// TODO 404?
 	}
 
 	public void createAvailabilityOption(String name, String colour) throws InvalidAvailabilityOptionException {

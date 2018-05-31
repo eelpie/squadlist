@@ -83,7 +83,7 @@ public class PermissionsService {
 			return true;
 		}
 
-		final Outing outing = instanceSpecificApiClient.getOuting(outingId);
+		final Outing outing = squadlistApi.getOuting(outingId);
 		if (permission == Permission.EDIT_OUTING) {
 			return canEditOuting(loggedInMember, outing);
 		}

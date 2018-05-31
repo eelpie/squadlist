@@ -65,284 +65,284 @@ import com.google.common.collect.Lists;
 @Controller
 public class OutingsController {
 
-	private final static Logger log = Logger.getLogger(OutingsController.class);
+  private final static Logger log = Logger.getLogger(OutingsController.class);
 
-	private LoggedInUserService loggedInUserService;
-	private InstanceSpecificApiClient instanceSpecificApiClient;
-	private UrlBuilder urlBuilder;
-	private DateFormatter dateFormatter;
-	private PreferedSquadService preferedSquadService;
-	private ViewFactory viewFactory;
-	private OutingAvailabilityCountsService outingAvailabilityCountsService;
-	private ActiveMemberFilter activeMemberFilter;
-	private CsvOutputRenderer csvOutputRenderer;
-	private SquadlistApi squadlistApi;
+  private LoggedInUserService loggedInUserService;
+  private InstanceSpecificApiClient instanceSpecificApiClient;
+  private UrlBuilder urlBuilder;
+  private DateFormatter dateFormatter;
+  private PreferedSquadService preferedSquadService;
+  private ViewFactory viewFactory;
+  private OutingAvailabilityCountsService outingAvailabilityCountsService;
+  private ActiveMemberFilter activeMemberFilter;
+  private CsvOutputRenderer csvOutputRenderer;
+  private SquadlistApi squadlistApi;
 
-	public OutingsController() {
-	}
+  public OutingsController() {
+  }
 
-	@Autowired
-	public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder,
-							 DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-							 OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
-							 CsvOutputRenderer csvOutputRenderer, SquadlistApiFactory squadlistApiFactory) {
-		this.loggedInUserService = loggedInUserService;
-		this.instanceSpecificApiClient = instanceSpecificApiClient;
-		this.urlBuilder = urlBuilder;
-		this.dateFormatter = dateFormatter;
-		this.preferedSquadService = preferedSquadService;
-		this.viewFactory = viewFactory;
-		this.outingAvailabilityCountsService = outingAvailabilityCountsService;
-		this.activeMemberFilter = activeMemberFilter;
-		this.csvOutputRenderer = csvOutputRenderer;
-		this.squadlistApi = squadlistApiFactory.createClient();
-	}
+  @Autowired
+  public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder,
+                           DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+                           OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
+                           CsvOutputRenderer csvOutputRenderer, SquadlistApiFactory squadlistApiFactory) {
+    this.loggedInUserService = loggedInUserService;
+    this.instanceSpecificApiClient = instanceSpecificApiClient;
+    this.urlBuilder = urlBuilder;
+    this.dateFormatter = dateFormatter;
+    this.preferedSquadService = preferedSquadService;
+    this.viewFactory = viewFactory;
+    this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+    this.activeMemberFilter = activeMemberFilter;
+    this.csvOutputRenderer = csvOutputRenderer;
+    this.squadlistApi = squadlistApiFactory.createClient();
+  }
 
-	@RequestMapping("/outings")
-    public ModelAndView outings(@RequestParam(required=false, value="squad") String squadId,
-    		@RequestParam(value = "month", required = false) String month) throws Exception {
-    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
-    	if (squadToShow == null) {
-    		mv.addObject("title", "Outings");
-    		return mv;
-    	}
-
-    	Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-		Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
-
-		String title = squadToShow.getName() + " outings";
-		if (month != null) {
-    		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);	// TODO Can be moved to spring?
-    		startDate = monthDateTime.toDate();
-    		endDate = monthDateTime.plusMonths(1).toDate();
-    		title =  squadToShow.getName() + " outings - " + dateFormatter.fullMonthYear(startDate);
-    	} else {
-    		mv.addObject("current", true);
-    	}
-
-		mv.addObject("title", title);
-		mv.addObject("squad", squadToShow);
-		mv.addObject("startDate", startDate);
-		mv.addObject("endDate", endDate);
-		mv.addObject("month", month);
-    	mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
-
-		final List<OutingWithSquadAvailability> squadOutings = squadlistApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
-		mv.addObject("outings", squadOutings);
-    	mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
-
-    	mv.addObject("squads", instanceSpecificApiClient.getSquads());
-    	return mv;
+  @RequestMapping("/outings")
+  public ModelAndView outings(@RequestParam(required = false, value = "squad") String squadId,
+                              @RequestParam(value = "month", required = false) String month) throws Exception {
+    final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
+    if (squadToShow == null) {
+      mv.addObject("title", "Outings");
+      return mv;
     }
 
-	@RequestMapping("/outings/{id}")
-    public ModelAndView outing(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
+    Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
+    Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
 
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing");
-    	mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
-		mv.addObject("outing", outing);
-		mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
-		mv.addObject("squad", outing.getSquad());
-    	mv.addObject("squadAvailability", instanceSpecificApiClient.getOutingAvailability(outing.getId()));
-		mv.addObject("squads", instanceSpecificApiClient.getSquads());
-		mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(outing.getSquad().getId())));
-		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
-    	return mv;
+    String title = squadToShow.getName() + " outings";
+    if (month != null) {
+      final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);  // TODO Can be moved to spring?
+      startDate = monthDateTime.toDate();
+      endDate = monthDateTime.plusMonths(1).toDate();
+      title = squadToShow.getName() + " outings - " + dateFormatter.fullMonthYear(startDate);
+    } else {
+      mv.addObject("current", true);
     }
 
-	@RequestMapping("/outings/{id}.csv")
-    public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
-    	final List<Member> squadMembers = squadlistApi.getSquadMembers(outing.getSquad().getId());
-    	final Map<String, AvailabilityOption> outingAvailability = instanceSpecificApiClient.getOutingAvailability(outing.getId());
+    mv.addObject("title", title);
+    mv.addObject("squad", squadToShow);
+    mv.addObject("startDate", startDate);
+    mv.addObject("endDate", endDate);
+    mv.addObject("month", month);
+    mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
 
-    	final List<List<String>> rows = Lists.newArrayList();
-		for (Member member : squadMembers) {
-			rows.add(Arrays.asList(
-					dateFormatter.dayMonthYearTime(outing.getDate()),
-					outing.getSquad().getName(),
-					member.getDisplayName(),
-					member.getRole(),
-					outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
-			));
-		}
-		csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("Date", "Squad", "Member", "Role", "Availability"), rows);
+    final List<OutingWithSquadAvailability> squadOutings = squadlistApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
+    mv.addObject("outings", squadOutings);
+    mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
+
+    mv.addObject("squads", instanceSpecificApiClient.getSquads());
+    return mv;
+  }
+
+  @RequestMapping("/outings/{id}")
+  public ModelAndView outing(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing");
+    mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
+    mv.addObject("outing", outing);
+    mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
+    mv.addObject("squad", outing.getSquad());
+    mv.addObject("squadAvailability", squadlistApi.getOutingAvailability(outing.getId()));
+    mv.addObject("squads", instanceSpecificApiClient.getSquads());
+    mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(outing.getSquad().getId())));
+    mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
+    return mv;
+  }
+
+  @RequestMapping("/outings/{id}.csv")
+  public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+    final List<Member> squadMembers = squadlistApi.getSquadMembers(outing.getSquad().getId());
+    final Map<String, AvailabilityOption> outingAvailability = squadlistApi.getOutingAvailability(outing.getId());
+
+    final List<List<String>> rows = Lists.newArrayList();
+    for (Member member : squadMembers) {
+      rows.add(Arrays.asList(
+              dateFormatter.dayMonthYearTime(outing.getDate()),
+              outing.getSquad().getName(),
+              member.getDisplayName(),
+              member.getRole(),
+              outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
+      ));
+    }
+    csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("Date", "Squad", "Member", "Role", "Availability"), rows);
+  }
+
+  @RequiresPermission(permission = Permission.ADD_OUTING)
+  @RequestMapping(value = "/outings/new", method = RequestMethod.GET)  // TODO fails hard if no squads are available
+  public ModelAndView newOuting() throws Exception {
+    final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
+    final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
+    outingDefaults.setSquad(preferedSquadService.resolveSquad(null).getId());
+    return renderNewOutingForm(outingDefaults);
+  }
+
+  @RequiresPermission(permission = Permission.ADD_OUTING)
+  @RequestMapping(value = "/outings/new", method = RequestMethod.POST)
+  public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+    if (result.hasErrors()) {
+      return renderNewOutingForm(outingDetails);
     }
 
-	@RequiresPermission(permission=Permission.ADD_OUTING)
-	@RequestMapping(value="/outings/new", method=RequestMethod.GET)	// TODO fails hard if no squads are available
-    public ModelAndView newOuting() throws Exception {
-		final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
-		final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-		outingDefaults.setSquad(preferedSquadService.resolveSquad(null).getId());
-    	return renderNewOutingForm(outingDefaults);
-	}
+    try {
+      final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
+      if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
+        instanceSpecificApiClient.createOuting(newOuting, outingDetails.getRepeatsCount());
+      } else {
+        instanceSpecificApiClient.createOuting(newOuting);
+      }
 
-	@RequiresPermission(permission=Permission.ADD_OUTING)
-	@RequestMapping(value="/outings/new", method=RequestMethod.POST)
-    public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-		if (result.hasErrors()) {
-			return renderNewOutingForm(outingDetails);
-		}
+      final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
+      return new ModelAndView(new RedirectView(outingsViewForNewOutingsSquadAndMonth));
 
-		try {
-			final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
-			if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
-				instanceSpecificApiClient.createOuting(newOuting, outingDetails.getRepeatsCount());
-			} else {
-				instanceSpecificApiClient.createOuting(newOuting);
-			}
+    } catch (InvalidOutingException e) {
+      result.addError(new ObjectError("outing", e.getMessage()));
+      return renderNewOutingForm(outingDetails);
 
-			final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
-			return new ModelAndView(new RedirectView(outingsViewForNewOutingsSquadAndMonth));
+    } catch (Exception e) {
+      result.addError(new ObjectError("outing", "Unknown error"));
+      return renderNewOutingForm(outingDetails);
+    }
+  }
 
-		} catch (InvalidOutingException e) {
-			result.addError(new ObjectError("outing", e.getMessage()));
-			return renderNewOutingForm(outingDetails);
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/edit", method = RequestMethod.GET)
+  public ModelAndView outingEdit(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
 
-		} catch (Exception e) {
-			result.addError(new ObjectError("outing", "Unknown error"));
-			return renderNewOutingForm(outingDetails);
-		}
-	}
+    final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
+    outingDetails.setSquad(outing.getSquad().getId());
+    outingDetails.setNotes(outing.getNotes());
 
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView outingEdit(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
+    return renderEditOutingForm(outingDetails, outing);
+  }
 
-    	final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
-    	outingDetails.setSquad(outing.getSquad().getId());
-    	outingDetails.setNotes(outing.getNotes());
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.GET)
+  public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+    return viewFactory.getViewForLoggedInUser("deleteOuting").addObject("outing", outing);
+  }
 
-    	return renderEditOutingForm(outingDetails, outing);
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.POST)
+  public ModelAndView deleteOuting(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+
+    squadlistApi.deleteOuting(outing.getId());
+
+    final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
+    return new ModelAndView(new RedirectView(exitUrl));
+  }
+
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/close", method = RequestMethod.GET)
+  public ModelAndView closeOuting(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+
+    log.info("Closing outing: " + outing);
+    outing.setClosed(true);
+    squadlistApi.updateOuting(outing);
+
+    return redirectToOuting(outing);
+  }
+
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/reopen", method = RequestMethod.GET)
+  public ModelAndView reopenOuting(@PathVariable String id) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+
+    log.info("Reopening outing: " + outing);
+    outing.setClosed(false);
+    squadlistApi.updateOuting(outing);
+
+    return redirectToOuting(outing);
+  }
+
+  @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
+  @RequestMapping(value = "/outings/{id}/edit", method = RequestMethod.POST)
+  public ModelAndView editOutingSubmit(@PathVariable String id,
+                                       @Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+    final Outing outing = squadlistApi.getOuting(id);
+    if (result.hasErrors()) {
+      return renderEditOutingForm(outingDetails, outing);
+    }
+    try {
+      final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
+      updatedOuting.setId(id);
+
+      squadlistApi.updateOuting(updatedOuting);
+      return redirectToOuting(updatedOuting);
+
+    } catch (InvalidOutingException e) {
+      result.addError(new ObjectError("outing", e.getMessage()));
+      return renderEditOutingForm(outingDetails, outing);
+
+    } catch (Exception e) {
+      log.error(e);
+      result.addError(new ObjectError("outing", "Unknown exception"));
+      return renderEditOutingForm(outingDetails, outing);
+    }
+  }
+
+  private ModelAndView redirectToOuting(final Outing updatedOuting) {
+    return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
+  }
+
+  private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("newOuting");
+    mv.addObject("squads", instanceSpecificApiClient.getSquads());
+    final Squad squad = preferedSquadService.resolveSquad(null);
+    mv.addObject("squad", squad);
+    mv.addObject("outingMonths", getOutingMonthsFor(squad));
+    mv.addObject("outing", outingDetails);
+    return mv;
+  }
+
+  private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("editOuting");
+    mv.addObject("squads", instanceSpecificApiClient.getSquads());
+    mv.addObject("squad", outing.getSquad());
+    mv.addObject("outing", outingDetails);
+    mv.addObject("outingObject", outing);
+    mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
+    mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
+    return mv;
+  }
+
+  @RequestMapping(value = "/availability/ajax", method = RequestMethod.POST)
+  public ModelAndView updateAvailability(
+          @RequestParam(value = "outing", required = true) String outingId,
+          @RequestParam(value = "availability", required = true) String availability) throws Exception {
+    final Outing outing = squadlistApi.getOuting(outingId);
+
+    if (!outing.isClosed()) {
+      final OutingAvailability result = squadlistApi.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
+      return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
     }
 
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/delete", method=RequestMethod.GET)
-    public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
-    	return viewFactory.getViewForLoggedInUser("deleteOuting").addObject("outing", outing);
+    throw new OutingClosedException();
+  }
+
+  private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
+    if (Strings.isNullOrEmpty(availabilityId)) {
+      return null;
     }
+    return instanceSpecificApiClient.getAvailabilityOption(availabilityId);
+  }
 
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/delete", method=RequestMethod.POST)
-    public ModelAndView deleteOuting(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
+  private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
+    return instanceSpecificApiClient.getOutingMonths(squad);
+  }
 
-    	instanceSpecificApiClient.deleteOuting(outing);
-
-    	final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
-    	return new ModelAndView(new RedirectView(exitUrl));
-    }
-
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/close", method=RequestMethod.GET)
-    public ModelAndView closeOuting(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
-
-    	log.info("Closing outing: " + outing);
-    	outing.setClosed(true);
-    	instanceSpecificApiClient.updateOuting(outing);
-
-    	return redirectToOuting(outing);
-    }
-
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/reopen", method=RequestMethod.GET)
-    public ModelAndView reopenOuting(@PathVariable String id) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(id);
-
-    	log.info("Reopening outing: " + outing);
-    	outing.setClosed(false);
-    	instanceSpecificApiClient.updateOuting(outing);
-
-    	return redirectToOuting(outing);
-    }
-
-	@RequiresOutingPermission(permission=Permission.EDIT_OUTING)
-	@RequestMapping(value="/outings/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editOutingSubmit(@PathVariable String id,
-    		@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-		final Outing outing = instanceSpecificApiClient.getOuting(id);
-		if (result.hasErrors()) {
-			return renderEditOutingForm(outingDetails, outing);
-		}
-		try {
-			final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
-			updatedOuting.setId(id);
-
-			instanceSpecificApiClient.updateOuting(updatedOuting);
-			return redirectToOuting(updatedOuting);
-
-		} catch (InvalidOutingException e) {
-			result.addError(new ObjectError("outing", e.getMessage()));
-			return renderEditOutingForm(outingDetails, outing);
-
-		} catch (Exception e) {
-			log.error(e);
-			result.addError(new ObjectError("outing", "Unknown exception"));
-			return renderEditOutingForm(outingDetails, outing);
-		}
-	}
-
-	private ModelAndView redirectToOuting(final Outing updatedOuting) {
-		return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
-	}
-
-	private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
-		final ModelAndView mv = viewFactory.getViewForLoggedInUser("newOuting");
-		mv.addObject("squads", instanceSpecificApiClient.getSquads());
-		final Squad squad = preferedSquadService.resolveSquad(null);
-		mv.addObject("squad", squad);
-		mv.addObject("outingMonths", getOutingMonthsFor(squad));
-		mv.addObject("outing", outingDetails);
-		return mv;
-	}
-
-	private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("editOuting");
-		mv.addObject("squads", instanceSpecificApiClient.getSquads());
-		mv.addObject("squad", outing.getSquad());
-		mv.addObject("outing", outingDetails);
-    	mv.addObject("outingObject", outing);
-    	mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
-		mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));	// TODO push to date parser - local time
-		return mv;
-	}
-
-	@RequestMapping(value="/availability/ajax", method=RequestMethod.POST)
-    public ModelAndView updateAvailability(
-    		@RequestParam(value="outing", required=true) String outingId,
-    		@RequestParam(value="availability", required=true) String availability) throws Exception {
-    	final Outing outing = instanceSpecificApiClient.getOuting(outingId);
-
-    	if (!outing.isClosed()) {
-    		final OutingAvailability result = instanceSpecificApiClient.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
-    		return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
-    	}
-
-    	throw new OutingClosedException();
-	}
-
-	private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
-		if (Strings.isNullOrEmpty(availabilityId)) {
-			return null;
-		}
-		return instanceSpecificApiClient.getAvailabilityOption(availabilityId);
-	}
-
-	private Map<String, Integer> getOutingMonthsFor(final Squad squad) {
-		return instanceSpecificApiClient.getOutingMonths(squad);
-	}
-
-	private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
-		Date date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate();
-		Squad squad = outingDetails.getSquad() != null ? squadlistApi.getSquad(outingDetails.getSquad()) : null;	// TODO validation
-		String notes = outingDetails.getNotes();
-		return new Outing(squad, date, notes);
-	}
+  private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
+    Date date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate();
+    Squad squad = outingDetails.getSquad() != null ? squadlistApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
+    String notes = outingDetails.getNotes();
+    return new Outing(squad, date, notes);
+  }
 
 }
