@@ -132,7 +132,7 @@ public class OutingsController {
     mv.addObject("month", month);
     mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
 
-    final List<OutingWithSquadAvailability> squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
+    final List<OutingWithSquadAvailability> squadOutings = squadlistApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
     mv.addObject("outings", squadOutings);
     mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
 
@@ -306,6 +306,22 @@ public class OutingsController {
     }
   }
 
+  @RequestMapping(value = "/availability/ajax", method = RequestMethod.POST)
+  public ModelAndView updateAvailability(
+          @RequestParam(value = "outing", required = true) String outingId,
+          @RequestParam(value = "availability", required = true) String availability) throws Exception {
+    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+    final Outing outing = loggedInUserApi.getOuting(outingId);
+
+    if (!outing.isClosed()) {
+      final OutingAvailability result = loggedInUserApi.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
+      return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
+    }
+
+    throw new OutingClosedException();
+  }
+
   private ModelAndView redirectToOuting(final Outing updatedOuting) {
     return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
   }
@@ -329,20 +345,6 @@ public class OutingsController {
     mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
     mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
     return mv;
-  }
-
-  @RequestMapping(value = "/availability/ajax", method = RequestMethod.POST)
-  public ModelAndView updateAvailability(
-          @RequestParam(value = "outing", required = true) String outingId,
-          @RequestParam(value = "availability", required = true) String availability) throws Exception {
-    final Outing outing = squadlistApi.getOuting(outingId);
-
-    if (!outing.isClosed()) {
-      final OutingAvailability result = squadlistApi.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability));
-      return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
-    }
-
-    throw new OutingClosedException();
   }
 
   private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
