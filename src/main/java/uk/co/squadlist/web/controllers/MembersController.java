@@ -313,7 +313,7 @@ public class MembersController {
 
     final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
-            addObject("member", squadlistApi.getMember(id)).
+            addObject("member", member).
             addObject("title", "Delete member - " + member.getDisplayName());
   }
 
