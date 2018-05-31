@@ -432,14 +432,17 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
   public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
-    final Member member = squadlistApi.getMember(id);
+    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").addObject("member", member);
   }
 
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.POST)
   public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
-    final Member member = squadlistApi.getMember(id);
+    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+    final Member member = loggedInUserApi.getMember(id);
 
     final String newPassword = instanceSpecificApiClient.resetMemberPassword(member);
 
