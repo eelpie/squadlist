@@ -4,11 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AtomicLongMap;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.OutingWithSquadAvailability;
@@ -20,13 +18,6 @@ import java.util.Map;
 
 @Component
 public class OutingAvailabilityCountsService {
-	
-	private final SquadlistApi api;
-
-	@Autowired
-	public OutingAvailabilityCountsService(SquadlistApiFactory squadlistApiFactory) {
-		this.api = squadlistApiFactory.createClient();
-	}
 
 	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(List<OutingWithSquadAvailability> squadOutings) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
 		final Map<String, Map<String, Long>> results = Maps.newHashMap();
@@ -44,7 +35,7 @@ public class OutingAvailabilityCountsService {
 		return results;
 	}
 
-	public int getPendingOutingsCountFor(String memberId) {
+	public int getPendingOutingsCountFor(String memberId, SquadlistApi api) {
 		int pendingCount = 0;
 		for (OutingAvailability outingAvailability : api.getAvailabilityFor(memberId, 
 				DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.oneYearFromNow().toDate())) {

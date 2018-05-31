@@ -44,6 +44,7 @@ public class MyOutingsController {
 	private final UrlBuilder urlBuilder;
 	private final SquadNamesHelper squadNamesHelper;
 	private final OutingCalendarService outingCalendarService;
+	private final SquadlistApiFactory squadlistApiFactory;
 	private final SquadlistApi squadlistApi;
 
 	@Autowired
@@ -58,6 +59,7 @@ public class MyOutingsController {
 		this.urlBuilder = urlBuilder;
 		this.squadNamesHelper = squadNamesHelper;
 		this.outingCalendarService = outingCalendarService;
+		this.squadlistApiFactory = squadlistApiFactory;
 		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
@@ -124,7 +126,8 @@ public class MyOutingsController {
 	@RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
     	final ModelAndView mv = viewFactory.getViewForLoggedInUser("myOutingsAjax");
-    	int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInMember().getId());
+			SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+			int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInMember().getId(), loggedInUserApi);
     	if (pendingOutingsCountFor > 0) {
     		mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
     	}
