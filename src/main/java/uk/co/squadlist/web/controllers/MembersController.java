@@ -289,7 +289,7 @@ public class MembersController {
 
     final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
-            addObject("member", squadlistApi.getMember(id)).
+            addObject("member", member).
             addObject("title", "Make member inactive - " + member.getDisplayName());
   }
 
