@@ -104,10 +104,6 @@ public class InstanceSpecificApiClient {
 		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
 	}
 
-	public Squad createSquad(String name) throws InvalidSquadException {
-		return api.createSquad(instanceConfig.getInstance(), name);
-	}
-
 	public void resetPassword(String username) throws UnknownMemberException {
 		api.resetPassword(instanceConfig.getInstance(), username);
 	}

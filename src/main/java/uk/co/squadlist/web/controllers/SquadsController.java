@@ -27,8 +27,11 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
@@ -50,16 +53,20 @@ public class SquadsController {
 	private UrlBuilder urlBuilder;
 	private ViewFactory viewFactory;
 	private SquadlistApi squadlistApi;
+	private InstanceConfig instanceConfig;
 
 	public SquadsController() {
 	}
 
 	@Autowired
-	public SquadsController(InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder, ViewFactory viewFactory, SquadlistApiFactory squadlistApiFactory) {
+	public SquadsController(InstanceSpecificApiClient instanceSpecificApiClient,
+							UrlBuilder urlBuilder, ViewFactory viewFactory, SquadlistApiFactory squadlistApiFactory,
+							InstanceConfig instanceConfig) {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;
 		this.squadlistApi = squadlistApiFactory.createClient();
+		this.instanceConfig = instanceConfig;
 	}
 
 	@RequestMapping(value="/squad/new", method=RequestMethod.GET)
@@ -68,13 +75,14 @@ public class SquadsController {
     }
 
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownInstanceException {
 		if (result.hasErrors()) {
 			return renderNewSquadForm(squadDetails);
 		}
 
 		try {
-			instanceSpecificApiClient.createSquad(squadDetails.getName());
+			Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
+			squadlistApi.createSquad(instance, squadDetails.getName());
 
 			return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 
