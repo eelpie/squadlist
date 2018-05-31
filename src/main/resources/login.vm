@@ -15,7 +15,7 @@
 				<div class="form-group">
 				    <label for="username" class="col-sm-2 control-label">$text.text('username')</label>
 				    <div class="col-sm-6">
-				        <input type="text" class="form-control" name="username" placeholder="$text.text('username')">				      				      					   				
+				        <input type="text" class="form-control" name="username" placeholder="$text.text('username')" value="$!username">
 				    </div>
 				</div>
 				        

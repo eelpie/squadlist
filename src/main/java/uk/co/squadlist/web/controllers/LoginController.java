@@ -33,7 +33,7 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})     // TODO SEO this onto the root url
     public ModelAndView login() throws Exception {
-       return renderLoginScreen(false);
+       return renderLoginScreen(false, null);
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
@@ -52,7 +52,7 @@ public class LoginController {
             }
         }
 
-        return renderLoginScreen(true);
+        return renderLoginScreen(true, username);
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
@@ -61,11 +61,12 @@ public class LoginController {
         return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
     }
 
-    private ModelAndView renderLoginScreen(boolean errors) throws UnknownInstanceException {
+    private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
         final ModelAndView mv = new ModelAndView("login");
         final Instance instance = api.getInstance();
         mv.addObject("title", instance.getName());
         mv.addObject("instance", instance);
+        mv.addObject("username", username);
         mv.addObject("errors", errors);
         return mv;
     }
