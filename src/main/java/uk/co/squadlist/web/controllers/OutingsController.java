@@ -193,9 +193,9 @@ public class OutingsController {
     try {
       final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
       if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
-        instanceSpecificApiClient.createOuting(newOuting, outingDetails.getRepeatsCount());
+        squadlistApi.createOuting(newOuting, outingDetails.getRepeatsCount());
       } else {
-        instanceSpecificApiClient.createOuting(newOuting);
+        squadlistApi.createOuting(newOuting, null);
       }
 
       final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));

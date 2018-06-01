@@ -112,14 +112,6 @@ public class InstanceSpecificApiClient {
 		return api.confirmResetPassword(instanceConfig.getInstance(), token);
 	}
 
-	public Outing createOuting(Outing newOuting) throws InvalidOutingException {
-		return api.createOuting(instanceConfig.getInstance(), newOuting);
-	}
-
-	public Outing createOuting(Outing newOuting, int repeats) throws InvalidOutingException {
-		return api.createOuting(instanceConfig.getInstance(), newOuting, repeats);
-	}
-
 	public Map<String, Object> statistics() throws UnknownInstanceException {
 		return api.getInstanceStatistics(instanceConfig.getInstance());
 	}
