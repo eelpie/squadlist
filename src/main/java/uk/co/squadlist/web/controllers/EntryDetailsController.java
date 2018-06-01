@@ -77,7 +77,7 @@ public class EntryDetailsController {
     JsonNode readTree = new ObjectMapper().readTree(json);
     Iterator<JsonNode> iterator = readTree.iterator();
     while (iterator.hasNext()) {
-      selectedMembers.add(squadlistApi.getMember(iterator.next().asText()));
+      selectedMembers.add(loggedInUserApi.getMember(iterator.next().asText()));
     }
 
     List<String> rowingPoints = Lists.newArrayList();
