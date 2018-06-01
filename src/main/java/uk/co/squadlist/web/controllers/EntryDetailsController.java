@@ -31,18 +31,15 @@ public class EntryDetailsController {
 
   private final static Logger log = Logger.getLogger(EntryDetailsController.class);
 
-  private InstanceSpecificApiClient instanceSpecificApiClient;
-  private PreferedSquadService preferedSquadService;
-  private ViewFactory viewFactory;
-  private EntryDetailsModelPopulator entryDetailsModelPopulator;
-  private CsvOutputRenderer csvOutputRenderer;
-  private GoverningBodyFactory governingBodyFactory;
-  private SquadlistApi squadlistApi;
-  private LoggedInUserService loggedInUserService;
-  private SquadlistApiFactory squadlistApiFactory;
-
-  public EntryDetailsController() {
-  }
+  private final InstanceSpecificApiClient instanceSpecificApiClient;
+  private final PreferedSquadService preferedSquadService;
+  private final ViewFactory viewFactory;
+  private final EntryDetailsModelPopulator entryDetailsModelPopulator;
+  private final CsvOutputRenderer csvOutputRenderer;
+  private final GoverningBodyFactory governingBodyFactory;
+  private final SquadlistApi squadlistApi;
+  private final LoggedInUserService loggedInUserService;
+  private final SquadlistApiFactory squadlistApiFactory;
 
   @Autowired
   public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
@@ -56,6 +53,7 @@ public class EntryDetailsController {
     this.csvOutputRenderer = csvOutputRenderer;
     this.governingBodyFactory = governingBodyFactory;
     this.loggedInUserService = loggedInUserService;
+    this.squadlistApiFactory = squadlistApiFactory;
     this.squadlistApi = squadlistApiFactory.createClient();
   }
 
