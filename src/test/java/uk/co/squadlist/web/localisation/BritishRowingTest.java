@@ -30,7 +30,7 @@ public class BritishRowingTest {
 
 	@Test
 	public void shouldReturnNullProblemsForValidRegistrationNumbers() throws Exception {
-		assertNull(britishRowing.checkRegistrationNumber("201805G1020791"));
+		assertNull(britishRowing.checkRegistrationNumber("206505G1020791"));
 	}
 
 	@Test
