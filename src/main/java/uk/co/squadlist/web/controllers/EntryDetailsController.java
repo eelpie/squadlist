@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
@@ -28,114 +29,120 @@ import java.util.List;
 @Controller
 public class EntryDetailsController {
 
-	private final static Logger log = Logger.getLogger(EntryDetailsController.class);
+  private final static Logger log = Logger.getLogger(EntryDetailsController.class);
 
-	private InstanceSpecificApiClient instanceSpecificApiClient;
-	private PreferedSquadService preferedSquadService;
-	private ViewFactory viewFactory;
-	private EntryDetailsModelPopulator entryDetailsModelPopulator;
-	private CsvOutputRenderer csvOutputRenderer;
-	private GoverningBodyFactory governingBodyFactory;
-	private SquadlistApi squadlistApi;
+  private InstanceSpecificApiClient instanceSpecificApiClient;
+  private PreferedSquadService preferedSquadService;
+  private ViewFactory viewFactory;
+  private EntryDetailsModelPopulator entryDetailsModelPopulator;
+  private CsvOutputRenderer csvOutputRenderer;
+  private GoverningBodyFactory governingBodyFactory;
+  private SquadlistApi squadlistApi;
+  private LoggedInUserService loggedInUserService;
+  private SquadlistApiFactory squadlistApiFactory;
 
-	public EntryDetailsController() {
-	}
+  public EntryDetailsController() {
+  }
 
-	@Autowired
-	public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-																EntryDetailsModelPopulator entryDetailsModelPopulator,
-																CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
-		this.instanceSpecificApiClient = instanceSpecificApiClient;
-		this.preferedSquadService = preferedSquadService;
-		this.viewFactory = viewFactory;
-		this.entryDetailsModelPopulator = entryDetailsModelPopulator;
-		this.csvOutputRenderer = csvOutputRenderer;
-		this.governingBodyFactory = governingBodyFactory;
-		this.squadlistApi  = squadlistApiFactory.createClient();
-	}
+  @Autowired
+  public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+                                EntryDetailsModelPopulator entryDetailsModelPopulator,
+                                CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory,
+                                SquadlistApiFactory squadlistApiFactory, LoggedInUserService loggedInUserService) {
+    this.instanceSpecificApiClient = instanceSpecificApiClient;
+    this.preferedSquadService = preferedSquadService;
+    this.viewFactory = viewFactory;
+    this.entryDetailsModelPopulator = entryDetailsModelPopulator;
+    this.csvOutputRenderer = csvOutputRenderer;
+    this.governingBodyFactory = governingBodyFactory;
+    this.loggedInUserService = loggedInUserService;
+    this.squadlistApi = squadlistApiFactory.createClient();
+  }
 
-	@RequestMapping("/entrydetails/{squadId}")
-    public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
-    	final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails");
-    	mv.addObject("squads", instanceSpecificApiClient.getSquads());
-    	mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
+  @RequestMapping("/entrydetails/{squadId}")
+  public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails");
+    mv.addObject("squads", instanceSpecificApiClient.getSquads());
+    mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
 
-    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-		entryDetailsModelPopulator.populateModel(squadToShow, mv);
-    	return mv;
+    final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+    entryDetailsModelPopulator.populateModel(squadToShow, mv);
+    return mv;
+  }
+
+  @RequestMapping("/entrydetails/ajax")
+  public ModelAndView ajax(@RequestBody String json) throws Exception {
+    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+
+    List<Member> selectedMembers = Lists.newArrayList();
+
+    JsonNode readTree = new ObjectMapper().readTree(json);
+    Iterator<JsonNode> iterator = readTree.iterator();
+    while (iterator.hasNext()) {
+      selectedMembers.add(squadlistApi.getMember(iterator.next().asText()));
     }
 
-	@RequestMapping("/entrydetails/ajax")
-	public ModelAndView ajax(@RequestBody String json) throws Exception {
-		List<Member> selectedMembers = Lists.newArrayList();
+    List<String> rowingPoints = Lists.newArrayList();
+    List<String> scullingPoints = Lists.newArrayList();
+    for (Member member : selectedMembers) {
+      rowingPoints.add(member.getRowingPoints());
+      scullingPoints.add(member.getScullingPoints());
+    }
 
-		JsonNode readTree = new ObjectMapper().readTree(json);
-		Iterator<JsonNode> iterator = readTree.iterator();
-		while (iterator.hasNext()) {
-			selectedMembers.add(squadlistApi.getMember(iterator.next().asText()));
-		}
+    final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax");
+    if (!selectedMembers.isEmpty()) {
+      mv.addObject("members", selectedMembers);
 
-		List<String> rowingPoints = Lists.newArrayList();
-		List<String> scullingPoints = Lists.newArrayList();
-		for (Member member: selectedMembers) {
-			rowingPoints.add(member.getRowingPoints());
-			scullingPoints.add(member.getScullingPoints());
-		}
+      final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
 
-		final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax");
-		if (!selectedMembers.isEmpty()) {
-			mv.addObject("members", selectedMembers);
+      int crewSize = selectedMembers.size();
+      final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
+      mv.addObject("ok", isFullBoat);
+      if (isFullBoat) {
+        mv.addObject("rowingPoints", governingBody.getTotalPoints(rowingPoints));
+        mv.addObject("rowingStatus", governingBody.getRowingStatus(rowingPoints));
 
-			final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
+        mv.addObject("scullingPoints", governingBody.getTotalPoints(scullingPoints));
+        mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
 
-			int crewSize = selectedMembers.size();
-			final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
-			mv.addObject("ok", isFullBoat);
-			if (isFullBoat) {
-				mv.addObject("rowingPoints", governingBody.getTotalPoints(rowingPoints));
-				mv.addObject("rowingStatus", governingBody.getRowingStatus(rowingPoints));
+        List<Date> datesOfBirth = Lists.newArrayList();
+        for (Member member : selectedMembers) {
+          datesOfBirth.add(member.getDateOfBirth());
+        }
 
-				mv.addObject("scullingPoints", governingBody.getTotalPoints(scullingPoints));
-				mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
+        Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
+        if (effectiveAge != null) {
+          mv.addObject("effectiveAge", effectiveAge);
+          mv.addObject("ageGrade", governingBody.getAgeGrade(effectiveAge));
+        }
+      }
+    }
+    return mv;
+  }
 
-				List<Date> datesOfBirth = Lists.newArrayList();
-				for (Member member: selectedMembers) {
-					datesOfBirth.add(member.getDateOfBirth());
-				}
+  @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
+  public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
+    viewFactory.getViewForLoggedInUser("entryDetails");  // TODO
 
-				Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
-				if (effectiveAge != null) {
-					mv.addObject("effectiveAge", effectiveAge);
-					mv.addObject("ageGrade", governingBody.getAgeGrade(effectiveAge));
-				}
-			}
-		}
-		return mv;
-	}
+    final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+    final List<Member> squadMembers = squadlistApi.getSquadMembers(squadToShow.getId());
 
-	@RequestMapping(value="/entrydetails/{squadId}.csv", method=RequestMethod.GET)
-    public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
-		viewFactory.getViewForLoggedInUser("entryDetails");	// TODO
+    List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
+    csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
+  }
 
-    	final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
-    	final List<Member> squadMembers = squadlistApi.getSquadMembers(squadToShow.getId());
+  @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET)
+  public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
+    log.info("Selected members: " + members);
+    List<Member> selectedMembers = Lists.newArrayList();
+    final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
+    while (iterator.hasNext()) {
+      final String selectedMemberId = iterator.next();
+      log.info("Selected member id: " + selectedMemberId);
+      selectedMembers.add(squadlistApi.getMember(selectedMemberId));
+    }
 
-		List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
-		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
-	}
-
-	@RequestMapping(value="/entrydetails/selected.csv", method=RequestMethod.GET)
-    public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
-		log.info("Selected members: " + members);
-    	List<Member> selectedMembers = Lists.newArrayList();
-		final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
-    	while(iterator.hasNext()) {
-    		final String selectedMemberId = iterator.next();
-    		log.info("Selected member id: " + selectedMemberId);
-			selectedMembers.add(squadlistApi.getMember(selectedMemberId));
-    	}
-
-		csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
-	}
+    csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
+  }
 
 }
