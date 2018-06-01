@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import uk.co.squadlist.web.views.interceptors.AnalyticsHandler;
 import uk.co.squadlist.web.views.interceptors.InstanceHandler;
 import uk.co.squadlist.web.views.interceptors.NoCacheHandler;
 
@@ -14,13 +15,15 @@ public class Interceptors extends WebMvcConfigurerAdapter {
 
 	@Autowired
 	private InstanceHandler instanceHandler;
-
+	@Autowired
+	private AnalyticsHandler analyticsHandler;
 	@Autowired
 	private NoCacheHandler noCacheHandler;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(instanceHandler);
+		registry.addInterceptor(analyticsHandler);
 		registry.addInterceptor(noCacheHandler);
 	}
 	

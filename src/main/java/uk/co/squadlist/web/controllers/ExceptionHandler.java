@@ -2,6 +2,7 @@ package uk.co.squadlist.web.controllers;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 	private final static Logger log = Logger.getLogger(ExceptionHandler.class);
 
 	private final UrlBuilder urlBuilder;
+
+	@Value("${googleAnalyticsAccount}")
+	private String googleAnalyticsAccount;
 
 	@Autowired
 	public ExceptionHandler(UrlBuilder urlBuilder) {
@@ -75,8 +79,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		log.error("Returning 500 error", e);
-
-		return new ModelAndView("500");
+		return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
 	}
 
 	@Override
