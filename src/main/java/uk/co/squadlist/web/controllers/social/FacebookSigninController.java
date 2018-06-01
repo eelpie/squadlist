@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -62,7 +63,7 @@ public class FacebookSigninController {
 	}
 
 	@RequestMapping(value="/social/facebook/link/callback", method=RequestMethod.GET)
-	public ModelAndView facebookLinkCallback(@RequestParam(required=false) String code, @RequestParam(required=false) String state) throws IOException, UnknownMemberException {
+	public ModelAndView facebookLinkCallback(@RequestParam(required=false) String code, @RequestParam(required=false) String state) throws IOException, UnknownMemberException, SignedInMemberRequiredException {
 		if (code == null || state == null) {
 			log.warn("Not a complete Facebook callback; redirecting back to social settings");
 			return redirectToSocialSettings();
@@ -117,7 +118,7 @@ public class FacebookSigninController {
 	}
 
 	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
-	public ModelAndView remove() throws UnknownMemberException {
+	public ModelAndView remove() throws UnknownMemberException, SignedInMemberRequiredException {
 		facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());	// TODO Should tell Facebook to invalidate the token as well
 		return redirectToSocialSettings();
 	}

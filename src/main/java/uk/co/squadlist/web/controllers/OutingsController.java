@@ -35,12 +35,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.exceptions.InvalidOutingException;
-import uk.co.squadlist.web.exceptions.OutingClosedException;
-import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -326,7 +321,7 @@ public class OutingsController {
     return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
   }
 
-  private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
+  private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException, SignedInMemberRequiredException {
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("newOuting");
     mv.addObject("squads", instanceSpecificApiClient.getSquads());
     final Squad squad = preferedSquadService.resolveSquad(null);
@@ -336,7 +331,7 @@ public class OutingsController {
     return mv;
   }
 
-  private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException {
+  private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException, SignedInMemberRequiredException {
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("editOuting");
     mv.addObject("squads", instanceSpecificApiClient.getSquads());
     mv.addObject("squad", outing.getSquad());

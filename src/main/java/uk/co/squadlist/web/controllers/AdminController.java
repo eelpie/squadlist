@@ -17,6 +17,7 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
@@ -190,7 +191,7 @@ public class AdminController {
     return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
   }
 
-  private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) {
+  private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException {
     return viewFactory.getViewForLoggedInUser("editInstance").
             addObject("instanceDetails", instanceDetails).
             addObject("memberOrderings", MEMBER_ORDERINGS).

@@ -29,6 +29,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Instance;
@@ -75,7 +76,7 @@ public class SquadsController {
     }
 
 	@RequestMapping(value="/squad/new", method=RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownInstanceException {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownInstanceException, SignedInMemberRequiredException {
 		if (result.hasErrors()) {
 			return renderNewSquadForm(squadDetails);
 		}
@@ -95,7 +96,7 @@ public class SquadsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/squad/{id}/delete", method=RequestMethod.GET)
-	public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException {
+	public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
 		final Squad squad = squadlistApi.getSquad(id);
 		return viewFactory.getViewForLoggedInUser("deleteSquadPrompt").addObject("squad", squad).addObject("title", "Delete squad");
 	}
@@ -109,7 +110,7 @@ public class SquadsController {
 	}
 
 	@RequestMapping(value="/squad/{id}/edit", method=RequestMethod.GET)
-	public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException {
+	public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
 		final Squad squad = squadlistApi.getSquad(id);
 
 		final SquadDetails squadDetails = new SquadDetails();
@@ -119,7 +120,7 @@ public class SquadsController {
 	}
 
 	@RequestMapping(value="/squad/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException {
+    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, JsonGenerationException, JsonMappingException, HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, IOException, HttpFetchException, SignedInMemberRequiredException {
 		final Squad squad = squadlistApi.getSquad(id);
 		if (result.hasErrors()) {
 			return renderEditSquadForm(squad, squadDetails);
@@ -136,11 +137,11 @@ public class SquadsController {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
     }
 
-	private ModelAndView renderNewSquadForm(SquadDetails squadDetails) {
+	private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException {
 		return viewFactory.getViewForLoggedInUser("newSquad").addObject("squadDetails", squadDetails);
 	}
 
-	private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails) {
+	private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails) throws SignedInMemberRequiredException {
 		final ModelAndView mv = viewFactory.getViewForLoggedInUser("editSquad");
 		mv.addObject("squad", squad);
 		mv.addObject("squadDetails", squadDetails);

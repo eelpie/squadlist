@@ -7,6 +7,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferedSquadService;
@@ -30,7 +31,7 @@ public class ViewFactory {
     this.squadlistApiFactory = squadlistApiFactory;
   }
 
-  public ModelAndView getViewForLoggedInUser(String templateName) {
+  public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException {
     final Member loggedInUser = loggedInUserService.getLoggedInMember();
     SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
 

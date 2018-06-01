@@ -12,6 +12,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Instance;
@@ -77,7 +78,7 @@ public class ContactsModelPopulator {
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_CONTACT_DETAILS)
-	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException, UnknownInstanceException {
+	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException, UnknownInstanceException, SignedInMemberRequiredException {
 		mv.addObject("title", squad.getName() + " contacts");
 		mv.addObject("squad", squad);
 

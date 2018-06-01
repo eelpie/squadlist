@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class LoggedInUserService {
 		this.request = request;
 	}
 
-	public Member getLoggedInMember() {
+	public Member getLoggedInMember() throws SignedInMemberRequiredException {
 		String token = getLoggedInMembersToken();
 		if (token != null) {
 			log.debug("Found signed in user token; need to verify: " + token);
@@ -33,8 +34,8 @@ public class LoggedInUserService {
 			return verifiedMember;
 		}
 
-		log.debug("No signed in user token found; returning null");
-		return null;
+		log.debug("No signed in user token found");
+		throw new SignedInMemberRequiredException();
 	}
 
 	public String getLoggedInMembersToken() {

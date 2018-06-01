@@ -23,6 +23,7 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
@@ -53,7 +54,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.GET)
-    public ModelAndView editPrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
+    public ModelAndView editPrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 
 		final AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
@@ -65,7 +66,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/delete", method=RequestMethod.GET)
-	public ModelAndView deletePrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
+	public ModelAndView deletePrompt(@PathVariable String id) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		return renderDeleteForm(a);
 	}
@@ -90,7 +91,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.GET)
-    public ModelAndView availability() {
+    public ModelAndView availability() throws SignedInMemberRequiredException {
     	AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
     	availabilityOption.setColour("green");
 		return renderNewAvailabilityOptionForm(availabilityOption);
@@ -98,7 +99,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/new", method=RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws SignedInMemberRequiredException {
 		if (result.hasErrors()) {
 			return renderNewAvailabilityOptionForm(availabilityOptionDetails);
 		}
@@ -115,7 +116,7 @@ public class AvailabilityOptionsController {
 
 	@RequiresPermission(permission=Permission.VIEW_ADMIN_SCREEN)
 	@RequestMapping(value="/availability-option/{id}/edit", method=RequestMethod.POST)
-    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
+    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException {
 		final AvailabilityOption a = api.getAvailabilityOption(id);
 		if (result.hasErrors()) {
 			return renderEditAvailabilityOptionForm(availabilityOptionDetails, a);
@@ -135,11 +136,11 @@ public class AvailabilityOptionsController {
 		return redirectToAdmin();
     }
 
-	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) {
+	private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException {
 		return viewFactory.getViewForLoggedInUser("newAvailabilityOption").addObject("availabilityOptionDetails", availabilityOptionDetails);
 	}
 
-	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) {
+	private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) throws SignedInMemberRequiredException {
 		return viewFactory.getViewForLoggedInUser("editAvailabilityOption").
 				addObject("availabilityOptionDetails", availabilityOptionDetails).
 				addObject("availabilityOption", a);
@@ -149,7 +150,7 @@ public class AvailabilityOptionsController {
 		return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 	}
 
-	private ModelAndView renderDeleteForm(final AvailabilityOption a) throws JsonParseException, JsonMappingException, HttpFetchException, IOException {
+	private ModelAndView renderDeleteForm(final AvailabilityOption a) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, SignedInMemberRequiredException {
 		final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
 		alternatives.remove(a);
 

@@ -22,10 +22,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.exceptions.InvalidImageException;
-import uk.co.squadlist.web.exceptions.InvalidMemberException;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -372,7 +369,7 @@ public class MembersController {
     return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
   }
 
-  private ModelAndView renderNewMemberForm() {
+  private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException {
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("newMember");
     mv.addObject("squads", instanceSpecificApiClient.getSquads());
     mv.addObject("title", "Adding a new member");
@@ -380,7 +377,7 @@ public class MembersController {
     return mv;
   }
 
-  private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member) throws UnknownMemberException {
+  private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member) throws UnknownMemberException, SignedInMemberRequiredException {
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("editMemberDetails");
     mv.addObject("member", memberDetails);
     mv.addObject("memberId", memberId);
@@ -402,7 +399,7 @@ public class MembersController {
     return mv;
   }
 
-  private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException {
+  private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException, SignedInMemberRequiredException {
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("changePassword");
     mv.addObject("member", loggedInUserService.getLoggedInMember());
     mv.addObject("changePassword", changePassword);

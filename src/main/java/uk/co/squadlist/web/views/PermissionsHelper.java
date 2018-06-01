@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.model.Member;
@@ -26,21 +27,21 @@ public class PermissionsHelper {
 		this.permissionsService = permissionsService;
 	}
 	
-	public boolean hasPermission(String permissionName) throws UnknownMemberException {
+	public boolean hasPermission(String permissionName) throws UnknownMemberException, SignedInMemberRequiredException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
 		log.debug("Checking view permission " + permission +  " for " + loggedInMember.getUsername());
 		return permissionsService.hasPermission(loggedInMember, permission);
 	}
 	
-	public boolean hasOutingPermission(Outing outing, String permissionName) throws UnknownMemberException, UnknownOutingException {
+	public boolean hasOutingPermission(Outing outing, String permissionName) throws UnknownMemberException, UnknownOutingException, SignedInMemberRequiredException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
 		log.debug("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInMember.getUsername());
 		return permissionsService.hasOutingPermission(loggedInMember, permission, outing.getId());
 	}
 	
-	public boolean hasMemberPermission(Member member, String permissionName) throws UnknownMemberException, UnknownOutingException {
+	public boolean hasMemberPermission(Member member, String permissionName) throws UnknownMemberException, UnknownOutingException, SignedInMemberRequiredException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
 		log.debug("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInMember.getUsername());

@@ -129,7 +129,7 @@ public class EntryDetailsController {
     csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
   }
 
-  @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET)
+  @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET) // TODO Unused
   public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
     log.info("Selected members: " + members);
     List<Member> selectedMembers = Lists.newArrayList();

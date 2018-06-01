@@ -12,6 +12,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
@@ -39,7 +40,7 @@ public class PreferedSquadService {
 		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 	
-	public Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException {
+	public Squad resolveSquad(String squadId) throws UnknownSquadException, UnknownMemberException, SignedInMemberRequiredException {
     	if(!Strings.isNullOrEmpty(squadId)) {    		
     		final Squad selectedSquad = squadlistApi.getSquad(squadId);
     		setPreferedSquad(selectedSquad);
