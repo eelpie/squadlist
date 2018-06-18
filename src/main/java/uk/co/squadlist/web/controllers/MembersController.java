@@ -345,7 +345,7 @@ public class MembersController {
     log.info("Making member active: " + id);
     final Member member = loggedInUserApi.getMember(id);
     member.setInactive(false);
-    squadlistApi.updateMemberDetails(member);
+    loggedInUserApi.updateMemberDetails(member);
     return redirectToAdminScreen();
   }
 
