@@ -1,4 +1,3 @@
-#parse('macros.vm')
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,11 +12,11 @@
 	<script src="$urlBuilder.staticUrl('bootstrap-colorselector/bootstrap-colorselector.js')"></script>
 	<link href="$urlBuilder.staticUrl('bootstrap-colorselector/bootstrap-colorselector.css')" rel="stylesheet" type="text/css" />
 	
-	<title>Squadlist - $!title</title>
+	<title>Squadlist - ${title!}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	#if($rssUrl) 
-        <link rel="alternate" type="application/rss+xml" href="$rssUrl">
-	#end
+	<#if rssUrl??>
+        <link rel="alternate" type="application/rss+xml" href="${rssUrl}">
+	</#if>
 </head>
 <body>
 

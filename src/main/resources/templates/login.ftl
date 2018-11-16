@@ -1,4 +1,4 @@
-#parse('includes/head.vm')
+<#include 'includes/head.ftl'>
 
 <div class="container-fluid">
 
@@ -98,4 +98,4 @@
 	
 </div>
 
-#parse('includes/footer.vm')
+<#include 'includes/footer.ftl'>
