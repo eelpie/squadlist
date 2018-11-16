@@ -51,8 +51,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
     }
 
     private fun auth(username: String, password: String): String? { // TODO inline once api is migrated
-        val auth: String? = api.auth(username, password)
-        return auth
+        return api.auth(username, password)
     }
 
     private fun verify(token: String): Member? {
