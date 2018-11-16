@@ -8,8 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
-public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
+//@Controller
+public class ErrorController  {
 
 	private final static Logger log = Logger.getLogger(ErrorController.class);
 
@@ -26,7 +26,6 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
 		return new ModelAndView("404");
 	}
 
-	@Override
 	public String getErrorPath() {
 		return "/error";
 	}

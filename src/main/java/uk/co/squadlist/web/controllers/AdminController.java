@@ -23,7 +23,6 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
-import uk.co.squadlist.web.services.github.GithubService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
@@ -50,7 +49,6 @@ public class AdminController {
   private ActiveMemberFilter activeMemberFilter;
   private CsvOutputRenderer csvOutputRenderer;
   private UrlBuilder urlBuilder;
-  private GithubService githubService;
   private Context context;
   private DateFormatter dateFormatter;
   private GoverningBodyFactory governingBodyFactory;
@@ -61,14 +59,13 @@ public class AdminController {
   @Autowired
   public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
                          ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-                         UrlBuilder urlBuilder, GithubService githubService,
+                         UrlBuilder urlBuilder,
                          Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory) {
     this.api = api;
     this.viewFactory = viewFactory;
     this.activeMemberFilter = activeMemberFilter;
     this.csvOutputRenderer = csvOutputRenderer;
     this.urlBuilder = urlBuilder;
-    this.githubService = githubService;
     this.context = context;
     this.dateFormatter = dateFormatter;
     this.governingBodyFactory = governingBodyFactory;
@@ -90,9 +87,6 @@ public class AdminController {
     mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
     mv.addObject("statistics", api.statistics());
     mv.addObject("boats", api.getBoats());
-
-    mv.addObject("openIssues", githubService.getOpenIssues());
-    mv.addObject("closedIssues", githubService.getClosedIssues());
     mv.addObject("language", context.getLanguage());
     return mv;
   }
