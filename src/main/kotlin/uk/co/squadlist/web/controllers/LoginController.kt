@@ -16,9 +16,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
     private val log = Logger.getLogger(LoginController::class.java)
 
     @RequestMapping(value = "/login", method = arrayOf(RequestMethod.GET, RequestMethod.HEAD))     // TODO SEO this onto the root url
-    fun login(): ModelAndView {
-        return renderLoginScreen(false, null)
-    }
+    fun login() = ::renderLoginScreen
 
     @PostMapping(value = "/login")
     fun loginSubmit(
@@ -43,7 +41,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
         return ModelAndView(RedirectView(urlBuilder.loginUrl()))
     }
 
-    private fun renderLoginScreen(errors: Boolean, username: String?): ModelAndView {
+    private fun renderLoginScreen(errors: Boolean = false, username: String? = null): ModelAndView {
         val instance = api.instance
         return ModelAndView("login").addAllObjects(mapOf(
                 "title" to instance.name,
