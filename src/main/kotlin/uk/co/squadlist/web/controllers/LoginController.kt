@@ -24,9 +24,9 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
             @RequestParam(value = "password", required = true) password: String): ModelAndView {
 
         log.info("Attempting to auth user: $username")
-        auth(username, password).let { token ->
-            verify(token!!).let { user ->
-                log.info("Auth successful for user: " + user!!.username)
+        auth(username, password)?.let { token ->
+            verify(token)?.let { user ->
+                log.info("Auth successful for user: " + user.username)
                 loggedInUserService.setSignedIn(token)
                 return ModelAndView(RedirectView(urlBuilder.baseUrl))
             }
