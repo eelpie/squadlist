@@ -17,13 +17,13 @@
 	</div>
 	<hr/>
 	
-	#if($member.squads.isEmpty()) 
+	<#if member.squads.isEmpty()>
 		<h5>$text.text('not.assigned.to.any.squads')</h5>	
 		<p>$text.text('no.outing.because.not.assigned.to.any.squads')</p>
 			
-	#else
+	<#else>
 	
-		#if($outings.isEmpty())
+		<#if outings.isEmpty>
 		   <div class="row">
 		   		<div class="col-md-12">	   
 					<h5>$text.text('no.current.outings')</h5>
@@ -31,7 +31,7 @@
 				</div>
 			</div>
 	
-		#else		
+		<#else>
 			<div class="row">
 				<div class="col-md-12">	 
 					<form>
@@ -79,8 +79,8 @@
 					</form>
 				</div>				
 			</div>
-		#end
-	#end
+		</#if>
+	</#if>
 </div>
 <hr/>
 
