@@ -1,4 +1,4 @@
-#parse('includes/head.vm')
+<#include 'includes/head.ftl'>
 #navTabs('My outings')
 
 <span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('wait30.gif')"></span>
@@ -11,7 +11,7 @@
 		</div>
 		<div class="col-xs-2">
 			<span class="pull-right">
-				<a href="$icalUrl">iCal</a>
+				<a href="${icalUrl}">iCal</a>
 			</span>
 		</div>
 	</div>
@@ -119,4 +119,4 @@
   	});
 </script>
 
-#parse('includes/footer.vm')
+<#include 'includes/footer.ftl'>
