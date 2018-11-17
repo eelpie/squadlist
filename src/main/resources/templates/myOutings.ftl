@@ -16,45 +16,45 @@
 		</div>
 	</div>
 	<hr/>
-	
+
 	<#if member.squads.isEmpty()>
 		<h5>$text.text('not.assigned.to.any.squads')</h5>	
 		<p>$text.text('no.outing.because.not.assigned.to.any.squads')</p>
 			
 	<#else>
 	
-		<#if outings.isEmpty>
+		<#if outings.isEmpty()>
 		   <div class="row">
-		   		<div class="col-md-12">	   
+		   		<div class="col-md-12">
 					<h5>$text.text('no.current.outings')</h5>
-					<p>$text.text('no.current.outings.for.your.squads')</p>			
+					<p>$text.text('no.current.outings.for.your.squads')</p>
 				</div>
 			</div>
-	
+
 		<#else>
 			<div class="row">
-				<div class="col-md-12">	 
+				<div class="col-md-12">
 					<form>
-						
+
 						<p>$squadNamesHelper.list($member.squads) outings.</p>
-												
+
 						<table style="font-size: 14px;" class="table table-striped">
-							#foreach($outingAvailability in $outings)								
+							<#list outings as outingAvailability>
 							    <tr>
-						   			<td>											   			
+						   			<td>
 						   				#set($outing = $outingAvailability.outing)
-										#parse('includes/outing.vm')											
-								    </td>					
-						   			<td>						   			
+										#parse('includes/outing.vm')
+								    </td>
+						   			<td>
 						   				#if($outing.closed)
 						   					#parse('includes/closedOuting.vm')
-																					   				
-						   				#else						   									   			
+
+						   				#else
 											<select class="availabilityDropdown" id="${outingAvailability.outing.id}">
-												<option value="">TBA</option>		
+												<option value="">TBA</option>
 												#foreach($option in $availabilityOptions)
 													#set($selected = '')
-													#if ($outingAvailability && $outingAvailability.availabilityOption.id == $option.id) 
+													#if ($outingAvailability && $outingAvailability.availabilityOption.id == $option.id)
 														#set($selected = 'SELECTED')
 													#end
 													<option value="$option.id" $selected>$option.label</option>
@@ -62,22 +62,22 @@
 											</select>
 										#end
 									</td>
-									<td>								
-										#if ($outingAvailability.availabilityOption) 						
+									<td>
+										#if ($outingAvailability.availabilityOption)
 											<span id="currentAvailability${outingAvailability.outing.id}" class="pull-right">
 												#set($availability = $outingAvailability.availabilityOption)
-												#parse('includes/availability.vm')											
+												#parse('includes/availability.vm')
 											</span>
-										
+
 										#else
 							 				<span class="pull-right" id="currentAvailability${outingAvailability.outing.id}">TBA</span>
-										#end				
+										#end
 								    </td>
 								</tr>
-							#end
+							</#list>
 						</table>
 					</form>
-				</div>				
+				</div>
 			</div>
 		</#if>
 	</#if>
