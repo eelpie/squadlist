@@ -15,7 +15,7 @@
 				<div class="form-group">
 				    <label for="username" class="col-sm-2 control-label">$text.text('username')</label>
 				    <div class="col-sm-6">
-				        <input type="text" class="form-control" name="username" placeholder="$text.text('username')" value="$!username">
+				        <input type="text" class="form-control" name="username" placeholder="$text.text('username')" value="${username!}">
 				    </div>
 				</div>
 				        
@@ -23,7 +23,7 @@
 				    <label for="password" class="col-sm-2 control-label">$text.text('password')</label>
 				    <div class="col-sm-6">					
 				        <input type="password" class="form-control" name="password" placeholder="$text.text('password')">
-				       	<p><a href="$urlBuilder.applicationUrl('/reset-password')">$text.text('forgotten.your.password')</a></p>				     				       	
+				       	<p><a href="${urlBuilder.applicationUrl('/reset-password')}">$text.text('forgotten.your.password')</a></p>
 				    </div>
 				</div>
 
@@ -39,9 +39,9 @@
 					<div class="col-sm-2">
 					</div>			   	
 				   	<div class="col-sm-6">					
-						#if($errors)
+						<#if errors>
 					        <div id="alert" class="alert alert-warning">$text.text('incorrect.login')</div>
-						#end
+						</#if>
 					</div>					
 				</div>
 	
@@ -62,7 +62,7 @@
 		<div class="col-sm-6">
 			<p>
 			<br/>				
-			<p><a href="$urlBuilder.facebookSignin()">$text.text('login.with.linked.facebook.account')</a></p>
+			<p><a href="${urlBuilder.facebookSignin()}">$text.text('login.with.linked.facebook.account')</a></p>
 		</div>					
 	</div>	
 	
