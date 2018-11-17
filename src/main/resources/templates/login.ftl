@@ -4,14 +4,14 @@
 
 	<div class="row">
 		<div class="col-xs-8">
-			<h3>Squadlist - $instance.name</h3>
+			<h3>Squadlist - ${instance.name!}</h3>
 		</div>
 	</div>
 	<hr/>
-		
+
 	<div class="row">
 		<div class="col-xs-12">
-		   	<form action="$urlBuilder.loginUrl()" method="POST" class="form-horizontal" accept-charset="UTF-8">
+		   	<form action="${urlBuilder.loginUrl()}" method="POST" class="form-horizontal" accept-charset="UTF-8">
 				<div class="form-group">
 				    <label for="username" class="col-sm-2 control-label">$text.text('username')</label>
 				    <div class="col-sm-6">
