@@ -160,7 +160,3 @@
 		</div>
 	#end
 #end
-
-#macro(cancel $action)
-	<a href="$action"><button class="btn" type="button">$text.text('cancel')</button></a>
-#end

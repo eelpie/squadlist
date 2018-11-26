@@ -39,7 +39,7 @@
 				<div class="control-group">
 					<div  class="col-sm-3"></div><div class="controls">
 						<button type="submit" class="btn btn-primary"><@spring.message 'reset.password' /></button>
-						#cancel($urlBuilder.loginUrl())
+						<@cancel urlBuilder.loginUrl() />
 					</div>
 				</div>				
 			</form>

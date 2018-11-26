@@ -21,3 +21,6 @@
 </head>
 <body>
 
+<#macro cancel to>
+	<a href="${to}"><button class="btn" type="button"><@spring.message 'cancel' /></button></a>
+</#macro>
