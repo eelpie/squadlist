@@ -70,7 +70,7 @@
 		<div class="col-sm-6">
 			<p>
 			<br/>
-			<p>$text.text('require.access', $instance.name)</p>
+			<p><@spring.messageText "require.access", ["${instance.name}"] /></p>
 			<p>
 			</br>
 		</div>
