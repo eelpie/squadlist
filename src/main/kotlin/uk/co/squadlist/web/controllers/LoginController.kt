@@ -7,7 +7,6 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.auth.LoggedInUserService
-import uk.co.squadlist.web.model.Member
 import uk.co.squadlist.web.urls.UrlBuilder
 
 @Controller
@@ -24,8 +23,8 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
             @RequestParam(value = "password", required = true) password: String): ModelAndView {
 
         log.info("Attempting to auth user: $username")
-        auth(username, password)?.let { token ->
-            verify(token)?.let { user ->
+        api.auth(username, password)?.let { token ->
+            api.verify(token)?.let { user ->
                 log.info("Auth successful for user: " + user.username)
                 loggedInUserService.setSignedIn(token)
                 return ModelAndView(RedirectView(urlBuilder.baseUrl))
@@ -49,14 +48,6 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
                 "errors" to errors,
                 "urlBuilder" to urlBuilder
         ))
-    }
-
-    private fun auth(username: String, password: String): String? { // TODO inline once api is migrated
-        return api.auth(username, password)
-    }
-
-    private fun verify(token: String): Member? {
-        return api.verify(token)
     }
 
 }
