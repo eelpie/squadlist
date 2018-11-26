@@ -73,7 +73,6 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
     @PostMapping(value = "/member/new")
-    @Throws(Exception::class)
     fun newMemberSubmit(@Valid @ModelAttribute("memberDetails") memberDetails: MemberDetails, result: BindingResult): ModelAndView {
         val requestedSquads = extractAndValidateRequestedSquads(memberDetails, result)
 
@@ -238,7 +237,6 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @PostMapping(value = "/member/{id}/make-inactive")
-    @Throws(Exception::class)
     fun makeInactive(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
