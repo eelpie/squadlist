@@ -43,6 +43,8 @@ public class UrlBuilder {
 		return applicationUrl("/login");
 	}
 
+	public String resetPassword() { return applicationUrl("/reset-password"); }
+
 	public String staticUrl(String uri) {
 		return applicationUrl("/assets/") + uri;
 	}
