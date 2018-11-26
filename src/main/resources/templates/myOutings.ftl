@@ -18,16 +18,16 @@
 	<hr/>
 
 	<#if member.squads?size == 0>
-		<h5>$text.text('not.assigned.to.any.squads')</h5>	
-		<p>$text.text('no.outing.because.not.assigned.to.any.squads')</p>
+		<h5><@spring.message 'not.assigned.to.any.squads' /></h5>
+		<p><@spring.message 'no.outing.because.not.assigned.to.any.squads' /></p>
 			
 	<#else>
 	
 		<#if outings?size == 0>
 		   <div class="row">
 		   		<div class="col-md-12">
-					<h5>$text.text('no.current.outings')</h5>
-					<p>$text.text('no.current.outings.for.your.squads')</p>
+					<h5><@spring.message 'no.current.outings' /></h5>
+					<p><@spring.message 'no.current.outings.for.your.squads' /></p>
 				</div>
 			</div>
 
