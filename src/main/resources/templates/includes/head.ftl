@@ -4,7 +4,7 @@
 <head>
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-	<script src="$urlBuilder.staticUrl('jquery.ui.touch-punch.js')"></script>	
+	<script src="${urlBuilder.staticUrl('jquery.ui.touch-punch.js')}"></script>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">

@@ -133,29 +133,6 @@ public class MembersController {
     }
   }
 
-  @RequestMapping(value = "/change-password", method = RequestMethod.GET)
-  public ModelAndView changePassword() throws Exception {
-    return renderChangePasswordForm(new ChangePassword());
-  }
-
-  @RequestMapping(value = "/change-password", method = RequestMethod.POST)
-  public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
-    if (result.hasErrors()) {
-      return renderChangePasswordForm(changePassword);
-    }
-
-    final Member member = loggedInUserService.getLoggedInMember();
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
-
-    log.info("Requesting change password for member: " + member.getId());
-    if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
-      return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
-    } else {
-      result.addError(new ObjectError("changePassword", "Change password failed"));
-      return renderChangePasswordForm(changePassword);
-    }
-  }
-
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
   public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
@@ -396,14 +373,6 @@ public class MembersController {
     mv.addObject("canChangeSquads", canChangeRole);
 
     mv.addObject("memberSquads", member.getSquads());  // TODO would not be needed id member.squads would form bind
-    return mv;
-  }
-
-  private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws UnknownMemberException, SignedInMemberRequiredException {
-    final ModelAndView mv = viewFactory.getViewForLoggedInUser("changePassword");
-    mv.addObject("member", loggedInUserService.getLoggedInMember());
-    mv.addObject("changePassword", changePassword);
-    mv.addObject("title", "Change password");
     return mv;
   }
 
