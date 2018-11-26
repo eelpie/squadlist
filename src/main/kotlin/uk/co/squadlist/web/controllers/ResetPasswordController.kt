@@ -18,24 +18,16 @@ class ResetPasswordController(val api: InstanceSpecificApiClient, val urlBuilder
 
     @GetMapping(value = "/reset-password")
     fun resetPasswordPrompt(): ModelAndView {
-        val mv = ModelAndView("resetPassword")
-        mv.addObject("title", "Reset password")
-        mv.addObject("errors", false)
-        mv.addObject("urlBuilder", urlBuilder)
-        return mv
+        return resetPasswordScreen().addObject("errors", false)
     }
 
     @PostMapping(value = "/reset-password")
     fun resetPassword(@RequestParam(value = "username", required = false) username: String): ModelAndView {
         if (Strings.isNullOrEmpty(username)) {
-            val mv = ModelAndView("resetPassword")
-            mv.addObject("errors", true)
-            mv.addObject("title", "Reset password")
-            mv.addObject("urlBuilder", urlBuilder)
-            return mv
+            return resetPasswordScreen().addObject("errors", true)
         }
 
-        log.info("Reseting password for: $username")
+        log.info("Resetting password for: $username")
         try {
             api.resetPassword(username)    // TODO errors
             log.info("Reset password call successful for: $username")
@@ -45,13 +37,8 @@ class ResetPasswordController(val api: InstanceSpecificApiClient, val urlBuilder
             return mv
 
         } catch (e: UnknownMemberException) {
-            val mv = ModelAndView("resetPassword")
-            mv.addObject("title", "Reset password")
-            mv.addObject("errors", true)
-            mv.addObject("urlBuilder", urlBuilder)
-            return mv
+            return resetPasswordScreen().addObject("errors", true)
         }
-
     }
 
     @GetMapping(value = "/reset-password/confirm")
@@ -69,6 +56,13 @@ class ResetPasswordController(val api: InstanceSpecificApiClient, val urlBuilder
                     addObject("urlBuilder", urlBuilder)
         }
 
+    }
+
+    private fun resetPasswordScreen(): ModelAndView {
+        val mv = ModelAndView("resetPassword")
+        mv.addObject("title", "Reset password")
+        mv.addObject("urlBuilder", urlBuilder)
+        return mv
     }
 
 }
