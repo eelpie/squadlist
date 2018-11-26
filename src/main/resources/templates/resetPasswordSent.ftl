@@ -11,7 +11,7 @@
 		
 	<div class="row">		
 		<div class="col-xs-12">	
-			<h4>$text.text('resetting.your.password')</h4>
+			<h4><@spring.message 'resetting.your.password' /></h4>
 			
 			<p>An email containing password reset instructions has been sent to your email address.</p>
 			<p>It should arrive within a few minutes.
@@ -21,7 +21,7 @@
 	
 	<div class="control-group">
 		<div class="controls">		
-			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button">$text.text('return.to.login.screen')</button></a>
+			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button"><@spring.message 'return.to.login.screen' /></button></a>
 		</div>
 	</div>
 	<hr/>	

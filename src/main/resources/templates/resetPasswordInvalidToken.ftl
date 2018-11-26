@@ -17,7 +17,7 @@
 	
 	<div class="control-group">
 		<div class="controls">		
-			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button">$text.text('return.to.login.screen')</button></a>
+			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button"><@spring.message 'return.to.login.screen' />s</button></a>
 		</div>
 	</div>
 	<hr/>	

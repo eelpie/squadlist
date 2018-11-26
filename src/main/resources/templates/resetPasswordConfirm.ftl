@@ -11,15 +11,15 @@
 		
 	<div class="row">		
 		<div class="col-xs-12">	
-			<h4>$text.text('resetting.your.password')</h4>
+			<h4><@spring.message 'resetting.your.password' /></h4>
 			
-			<p>$text.text('your.new.password.is') <code>$newPassword</code></p>  
+			<p><@spring.message 'your.new.password.is' /><code>$newPassword</code></p>
 		</div>		
 	</div>
 	
 	<div class="control-group">
 		<div class="controls">		
-			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button">$text.text('return.to.login.screen')</button></a>
+			<a href="${urlBuilder.loginUrl()}"><button class="btn" type="button"><@spring.message 'return.to.login.screen' /></button></a>
 		</div>
 	</div>
 	<hr/>	
