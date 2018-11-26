@@ -44,10 +44,10 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
 
     private val log = Logger.getLogger(MembersController::class.java)
 
-    private val GENDER_OPTIONS = Lists.newArrayList("female", "male")
-    private val ROLES_OPTIONS = Lists.newArrayList("Rower", "Rep", "Coach", "Cox", "Non rowing")
-    private val SWEEP_OAR_SIDE_OPTIONS = Lists.newArrayList("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow")
-    private val YES_NO_OPTIONS = Lists.newArrayList("Y", "N")
+    private val GENDER_OPTIONS = listOf("female", "male")
+    private val ROLES_OPTIONS = listOf("Rower", "Rep", "Coach", "Cox", "Non rowing")
+    private val SWEEP_OAR_SIDE_OPTIONS = listOf("Bow", "Stroke", "Bow/Stroke", "Stroke/Bow")
+    private val YES_NO_OPTIONS = listOf("Y", "N")
 
     private val squadlistApi = squadlistApiFactory.createClient()
 
