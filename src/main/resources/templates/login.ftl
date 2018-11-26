@@ -87,7 +87,7 @@
         </div>
         <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
           <div class="panel-body">
-            #parse('data.vm')
+            <#include 'data.ftl'>
           </div>
         </div>
       </div>
