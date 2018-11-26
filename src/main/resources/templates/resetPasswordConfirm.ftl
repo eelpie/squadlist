@@ -12,8 +12,7 @@
 	<div class="row">		
 		<div class="col-xs-12">	
 			<h4><@spring.message 'resetting.your.password' /></h4>
-			
-			<p><@spring.message 'your.new.password.is' /><code>$newPassword</code></p>
+			<p><@spring.message 'your.new.password.is' /><code>${newPassword}</code></p>
 		</div>		
 	</div>
 	

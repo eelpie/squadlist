@@ -65,9 +65,9 @@
 	    			   			<b class="caret"></b>
 	    			   	</a>
 	    			   	<ul class="dropdown-menu">
-							<li><a href="$urlBuilder.changePassword()"><@spring.message 'change.password'/></a></li>
-							<li><a href="$urlBuilder.socialMediaAccounts()"><@spring.message 'social.accounts'/></a></li>
-							<li><a href="$urlBuilder.applicationUrl('/logout')"><@spring.message 'logout'/></a></li>
+							<li><a href="${urlBuilder.changePassword()}"><@spring.message 'change.password'/></a></li>
+							<li><a href="${urlBuilder.socialMediaAccounts()}"><@spring.message 'social.accounts'/></a></li>
+							<li><a href="${urlBuilder.applicationUrl('/logout')}"><@spring.message 'logout'/></a></li>
 						</ul>
 					</li>
 				</ul>
