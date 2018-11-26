@@ -88,34 +88,34 @@
 	$('.availabilityDropdown').change(function() {
     	outingId = $(this).attr('id');
     	newAvailability = $(this).val();
-    	
+
 		$("#currentAvailability" + outingId).html($('#spinner').html())
-    	    						
-		updateUrl = "$urlBuilder.applicationUrl('/availability/ajax')";
+
+		updateUrl = "${urlBuilder.applicationUrl('/availability/ajax')}";
 		postData = { outing: outingId, availability: newAvailability };
     	redrawPendingOutingBadge = function(data) {$("#pendingOutings").html(data)};
 		pendingOutingsCountUrl = '$urlBuilder.applicationUrl('/myoutings/ajax')';
-				    	    
+
 	    redrawCurrentOutingAvailabilityAndPendingOutingBadge = function(data) {
-			$("#currentAvailability" + outingId).html(data);    		
+			$("#currentAvailability" + outingId).html(data);
 			$.post(pendingOutingsCountUrl, {}, redrawPendingOutingBadge);
 		};
-									    	    			    	    							
+
     	$.ajax(
     			{
     				url: updateUrl,
     				type: 'POST',
     				data: postData,
-    				dataType: 'text',    				
-    				success: function(data, status, xhr) {    				
+    				dataType: 'text',
+    				success: function(data, status, xhr) {
     					redrawCurrentOutingAvailabilityAndPendingOutingBadge(data);
     				},
     				error: function(xhr, status, error) {
-    					$("#currentAvailability" + outingId).html("Error: could not be updated");	    				
+    					$("#currentAvailability" + outingId).html("Error: could not be updated");
     				}
     			}
     	);
-    			
+
   	});
 </script>
 
