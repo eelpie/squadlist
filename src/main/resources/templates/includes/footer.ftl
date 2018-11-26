@@ -1,4 +1,3 @@
-#parse('includes/analytics.vm')
-
+ <#include 'analytics.ftl'>
 </body>
 </html>
