@@ -8,22 +8,21 @@
 		</div>
 	</div>
 	<hr/>
-
 	<div class="row">
 		<div class="col-xs-12">
 		   	<form action="${urlBuilder.loginUrl()}" method="POST" class="form-horizontal" accept-charset="UTF-8">
 				<div class="form-group">
-				    <label for="username" class="col-sm-2 control-label">$text.text('username')</label>
+				    <label for="username" class="col-sm-2 control-label"><@spring.message "username"/></label>
 				    <div class="col-sm-6">
-				        <input type="text" class="form-control" name="username" placeholder="$text.text('username')" value="${username!}">
+				        <input type="text" class="form-control" name="username" placeholder="<@spring.message "username"/>" value="${username!}">
 				    </div>
 				</div>
 				        
 		   	  	<div class="form-group">
-				    <label for="password" class="col-sm-2 control-label">$text.text('password')</label>
+				    <label for="password" class="col-sm-2 control-label"><@spring.message "password"/></label>
 				    <div class="col-sm-6">					
-				        <input type="password" class="form-control" name="password" placeholder="$text.text('password')">
-				       	<p><a href="${urlBuilder.applicationUrl('/reset-password')}">$text.text('forgotten.your.password')</a></p>
+				        <input type="password" class="form-control" name="password" placeholder="<@spring.message "password"/>">
+				       	<p><a href="${urlBuilder.applicationUrl('/reset-password')}"><@spring.message "forgotten.your.password"/></a></p>
 				    </div>
 				</div>
 
@@ -40,7 +39,7 @@
 					</div>			   	
 				   	<div class="col-sm-6">					
 						<#if errors>
-					        <div id="alert" class="alert alert-warning">$text.text('incorrect.login')</div>
+					        <div id="alert" class="alert alert-warning"><@spring.message "incorrect.login"/></div>
 						</#if>
 					</div>					
 				</div>
@@ -49,7 +48,7 @@
 					<div class="col-sm-2">
 					</div>	
 					<div class="controls">
-						<input type="submit" name="login" value="$text.text('login')" class="btn btn-primary" />
+						<input type="submit" name="login" value="<@spring.message "login"/>" class="btn btn-primary" />
 					</div>
 				</div>
 								   	            
@@ -62,7 +61,7 @@
 		<div class="col-sm-6">
 			<p>
 			<br/>				
-			<p><a href="${urlBuilder.facebookSignin()}">$text.text('login.with.linked.facebook.account')</a></p>
+			<p><a href="${urlBuilder.facebookSignin()}"><@spring.message "login.with.linked.facebook.account"/></a></p>
 		</div>					
 	</div>	
 	
@@ -70,7 +69,7 @@
 		<div class="col-sm-2"></div>
 		<div class="col-sm-6">
 			<p>
-			<br/>				
+			<br/>
 			<p>$text.text('require.access', $instance.name)</p>
 			<p>
 			</br>
