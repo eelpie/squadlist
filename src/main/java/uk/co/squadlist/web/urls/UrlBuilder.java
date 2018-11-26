@@ -124,6 +124,10 @@ public class UrlBuilder {
 		return outingUrl(outing) + "/edit";
 	}
 
+	public String entryDetails(Squad squad) {
+		return applicationUrl("/entry-details?squad=" + squad.getId());
+	}
+
 	public String outings(Squad squad) {
 		return applicationUrl("/outings?squad=" + squad.getId());
 	}

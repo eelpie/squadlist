@@ -14,13 +14,14 @@ import uk.co.squadlist.web.services.OutingAvailabilityCountsService
 import uk.co.squadlist.web.services.ical.OutingCalendarService
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.DateHelper
+import uk.co.squadlist.web.views.PermissionsHelper
 import uk.co.squadlist.web.views.ViewFactory
 import javax.servlet.http.HttpServletResponse
 
 @Controller
 class MyOutingsController(val loggedInUserService: LoggedInUserService, val instanceSpecificApiClient: InstanceSpecificApiClient, val viewFactory: ViewFactory,
                           val outingAvailabilityCountsService: OutingAvailabilityCountsService, private val urlBuilder: UrlBuilder,
-                          val outingCalendarService: OutingCalendarService, val squadlistApiFactory: SquadlistApiFactory) {
+                          val outingCalendarService: OutingCalendarService, val squadlistApiFactory: SquadlistApiFactory, val permissionsHelper: PermissionsHelper) {
 
     private val squadlistApi = squadlistApiFactory.createClient()
 
@@ -42,6 +43,8 @@ class MyOutingsController(val loggedInUserService: LoggedInUserService, val inst
         mv.addObject("availabilityOptions", instanceSpecificApiClient.availabilityOptions)
         mv.addObject("rssUrl", urlBuilder.outingsRss(loggedInUser, instanceSpecificApiClient.instance))
         mv.addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser, instanceSpecificApiClient.instance))
+        mv.addObject("permissionsHelper", permissionsHelper)
+        mv.addObject("urlBuilder", urlBuilder)
         return mv
     }
 

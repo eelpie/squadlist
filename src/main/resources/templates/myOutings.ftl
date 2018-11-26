@@ -1,5 +1,5 @@
 <#include 'includes/head.ftl'>
-#navTabs('My outings')
+<@navTabs 'My outings' />
 
 <span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('wait30.gif')"></span>
 												
@@ -94,7 +94,7 @@
 		updateUrl = "${urlBuilder.applicationUrl('/availability/ajax')}";
 		postData = { outing: outingId, availability: newAvailability };
     	redrawPendingOutingBadge = function(data) {$("#pendingOutings").html(data)};
-		pendingOutingsCountUrl = '$urlBuilder.applicationUrl('/myoutings/ajax')';
+		pendingOutingsCountUrl = '${urlBuilder.applicationUrl('/myoutings/ajax')}';
 
 	    redrawCurrentOutingAvailabilityAndPendingOutingBadge = function(data) {
 			$("#currentAvailability" + outingId).html(data);
