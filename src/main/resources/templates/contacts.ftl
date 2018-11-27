@@ -10,7 +10,7 @@
             </div>
             <div class="col-xs-4">
                 <div class="pull-right">
-                    #squadSelect('/contacts/', 'Show contacts')
+                    <@squadSelect '/contacts/' 'Show contacts' />
                 </div>
             </div>
         </div>
