@@ -1,8 +1,0 @@
-#if($permissionsHelper.hasMemberPermission($member, 'EDIT_MEMBER_DETAILS'))
-	<a href="$urlBuilder.applicationUrl("/member/$member.id")" 
-	#if ($member.availabilityLastUpdated) title="Availability last updated $dateFormatter.timeSince($!member.availabilityLastUpdated)" #end >
-	$member.displayName
-	</a>
-#else
-	$member.displayName
-#end

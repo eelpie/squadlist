@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.services.PreferedSquadService
+import uk.co.squadlist.web.urls.UrlBuilder
+import uk.co.squadlist.web.views.PermissionsHelper
 import uk.co.squadlist.web.views.ViewFactory
 
 @Controller
-class ContactsController(val api: InstanceSpecificApiClient, val preferedSquadService: PreferedSquadService, val viewFactory: ViewFactory, val contactsModelPopulator: ContactsModelPopulator) {
+class ContactsController(val api: InstanceSpecificApiClient, val preferedSquadService: PreferedSquadService,
+                         val viewFactory: ViewFactory, val contactsModelPopulator: ContactsModelPopulator,
+                         val urlBuilder: UrlBuilder, val permissionsHelper: PermissionsHelper) {
 
     private val log = Logger.getLogger(ContactsController::class.java)
 
@@ -19,6 +23,8 @@ class ContactsController(val api: InstanceSpecificApiClient, val preferedSquadSe
         val mv = viewFactory.getViewForLoggedInUser("contacts")
         val allSquads = api.squads
         mv.addObject("squads", allSquads)    // TODO leaves squad null on view
+        mv.addObject("urlBuilder", urlBuilder)
+        mv.addObject("permissionsHelper", permissionsHelper)
         return mv
     }
 
@@ -33,6 +39,9 @@ class ContactsController(val api: InstanceSpecificApiClient, val preferedSquadSe
             log.info("Squad to show: $squadToShow")
             contactsModelPopulator.populateModel(squadToShow, mv)
         }
+
+        mv.addObject("urlBuilder", urlBuilder)
+        mv.addObject("permissionsHelper", permissionsHelper)
         return mv
     }
 
