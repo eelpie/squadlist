@@ -17,7 +17,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
     @RequestMapping(value = "/login", method = arrayOf(RequestMethod.GET, RequestMethod.HEAD))     // TODO SEO this onto the root url
     fun login() = renderLoginScreen()
 
-    @PostMapping(value = "/login")
+    @PostMapping("/login")
     fun loginSubmit(
             @RequestParam(value = "username", required = true) username: String,
             @RequestParam(value = "password", required = true) password: String): ModelAndView {
@@ -34,7 +34,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
         return renderLoginScreen(true, username)
     }
 
-    @GetMapping(value = "/logout")
+    @GetMapping("/logout")
     fun logout(): ModelAndView {
         loggedInUserService.cleanSignedIn()
         return ModelAndView(RedirectView(urlBuilder.loginUrl()))

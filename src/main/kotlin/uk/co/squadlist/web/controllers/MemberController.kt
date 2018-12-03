@@ -66,13 +66,13 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
-    @GetMapping(value = "/member/new")
+    @GetMapping("/member/new")
     fun newMember(@ModelAttribute("memberDetails") memberDetails: MemberDetails): ModelAndView {
         return renderNewMemberForm()
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
-    @PostMapping(value = "/member/new")
+    @PostMapping("/member/new")
     fun newMemberSubmit(@Valid @ModelAttribute("memberDetails") memberDetails: MemberDetails, result: BindingResult): ModelAndView {
         val requestedSquads = extractAndValidateRequestedSquads(memberDetails, result)
 
@@ -104,7 +104,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @GetMapping(value = "/member/{id}/edit")
+    @GetMapping("/member/{id}/edit")
     fun updateMember(@PathVariable id: String, @RequestParam(required = false) invalidImage: Boolean?): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -148,7 +148,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @RequestMapping(value = "/member/{id}/edit")
+    @PostMapping("/member/{id}/edit")
     fun updateMemberSubmit(@PathVariable id: String, @Valid @ModelAttribute("member") memberDetails: MemberDetails, result: BindingResult): ModelAndView {
         log.info("Received edit member request: $memberDetails")
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
@@ -227,7 +227,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @GetMapping(value = "/member/{id}/make-inactive")
+    @GetMapping("/member/{id}/make-inactive")
     fun makeInactivePrompt(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -236,7 +236,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @PostMapping(value = "/member/{id}/make-inactive")
+    @PostMapping("/member/{id}/make-inactive")
     fun makeInactive(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -249,7 +249,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @GetMapping(value = "/member/{id}/delete")
+    @GetMapping("/member/{id}/delete")
     fun deletePrompt(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -258,7 +258,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @PostMapping(value = "/member/{id}/delete")
+    @PostMapping("/member/{id}/delete")
     fun delete(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -269,7 +269,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @GetMapping(value = "/member/{id}/make-active")
+    @GetMapping("/member/{id}/make-active")
     fun makeActivePrompt(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -279,7 +279,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @PostMapping(value = "/member/{id}/make-active")
+    @PostMapping("/member/{id}/make-active")
     fun makeActive(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -291,7 +291,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @PostMapping(value = "/member/{id}/edit/profileimage")
+    @PostMapping("/member/{id}/edit/profileimage")
     fun updateMemberProfileImageSubmit(@PathVariable id: String, request: MultipartHttpServletRequest): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -312,7 +312,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @GetMapping(value = "/member/{id}/reset")
+    @GetMapping("/member/{id}/reset")
     fun resetMemberPasswordPrompt(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
         val member = loggedInUserApi.getMember(id)
@@ -320,7 +320,7 @@ public class MembersController(val instanceSpecificApiClient: InstanceSpecificAp
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
-    @PostMapping(value = "/member/{id}/reset")
+    @PostMapping("/member/{id}/reset")
     fun resetMemberPassword(@PathVariable id: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 

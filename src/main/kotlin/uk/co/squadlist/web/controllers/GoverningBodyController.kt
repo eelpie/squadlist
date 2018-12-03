@@ -9,7 +9,7 @@ import uk.co.squadlist.web.views.ViewFactory
 @Controller
 public class GoverningBodyController(val governingBodyFactory: GoverningBodyFactory, val viewFactory: ViewFactory) {
 
-    @GetMapping(value = "/governing-body/british-rowing")
+    @GetMapping("/governing-body/british-rowing")
     fun member(): ModelAndView {
         val governingBody = governingBodyFactory.governingBody
 

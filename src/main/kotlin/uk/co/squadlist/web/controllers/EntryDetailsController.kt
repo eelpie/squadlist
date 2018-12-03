@@ -94,7 +94,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         return mv
     }
 
-    @GetMapping(value = "/entrydetails/{squadId}.csv")
+    @GetMapping("/entrydetails/{squadId}.csv")
     fun entrydetailsCSV(@PathVariable squadId: String, response: HttpServletResponse) {
         viewFactory.getViewForLoggedInUser("entryDetails")  // TODO
 
@@ -105,7 +105,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.entryDetailsHeaders, entryDetailsRows)
     }
 
-    @GetMapping(value = "/entrydetails/selected.csv") // TODO Unused
+    @GetMapping("/entrydetails/selected.csv") // TODO Unused
     fun entrydetailsSelectedCSV(@RequestParam members: String, response: HttpServletResponse) {
         log.info("Selected members: $members")
         val selectedMembers = Lists.newArrayList<Member>()

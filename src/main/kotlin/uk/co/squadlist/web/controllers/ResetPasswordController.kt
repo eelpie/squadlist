@@ -16,12 +16,12 @@ class ResetPasswordController(val api: InstanceSpecificApiClient, val urlBuilder
 
     private val log = Logger.getLogger(ResetPasswordController::class.java)
 
-    @GetMapping(value = "/reset-password")
+    @GetMapping("/reset-password")
     fun resetPasswordPrompt(): ModelAndView {
         return resetPasswordScreen().addObject("errors", false)
     }
 
-    @PostMapping(value = "/reset-password")
+    @PostMapping("/reset-password")
     fun resetPassword(@RequestParam(value = "username", required = false) username: String): ModelAndView {
         if (Strings.isNullOrEmpty(username)) {
             return resetPasswordScreen().addObject("errors", true)
@@ -41,7 +41,7 @@ class ResetPasswordController(val api: InstanceSpecificApiClient, val urlBuilder
         }
     }
 
-    @GetMapping(value = "/reset-password/confirm")
+    @GetMapping("/reset-password/confirm")
     fun confirmPasswordReset(@RequestParam token: String): ModelAndView {
         try {
             val newPassword = api.confirmResetPassword(token)

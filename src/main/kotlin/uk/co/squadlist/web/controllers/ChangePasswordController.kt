@@ -24,12 +24,12 @@ class ChangePasswordController(val api: InstanceSpecificApiClient, val urlBuilde
 
     private val log = Logger.getLogger(ChangePasswordController::class.java)
 
-    @GetMapping(value = "/change-password")
+    @GetMapping("/change-password")
     fun changePassword(): ModelAndView {
         return renderChangePasswordForm(ChangePassword())
     }
 
-    @PostMapping(value = "/change-password")
+    @PostMapping("/change-password")
     fun changePasswordSubmit(@Valid @ModelAttribute("changePassword") changePassword: ChangePassword, result: BindingResult): ModelAndView {
         if (result.hasErrors()) {
             return renderChangePasswordForm(changePassword)
