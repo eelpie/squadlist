@@ -5,16 +5,18 @@ import com.google.common.collect.Lists
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.localisation.GoverningBody
 import uk.co.squadlist.web.model.*
 import java.net.URISyntaxException
 
-class UrlBuilder (@param:Value("\${baseUrl}") private val baseUrl: String, val instanceConfig: InstanceConfig,
-                   val seoLinkBuilder: SeoLinkBuilder,
-            @param:Value("\${apiUrl}")  val apiUrl: String,
-            @param:Value("\${profilePicturesUrl}")  val profilePicturesUrl: String
-) {
+@Component
+class UrlBuilder (@param:Value("\${baseUrl}") private val baseUrl: String,
+                  val instanceConfig: InstanceConfig,
+                  val seoLinkBuilder: SeoLinkBuilder,
+                  @param:Value("\${apiUrl}") private val apiUrl: String,
+                  @param:Value("\${profilePicturesUrl}") private val profilePicturesUrl: String) {
 
     val linkFacebookCallbackUrl: String
         get() = applicationUrl("/social/facebook/link/callback")

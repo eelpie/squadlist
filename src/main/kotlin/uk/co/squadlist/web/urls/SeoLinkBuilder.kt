@@ -1,5 +1,8 @@
 package uk.co.squadlist.web.urls
 
+import org.springframework.stereotype.Component
+
+@Component
 class SeoLinkBuilder {
 
     fun makeSeoLinkFor(name: String): String {

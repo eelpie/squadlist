@@ -7,22 +7,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class SquadlistApiFactory {
 
-	private final String apiUrl;
-	private final String clientAccessToken;
-	
-	@Autowired
-	public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
-			@Value("${apiAccessToken}") String clientAccessToken) {
-		this.apiUrl = apiUrl;
-		this.clientAccessToken = clientAccessToken;
-	}
-	
-	public SquadlistApi createClient() {
-		return createForToken(clientAccessToken);
-	}
+  private final String apiUrl;
+  private final String clientAccessToken;
 
-	public SquadlistApi createForToken(String token) {
-		return new SquadlistApi(apiUrl, token);
-	}
+  @Autowired
+  public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
+                             @Value("${apiAccessToken}") String clientAccessToken) {
+    this.apiUrl = apiUrl;
+    this.clientAccessToken = clientAccessToken;
+  }
+
+  public SquadlistApi createClient() {
+    return createForToken(clientAccessToken);
+  }
+
+  public SquadlistApi createForToken(String token) {
+    return new SquadlistApi(apiUrl, token);
+  }
 
 }

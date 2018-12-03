@@ -14,6 +14,7 @@ import org.springframework.web.servlet.view.RedirectView
 import uk.co.squadlist.web.annotations.RequiresPermission
 import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.api.SquadlistApi
+import uk.co.squadlist.web.api.SquadlistApiFactory
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.exceptions.InvalidSquadException
 import uk.co.squadlist.web.model.Squad
@@ -28,12 +29,14 @@ class SquadsController(
         val instanceSpecificApiClient: InstanceSpecificApiClient,
         val urlBuilder: UrlBuilder,
         val viewFactory: ViewFactory,
-        val squadlistApi: SquadlistApi,
-        val instanceConfig: InstanceConfig) {
+        val instanceConfig: InstanceConfig,
+        val squadlistApiFactory: SquadlistApiFactory) {
 
     private val log = Logger.getLogger(SquadsController::class.java)
 
     private val COMMA_SPLITTER = Splitter.on(",")
+
+    private val squadlistApi: SquadlistApi = squadlistApiFactory.createClient()
 
     @GetMapping("/squad/new")
     fun newSquad(@ModelAttribute("squadDetails") squadDetails: SquadDetails): ModelAndView {
