@@ -27,7 +27,7 @@ class LoginController(val api: InstanceSpecificApiClient, val loggedInUserServic
             api.verify(token)?.let { user ->
                 log.info("Auth successful for user: " + user.username)
                 loggedInUserService.setSignedIn(token)
-                return ModelAndView(RedirectView(urlBuilder.baseUrl))
+                return ModelAndView(RedirectView(urlBuilder.getBaseUrl()))
             }
         }
 
