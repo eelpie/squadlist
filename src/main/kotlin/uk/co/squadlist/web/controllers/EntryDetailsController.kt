@@ -33,6 +33,10 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
 
     private val squadlistApi = squadlistApiFactory.createClient()
 
+    private val entryDetailsHeaders: List<String> = Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Age grade",
+            "Weight", "Rowing points", "Rowing status",
+            "Sculling points", "Sculling status", "Registration number")
+
     @GetMapping("/entrydetails/{squadId}")
     fun entrydetails(@PathVariable squadId: String): ModelAndView {
         val mv = viewFactory.getViewForLoggedInUser("entryDetails")
@@ -102,7 +106,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         val squadMembers = squadlistApi.getSquadMembers(squadToShow.id)
 
         val entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers)
-        csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.entryDetailsHeaders, entryDetailsRows)
+        csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsRows)
     }
 
     @GetMapping("/entrydetails/selected.csv") // TODO Unused
@@ -116,7 +120,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
             selectedMembers.add(squadlistApi.getMember(selectedMemberId))
         }
 
-        csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.entryDetailsHeaders, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers))
+        csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers))
     }
 
 }
