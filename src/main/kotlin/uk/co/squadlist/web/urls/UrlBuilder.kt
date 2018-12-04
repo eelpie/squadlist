@@ -114,7 +114,7 @@ class UrlBuilder (@param:Value("\${baseUrl}") private val baseUrl: String,
     }
 
     fun entryDetails(squad: Squad): String {
-        return applicationUrl("/entry-details?squad=" + squad.id)
+        return applicationUrl("/entry-details/" + squad.id)
     }
 
     fun outings(squad: Squad): String {
@@ -146,12 +146,12 @@ class UrlBuilder (@param:Value("\${baseUrl}") private val baseUrl: String,
     }
 
     fun entryDetailsCsv(squad: Squad): String {
-        return applicationUrl("/entrydetails/" + squad.id + ".csv")
+        return applicationUrl("/entry-details/" + squad.id + ".csv")
     }
 
     fun entryDetailsCsv(members: List<Member>): String {
         try {
-            val url = URIBuilder(applicationUrl("/entrydetails/selected.csv"))
+            val url = URIBuilder(applicationUrl("/entry-details/selected.csv"))
 
             val memberIds = Lists.newArrayList<String>()
             for (member in members) {

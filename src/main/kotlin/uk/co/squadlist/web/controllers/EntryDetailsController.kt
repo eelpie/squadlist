@@ -16,7 +16,9 @@ import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.model.Member
 import uk.co.squadlist.web.services.PreferedSquadService
+import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.CsvOutputRenderer
+import uk.co.squadlist.web.views.PermissionsHelper
 import uk.co.squadlist.web.views.ViewFactory
 import java.util.*
 import javax.servlet.http.HttpServletResponse
@@ -27,7 +29,8 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
                                     val viewFactory: ViewFactory,
                                     val entryDetailsModelPopulator: EntryDetailsModelPopulator,
                                     val csvOutputRenderer: CsvOutputRenderer, val governingBodyFactory: GoverningBodyFactory,
-                                    val squadlistApiFactory: SquadlistApiFactory, val loggedInUserService: LoggedInUserService) {
+                                    val squadlistApiFactory: SquadlistApiFactory, val loggedInUserService: LoggedInUserService,
+                                    val urlBuilder: UrlBuilder, val permissionsHelper: PermissionsHelper) {
 
     private val log = Logger.getLogger(EntryDetailsController::class.java)
 
@@ -37,18 +40,20 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
             "Weight", "Rowing points", "Rowing status",
             "Sculling points", "Sculling status", "Registration number")
 
-    @GetMapping("/entrydetails/{squadId}")
+    @GetMapping("/entry-details/{squadId}")
     fun entrydetails(@PathVariable squadId: String): ModelAndView {
         val mv = viewFactory.getViewForLoggedInUser("entryDetails")
         mv.addObject("squads", instanceSpecificApiClient.squads)
         mv.addObject("governingBody", governingBodyFactory.governingBody)
+        mv.addObject("urlBuilder", urlBuilder)
+        mv.addObject("permissionsHelper", permissionsHelper)
 
         val squadToShow = preferedSquadService.resolveSquad(squadId)
         entryDetailsModelPopulator.populateModel(squadToShow, mv)
         return mv
     }
 
-    @GetMapping("/entrydetails/ajax")
+    @GetMapping("/entry-details/ajax")
     fun ajax(@RequestBody json: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
@@ -98,7 +103,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         return mv
     }
 
-    @GetMapping("/entrydetails/{squadId}.csv")
+    @GetMapping("/entry-details/{squadId}.csv")
     fun entrydetailsCSV(@PathVariable squadId: String, response: HttpServletResponse) {
         viewFactory.getViewForLoggedInUser("entryDetails")  // TODO
 
@@ -109,7 +114,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsRows)
     }
 
-    @GetMapping("/entrydetails/selected.csv") // TODO Unused
+    @GetMapping("/entry-details/selected.csv") // TODO Unused
     fun entrydetailsSelectedCSV(@RequestParam members: String, response: HttpServletResponse) {
         log.info("Selected members: $members")
         val selectedMembers = Lists.newArrayList<Member>()
