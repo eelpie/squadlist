@@ -2,7 +2,6 @@ package uk.co.squadlist.web.controllers
 
 import com.google.common.base.Splitter
 import com.google.common.collect.Lists
-import org.apache.log4j.Logger
 import org.codehaus.jackson.map.ObjectMapper
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,10 +29,6 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
                                     val csvOutputRenderer: CsvOutputRenderer, val governingBodyFactory: GoverningBodyFactory,
                                     val squadlistApiFactory: SquadlistApiFactory, val loggedInUserService: LoggedInUserService,
                                     val urlBuilder: UrlBuilder, val permissionsHelper: PermissionsHelper) {
-
-    private val log = Logger.getLogger(EntryDetailsController::class.java)
-
-    private val squadlistApi = squadlistApiFactory.createClient()
 
     private val entryDetailsHeaders: List<String> = Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Age grade",
             "Weight", "Rowing points", "Rowing status",
@@ -99,10 +94,10 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
 
     @GetMapping("/entry-details/{squadId}.csv")
     fun entrydetailsCSV(@PathVariable squadId: String, response: HttpServletResponse) {
-        viewFactory.getViewForLoggedInUser("entryDetails")  // TODO
+        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
         val squadToShow = preferedSquadService.resolveSquad(squadId)
-        val squadMembers = squadlistApi.getSquadMembers(squadToShow.id)
+        val squadMembers = loggedInUserApi.getSquadMembers(squadToShow.id)
 
         val entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers)
         csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsRows)
@@ -110,9 +105,9 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
 
     @GetMapping("/entry-details/selected.csv") // TODO Unused
     fun entrydetailsSelectedCSV(@RequestParam members: String, response: HttpServletResponse) {
-        log.info("Selected members: $members")
+        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
-        val selectedMembers = Splitter.on(",").split(members).map { squadlistApi.getMember(it) }
+        val selectedMembers = Splitter.on(",").split(members).map { loggedInUserApi.getMember(it) }
 
         csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers))
     }
