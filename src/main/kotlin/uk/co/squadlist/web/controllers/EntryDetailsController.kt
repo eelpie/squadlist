@@ -117,13 +117,8 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
     @GetMapping("/entry-details/selected.csv") // TODO Unused
     fun entrydetailsSelectedCSV(@RequestParam members: String, response: HttpServletResponse) {
         log.info("Selected members: $members")
-        val selectedMembers = Lists.newArrayList<Member>()
-        val iterator = Splitter.on(",").split(members).iterator()
-        while (iterator.hasNext()) {
-            val selectedMemberId = iterator.next()
-            log.info("Selected member id: $selectedMemberId")
-            selectedMembers.add(squadlistApi.getMember(selectedMemberId))
-        }
+
+        val selectedMembers = Splitter.on(",").split(members).map { squadlistApi.getMember(it) }
 
         csvOutputRenderer.renderCsvResponse(response, entryDetailsHeaders, entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers))
     }
