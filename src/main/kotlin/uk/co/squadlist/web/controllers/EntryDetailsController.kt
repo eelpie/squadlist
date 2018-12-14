@@ -14,7 +14,6 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.api.SquadlistApiFactory
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.GoverningBodyFactory
-import uk.co.squadlist.web.model.Member
 import uk.co.squadlist.web.services.PreferedSquadService
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.CsvOutputRenderer
@@ -57,13 +56,8 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
     fun ajax(@RequestBody json: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
-        val selectedMembers = Lists.newArrayList<Member>()
-
-        val readTree = ObjectMapper().readTree(json)
-        val iterator = readTree.iterator()
-        while (iterator.hasNext()) {
-            selectedMembers.add(loggedInUserApi.getMember(iterator.next().asText()))
-        }
+        val memberIds = ObjectMapper().readTree(json).map { it.asText() }
+        val selectedMembers= memberIds.map { loggedInUserApi.getMember(it)}
 
         val rowingPoints = Lists.newArrayList<String>()
         val scullingPoints = Lists.newArrayList<String>()
