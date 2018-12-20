@@ -12,42 +12,42 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class LoggedInUserService {
 
-	private final static Logger log = Logger.getLogger(LoggedInUserService.class);
+  private final static Logger log = Logger.getLogger(LoggedInUserService.class);
 
-	private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
+  private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
 
-    private final InstanceSpecificApiClient api;
-	private final HttpServletRequest request;
+  private final InstanceSpecificApiClient api;
+  private final HttpServletRequest request;
 
-    @Autowired
-	public LoggedInUserService(InstanceSpecificApiClient api, HttpServletRequest request) {
-		this.api = api;
-		this.request = request;
-	}
+  @Autowired
+  public LoggedInUserService(InstanceSpecificApiClient api, HttpServletRequest request) {
+    this.api = api;
+    this.request = request;
+  }
 
-	public Member getLoggedInMember() throws SignedInMemberRequiredException {
-		String token = getLoggedInMembersToken();
-		if (token != null) {
-			log.debug("Found signed in user token; need to verify: " + token);
-			Member verifiedMember = api.verify(token);
-			log.debug("Verified member: "+ verifiedMember);
-			return verifiedMember;
-		}
+  public Member getLoggedInMember() throws SignedInMemberRequiredException {
+    String token = getLoggedInMembersToken();
+    if (token != null) {
+      log.debug("Found signed in user token; need to verify: " + token);
+      Member verifiedMember = api.verify(token);
+      log.debug("Verified member: " + verifiedMember);
+      return verifiedMember;
+    }
 
-		log.debug("No signed in user token found");
-		throw new SignedInMemberRequiredException();
-	}
+    log.debug("No signed in user token found");
+    throw new SignedInMemberRequiredException();
+  }
 
-	public String getLoggedInMembersToken() {
-		return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
-	}
+  public String getLoggedInMembersToken() {
+    return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+  }
 
-	public void setSignedIn(String token) {
-		request.getSession().setAttribute(SIGNED_IN_USER_ACCESS_TOKEN, token);
-	}
+  public void setSignedIn(String token) {
+    request.getSession().setAttribute(SIGNED_IN_USER_ACCESS_TOKEN, token);
+  }
 
-	public void cleanSignedIn() {
-		request.getSession().removeAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
-	}
+  public void cleanSignedIn() {
+    request.getSession().removeAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+  }
 
 }

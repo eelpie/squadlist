@@ -9,6 +9,7 @@ import uk.co.squadlist.web.annotations.RequiresSignedInMember
 import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.api.SquadlistApiFactory
 import uk.co.squadlist.web.auth.LoggedInUserService
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.exceptions.UnknownMemberException
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService
 import uk.co.squadlist.web.services.ical.OutingCalendarService
@@ -27,6 +28,7 @@ class MyOutingsController(val loggedInUserService: LoggedInUserService, val inst
 
     @RequiresSignedInMember
     @RequestMapping("/")
+    @Throws(SignedInMemberRequiredException::class)
     fun outings(): ModelAndView {
         val loggedInUser = loggedInUserService.loggedInMember.id
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
