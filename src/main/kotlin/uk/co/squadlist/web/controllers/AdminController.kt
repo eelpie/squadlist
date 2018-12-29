@@ -95,15 +95,10 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     @RequestMapping(value = "/admin/admins", method = arrayOf(RequestMethod.GET))
     @Throws(Exception::class)
     fun setAdminsPrompt(): ModelAndView {
-        val adminMembers = Lists.newArrayList<Member>()
-        val availableMembers = Lists.newArrayList<Member>()
-        for (member in api.members) {
-            if (member.admin!!) {
-                adminMembers.add(member)
-            } else {
-                availableMembers.add(member)
-            }
-        }
+        val allMembers = api.members
+        val adminMembers = allMembers.filter {  it.admin!! }
+        val availableMembers = allMembers.subtract(adminMembers)
+
         return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers)
     }
 
