@@ -6,10 +6,7 @@ import com.google.common.collect.Sets
 import org.apache.log4j.Logger
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import uk.co.squadlist.web.annotations.RequiresPermission
@@ -44,7 +41,7 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     private val COMMA_SPLITTER = Splitter.on(",")
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin", method = arrayOf(RequestMethod.GET))
+    @GetMapping("/admin")
     @Throws(Exception::class)
     fun member(): ModelAndView {
         val mv = viewFactory.getViewForLoggedInUser("admin")
@@ -65,7 +62,7 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin/instance", method = arrayOf(RequestMethod.GET))
+    @GetMapping("/admin/instance")
     @Throws(Exception::class)
     fun instance(): ModelAndView {
         val instanceDetails = InstanceDetails()
@@ -75,7 +72,7 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin/instance", method = arrayOf(RequestMethod.POST))
+    @PostMapping("/admin/instance")
     @Throws(Exception::class)
     fun instanceSubmit(@Valid @ModelAttribute("instanceDetails") instanceDetails: InstanceDetails, result: BindingResult): ModelAndView {
         if (result.hasErrors()) {
@@ -92,18 +89,18 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin/admins", method = arrayOf(RequestMethod.GET))
+    @GetMapping("/admin/admins")
     @Throws(Exception::class)
     fun setAdminsPrompt(): ModelAndView {
         val allMembers = api.members
-        val adminMembers = allMembers.filter {  it.admin!! }
+        val adminMembers = allMembers.filter { it.admin!! }
         val availableMembers = allMembers.subtract(adminMembers)
 
         return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers)
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin/admins", method = arrayOf(RequestMethod.POST))
+    @PostMapping(value = "/admin/admins")
     @Throws(Exception::class)
     fun setAdmins(@RequestParam admins: String): ModelAndView {
         log.info("Setting admins request: $admins")
@@ -116,7 +113,7 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-    @RequestMapping(value = "/admin/export/members.csv", method = arrayOf(RequestMethod.GET))
+    @GetMapping("/admin/export/members.csv")
     @Throws(Exception::class)
     fun membersCSV(response: HttpServletResponse) {
         val rows = Lists.newArrayList<List<String>>()
@@ -162,6 +159,5 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
     private fun renderEditInstanceDetailsForm(instanceDetails: InstanceDetails): ModelAndView {
         return viewFactory.getViewForLoggedInUser("editInstance").addObject("instanceDetails", instanceDetails).addObject("memberOrderings", MEMBER_ORDERINGS).addObject("governingBodies", GOVERNING_BODIES)
     }
-
 
 }
