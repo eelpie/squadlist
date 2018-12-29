@@ -54,12 +54,8 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         val memberIds = ObjectMapper().readTree(json).map { it.asText() }
         val selectedMembers= memberIds.map { loggedInUserApi.getMember(it)}
 
-        val rowingPoints = Lists.newArrayList<String>()
-        val scullingPoints = Lists.newArrayList<String>()
-        for (member in selectedMembers) {
-            rowingPoints.add(member.rowingPoints)
-            scullingPoints.add(member.scullingPoints)
-        }
+        val rowingPoints = selectedMembers.map { it.rowingPoints }
+        val scullingPoints = selectedMembers.map { it.scullingPoints }
 
         val mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax")
         if (!selectedMembers.isEmpty()) {
