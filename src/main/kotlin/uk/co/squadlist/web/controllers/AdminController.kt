@@ -6,7 +6,10 @@ import com.google.common.collect.Sets
 import org.apache.log4j.Logger
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import uk.co.squadlist.web.annotations.RequiresPermission
@@ -14,7 +17,6 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.context.Context
 import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
-import uk.co.squadlist.web.model.Member
 import uk.co.squadlist.web.model.forms.InstanceDetails
 import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
@@ -53,7 +55,7 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
         mv.addObject("members", members)
         mv.addObject("activeMembers", activeMemberFilter.extractActive(members))
         mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members))
-        mv.addObject("admins", extractAdminUsersFrom(members))
+        mv.addObject("admins", members.filter { it.admin!! })
         mv.addObject("governingBody", governingBodyFactory.governingBody)
         mv.addObject("statistics", api.statistics())
         mv.addObject("boats", api.boats)
@@ -139,16 +141,6 @@ class AdminController(val api: InstanceSpecificApiClient,   // TODO move to user
         csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
                 "Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
                 "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows)
-    }
-
-    private fun extractAdminUsersFrom(members: List<Member>): List<Member> {
-        val admins = Lists.newArrayList<Member>()
-        for (member in members) {
-            if (member.admin != null && member.admin!!) {  // TODO should be boolean is the API knows that it is always present.
-                admins.add(member)
-            }
-        }
-        return admins
     }
 
     private fun redirectToAdminScreen(): ModelAndView {
