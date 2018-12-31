@@ -42,10 +42,10 @@
                                 <#if member.dateOfBirth??>
                                     ${dateFormatter.dayMonthYear(member.dateOfBirth)}
                                     </br>
-                                    #set($ageGrade = "")
-                                    #set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth)))
-                                    <span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($member.dateOfBirth)</span>
-                                    #if($ageGrade) <br/> $ageGrade #end
+                                    <#assign effectiveAge = governingBody.getEffectiveAge(member.dateOfBirth) >
+                                    <#assign ageGrade = governingBody.getAgeGrade(effectiveAge) >
+                                    <span <#if $ageGrade??> title="${ageGrade}" </#if>>${effectiveAge}</span>
+                                    <#if ageGrade?? ><br/> ${ageGrade}</#if>
                                 </#if>
                             </td>
                             <td>${member.weight!}</td>
