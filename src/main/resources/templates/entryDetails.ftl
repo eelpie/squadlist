@@ -39,16 +39,16 @@
                             <td><input type="checkbox" class="selected" value="$member.id" /></td>
                             <td><#include 'includes/member.ftl'></td>
                             <td>
-                                #if($member.dateOfBirth)
-                                    $dateFormatter.dayMonthYear($member.dateOfBirth)
+                                <#if member.dateOfBirth??>
+                                    ${dateFormatter.dayMonthYear(member.dateOfBirth)}
                                     </br>
                                     #set($ageGrade = "")
                                     #set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth)))
                                     <span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($member.dateOfBirth)</span>
                                     #if($ageGrade) <br/> $ageGrade #end
-                                #end
+                                </#if>
                             </td>
-                            <td>$!member.weight</td>
+                            <td>${member.weight!}</td>
                             <td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span>
                                 <br/>#if($member.rowingPoints) $!governingBody.getRowingStatus($member.rowingPoints) #end
                             </td>
@@ -59,7 +59,7 @@
                                 #set($registrationNumberProblems = '')
                                 #set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))
                                 #if($registrationNumberProblems && $registrationNumberProblems != '')
-                                    $!member.registrationNumber
+                                    ${member.registrationNumber}
                                     <div class="alert alert-danger">
                                         $registrationNumberProblems
                                     </div>

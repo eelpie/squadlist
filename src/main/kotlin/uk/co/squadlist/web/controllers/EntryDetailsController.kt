@@ -16,6 +16,7 @@ import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.services.PreferedSquadService
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.CsvOutputRenderer
+import uk.co.squadlist.web.views.DateFormatter
 import uk.co.squadlist.web.views.PermissionsHelper
 import uk.co.squadlist.web.views.ViewFactory
 import java.util.*
@@ -28,9 +29,9 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
                                     val entryDetailsModelPopulator: EntryDetailsModelPopulator,
                                     val csvOutputRenderer: CsvOutputRenderer, val governingBodyFactory: GoverningBodyFactory,
                                     val squadlistApiFactory: SquadlistApiFactory, val loggedInUserService: LoggedInUserService,
-                                    val urlBuilder: UrlBuilder, val permissionsHelper: PermissionsHelper) {
+                                    val urlBuilder: UrlBuilder, val permissionsHelper: PermissionsHelper, val dateFormatter: DateFormatter) {
 
-    private val entryDetailsHeaders: List<String> = Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Age grade",
+    private val entryDetailsHeaders = Lists.newArrayList("First name", "Last name", "Date of birth", "Effective age", "Age grade",
             "Weight", "Rowing points", "Rowing status",
             "Sculling points", "Sculling status", "Registration number")
 
@@ -44,7 +45,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
 
         val squadToShow = preferedSquadService.resolveSquad(squadId)
         entryDetailsModelPopulator.populateModel(squadToShow, mv)
-        return mv
+        return mv.addObject("dateFormatter", dateFormatter)
     }
 
     @GetMapping("/entry-details/ajax")
