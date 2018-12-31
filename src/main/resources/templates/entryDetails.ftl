@@ -49,11 +49,19 @@
                                 </#if>
                             </td>
                             <td>${member.weight!}</td>
-                            <td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >${member.rowingPoints!}</span>
-                                <br/>#if($member.rowingPoints) $!governingBody.getRowingStatus($member.rowingPoints) #end
+                            <td>
+                                <#if member.rowingPoints??>
+                                    <#assign rowingStatus = governingBody.getRowingStatus(member.rowingPoints) >
+                                    <span title="${rowingStatus!}">${member.rowingPoints!}</span>
+                                    <br/>${rowingStatus!}
+                                </#if>
                             </td>
-                            <td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >${member.scullingPoints!}</span>
-                                #if($member.scullingPoints) <br/>$!governingBody.getScullingStatus($member.scullingPoints) #end
+                            <td>
+                                <#if member.scullingPoints??>
+                                    <#assign scullingStatus = governingBody.getScullingStatus(member.scullingPoints) >
+                                    <span title="${scullingStatus!}">${member.scullingPoints!}</span>
+                                    <br/>${scullingStatus!}
+                                </#if>
                             </td>
                             <td>
                                 #set($registrationNumberProblems = '')
