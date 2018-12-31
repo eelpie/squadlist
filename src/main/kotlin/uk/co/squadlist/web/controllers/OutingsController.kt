@@ -52,12 +52,10 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
 
     private val log = Logger.getLogger(OutingsController::class.java)
 
-    private val squadlistApi: SquadlistApi = squadlistApiFactory.createClient()
-
     @GetMapping("/outings")
     fun outings(@RequestParam(required = false, value = "squad") squadId: String,
                 @RequestParam(value = "month", required = false) month: String?): ModelAndView {
-        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)  // TODO why is this unused!
+        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
         val squadToShow = preferedSquadService.resolveSquad(squadId)
         val mv = viewFactory.getViewForLoggedInUser("outings")
@@ -86,7 +84,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
         mv.addObject("month", month)
         mv.addObject("outingMonths", getOutingMonthsFor(squadToShow))
 
-        val squadOutings = squadlistApi.getSquadAvailability(squadToShow.id, startDate, endDate)
+        val squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.id, startDate, endDate)
         mv.addObject("outings", squadOutings)
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings))
 
@@ -107,7 +105,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
         mv.addObject("squad", outing.squad)
         mv.addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.id))
         mv.addObject("squads", instanceSpecificApiClient.squads)
-        mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(outing.squad.id)))
+        mv.addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.squad.id)))
         mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.date.time))  // TODO push to date parser - local time
         return mv
     }
@@ -117,7 +115,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 
         val outing = loggedInUserApi.getOuting(id)
-        val squadMembers = squadlistApi.getSquadMembers(outing.squad.id)
+        val squadMembers = loggedInUserApi.getSquadMembers(outing.squad.id)
         val outingAvailability = loggedInUserApi.getOutingAvailability(outing.id)
 
         val rows = Lists.newArrayList<List<String>>()
@@ -145,16 +143,18 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
     @RequiresPermission(permission = Permission.ADD_OUTING)
     @PostMapping("/outings/new")
     fun newOutingSubmit(@Valid @ModelAttribute("outing") outingDetails: OutingDetails, result: BindingResult): ModelAndView {
+        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
+
         if (result.hasErrors()) {
             return renderNewOutingForm(outingDetails)
         }
 
         try {
-            val newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.instance)
+            val newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.instance, loggedInUserApi)
             if (outingDetails.repeats != null && outingDetails.repeats!! && outingDetails.repeatsCount != null) {
-                squadlistApi.createOuting(newOuting, outingDetails.repeatsCount)
+                loggedInUserApi.createOuting(newOuting, outingDetails.repeatsCount)
             } else {
-                squadlistApi.createOuting(newOuting, null)
+                loggedInUserApi.createOuting(newOuting, null)
             }
 
             val outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.squad, DateTime(newOuting.date).toString("yyyy-MM"))
@@ -199,7 +199,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
         val outing = loggedInUserApi.getOuting(id)
 
-        squadlistApi.deleteOuting(outing.id)
+        loggedInUserApi.deleteOuting(outing.id)
 
         val exitUrl = if (outing.squad == null) urlBuilder.outings(outing.squad) else urlBuilder.outingsUrl()
         return ModelAndView(RedirectView(exitUrl))
@@ -244,7 +244,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
             return renderEditOutingForm(outingDetails, outing)
         }
         try {
-            val updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.instance)
+            val updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.instance, loggedInUserApi)
             updatedOuting.id = id
 
             loggedInUserApi.updateOuting(updatedOuting)
@@ -314,7 +314,7 @@ class OutingsController(val loggedInUserService: LoggedInUserService, val instan
         return instanceSpecificApiClient.getOutingMonths(squad)
     }
 
-    private fun buildOutingFromOutingDetails(outingDetails: OutingDetails, instance: Instance): Outing {
+    private fun buildOutingFromOutingDetails(outingDetails: OutingDetails, instance: Instance, squadlistApi: SquadlistApi): Outing {
         val date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.timeZone)).toDate()
         val squad = if (outingDetails.squad != null) squadlistApi.getSquad(outingDetails.squad) else null  // TODO validation
         val notes = outingDetails.notes
