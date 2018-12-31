@@ -43,7 +43,7 @@
                                     ${dateFormatter.dayMonthYear(member.dateOfBirth)}
                                     </br>
                                     <#assign effectiveAge = governingBody.getEffectiveAge(member.dateOfBirth) >
-                                    <#assign ageGrade = governingBody.getAgeGrade(effectiveAge) >
+                                    <#assign ageGrade = governingBody.getAgeGrade(effectiveAge)!"" >
                                     <span <#if $ageGrade??> title="${ageGrade}" </#if>>${effectiveAge}</span>
                                     <#if ageGrade?? ><br/> ${ageGrade}</#if>
                                 </#if>
@@ -64,12 +64,14 @@
                                 </#if>
                             </td>
                             <td>
-                                ${member.registrationNumber!}
-                                <#assign registrationNumberProblems = governingBody.checkRegistrationNumber(member.registrationNumber)>
-                                <#if registrationNumberProblems??>
-                                    <div class="alert alert-danger">
-                                        ${registrationNumberProblems}
-                                    </div>
+                                <#if member.registrationNumber??>
+                                    ${member.registrationNumber}
+                                    <#assign registrationNumberProblems = governingBody.checkRegistrationNumber(member.registrationNumber)!"">
+                                    <#if registrationNumberProblems != "" >
+                                        <div class="alert alert-danger">
+                                            ${registrationNumberProblems}
+                                        </div>
+                                    </#if>
                                 </#if>
                             </td>
                         </tr>
