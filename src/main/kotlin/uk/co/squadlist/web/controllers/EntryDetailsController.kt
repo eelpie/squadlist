@@ -37,6 +37,8 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
 
     @GetMapping("/entry-details/{squadId}")
     fun entrydetails(@PathVariable squadId: String): ModelAndView {
+        val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
+
         val mv = viewFactory.getViewForLoggedInUser("entryDetails")
         mv.addObject("squads", instanceSpecificApiClient.squads)
         mv.addObject("governingBody", governingBodyFactory.governingBody)
@@ -44,7 +46,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         mv.addObject("permissionsHelper", permissionsHelper)
 
         val squadToShow = preferedSquadService.resolveSquad(squadId)
-        entryDetailsModelPopulator.populateModel(squadToShow, mv)
+        entryDetailsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi)
         return mv.addObject("dateFormatter", dateFormatter)
     }
 

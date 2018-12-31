@@ -18,17 +18,15 @@ import java.util.*
 class EntryDetailsModelPopulator (val dateFormatter: DateFormatter, val activeMemberFilter: ActiveMemberFilter,
                 val governingBodyFactory: GoverningBodyFactory, squadlistApiFactory: SquadlistApiFactory) {
 
-    private val squadlistApi: SquadlistApi = squadlistApiFactory.createClient()
-
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_ENTRY_DETAILS)
-    fun populateModel(squadToShow: Squad, mv: ModelAndView) {
+    fun populateModel(squadToShow: Squad, mv: ModelAndView, squadlistApi: SquadlistApi) {
         mv.addObject("squad", squadToShow)
         mv.addObject("title", squadToShow.name + " entry details")
         mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.id)))
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_ENTRY_DETAILS)
-    fun getEntryDetailsRows(squadToShow: Squad): List<List<String>> {
+    fun getEntryDetailsRows(squadToShow: Squad, squadlistApi: SquadlistApi): List<List<String>> {
         return getEntryDetailsRows(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.id)))
     }
 
