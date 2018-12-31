@@ -4,10 +4,7 @@ import com.google.common.base.Splitter
 import com.google.common.collect.Lists
 import org.codehaus.jackson.map.ObjectMapper
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.web.api.InstanceSpecificApiClient
 import uk.co.squadlist.web.api.SquadlistApiFactory
@@ -50,7 +47,7 @@ public class EntryDetailsController(val instanceSpecificApiClient: InstanceSpeci
         return mv.addObject("dateFormatter", dateFormatter)
     }
 
-    @GetMapping("/entry-details/ajax")
+    @PostMapping("/entry-details/ajax")
     fun ajax(@RequestBody json: String): ModelAndView {
         val loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.loggedInMembersToken)
 

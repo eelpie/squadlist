@@ -104,7 +104,7 @@
         });
 
         $.ajax({
-            url: "$urlBuilder.applicationUrl('/entry-details/ajax')",
+            url: "${urlBuilder.applicationUrl('/entry-details/ajax')}",
             type: 'POST',
             contentType: 'application/json',
             processData: false,
