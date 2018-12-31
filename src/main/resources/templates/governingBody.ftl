@@ -1,0 +1,60 @@
+<#include 'includes/head.ftl'>
+<@navTabs 'Governing body' />
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-8">
+			<h4>${title!}</h4>
+		</div>
+	</div>
+	<hr/>
+
+	<div class="row">
+		<div class="col-xs-12">
+			<p>$text.text('localised.for.governing.body', $governingBody.name) (<a href="$governingBody.statusPointsReference">link</a>)</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-6">
+			<h5>Statuses</h5>
+			#table($statuses)
+
+			<h5>Boat sizes</h5>
+			$boatSizes
+		</div>
+
+		<div class="col-xs-6">
+			<h5>Age grades</h5>
+			#table($ageGrades)
+
+			<h5>$text.text('effective.age')</h5>
+			<p>$governingBody.effectiveAgeDescription</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+			<p>Please contact us if you are interested in developing a localisation for a different governing body.</p>
+		</div>
+	</div>
+
+</div>
+<hr/>
+
+#macro(table $values)
+	<table class="table table-striped">
+		#foreach($value in $values.keySet())
+			<tr>
+				<td>$value</td><td>
+					#if($values.get($value))
+						$values.get($value)
+					#end
+				</td>
+			</tr>
+		#end
+	</table>
+#end
+
+<#include 'includes/footer.ftl'>
