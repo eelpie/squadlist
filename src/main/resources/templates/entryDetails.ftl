@@ -64,14 +64,13 @@
                                 </#if>
                             </td>
                             <td>
-                                #set($registrationNumberProblems = '')
-                                #set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))
-                                #if($registrationNumberProblems && $registrationNumberProblems != '')
-                                    ${member.registrationNumber}
+                                ${member.registrationNumber!}
+                                <#assign registrationNumberProblems = governingBody.checkRegistrationNumber(member.registrationNumber)>
+                                <#if registrationNumberProblems??>
                                     <div class="alert alert-danger">
-                                        $registrationNumberProblems
+                                        ${registrationNumberProblems}
                                     </div>
-                                #end
+                                </#if>
                             </td>
                         </tr>
                     </#list>
