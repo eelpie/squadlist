@@ -43,6 +43,7 @@ public class LoginController {
 
         log.info("Attempting to auth user: " + username);
         final String authenticatedUsersAccessToken = api.auth(username, password);
+        log.info("Auth got access token: " + authenticatedUsersAccessToken);
         if (authenticatedUsersAccessToken != null) {
             Member authenticatedMember = api.verify(authenticatedUsersAccessToken);
             if (authenticatedMember != null) {

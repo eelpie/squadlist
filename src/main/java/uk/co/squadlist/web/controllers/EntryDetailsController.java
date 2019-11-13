@@ -22,6 +22,7 @@ import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +46,7 @@ public class EntryDetailsController {
   public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
                                 EntryDetailsModelPopulator entryDetailsModelPopulator,
                                 CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory,
-                                SquadlistApiFactory squadlistApiFactory, LoggedInUserService loggedInUserService) {
+                                SquadlistApiFactory squadlistApiFactory, LoggedInUserService loggedInUserService) throws IOException {
     this.instanceSpecificApiClient = instanceSpecificApiClient;
     this.preferedSquadService = preferedSquadService;
     this.viewFactory = viewFactory;

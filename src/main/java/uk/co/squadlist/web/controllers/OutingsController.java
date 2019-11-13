@@ -81,7 +81,7 @@ public class OutingsController {
   public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder,
                            DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
                            OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
-                           CsvOutputRenderer csvOutputRenderer, SquadlistApiFactory squadlistApiFactory) {
+                           CsvOutputRenderer csvOutputRenderer, SquadlistApiFactory squadlistApiFactory) throws IOException {
     this.loggedInUserService = loggedInUserService;
     this.instanceSpecificApiClient = instanceSpecificApiClient;
     this.urlBuilder = urlBuilder;

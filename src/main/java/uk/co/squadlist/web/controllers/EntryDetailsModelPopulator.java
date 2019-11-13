@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class EntryDetailsModelPopulator {
 
 	@Autowired
 	public EntryDetailsModelPopulator(DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter,
-									  GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
+									  GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
 		this.governingBodyFactory = governingBodyFactory;

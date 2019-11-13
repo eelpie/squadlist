@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class ContactsModelPopulator {
 
 	@Autowired
 	public ContactsModelPopulator(InstanceSpecificApiClient instanceSpecificApiClient, LoggedInUserService loggedInUserService, PermissionsService permissionsService,
-								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) {
+								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.loggedInUserService = loggedInUserService;
 		this.permissionsService = permissionsService;

@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class PreferedSquadService {
 	private final LoggedInUserService loggedInUserService;
 	
 	@Autowired
-	public PreferedSquadService(InstanceSpecificApiClient instanceSpecificApiClient, HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) {
+	public PreferedSquadService(InstanceSpecificApiClient instanceSpecificApiClient, HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.request = request;
 		this.loggedInUserService = loggedInUserService;

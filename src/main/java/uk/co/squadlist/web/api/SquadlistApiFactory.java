@@ -4,20 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
 public class SquadlistApiFactory {
 
 	private final String apiUrl;
-	private final String clientAccessToken;
-	
+	private final String clientId;
+	private final String clientSecret;
+
 	@Autowired
 	public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
-			@Value("${apiAccessToken}") String clientAccessToken) {
+			@Value("${client.id}") String clientId,
+			@Value("${client.secret}") String clientSecret) {
 		this.apiUrl = apiUrl;
-		this.clientAccessToken = clientAccessToken;
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
 	}
 	
-	public SquadlistApi createClient() {
+	public SquadlistApi createClient() throws IOException {
+		String clientAccessToken = new SquadlistApi(apiUrl).requestClientAccessToken(clientId, clientSecret);
 		return createForToken(clientAccessToken);
 	}
 

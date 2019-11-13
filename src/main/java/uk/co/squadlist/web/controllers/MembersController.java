@@ -68,7 +68,7 @@ public class MembersController {
                            PasswordGenerator passwordGenerator,
                            PermissionsService permissionsService,
                            GoverningBodyFactory governingBodyFactory,
-                           SquadlistApiFactory squadlistApiFactory) {
+                           SquadlistApiFactory squadlistApiFactory) throws IOException {
     this.instanceSpecificApiClient = instanceSpecificApiClient;
     this.loggedInUserService = loggedInUserService;
     this.urlBuilder = urlBuilder;

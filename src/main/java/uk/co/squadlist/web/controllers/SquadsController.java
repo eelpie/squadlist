@@ -62,7 +62,7 @@ public class SquadsController {
 	@Autowired
 	public SquadsController(InstanceSpecificApiClient instanceSpecificApiClient,
 							UrlBuilder urlBuilder, ViewFactory viewFactory, SquadlistApiFactory squadlistApiFactory,
-							InstanceConfig instanceConfig) {
+							InstanceConfig instanceConfig) throws IOException {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.urlBuilder = urlBuilder;
 		this.viewFactory = viewFactory;

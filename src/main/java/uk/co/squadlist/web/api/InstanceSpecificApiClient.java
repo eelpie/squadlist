@@ -30,7 +30,7 @@ public class InstanceSpecificApiClient {
 	@Autowired
 	public InstanceSpecificApiClient(InstanceConfig instanceConfig,
 									 SquadlistApiFactory squadlistApiFactory, @Value("${client.id}") String clientId,
-									 @Value("${client.secret}") String clientSecret) {
+									 @Value("${client.secret}") String clientSecret) throws IOException {
 		this.instanceConfig = instanceConfig;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;

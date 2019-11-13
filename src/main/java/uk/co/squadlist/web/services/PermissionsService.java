@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class PermissionsService {
 	private SquadlistApi squadlistApi;
 
 	@Autowired
-	public PermissionsService(InstanceSpecificApiClient instanceSpecificApiClient, SquadlistApiFactory squadlistApiFactory) {
+	public PermissionsService(InstanceSpecificApiClient instanceSpecificApiClient, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.squadlistApi = squadlistApiFactory.createClient();
 	}

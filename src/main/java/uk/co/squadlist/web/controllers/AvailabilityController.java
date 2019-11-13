@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class AvailabilityController {
 
 	@Autowired
 	public AvailabilityController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
-								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) {
+								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.preferedSquadService = preferedSquadService;
 		this.viewFactory = viewFactory;

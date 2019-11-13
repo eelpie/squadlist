@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +52,7 @@ public class MyOutingsController {
 	public MyOutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, ViewFactory viewFactory,
 														 OutingAvailabilityCountsService outingAvailabilityCountsService, UrlBuilder urlBuilder,
 														 SquadNamesHelper squadNamesHelper,
-														 OutingCalendarService outingCalendarService, SquadlistApiFactory squadlistApiFactory) {
+														 OutingCalendarService outingCalendarService, SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.loggedInUserService = loggedInUserService;
 		this.instanceSpecificApiClient = instanceSpecificApiClient;
 		this.viewFactory = viewFactory;

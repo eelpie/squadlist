@@ -8,6 +8,8 @@ import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
+import java.io.IOException;
+
 @Component
 public class FacebookLinkedAccountsService {
 	
@@ -16,7 +18,7 @@ public class FacebookLinkedAccountsService {
 	private final SquadlistApi api;
 	
 	@Autowired
-	public FacebookLinkedAccountsService(SquadlistApiFactory squadlistApiFactory) {
+	public FacebookLinkedAccountsService(SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.api = squadlistApiFactory.createClient();
 	}
 	

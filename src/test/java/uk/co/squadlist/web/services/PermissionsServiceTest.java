@@ -14,6 +14,8 @@ import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
+import java.io.IOException;
+
 public class PermissionsServiceTest {
 
 	private static final String ADMIN_ID = "admin-id";
@@ -34,7 +36,7 @@ public class PermissionsServiceTest {
 	private PermissionsService permissionsService;
 	
 	@Before
-	public void setup() throws UnknownMemberException {
+	public void setup() throws UnknownMemberException, IOException {
 		MockitoAnnotations.initMocks(this);
 		
 		this.admin = new Member();
