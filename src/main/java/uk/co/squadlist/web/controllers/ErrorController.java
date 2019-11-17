@@ -22,7 +22,7 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
 
 	@RequestMapping("/error")
 	public ModelAndView error() throws Exception {
-		log.warn("Error page shown");	// TODO how to get the original request before spring rewrites it to /error
+		log.warn("Error page shown for path: " + request.getPathInfo());	// TODO how to get the original request before spring rewrites it to /error
 		return new ModelAndView("404");
 	}
 
