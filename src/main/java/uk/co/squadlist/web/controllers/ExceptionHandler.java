@@ -1,5 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
+import io.sentry.SentryClient;
+import io.sentry.SentryClientFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,66 +20,72 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
-	private final static Logger log = Logger.getLogger(ExceptionHandler.class);
+    private final static Logger log = Logger.getLogger(ExceptionHandler.class);
 
-	private final UrlBuilder urlBuilder;
+    private final UrlBuilder urlBuilder;
 
-	@Value("${googleAnalyticsAccount}")
-	private String googleAnalyticsAccount;
+    @Value("${googleAnalyticsAccount}")
+    private String googleAnalyticsAccount;
 
-	@Autowired
-	public ExceptionHandler(UrlBuilder urlBuilder) {
-		this.urlBuilder = urlBuilder;
-	}
+    @Value("${sentryDNS}")
+    private String sentryDNS;
 
-	@Override
-	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response,
-			Object handler,
-			Exception e) {
+    private final SentryClient sentryClient;
 
-		log.debug("Handling exception of type: " + e.getClass());
-		if (e instanceof UnknownInstanceException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("unknownInstance");
-		}
-		if (e instanceof UnknownAvailabilityOptionException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof UnknownBoatException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof UnknownOutingException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof UnknownSquadException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof UnknownMemberException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof PermissionDeniedException) {
-			response.setStatus(HttpStatus.FORBIDDEN.value());
-			return new ModelAndView("403");
-		}
+    @Autowired
+    public ExceptionHandler(UrlBuilder urlBuilder) {
+        this.urlBuilder = urlBuilder;
+        this.sentryClient = SentryClientFactory.sentryClient(sentryDNS);
+    }
 
-		if (e instanceof SignedInMemberRequiredException) {
-			return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
-		}
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request,
+                                         HttpServletResponse response,
+                                         Object handler,
+                                         Exception e) {
+        log.debug("Handling exception of type: " + e.getClass());
+        if (e instanceof UnknownInstanceException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("unknownInstance");
+        }
+        if (e instanceof UnknownAvailabilityOptionException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("404");
+        }
+        if (e instanceof UnknownBoatException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("404");
+        }
+        if (e instanceof UnknownOutingException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("404");
+        }
+        if (e instanceof UnknownSquadException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("404");
+        }
+        if (e instanceof UnknownMemberException) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ModelAndView("404");
+        }
+        if (e instanceof PermissionDeniedException) {
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            return new ModelAndView("403");
+        }
 
-		log.error("Returning 500 error for path: " + request.getPathInfo(), e);
-		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
-	}
+        if (e instanceof SignedInMemberRequiredException) {
+            return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
+        }
 
-	@Override
-	public int getOrder() {
-		return Integer.MIN_VALUE;
-	}
+        log.error("Returning 500 error for path: " + request.getPathInfo(), e);
+        sentryClient.sendException(e);
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
+    }
+
+    @Override
+    public int getOrder() {
+        return Integer.MIN_VALUE;
+    }
 
 }
