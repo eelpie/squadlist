@@ -36,22 +36,16 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 			Object handler,
 			Exception e) {
 
-		log.info("Handling exception of type: " + e.getClass());
-
+		log.debug("Handling exception of type: " + e.getClass());
 		if (e instanceof UnknownInstanceException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("unknownInstance");
 		}
-
 		if (e instanceof UnknownAvailabilityOptionException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
 		}
 		if (e instanceof UnknownBoatException) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new ModelAndView("404");
-		}
-		if (e instanceof UnknownInstanceException) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
 		}
@@ -67,7 +61,6 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return new ModelAndView("404");
 		}
-
 		if (e instanceof PermissionDeniedException) {
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 			return new ModelAndView("403");
@@ -77,8 +70,8 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 			return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
 		}
 
+		log.error("Returning 500 error for path: " + request.getPathInfo(), e);
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		log.error("Returning 500 error", e);
 		return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
 	}
 
