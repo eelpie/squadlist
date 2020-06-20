@@ -77,8 +77,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
             return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
         }
 
-        log.error("Returning 500 error for path: " + request.getPathInfo(), e);
+        log.info("Sending sentry exception for path: " + request.getPathInfo(), e);
         sentryClient.sendException(e);
+
+        log.error("Returning 500 error for path: " + request.getPathInfo(), e);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
     }
