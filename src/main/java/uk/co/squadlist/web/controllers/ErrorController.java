@@ -32,7 +32,7 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
         }
 
         if (statusCode != null && statusCode == HttpStatus.NOT_FOUND.value()) {
-            log.info("404 page shown for path: " + path);
+            log.debug("404 page shown for path: " + path);
             return new ModelAndView("404");
         }
 
