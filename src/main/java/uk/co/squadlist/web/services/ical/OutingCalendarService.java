@@ -1,27 +1,19 @@
 package uk.co.squadlist.web.services.ical;
 
-import java.net.SocketException;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
+import com.google.common.base.Strings;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.TzId;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.Name;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
-import net.fortuna.ical4j.model.property.XProperty;
-import net.fortuna.ical4j.util.UidGenerator;
+import net.fortuna.ical4j.model.property.*;
+import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 
-import com.google.common.base.Strings;
+import java.net.SocketException;
+import java.util.List;
 
 @Component
 public class OutingCalendarService {
@@ -47,7 +39,7 @@ public class OutingCalendarService {
 		return calendar;
 	}
 
-	private VEvent buildEventFor(final Outing outing, String timeZone) throws SocketException {
+	private VEvent buildEventFor(final Outing outing, String timeZone) {
 		final VEvent outingEvent = new VEvent(new net.fortuna.ical4j.model.DateTime(outing.getDate()), ONE_HOUR, outing.getSquad().getName());
 
 		final TzId tzParam = new TzId(timeZone);
@@ -57,8 +49,8 @@ public class OutingCalendarService {
 			outingEvent.getProperties().add(new Description(outing.getNotes()));		
 		}
 
-		final UidGenerator ug = new UidGenerator(outing.getId());	// TODO how does this work - can we use the outing id?
-			outingEvent.getProperties().add(ug.generateUid());
+		Uid uid = new Uid(outing.getId());
+		outingEvent.getProperties().add(uid);
 		
 		return outingEvent;
 	}

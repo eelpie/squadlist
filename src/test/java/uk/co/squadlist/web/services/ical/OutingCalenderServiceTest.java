@@ -11,6 +11,7 @@ import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.model.Squad;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,8 @@ public class OutingCalenderServiceTest {
         squad.setName("A squad");
 
         Outing anOuting = new Outing();
+        String outingId = UUID.randomUUID().toString();
+        anOuting.setId(outingId);
         DateTime outingTime = new DateTime(2020, 6, 20, 8, 00, 0, DateTimeZone.forID("Europe/London"));
         anOuting.setDate(outingTime.toDate());
         anOuting.setSquad(squad);
@@ -43,6 +46,7 @@ public class OutingCalenderServiceTest {
         final String calenderOutput = calendar.toString();
         assertTrue(calenderOutput.contains("NAME:Some club outings"));
         assertTrue(calenderOutput.contains("DTSTART;TZID=Europe/London:20200620T080000"));
+        assertTrue(calenderOutput.contains("UID:" + outingId));
     }
 
 }
