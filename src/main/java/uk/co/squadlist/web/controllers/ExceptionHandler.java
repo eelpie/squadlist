@@ -14,6 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -77,10 +78,12 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
             return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
         }
 
-        log.info("Sending sentry exception for path: " + request.getPathInfo(), e);
+        String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
+
+        log.info("Sending sentry exception for path: " + path, e);
         sentryClient.sendException(e);
 
-        log.error("Returning 500 error for path: " + request.getPathInfo(), e);
+        log.error("Returning 500 error for path: " + path, e);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);
     }
