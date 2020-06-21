@@ -36,6 +36,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     @Autowired
     public ExceptionHandler(UrlBuilder urlBuilder) {
         this.urlBuilder = urlBuilder;
+        log.info("Setting up Sentry client with DSN: " + sentryDSN);
         this.sentryClient = SentryClientFactory.sentryClient(sentryDSN);
     }
 
