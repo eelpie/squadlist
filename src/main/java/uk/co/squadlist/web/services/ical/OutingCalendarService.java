@@ -9,7 +9,6 @@ import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 
-import java.net.SocketException;
 import java.time.Duration;
 import java.util.List;
 
@@ -18,28 +17,28 @@ public class OutingCalendarService {
 
 	private static final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
 
-	public Calendar buildCalendarFor(List<OutingAvailability> availability, Instance instance) throws SocketException {
+	public Calendar buildCalendarFor(List<OutingAvailability> availability, Instance instance) {
+        TimeZone timeZone = registry.getTimeZone(instance.getTimeZone());
+
 		final Calendar calendar = new Calendar();
 		calendar.getProperties().add(new ProdId("-//Squadlist//iCal4j 1.0//EN"));
 		calendar.getProperties().add(Version.VERSION_2_0);
 		calendar.getProperties().add(CalScale.GREGORIAN);
-		
+
 		final String name = instance.getName() + " outings";
 		calendar.getProperties().add(new Name(name));
 		calendar.getProperties().add(new XProperty("X-WR-CALNAME", name));	// TODO check source code for enum
 		calendar.getProperties().add(new XProperty("X-PUBLISHED-TTL", "PT1H"));
 		calendar.getProperties().add(new XProperty("REFRESH-INTERVAL;VALUE=DURATION", "P1H"));
-		
-		for (OutingAvailability outingAvailability : availability) {
-			final Outing outing = outingAvailability.getOuting();
-			calendar.getComponents().add(buildEventFor(outing, instance.getTimeZone()));
+
+        for (OutingAvailability outingAvailability : availability) {
+            final Outing outing = outingAvailability.getOuting();
+            calendar.getComponents().add(buildEventFor(outing, timeZone));
 		}
 		return calendar;
 	}
 
-	private VEvent buildEventFor(final Outing outing, String timeZoneId) {
-		TimeZone timeZone = registry.getTimeZone(timeZoneId);
-
+	private VEvent buildEventFor(final Outing outing, TimeZone timeZone) {
 		DateTime eventStartDate = new DateTime(outing.getDate());
 		eventStartDate.setTimeZone(timeZone);
 
