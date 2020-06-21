@@ -28,13 +28,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     @Value("${googleAnalyticsAccount}")
     private String googleAnalyticsAccount;
 
-    @Value("${sentryDSN}")
-    private String sentryDSN;
-
     private final SentryClient sentryClient;
 
     @Autowired
-    public ExceptionHandler(UrlBuilder urlBuilder) {
+    public ExceptionHandler(UrlBuilder urlBuilder, @Value("${sentryDSN}") String sentryDSN) {
         this.urlBuilder = urlBuilder;
         log.info("Setting up Sentry client with DSN: " + sentryDSN);
         this.sentryClient = SentryClientFactory.sentryClient(sentryDSN);
