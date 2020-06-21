@@ -1,11 +1,8 @@
 package uk.co.squadlist.web.services.ical;
 
 import com.google.common.base.Strings;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Dur;
-import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.parameter.TzId;
 import net.fortuna.ical4j.model.property.*;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.model.Instance;
@@ -13,12 +10,13 @@ import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.OutingAvailability;
 
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.List;
 
 @Component
 public class OutingCalendarService {
 
-	private static final Dur ONE_HOUR = new Dur(0, 1, 0, 0);
+	private static final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
 
 	public Calendar buildCalendarFor(List<OutingAvailability> availability, Instance instance) throws SocketException {
 		final Calendar calendar = new Calendar();
@@ -39,11 +37,17 @@ public class OutingCalendarService {
 		return calendar;
 	}
 
-	private VEvent buildEventFor(final Outing outing, String timeZone) {
-		final VEvent outingEvent = new VEvent(new net.fortuna.ical4j.model.DateTime(outing.getDate()), ONE_HOUR, outing.getSquad().getName());
+	private VEvent buildEventFor(final Outing outing, String timeZoneId) {
+		TimeZone timeZone = registry.getTimeZone(timeZoneId);
 
-		final TzId tzParam = new TzId(timeZone);
-		outingEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(tzParam);
+		DateTime eventStartDate = new DateTime(outing.getDate());
+		eventStartDate.setTimeZone(timeZone);
+
+		Duration eventDuration = Duration.ofMinutes(60);
+		String eventSummary = outing.getSquad().getName();
+
+		final VEvent outingEvent = new VEvent(eventStartDate, eventDuration, eventSummary);
+
 
 		if (!Strings.isNullOrEmpty(outing.getNotes())) {
 			outingEvent.getProperties().add(new Description(outing.getNotes()));		

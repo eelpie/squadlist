@@ -30,7 +30,7 @@ public class OutingCalenderServiceTest {
         DateTime outingTime = new DateTime(2020, 6, 20, 8, 00, 0, DateTimeZone.forID("Europe/London"));
         anOuting.setDate(outingTime.toDate());
         anOuting.setSquad(squad);
-
+        anOuting.setNotes("On the water for 8.30");
         OutingAvailability anOutingAvailability = new OutingAvailability();
         anOutingAvailability.setOuting(anOuting);
 
@@ -45,8 +45,10 @@ public class OutingCalenderServiceTest {
 
         final String calenderOutput = calendar.toString();
         assertTrue(calenderOutput.contains("NAME:Some club outings"));
-        assertTrue(calenderOutput.contains("DTSTART;TZID=Europe/London:20200620T080000"));
         assertTrue(calenderOutput.contains("UID:" + outingId));
+        assertTrue(calenderOutput.contains("DURATION:PT1H"));
+        assertTrue(calenderOutput.contains("DTSTART;TZID=Europe/London:20200620T080000"));
+        assertTrue(calenderOutput.contains("DESCRIPTION:On the water for 8.30"));
     }
 
 }
