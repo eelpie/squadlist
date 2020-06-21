@@ -24,6 +24,7 @@ public class OutingCalendarService {
 		calendar.getProperties().add(new ProdId("-//Squadlist//iCal4j 1.0//EN"));
 		calendar.getProperties().add(Version.VERSION_2_0);
 		calendar.getProperties().add(CalScale.GREGORIAN);
+		calendar.getComponents().add(timeZone.getVTimeZone());
 
 		final String name = instance.getName() + " outings";
 		calendar.getProperties().add(new Name(name));

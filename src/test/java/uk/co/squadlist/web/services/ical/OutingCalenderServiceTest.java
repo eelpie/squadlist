@@ -44,11 +44,16 @@ public class OutingCalenderServiceTest {
         Calendar calendar = outingCalendarService.buildCalendarFor(outingAvailabilities, instance);
 
         final String calenderOutput = calendar.toString();
+
         assertTrue(calenderOutput.contains("NAME:Some club outings"));
         assertTrue(calenderOutput.contains("UID:" + outingId));
         assertTrue(calenderOutput.contains("DURATION:PT1H"));
         assertTrue(calenderOutput.contains("DTSTART;TZID=Europe/London:20200620T080000"));
         assertTrue(calenderOutput.contains("DESCRIPTION:On the water for 8.30"));
+
+        // We need to define any timezones we later refer to in event dates
+        assertTrue(calenderOutput.contains("BEGIN:VTIMEZONE"));
+        assertTrue(calenderOutput.contains("TZID:Europe/London"));
     }
 
 }
