@@ -1,0 +1,21 @@
+#parse('includes/head.vm')
+#navTabs('Outings')
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-md-12">
+		<h4>Changes</h4>
+		</div>
+	</div>
+	<hr/>
+	
+	<div class="row">		
+		<div class="col-xs-12">			
+			$changes
+		</div>		
+	</div>
+</div>
+<hr/>			
+
+#parse('includes/footer.vm')
