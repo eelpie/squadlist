@@ -10,23 +10,23 @@ import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
-import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 
 @Component
 public class ViewFactory {
 
   private final LoggedInUserService loggedInUserService;
   private final OutingAvailabilityCountsService outingAvailabilityCountsService;
-  private final PreferedSquadService preferedSquadService;
+  private final PreferredSquadService preferredSquadService;
   private final GoverningBodyFactory governingBodyFactory;
   private final SquadlistApiFactory squadlistApiFactory;
 
   @Autowired
   public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
-                     PreferedSquadService preferedSquadService, GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
+                     PreferredSquadService preferredSquadService, GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
     this.loggedInUserService = loggedInUserService;
     this.outingAvailabilityCountsService = outingAvailabilityCountsService;
-    this.preferedSquadService = preferedSquadService;
+    this.preferredSquadService = preferredSquadService;
     this.governingBodyFactory = governingBodyFactory;
     this.squadlistApiFactory = squadlistApiFactory;
   }
@@ -48,7 +48,7 @@ public class ViewFactory {
     }
 
     try {
-      mv.addObject("preferredSquad", preferedSquadService.resolvedPreferedSquad(loggedInUser));
+      mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

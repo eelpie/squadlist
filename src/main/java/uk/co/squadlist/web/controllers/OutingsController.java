@@ -46,7 +46,7 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
@@ -66,7 +66,7 @@ public class OutingsController {
   private final InstanceSpecificApiClient instanceSpecificApiClient;
   private final UrlBuilder urlBuilder;
   private final DateFormatter dateFormatter;
-  private final PreferedSquadService preferedSquadService;
+  private final PreferredSquadService preferredSquadService;
   private final ViewFactory viewFactory;
   private final OutingAvailabilityCountsService outingAvailabilityCountsService;
   private final ActiveMemberFilter activeMemberFilter;
@@ -75,14 +75,14 @@ public class OutingsController {
 
   @Autowired
   public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder,
-                           DateFormatter dateFormatter, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+                           DateFormatter dateFormatter, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                            OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
                            CsvOutputRenderer csvOutputRenderer, SquadlistApiFactory squadlistApiFactory) throws IOException {
     this.loggedInUserService = loggedInUserService;
     this.instanceSpecificApiClient = instanceSpecificApiClient;
     this.urlBuilder = urlBuilder;
     this.dateFormatter = dateFormatter;
-    this.preferedSquadService = preferedSquadService;
+    this.preferredSquadService = preferredSquadService;
     this.viewFactory = viewFactory;
     this.outingAvailabilityCountsService = outingAvailabilityCountsService;
     this.activeMemberFilter = activeMemberFilter;
@@ -95,7 +95,7 @@ public class OutingsController {
                               @RequestParam(value = "month", required = false) String month) throws Exception {
     SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-    final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+    final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
     if (squadToShow == null) {
       mv.addObject("title", "Outings");
@@ -174,7 +174,7 @@ public class OutingsController {
   public ModelAndView newOuting() throws Exception {
     final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
     final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-    outingDefaults.setSquad(preferedSquadService.resolveSquad(null).getId());
+    outingDefaults.setSquad(preferredSquadService.resolveSquad(null).getId());
     return renderNewOutingForm(outingDefaults);
   }
 
@@ -319,7 +319,7 @@ public class OutingsController {
   }
 
   private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException, SignedInMemberRequiredException {
-    final Squad squad = preferedSquadService.resolveSquad(null);
+    final Squad squad = preferredSquadService.resolveSquad(null);
     return viewFactory.getViewForLoggedInUser("newOuting").
             addObject("squads", instanceSpecificApiClient.getSquads()).
             addObject("squad", squad).

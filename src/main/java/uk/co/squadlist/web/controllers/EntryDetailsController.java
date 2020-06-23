@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
-import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +31,7 @@ public class EntryDetailsController {
     private final static Logger log = Logger.getLogger(EntryDetailsController.class);
 
     private final InstanceSpecificApiClient instanceSpecificApiClient;
-    private final PreferedSquadService preferedSquadService;
+    private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;
     private final EntryDetailsModelPopulator entryDetailsModelPopulator;
     private final CsvOutputRenderer csvOutputRenderer;
@@ -41,12 +39,12 @@ public class EntryDetailsController {
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+    public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   EntryDetailsModelPopulator entryDetailsModelPopulator,
                                   CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory,
                                   LoggedInUserService loggedInUserService) {
         this.instanceSpecificApiClient = instanceSpecificApiClient;
-        this.preferedSquadService = preferedSquadService;
+        this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.entryDetailsModelPopulator = entryDetailsModelPopulator;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -56,7 +54,7 @@ public class EntryDetailsController {
 
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
-        final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
 
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
                 addObject("squads", instanceSpecificApiClient.getSquads()).
@@ -121,7 +119,7 @@ public class EntryDetailsController {
 
         viewFactory.getViewForLoggedInUser("entryDetails");  // TODO
 
-        final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
         List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);

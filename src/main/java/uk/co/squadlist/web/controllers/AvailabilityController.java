@@ -13,7 +13,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.*;
-import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -26,17 +26,17 @@ import java.util.Map;
 public class AvailabilityController {
 
     private final InstanceSpecificApiClient instanceSpecificApiClient;
-    private final PreferedSquadService preferedSquadService;
+    private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;
     private final ActiveMemberFilter activeMemberFilter;
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public AvailabilityController(InstanceSpecificApiClient instanceSpecificApiClient, PreferedSquadService preferedSquadService, ViewFactory viewFactory,
+    public AvailabilityController(InstanceSpecificApiClient instanceSpecificApiClient, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   ActiveMemberFilter activeMemberFilter,
                                   LoggedInUserService loggedInUserService) {
         this.instanceSpecificApiClient = instanceSpecificApiClient;
-        this.preferedSquadService = preferedSquadService;
+        this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.loggedInUserService = loggedInUserService;
@@ -56,7 +56,7 @@ public class AvailabilityController {
         ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
         mv.addObject("squads", instanceSpecificApiClient.getSquads());
 
-        final Squad squad = preferedSquadService.resolveSquad(squadId);
+        final Squad squad = preferredSquadService.resolveSquad(squadId);
 
         if (squad != null) {
             List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());

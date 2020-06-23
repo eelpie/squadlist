@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.model.Squad;
-import uk.co.squadlist.web.services.PreferedSquadService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
@@ -20,7 +20,7 @@ public class ContactsController {
 	private static Logger log = Logger.getLogger(ContactsController.class);
 
 	private InstanceSpecificApiClient api;
-	private PreferedSquadService preferedSquadService;
+	private PreferredSquadService preferredSquadService;
 	private ViewFactory viewFactory;
 	private ContactsModelPopulator contactsModelPopulator;
 
@@ -28,9 +28,9 @@ public class ContactsController {
 	}
 
 	@Autowired
-	public ContactsController(InstanceSpecificApiClient api, PreferedSquadService preferedSquadService, ViewFactory viewFactory, ContactsModelPopulator contactsModelPopulator) {
+	public ContactsController(InstanceSpecificApiClient api, PreferredSquadService preferredSquadService, ViewFactory viewFactory, ContactsModelPopulator contactsModelPopulator) {
 		this.api = api;
-		this.preferedSquadService = preferedSquadService;
+		this.preferredSquadService = preferredSquadService;
 		this.viewFactory = viewFactory;
 		this.contactsModelPopulator = contactsModelPopulator;
 	}
@@ -45,7 +45,7 @@ public class ContactsController {
 
 	@RequestMapping("/contacts/{squadId}")
     public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
-		final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
+		final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
 
     	final ModelAndView mv =  viewFactory.getViewForLoggedInUser("contacts");
     	final List<Squad> allSquads = api.getSquads();
