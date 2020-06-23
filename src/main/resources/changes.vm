@@ -11,8 +11,12 @@
 	<hr/>
 	
 	<div class="row">		
-		<div class="col-xs-12">			
-			$changes
+		<div class="col-xs-12">
+			#foreach($change in $changes)
+			    <h4>$change.title</h4>
+			    <p>$dateFormatter.dayMonthYear($change.date)</p>
+			    <p>$change.description</p>
+            #end
 		</div>		
 	</div>
 </div>
