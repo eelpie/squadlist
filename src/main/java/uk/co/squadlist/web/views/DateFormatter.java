@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.views;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -38,7 +39,8 @@ public class DateFormatter {
 	}
 
 	public String dayMonthYear(java.time.OffsetDateTime offsetDateTime) {
-		return getDateFormatter().dayMonthYear(new DateTime(offsetDateTime).toDate());
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM YYYY");
+		return formatter.format(offsetDateTime);
 	}
 
 	public String dayMonthYearTime(Date date) {
