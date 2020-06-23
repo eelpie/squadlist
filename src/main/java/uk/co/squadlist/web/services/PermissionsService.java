@@ -79,7 +79,7 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasOutingPermission(Member loggedInMember, Permission permission, String outingId) throws UnknownMemberException, UnknownOutingException {
+	public boolean hasOutingPermission(Member loggedInMember, Permission permission, String outingId) throws UnknownOutingException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}

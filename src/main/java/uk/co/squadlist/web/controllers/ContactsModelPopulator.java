@@ -32,84 +32,81 @@ import com.google.common.collect.Sets;
 @Component
 public class ContactsModelPopulator {
 
-	private static Function<Member, String> roleName = new Function<Member, String>() {
-		@Override
-		public String apply(Member obj) {
-			return obj.getRole();
-		}
-	};
+    private static Function<Member, String> roleName = new Function<Member, String>() {
+        @Override
+        public String apply(Member obj) {
+            return obj.getRole();
+        }
+    };
 
-	public ContactsModelPopulator() {
-	}
+    private static Function<Member, String> firstName = new Function<Member, String>() {
+        @Override
+        public String apply(Member obj) {
+            return obj.getFirstName();
+        }
+    };
 
-	private static Function<Member, String> firstName = new Function<Member, String>() {
-		@Override
-		public String apply(Member obj) {
-			return obj.getFirstName();
-		}
-	};
+    private static Function<Member, String> lastName = new Function<Member, String>() {
+        @Override
+        public String apply(Member obj) {
+            return obj.getLastName();
+        }
+    };
 
-	private static Function<Member, String> lastName = new Function<Member, String>() {
-		@Override
-		public String apply(Member obj) {
-			return obj.getLastName();
-		}
-	};
+    private final static Ordering<Member> byLastName = Ordering.natural().nullsLast().onResultOf(lastName);
+    private final static Ordering<Member> byFirstName = Ordering.natural().nullsLast().onResultOf(firstName);
+    private final static Ordering<Member> byRole = Ordering.natural().nullsLast().onResultOf(roleName);
+    private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
+    private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
-	private final static Ordering<Member> byLastName = Ordering.natural().nullsLast().onResultOf(lastName);
-	private final static Ordering<Member> byFirstName = Ordering.natural().nullsLast().onResultOf(firstName);
-	private final static Ordering<Member> byRole = Ordering.natural().nullsLast().onResultOf(roleName);
-	private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
-	private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
+    private InstanceSpecificApiClient instanceSpecificApiClient;
+    private LoggedInUserService loggedInUserService;
+    private PermissionsService permissionsService;
+    private ActiveMemberFilter activeMemberFilter;
+    private SquadlistApi squadlistApi;
 
-	private InstanceSpecificApiClient instanceSpecificApiClient;
-	private LoggedInUserService loggedInUserService;
-	private PermissionsService permissionsService;
-	private ActiveMemberFilter activeMemberFilter;
-	private SquadlistApi squadlistApi;
+    @Autowired
+    public ContactsModelPopulator(InstanceSpecificApiClient instanceSpecificApiClient, LoggedInUserService loggedInUserService, PermissionsService permissionsService,
+                                  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
+        this.instanceSpecificApiClient = instanceSpecificApiClient;
+        this.loggedInUserService = loggedInUserService;
+        this.permissionsService = permissionsService;
+        this.activeMemberFilter = activeMemberFilter;
+        this.squadlistApi = squadlistApiFactory.createClient();
+    }
 
-	@Autowired
-	public ContactsModelPopulator(InstanceSpecificApiClient instanceSpecificApiClient, LoggedInUserService loggedInUserService, PermissionsService permissionsService,
-								  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
-		this.instanceSpecificApiClient = instanceSpecificApiClient;
-		this.loggedInUserService = loggedInUserService;
-		this.permissionsService = permissionsService;
-		this.activeMemberFilter = activeMemberFilter;
-		this.squadlistApi = squadlistApiFactory.createClient();
-	}
-
-	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_CONTACT_DETAILS)
-	public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownMemberException, UnknownInstanceException, SignedInMemberRequiredException {
-		mv.addObject("title", squad.getName() + " contacts");
-		mv.addObject("squad", squad);
-
+    @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
+    public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownInstanceException, SignedInMemberRequiredException {
+		List<Member> squadMembers = squadlistApi.getSquadMembers(squad.getId());
 		Instance instance = instanceSpecificApiClient.getInstance();
-		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName; 
-		
-		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squad.getId())));
+		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
+
+		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
 		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
-		mv.addObject("members", redactedMembers);
-		
 		final Set<String> emails = Sets.newHashSet();
 		for (Member member : redactedMembers) {
 			if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
 				emails.add(member.getEmailAddress());
 			}
 		}
-		if (!emails.isEmpty()) {
-			mv.addObject("emails", Lists.newArrayList(emails));
-		}
-	}
-	
-	private List<Member> redactContentDetailsForMembers(Member loggedInMember, List<Member> members) {
-		List<Member> redactedMembers = Lists.newArrayList();
-		for (Member member : members) {
-			if (!permissionsService.canSeePhoneNumberForRower(loggedInMember, member)) {
-				member.setContactNumber(null);
-			}
-			redactedMembers.add(member);
-		}
-		return redactedMembers;
-	}
+
+		mv.addObject("title", squad.getName() + " contacts");
+		mv.addObject("squad", squad);
+		mv.addObject("members", redactedMembers);
+        if (!emails.isEmpty()) {
+            mv.addObject("emails", Lists.newArrayList(emails));
+        }
+    }
+
+    private List<Member> redactContentDetailsForMembers(Member loggedInMember, List<Member> members) {
+        List<Member> redactedMembers = Lists.newArrayList();
+        for (Member member : members) {
+            if (!permissionsService.canSeePhoneNumberForRower(loggedInMember, member)) {
+                member.setContactNumber(null);
+            }
+            redactedMembers.add(member);
+        }
+        return redactedMembers;
+    }
 
 }
