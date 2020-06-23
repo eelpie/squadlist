@@ -57,7 +57,6 @@ public class MembersController {
   private PermissionsService permissionsService;
   private GoverningBodyFactory governingBodyFactory;
   private SquadlistApiFactory squadlistApiFactory;
-  private SquadlistApi squadlistApi;
 
   public MembersController() {
   }
@@ -77,13 +76,12 @@ public class MembersController {
     this.permissionsService = permissionsService;
     this.governingBodyFactory = governingBodyFactory;
     this.squadlistApiFactory = squadlistApiFactory;
-    this.squadlistApi = squadlistApiFactory.createClient();
   }
 
   @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
   @RequestMapping("/member/{id}")
   public ModelAndView member(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member members = loggedInUserApi.getMember(id);
 
@@ -103,8 +101,9 @@ public class MembersController {
   @RequiresPermission(permission = Permission.ADD_MEMBER)
   @RequestMapping(value = "/member/new", method = RequestMethod.POST)
   public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
-    final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result);
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
+    final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
     if (result.hasErrors()) {
       log.info("New member submission has errors: " + result.getAllErrors());
       return renderNewMemberForm();
@@ -113,7 +112,7 @@ public class MembersController {
     final String initialPassword = passwordGenerator.generateRandomPassword(10);
 
     try {
-      final Member newMember = instanceSpecificApiClient.createMember(memberDetails.getFirstName(),
+      final Member newMember = instanceSpecificApiClient.createMember(memberDetails.getFirstName(), // TODO should be a user API client
               memberDetails.getLastName(),
               requestedSquads,
               memberDetails.getEmailAddress(),
@@ -145,7 +144,7 @@ public class MembersController {
     }
 
     final Member member = loggedInUserService.getLoggedInMember();
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     log.info("Requesting change password for member: " + member.getId());
     if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
@@ -159,7 +158,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
   public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
 
@@ -204,11 +203,11 @@ public class MembersController {
   @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.POST)
   public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
     log.info("Received edit member request: " + memberDetails);
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
 
-    final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result);
+    final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
     if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
       if (!governingBodyFactory.getGoverningBody().getPointsOptions().contains(memberDetails.getScullingPoints())) {
         result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));
@@ -282,7 +281,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.GET)
   public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
@@ -293,7 +292,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.POST)
   public ModelAndView makeInactive(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     log.info("Making member inactive: " + id);
     final Member member = loggedInUserApi.getMember(id);
@@ -306,7 +305,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.GET)
   public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
@@ -317,7 +316,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.POST)
   public ModelAndView delete(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
 
@@ -328,7 +327,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.GET)
   public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
 
@@ -340,7 +339,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.POST)
   public ModelAndView makeActive(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     log.info("Making member active: " + id);
     final Member member = loggedInUserApi.getMember(id);
@@ -351,8 +350,8 @@ public class MembersController {
 
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/edit/profileimage", method = RequestMethod.POST)
-  public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws UnknownMemberException, IOException {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+  public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws UnknownMemberException, IOException, SignedInMemberRequiredException {
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     log.info("Received update member profile image request: " + id);
     final Member member = loggedInUserApi.getMember(id);
@@ -407,7 +406,7 @@ public class MembersController {
     return mv;
   }
 
-  private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result) {
+  private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, SquadlistApi squadlistApi) {
     final List<Squad> squads = Lists.newArrayList();
     if (memberDetails.getSquads() == null) {
       return squads;
@@ -429,7 +428,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
   public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
     final Member member = loggedInUserApi.getMember(id);
     return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").addObject("member", member);
   }
@@ -437,7 +436,7 @@ public class MembersController {
   @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
   @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.POST)
   public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Member member = loggedInUserApi.getMember(id);
 

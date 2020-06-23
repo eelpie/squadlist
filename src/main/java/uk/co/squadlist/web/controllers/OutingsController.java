@@ -62,20 +62,16 @@ public class OutingsController {
 
   private final static Logger log = Logger.getLogger(OutingsController.class);
 
-  private LoggedInUserService loggedInUserService;
-  private InstanceSpecificApiClient instanceSpecificApiClient;
-  private UrlBuilder urlBuilder;
-  private DateFormatter dateFormatter;
-  private PreferedSquadService preferedSquadService;
-  private ViewFactory viewFactory;
-  private OutingAvailabilityCountsService outingAvailabilityCountsService;
-  private ActiveMemberFilter activeMemberFilter;
-  private CsvOutputRenderer csvOutputRenderer;
-  private SquadlistApiFactory squadlistApiFactory;
-  private SquadlistApi squadlistApi;
-
-  public OutingsController() {
-  }
+  private final LoggedInUserService loggedInUserService;
+  private final InstanceSpecificApiClient instanceSpecificApiClient;
+  private final UrlBuilder urlBuilder;
+  private final DateFormatter dateFormatter;
+  private final PreferedSquadService preferedSquadService;
+  private final ViewFactory viewFactory;
+  private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+  private final ActiveMemberFilter activeMemberFilter;
+  private final CsvOutputRenderer csvOutputRenderer;
+  private final SquadlistApiFactory squadlistApiFactory;
 
   @Autowired
   public OutingsController(LoggedInUserService loggedInUserService, InstanceSpecificApiClient instanceSpecificApiClient, UrlBuilder urlBuilder,
@@ -92,13 +88,12 @@ public class OutingsController {
     this.activeMemberFilter = activeMemberFilter;
     this.csvOutputRenderer = csvOutputRenderer;
     this.squadlistApiFactory = squadlistApiFactory;
-    this.squadlistApi = squadlistApiFactory.createClient();
   }
 
   @RequestMapping("/outings")
   public ModelAndView outings(@RequestParam(required = false, value = "squad") String squadId,
                               @RequestParam(value = "month", required = false) String month) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Squad squadToShow = preferedSquadService.resolveSquad(squadId);
     final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
@@ -127,7 +122,7 @@ public class OutingsController {
     mv.addObject("month", month);
     mv.addObject("outingMonths", getOutingMonthsFor(squadToShow));
 
-    final List<OutingWithSquadAvailability> squadOutings = squadlistApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
+    final List<OutingWithSquadAvailability> squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
     mv.addObject("outings", squadOutings);
     mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
 
@@ -137,7 +132,7 @@ public class OutingsController {
 
   @RequestMapping("/outings/{id}")
   public ModelAndView outing(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
 
@@ -148,17 +143,17 @@ public class OutingsController {
     mv.addObject("squad", outing.getSquad());
     mv.addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.getId()));
     mv.addObject("squads", instanceSpecificApiClient.getSquads());
-    mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(outing.getSquad().getId())));
+    mv.addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.getSquad().getId())));
     mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
     return mv;
   }
 
   @RequestMapping("/outings/{id}.csv")
   public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
-    final List<Member> squadMembers = squadlistApi.getSquadMembers(outing.getSquad().getId());
+    final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
     final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(outing.getId());
 
     final List<List<String>> rows = Lists.newArrayList();
@@ -186,16 +181,18 @@ public class OutingsController {
   @RequiresPermission(permission = Permission.ADD_OUTING)
   @RequestMapping(value = "/outings/new", method = RequestMethod.POST)
   public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+
     if (result.hasErrors()) {
       return renderNewOutingForm(outingDetails);
     }
 
     try {
-      final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
+      final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance(), loggedInUserApi);
       if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
-        squadlistApi.createOuting(newOuting, outingDetails.getRepeatsCount());
+        loggedInUserApi.createOuting(newOuting, outingDetails.getRepeatsCount());
       } else {
-        squadlistApi.createOuting(newOuting, null);
+        loggedInUserApi.createOuting(newOuting, null);
       }
 
       final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
@@ -214,7 +211,7 @@ public class OutingsController {
   @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
   @RequestMapping(value = "/outings/{id}/edit", method = RequestMethod.GET)
   public ModelAndView outingEdit(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
 
@@ -228,7 +225,7 @@ public class OutingsController {
   @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
   @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.GET)
   public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
     final Outing outing = loggedInUserApi.getOuting(id);
     return viewFactory.getViewForLoggedInUser("deleteOuting").addObject("outing", outing);
   }
@@ -236,10 +233,10 @@ public class OutingsController {
   @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
   @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.POST)
   public ModelAndView deleteOuting(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
     final Outing outing = loggedInUserApi.getOuting(id);
 
-    squadlistApi.deleteOuting(outing.getId());
+    loggedInUserApi.deleteOuting(outing.getId());
 
     final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
     return new ModelAndView(new RedirectView(exitUrl));
@@ -248,7 +245,7 @@ public class OutingsController {
   @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
   @RequestMapping(value = "/outings/{id}/close", method = RequestMethod.GET)
   public ModelAndView closeOuting(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
 
@@ -262,7 +259,7 @@ public class OutingsController {
   @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
   @RequestMapping(value = "/outings/{id}/reopen", method = RequestMethod.GET)
   public ModelAndView reopenOuting(@PathVariable String id) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
 
@@ -277,14 +274,14 @@ public class OutingsController {
   @RequestMapping(value = "/outings/{id}/edit", method = RequestMethod.POST)
   public ModelAndView editOutingSubmit(@PathVariable String id,
                                        @Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(id);
     if (result.hasErrors()) {
       return renderEditOutingForm(outingDetails, outing);
     }
     try {
-      final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance());
+      final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instanceSpecificApiClient.getInstance(), loggedInUserApi);
       updatedOuting.setId(id);
 
       loggedInUserApi.updateOuting(updatedOuting);
@@ -305,7 +302,7 @@ public class OutingsController {
   public ModelAndView updateAvailability(
           @RequestParam(value = "outing", required = true) String outingId,
           @RequestParam(value = "availability", required = true) String availability) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final Outing outing = loggedInUserApi.getOuting(outingId);
 
@@ -322,24 +319,22 @@ public class OutingsController {
   }
 
   private ModelAndView renderNewOutingForm(OutingDetails outingDetails) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException, SignedInMemberRequiredException {
-    final ModelAndView mv = viewFactory.getViewForLoggedInUser("newOuting");
-    mv.addObject("squads", instanceSpecificApiClient.getSquads());
     final Squad squad = preferedSquadService.resolveSquad(null);
-    mv.addObject("squad", squad);
-    mv.addObject("outingMonths", getOutingMonthsFor(squad));
-    mv.addObject("outing", outingDetails);
-    return mv;
+    return viewFactory.getViewForLoggedInUser("newOuting").
+            addObject("squads", instanceSpecificApiClient.getSquads()).
+            addObject("squad", squad).
+            addObject("outingMonths", getOutingMonthsFor(squad)).
+            addObject("outing", outingDetails);
   }
 
   private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing) throws UnknownMemberException, UnknownSquadException, UnknownInstanceException, SignedInMemberRequiredException {
-    final ModelAndView mv = viewFactory.getViewForLoggedInUser("editOuting");
-    mv.addObject("squads", instanceSpecificApiClient.getSquads());
-    mv.addObject("squad", outing.getSquad());
-    mv.addObject("outing", outingDetails);
-    mv.addObject("outingObject", outing);
-    mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad()));
-    mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
-    return mv;
+    return viewFactory.getViewForLoggedInUser("editOuting").
+            addObject("squads", instanceSpecificApiClient.getSquads()).
+            addObject("squad", outing.getSquad()).
+            addObject("outing", outingDetails).
+            addObject("outingObject", outing).
+            addObject("outingMonths", getOutingMonthsFor(outing.getSquad())).
+            addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));
   }
 
   private AvailabilityOption getAvailabilityOptionById(String availabilityId) throws JsonParseException, JsonMappingException, HttpFetchException, IOException, UnknownAvailabilityOptionException {
@@ -353,9 +348,9 @@ public class OutingsController {
     return instanceSpecificApiClient.getOutingMonths(squad);
   }
 
-  private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance) throws UnknownSquadException {
+  private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance, SquadlistApi loggedInUserApi) throws UnknownSquadException {
     Date date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate();
-    Squad squad = outingDetails.getSquad() != null ? squadlistApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
+    Squad squad = outingDetails.getSquad() != null ? loggedInUserApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
     String notes = outingDetails.getNotes();
     return new Outing(squad, date, notes);
   }

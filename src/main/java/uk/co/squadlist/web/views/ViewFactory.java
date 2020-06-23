@@ -33,7 +33,7 @@ public class ViewFactory {
 
   public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException {
     final Member loggedInUser = loggedInUserService.getLoggedInMember();
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     final ModelAndView mv = new ModelAndView(templateName);
     mv.addObject("loggedInUser", loggedInUser.getId());

@@ -71,7 +71,7 @@ public class EntryDetailsController {
 
   @RequestMapping("/entrydetails/ajax")
   public ModelAndView ajax(@RequestBody String json) throws Exception {
-    SquadlistApi loggedInUserApi = squadlistApiFactory.createForToken(loggedInUserService.getLoggedInMembersToken());
+    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
     List<Member> selectedMembers = Lists.newArrayList();
 

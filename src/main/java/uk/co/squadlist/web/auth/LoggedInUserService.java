@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
 
@@ -17,11 +19,13 @@ public class LoggedInUserService {
 	private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
 
     private final InstanceSpecificApiClient api;
+	private final SquadlistApiFactory squadlistApiFactory;
 	private final HttpServletRequest request;
 
     @Autowired
-	public LoggedInUserService(InstanceSpecificApiClient api, HttpServletRequest request) {
+	public LoggedInUserService(InstanceSpecificApiClient api, SquadlistApiFactory squadlistApiFactory, HttpServletRequest request) {
 		this.api = api;
+		this.squadlistApiFactory = squadlistApiFactory;
 		this.request = request;
 	}
 
@@ -38,7 +42,16 @@ public class LoggedInUserService {
 		throw new SignedInMemberRequiredException();
 	}
 
-	public String getLoggedInMembersToken() {
+	public SquadlistApi getApiClientForLoggedInUser() throws SignedInMemberRequiredException {
+		final String token = getLoggedInMembersToken();
+		if (token == null) {
+			log.debug("No signed in user token found");
+			throw new SignedInMemberRequiredException();
+		}
+		return squadlistApiFactory.createForToken(token);
+	}
+
+	private String getLoggedInMembersToken() {
 		return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
 	}
 
