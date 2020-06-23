@@ -44,9 +44,8 @@ public class AvailabilityController {
 
     @RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
-        ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
-        mv.addObject("squads", instanceSpecificApiClient.getSquads());
-        return mv;
+        return viewFactory.getViewForLoggedInUser("availability").
+                addObject("squads", instanceSpecificApiClient.getSquads());
     }
 
     @RequestMapping("/availability/{squadId}")

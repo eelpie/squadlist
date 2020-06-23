@@ -54,12 +54,13 @@ public class EntryDetailsController {
 
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
+        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
 
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
                 addObject("squads", instanceSpecificApiClient.getSquads()).
                 addObject("governingBody", governingBodyFactory.getGoverningBody());
-        entryDetailsModelPopulator.populateModel(squadToShow, mv);
+        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv);
         return mv;
     }
 

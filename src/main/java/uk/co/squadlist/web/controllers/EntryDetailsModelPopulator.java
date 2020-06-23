@@ -1,17 +1,11 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
@@ -20,7 +14,8 @@ import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateFormatter;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class EntryDetailsModelPopulator {
@@ -28,29 +23,24 @@ public class EntryDetailsModelPopulator {
 	private DateFormatter dateFormatter;
 	private ActiveMemberFilter activeMemberFilter;
 	private GoverningBodyFactory governingBodyFactory;
-	private SquadlistApi squadlistApi;
-
-	public EntryDetailsModelPopulator() {
-	}
 
 	@Autowired
 	public EntryDetailsModelPopulator(DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter,
-									  GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) throws IOException {
+									  GoverningBodyFactory governingBodyFactory) {
 		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
 		this.governingBodyFactory = governingBodyFactory;
-		this.squadlistApi = squadlistApiFactory.createClient();
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public void populateModel(final Squad squadToShow, final ModelAndView mv) {
+	public void populateModel(final Squad squadToShow, SquadlistApi squadlistApi, final ModelAndView mv) {
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
     	mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public List<List<String>> getEntryDetailsRows(Squad squadToShow) {
+	public List<List<String>> getEntryDetailsRows(Squad squadToShow, SquadlistApi squadlistApi) {
 		return getEntryDetailsRows(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
 	}
 
