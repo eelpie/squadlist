@@ -47,8 +47,6 @@ public class OutingCalendarService {
 		String eventSummary = outing.getSquad().getName();
 
 		final VEvent outingEvent = new VEvent(eventStartDate, eventDuration, eventSummary);
-
-
 		if (!Strings.isNullOrEmpty(outing.getNotes())) {
 			outingEvent.getProperties().add(new Description(outing.getNotes()));		
 		}

@@ -28,13 +28,17 @@ public class DateFormatter {
 		final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);
 		return monthDateTime.toString("MMM yyyy");
 	}
-	
+
 	public String dayMonthTime(Date date) {
 		return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
 	}
 	
 	public String dayMonthYear(Date date) {
 		return getDateFormatter().dayMonthYear(date);
+	}
+
+	public String dayMonthYear(java.time.OffsetDateTime offsetDateTime) {
+		return getDateFormatter().dayMonthYear(new DateTime(offsetDateTime).toDate());
 	}
 
 	public String dayMonthYearTime(Date date) {
