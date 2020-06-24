@@ -42,20 +42,14 @@ public class SquadsController {
 
     private final static Splitter COMMA_SPLITTER = Splitter.on(",");
 
-    private final InstanceSpecificApiClient instanceSpecificApiClient;
     private final UrlBuilder urlBuilder;
     private final ViewFactory viewFactory;
-    private final InstanceConfig instanceConfig;
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public SquadsController(InstanceSpecificApiClient instanceSpecificApiClient,
-                            UrlBuilder urlBuilder, ViewFactory viewFactory,
-                            InstanceConfig instanceConfig, LoggedInUserService loggedInUserService) {
-        this.instanceSpecificApiClient = instanceSpecificApiClient;
+    public SquadsController(UrlBuilder urlBuilder, ViewFactory viewFactory, LoggedInUserService loggedInUserService) {
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
-        this.instanceConfig = instanceConfig;
         this.loggedInUserService = loggedInUserService;
     }
 
@@ -66,16 +60,14 @@ public class SquadsController {
 
     @RequestMapping(value = "/squad/new", method = RequestMethod.POST)
     public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownInstanceException, SignedInMemberRequiredException {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         if (result.hasErrors()) {
             return renderNewSquadForm(squadDetails);
         }
 
         try {
-            Instance instance = loggedInUserApi.getInstance(instanceConfig.getInstance());
-            loggedInUserApi.createSquad(instance, squadDetails.getName());
-
+            loggedInUserApi.createSquad(squadDetails.getName());
             return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
 
         } catch (InvalidSquadException e) {
@@ -87,8 +79,8 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.GET)
-    public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
         return viewFactory.getViewForLoggedInUser("deleteSquadPrompt").addObject("squad", squad).addObject("title", "Delete squad");
@@ -97,7 +89,7 @@ public class SquadsController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.POST)
     public ModelAndView delete(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
         loggedInUserApi.deleteSquad(squad);
@@ -105,8 +97,8 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.GET)
-    public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
 
@@ -117,8 +109,8 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.POST)
-    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, IOException, HttpFetchException, SignedInMemberRequiredException {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, IOException, HttpFetchException, SignedInMemberRequiredException, UnknownInstanceException {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
         if (result.hasErrors()) {
@@ -136,20 +128,20 @@ public class SquadsController {
         return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
     }
 
-    private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException {
+    private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
         return viewFactory.getViewForLoggedInUser("newSquad").addObject("squadDetails", squadDetails);
     }
 
-    private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails, SquadlistApi squadlistApi) throws SignedInMemberRequiredException {
+    private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails, InstanceSpecificApiClient squadlistApi) throws SignedInMemberRequiredException, UnknownInstanceException {
         final List<Member> squadMembers = squadlistApi.getSquadMembers(squad.getId());
-        final List<Member> availableMembers = instanceSpecificApiClient.getMembers();
+        final List<Member> availableMembers = squadlistApi.getMembers();
         availableMembers.removeAll(squadMembers);
 
         return viewFactory.getViewForLoggedInUser("editSquad").
                 addObject("squad", squad).
-				addObject("squadDetails", squadDetails).
-				addObject("squadMembers", squadMembers).
-				addObject("availableMembers", availableMembers);
+                addObject("squadDetails", squadDetails).
+                addObject("squadMembers", squadMembers).
+                addObject("availableMembers", availableMembers);
     }
 
 }

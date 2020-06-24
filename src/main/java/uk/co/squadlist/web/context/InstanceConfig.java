@@ -33,6 +33,9 @@ public class InstanceConfig {
 
 		final String requestHost = requestHostService.getRequestHost();
 		log.debug("Request host is: " + requestHost);
+		if (requestHost == null) {
+			throw new RuntimeException("No vhost header seen and no manual host configured");
+		}
 
 		final String vhostName = requestHost.split("\\.")[0];
 		log.debug("Request vhost is: " + vhostName);

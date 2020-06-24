@@ -7,35 +7,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class GoverningBodyController {
 
-	private GoverningBodyFactory governingBodyFactory;
-	private ViewFactory viewFactory;
-	
-	public GoverningBodyController() {
-	}
-	
-	@Autowired
-	public GoverningBodyController(GoverningBodyFactory governingBodyFactory, ViewFactory viewFactory) {
-		this.governingBodyFactory = governingBodyFactory;
-		this.viewFactory = viewFactory;
-	}
-	
-	@RequestMapping(value="/governing-body/british-rowing", method=RequestMethod.GET)
-    public ModelAndView member() throws Exception {		
-		final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
+    private final GoverningBodyFactory governingBodyFactory;
+    private final ViewFactory viewFactory;
 
-		final ModelAndView mv = viewFactory.getViewForLoggedInUser("governingBody");
-		mv.addObject("governingBody", governingBody);
-    	mv.addObject("title", governingBody.getName());
-		mv.addObject("ageGrades", governingBody.getAgeGrades());
-    	mv.addObject("statuses", governingBody.getStatusPoints());
-    	mv.addObject("boatSizes", governingBody.getBoatSizes());
-    	return mv;
+    @Autowired
+    public GoverningBodyController(GoverningBodyFactory governingBodyFactory, ViewFactory viewFactory) {
+        this.governingBodyFactory = governingBodyFactory;
+        this.viewFactory = viewFactory;
     }
-	
+
+    @RequestMapping(value = "/governing-body/british-rowing", method = RequestMethod.GET)
+    public ModelAndView member() throws Exception {
+        final GoverningBody governingBody = governingBodyFactory.governingBodyFor("british-rowing");  // TODO take from path
+
+        return viewFactory.getViewForLoggedInUser("governingBody").
+                addObject("governingBody", governingBody).
+                addObject("title", governingBody.getName()).
+                addObject("ageGrades", governingBody.getAgeGrades()).
+                addObject("statuses", governingBody.getStatusPoints()).
+                addObject("boatSizes", governingBody.getBoatSizes());
+    }
+
 }

@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -35,7 +36,7 @@ public class OutingAvailabilityCountsService {
 		return results;
 	}
 
-	public int getPendingOutingsCountFor(String memberId, SquadlistApi api) {
+	public int getPendingOutingsCountFor(String memberId, InstanceSpecificApiClient api) {
 		int pendingCount = 0;
 		for (OutingAvailability outingAvailability : api.getAvailabilityFor(memberId, 
 				DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.oneYearFromNow().toDate())) {

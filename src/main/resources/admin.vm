@@ -160,26 +160,6 @@
 			</ul>
 			
 			<hr/>
-			<h4>Issues</h4>
-			
-			#if(!$openIssues.isEmpty())
-				<p>Currently known issues:</p>
-				<ul>
-				#foreach($issue in $openIssues) 
-					<li>$issue.title</li>
-				#end
-				</ul>
-			#end
-			
-			#if(!$closedIssues.isEmpty())
-				<p>Recently resolved issues:</p>
-				<ul>
-				#foreach($issue in $closedIssues) 
-					<li>$issue.title</li>
-				#end
-				</ul>
-			#end
-						
 		</div>
 	</div>
 	

@@ -1,14 +1,10 @@
 package uk.co.squadlist.web.services;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -16,26 +12,28 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
 
+import java.io.IOException;
+import java.util.List;
+
 @Component
 public class PermissionsService {
 
 	private static final String REP = "Rep";
 	private static final String COACH = "Coach";	// TODO push to an enum
 
-	private InstanceSpecificApiClient instanceSpecificApiClient;
-	private SquadlistApi squadlistApi;
+	private final SquadlistApi squadlistApi;
+	private final InstanceConfig instanceConfig;
 
 	@Autowired
-	public PermissionsService(InstanceSpecificApiClient instanceSpecificApiClient, SquadlistApiFactory squadlistApiFactory) throws IOException {
-		this.instanceSpecificApiClient = instanceSpecificApiClient;
+	public PermissionsService(SquadlistApiFactory squadlistApiFactory, InstanceConfig instanceConfig) throws IOException {
 		this.squadlistApi = squadlistApiFactory.createClient();
+		this.instanceConfig = instanceConfig;
 	}
 
 	public boolean hasPermission(Member loggedInMember, Permission permission) throws UnknownMemberException {
 		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
 			return true;
 		}
-
 		if (permission == Permission.ADD_MEMBER) {
 			return canAddNewMember(loggedInMember);
 		}
@@ -225,7 +223,7 @@ public class PermissionsService {
 	}
 
 	private boolean canSeeEntryFormDetails(Member loggedInMember) {
-		List<Squad> squads = instanceSpecificApiClient.getSquads();
+		List<Squad> squads = squadlistApi.getSquads(instanceConfig.getInstance());
 		for (Squad squad : squads) {
 			if (canSeeEntryFormDetailsForSquad(loggedInMember, squad)) {
 				return true;

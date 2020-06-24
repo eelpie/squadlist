@@ -6,61 +6,67 @@ import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @Component
 public class LoggedInUserService {
 
-	private final static Logger log = Logger.getLogger(LoggedInUserService.class);
+    private final static Logger log = Logger.getLogger(LoggedInUserService.class);
 
-	private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
+    private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
 
-    private final InstanceSpecificApiClient api;
-	private final SquadlistApiFactory squadlistApiFactory;
-	private final HttpServletRequest request;
+    private final SquadlistApiFactory squadlistApiFactory;
+    private final InstanceConfig instanceConfig;
+    private final HttpServletRequest request;
+    private final SquadlistApi api;
 
     @Autowired
-	public LoggedInUserService(InstanceSpecificApiClient api, SquadlistApiFactory squadlistApiFactory, HttpServletRequest request) {
-		this.api = api;
-		this.squadlistApiFactory = squadlistApiFactory;
-		this.request = request;
-	}
+    public LoggedInUserService(SquadlistApiFactory squadlistApiFactory,
+                               InstanceConfig instanceConfig,
+                               HttpServletRequest request) throws IOException {
+        this.api = squadlistApiFactory.createClient();
+        this.squadlistApiFactory = squadlistApiFactory;
+        this.instanceConfig = instanceConfig;
+        this.request = request;
+    }
 
-	public Member getLoggedInMember() throws SignedInMemberRequiredException {
-		String token = getLoggedInMembersToken();
-		if (token != null) {
-			log.debug("Found signed in user token; need to verify: " + token);
-			Member verifiedMember = api.verify(token);
-			log.debug("Verified member: "+ verifiedMember);
-			return verifiedMember;
-		}
+    public Member getLoggedInMember() throws SignedInMemberRequiredException {
+        String token = getLoggedInMembersToken();
+        if (token != null) {
+            log.debug("Found signed in user token; need to verify: " + token);
+            Member verifiedMember = api.verify(token);
+            log.debug("Verified member: " + verifiedMember);
+            return verifiedMember;
+        }
 
-		log.debug("No signed in user token found");
-		throw new SignedInMemberRequiredException();
-	}
+        log.debug("No signed in user token found");
+        throw new SignedInMemberRequiredException();
+    }
 
-	public SquadlistApi getApiClientForLoggedInUser() throws SignedInMemberRequiredException {
-		final String token = getLoggedInMembersToken();
-		if (token == null) {
-			log.debug("No signed in user token found");
-			throw new SignedInMemberRequiredException();
-		}
-		return squadlistApiFactory.createForToken(token);
-	}
+    public InstanceSpecificApiClient getApiClientForLoggedInUser() throws SignedInMemberRequiredException {
+        final String token = getLoggedInMembersToken();
+        if (token == null) {
+            log.debug("No signed in user token found");
+            throw new SignedInMemberRequiredException();
+        }
+        return new InstanceSpecificApiClient(squadlistApiFactory.createForToken(token), instanceConfig.getInstance());
+    }
 
-	private String getLoggedInMembersToken() {
-		return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
-	}
+    private String getLoggedInMembersToken() {
+        return (String) request.getSession().getAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+    }
 
-	public void setSignedIn(String token) {
-		request.getSession().setAttribute(SIGNED_IN_USER_ACCESS_TOKEN, token);
-	}
+    public void setSignedIn(String token) {
+        request.getSession().setAttribute(SIGNED_IN_USER_ACCESS_TOKEN, token);
+    }
 
-	public void cleanSignedIn() {
-		request.getSession().removeAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
-	}
+    public void cleanSignedIn() {
+        request.getSession().removeAttribute(SIGNED_IN_USER_ACCESS_TOKEN);
+    }
 
 }

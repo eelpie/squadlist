@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -22,31 +23,27 @@ public class EntryDetailsModelPopulator {
 
 	private DateFormatter dateFormatter;
 	private ActiveMemberFilter activeMemberFilter;
-	private GoverningBodyFactory governingBodyFactory;
 
 	@Autowired
-	public EntryDetailsModelPopulator(DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter,
-									  GoverningBodyFactory governingBodyFactory) {
+	public EntryDetailsModelPopulator(DateFormatter dateFormatter, ActiveMemberFilter activeMemberFilter) {
 		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
-		this.governingBodyFactory = governingBodyFactory;
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public void populateModel(final Squad squadToShow, SquadlistApi squadlistApi, final ModelAndView mv) {
+	public void populateModel(final Squad squadToShow, InstanceSpecificApiClient squadlistApi, final ModelAndView mv) {
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
     	mv.addObject("members", activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public List<List<String>> getEntryDetailsRows(Squad squadToShow, SquadlistApi squadlistApi) {
-		return getEntryDetailsRows(activeMemberFilter.extractActive(squadlistApi.getSquadMembers(squadToShow.getId())));
+	public List<List<String>> getEntryDetailsRows(Squad squadToShow, SquadlistApi squadlistApi, GoverningBody governingBody) {
+		List<Member> squadMembers = squadlistApi.getSquadMembers(squadToShow.getId());
+		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody);
 	}
 
-	public List<List<String>> getEntryDetailsRows(List<Member> members) {	// TOOD permissions
-		final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
-
+	public List<List<String>> getEntryDetailsRows(List<Member> members, GoverningBody governingBody) {	// TOOD permissions
 		final List<List<String>> rows = Lists.newArrayList();
 		for (Member member : members) {
     		final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;

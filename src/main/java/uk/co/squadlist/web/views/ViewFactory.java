@@ -3,11 +3,14 @@ package uk.co.squadlist.web.views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -15,44 +18,42 @@ import uk.co.squadlist.web.services.PreferredSquadService;
 @Component
 public class ViewFactory {
 
-  private final LoggedInUserService loggedInUserService;
-  private final OutingAvailabilityCountsService outingAvailabilityCountsService;
-  private final PreferredSquadService preferredSquadService;
-  private final GoverningBodyFactory governingBodyFactory;
-  private final SquadlistApiFactory squadlistApiFactory;
+    private final LoggedInUserService loggedInUserService;
+    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+    private final PreferredSquadService preferredSquadService;
+    private final GoverningBodyFactory governingBodyFactory;
 
-  @Autowired
-  public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
-                     PreferredSquadService preferredSquadService, GoverningBodyFactory governingBodyFactory, SquadlistApiFactory squadlistApiFactory) {
-    this.loggedInUserService = loggedInUserService;
-    this.outingAvailabilityCountsService = outingAvailabilityCountsService;
-    this.preferredSquadService = preferredSquadService;
-    this.governingBodyFactory = governingBodyFactory;
-    this.squadlistApiFactory = squadlistApiFactory;
-  }
-
-  public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException {
-    final Member loggedInUser = loggedInUserService.getLoggedInMember();
-    SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-
-    final ModelAndView mv = new ModelAndView(templateName);
-    mv.addObject("loggedInUser", loggedInUser.getId());
-    final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);  // TODO should be a post handler?
-    if (pendingOutingsCountFor > 0) {
-      mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
+    @Autowired
+    public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
+                       PreferredSquadService preferredSquadService, GoverningBodyFactory governingBodyFactory) {
+        this.loggedInUserService = loggedInUserService;
+        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+        this.preferredSquadService = preferredSquadService;
+        this.governingBodyFactory = governingBodyFactory;
     }
 
-    final int memberDetailsProblems = governingBodyFactory.getGoverningBody().checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-    if (memberDetailsProblems > 0) {
-      mv.addObject("memberDetailsProblems", memberDetailsProblems);
-    }
+    public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException, UnknownInstanceException {
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-    try {
-      mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+        final ModelAndView mv = new ModelAndView(templateName);
+        mv.addObject("loggedInUser", loggedInUser.getId());
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);  // TODO should be a post handler?
+        if (pendingOutingsCountFor > 0) {
+            mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
+        }
+
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+        if (memberDetailsProblems > 0) {
+            mv.addObject("memberDetailsProblems", memberDetailsProblems);
+        }
+
+        try {
+            mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return mv;
     }
-    return mv;
-  }
 
 }

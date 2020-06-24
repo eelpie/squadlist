@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
@@ -23,9 +24,9 @@ public class PermissionsServiceTest {
 	private static final String ROWER_ID = "auser";
 	
 	@Mock
-	private InstanceSpecificApiClient instanceSpecificApiClient;
-	@Mock
 	private SquadlistApiFactory squadlistApiFactory;
+	@Mock
+	private InstanceConfig instanceConfig;
 	@Mock
 	private SquadlistApi squadlistApi;
 
@@ -34,7 +35,9 @@ public class PermissionsServiceTest {
 	private Member rower;
 
 	private PermissionsService permissionsService;
-	
+
+
+
 	@Before
 	public void setup() throws UnknownMemberException, IOException {
 		MockitoAnnotations.initMocks(this);
@@ -55,7 +58,7 @@ public class PermissionsServiceTest {
 
 		when(squadlistApiFactory.createClient()).thenReturn(squadlistApi);
 				
-		this.permissionsService = new PermissionsService(instanceSpecificApiClient, squadlistApiFactory);
+		this.permissionsService = new PermissionsService(squadlistApiFactory, instanceConfig);
 	}
 
 	@Test

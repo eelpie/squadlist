@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.*;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -25,17 +24,15 @@ import java.util.Map;
 @Controller
 public class AvailabilityController {
 
-    private final InstanceSpecificApiClient instanceSpecificApiClient;
     private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;
     private final ActiveMemberFilter activeMemberFilter;
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public AvailabilityController(InstanceSpecificApiClient instanceSpecificApiClient, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
+    public AvailabilityController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   ActiveMemberFilter activeMemberFilter,
                                   LoggedInUserService loggedInUserService) {
-        this.instanceSpecificApiClient = instanceSpecificApiClient;
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
@@ -44,18 +41,19 @@ public class AvailabilityController {
 
     @RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         return viewFactory.getViewForLoggedInUser("availability").
-                addObject("squads", instanceSpecificApiClient.getSquads());
+                addObject("squads", loggedInUserApi.getSquads());
     }
 
     @RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
-        mv.addObject("squads", instanceSpecificApiClient.getSquads());
+        mv.addObject("squads", loggedInUserApi.getSquads());
 
-        final Squad squad = preferredSquadService.resolveSquad(squadId);
+        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
 
         if (squad != null) {
             List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());
@@ -79,11 +77,11 @@ public class AvailabilityController {
             }
 
             final List<OutingWithSquadAvailability> squadAvailability = loggedInUserApi.getSquadAvailability(squad.getId(), startDate, endDate);
-            final List<Outing> outings = instanceSpecificApiClient.getSquadOutings(squad, startDate, endDate);
+            final List<Outing> outings = loggedInUserApi.getSquadOutings(squad, startDate, endDate);
 
             mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
             mv.addObject("outings", outings);
-            mv.addObject("outingMonths", instanceSpecificApiClient.getOutingMonths(squad));
+            mv.addObject("outingMonths", loggedInUserApi.getOutingMonths(squad));
             mv.addObject("month", month);
         }
         return mv;
