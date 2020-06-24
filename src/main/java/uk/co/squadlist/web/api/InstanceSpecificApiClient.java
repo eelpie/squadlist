@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.context.InstanceConfig;
@@ -20,132 +19,107 @@ import java.util.Set;
 @Component
 public class InstanceSpecificApiClient {
 
-	private final static Logger log = Logger.getLogger(InstanceSpecificApiClient.class);
+    private final static Logger log = Logger.getLogger(InstanceSpecificApiClient.class);
 
-	private final InstanceConfig instanceConfig;
-	private final SquadlistApi api;
-	private final String clientId;
-	private final String clientSecret;
+    private final InstanceConfig instanceConfig;
+    private final SquadlistApi api;
 
-	@Autowired
-	public InstanceSpecificApiClient(InstanceConfig instanceConfig,
-									 SquadlistApiFactory squadlistApiFactory, @Value("${client.id}") String clientId,
-									 @Value("${client.secret}") String clientSecret) throws IOException {
-		this.instanceConfig = instanceConfig;
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
-		this.api = squadlistApiFactory.createClient();
-	}
+    @Autowired
+    public InstanceSpecificApiClient(InstanceConfig instanceConfig,
+                                     SquadlistApiFactory squadlistApiFactory) throws IOException {
+        this.instanceConfig = instanceConfig;
+        this.api = squadlistApiFactory.createClient();
+    }
 
-	public List<Boat> getBoats() {
-		return api.getBoats(instanceConfig.getInstance());
-	}
+    public List<Boat> getBoats() {
+        return api.getBoats(instanceConfig.getInstance());
+    }
 
-	public List<Squad> getSquads() {
-		return api.getSquads(instanceConfig.getInstance());
-	}
+    public List<Squad> getSquads() {
+        return api.getSquads(instanceConfig.getInstance());
+    }
 
-	public List<Member> getMembers() {
-		return api.getMembers(instanceConfig.getInstance());
-	}
+    public List<Member> getMembers() {
+        return api.getMembers(instanceConfig.getInstance());
+    }
 
-	public List<AvailabilityOption> getAvailabilityOptions() throws HttpFetchException, IOException {
-		return api.getAvailabilityOptions(instanceConfig.getInstance());
-	}
+    public List<AvailabilityOption> getAvailabilityOptions() throws HttpFetchException, IOException {
+        return api.getAvailabilityOptions(instanceConfig.getInstance());
+    }
 
-	public AvailabilityOption getAvailabilityOption(String id) throws HttpFetchException, IOException, UnknownAvailabilityOptionException {
-		List<AvailabilityOption> availabilityOptions = getAvailabilityOptions();
-		for (AvailabilityOption availabilityOption : availabilityOptions) {	// TODO API end point
-			if (availabilityOption.getId().equals(id)) {
-				return availabilityOption;
-			}
-		}
-		throw new UnknownAvailabilityOptionException();
-	}
+    public AvailabilityOption getAvailabilityOption(String id) throws HttpFetchException, IOException, UnknownAvailabilityOptionException {
+        List<AvailabilityOption> availabilityOptions = getAvailabilityOptions();
+        for (AvailabilityOption availabilityOption : availabilityOptions) {    // TODO API end point
+            if (availabilityOption.getId().equals(id)) {
+                return availabilityOption;
+            }
+        }
+        throw new UnknownAvailabilityOptionException();
+    }
 
-	public String auth(String username, String password) {
-		try {
-			return api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
+    public Member verify(String token) {
+        return api.verify(token);
+    }
 
-		} catch (Exception e) {
-			log.error("Uncaught error", e);	// TODO
-			return null;
-		}
-	}
+    public Map<String, Integer> getOutingMonths(Squad squad) {
+        return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad), DateTime.now().toDateMidnight().minusDays(1).toDate(), DateTime.now().plusYears(20).toDate());
+    }
 
-	public String authWithFacebook(String facebookAccessToken) {
-		try {
-			return api.requestAccessTokenWithFacebook(instanceConfig.getInstance(), facebookAccessToken, clientId, clientSecret);
+    public List<Outing> getSquadOutings(Squad squad, Date startDate, Date endDate) {
+        return api.getOutings(instanceConfig.getInstance(), Lists.newArrayList(squad), startDate, endDate);
+    }
 
-		} catch (Exception e) {
-			log.error("Uncaught error", e);	// TODO
-			return null;
-		}
-	}
+    public Instance getInstance() throws UnknownInstanceException {
+        return api.getInstance(instanceConfig.getInstance());
+    }
 
-	public Member verify(String token) {
-		return api.verify(token);
-	}
+    public Member createMember(String firstName, String lastName, List<Squad> squads,
+                               String emailAddress, String initialPassword, Date dateOfBirth, String role) throws InvalidMemberException {
+        return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
+    }
 
-	public Map<String, Integer> getOutingMonths(Squad squad) {
-		return api.getOutingMonths(instanceConfig.getInstance(), Lists.newArrayList(squad), DateTime.now().toDateMidnight().minusDays(1).toDate(), DateTime.now().plusYears(20).toDate());
-	}
+    public void resetPassword(String username) throws UnknownMemberException {
+        api.resetPassword(instanceConfig.getInstance(), username);
+    }
 
-	public List<Outing> getSquadOutings(Squad squad, Date startDate, Date endDate) {
-		return api.getOutings(instanceConfig.getInstance(), Lists.newArrayList(squad), startDate, endDate);
-	}
+    public String confirmResetPassword(String token) {
+        return api.confirmResetPassword(instanceConfig.getInstance(), token);
+    }
 
-	public Instance getInstance() throws UnknownInstanceException {
-		return api.getInstance(instanceConfig.getInstance());
-	}
+    public Map<String, Object> statistics() throws UnknownInstanceException {
+        return api.getInstanceStatistics(instanceConfig.getInstance());
+    }
 
-	public Member createMember(String firstName, String lastName, List<Squad> squads,
-			String emailAddress, String initialPassword, Date dateOfBirth, String role) throws InvalidMemberException {
-		return api.createMember(instanceConfig.getInstance(), firstName, lastName, squads, emailAddress, initialPassword, dateOfBirth, role);
-	}
+    public String resetMemberPassword(Member member) throws UnknownMemberException {
+        return api.resetMemberPassword(instanceConfig.getInstance(), member.getId());
+    }
 
-	public void resetPassword(String username) throws UnknownMemberException {
-		api.resetPassword(instanceConfig.getInstance(), username);
-	}
+    public void createAvailabilityOption(String name, String colour) throws InvalidAvailabilityOptionException {
+        api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name, colour));
+    }
 
-	public String confirmResetPassword(String token) {
-		return api.confirmResetPassword(instanceConfig.getInstance(), token);
-	}
+    public void updateAvailabilityOption(AvailabilityOption availabilityOption) throws InvalidAvailabilityOptionException {
+        api.updateAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
+    }
 
-	public Map<String, Object> statistics() throws UnknownInstanceException {
-		return api.getInstanceStatistics(instanceConfig.getInstance());
-	}
+    public void deleteAvailabilityOption(AvailabilityOption availabilityOption) {
+        api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
+    }
 
-	public String resetMemberPassword(Member member) throws UnknownMemberException {
-		return api.resetMemberPassword(instanceConfig.getInstance(), member.getId());
-	}
+    public void deleteAvailabilityOption(AvailabilityOption availabilityOption, AvailabilityOption alternativeOption) {
+        api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
+    }
 
-	public void createAvailabilityOption(String name, String colour) throws InvalidAvailabilityOptionException {
-		api.createAvailabilityOption(instanceConfig.getInstance(), new AvailabilityOption(name, colour));
-	}
+    public void setAdmins(Set<String> admins) throws IOException, HttpFetchException {
+        api.setAdmins(instanceConfig.getInstance(), admins);
+    }
 
-	public void updateAvailabilityOption(AvailabilityOption availabilityOption) throws InvalidAvailabilityOptionException {
-		api.updateAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
-	}
+    public void updateInstance(Instance instance) {
+        api.updateInstance(instance);
+    }
 
-	public void deleteAvailabilityOption(AvailabilityOption availabilityOption) {
-		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption);
-	}
-
-	public void deleteAvailabilityOption(AvailabilityOption availabilityOption, AvailabilityOption alternativeOption) {
-		api.deleteAvailabilityOption(instanceConfig.getInstance(), availabilityOption, alternativeOption);
-	}
-
-	public void setAdmins(Set<String> admins) throws IOException, HttpFetchException {
-		api.setAdmins(instanceConfig.getInstance(), admins);
-	}
-
-	public void updateInstance(Instance instance) {
-		api.updateInstance(instance);
-	}
-
-	public Boat getBoat(String id) throws UnknownSquadException, UnknownBoatException {
-		return api.getBoat(instanceConfig.getInstance(), id);
-	}
+    public Boat getBoat(String id) throws UnknownSquadException, UnknownBoatException {
+        return api.getBoat(instanceConfig.getInstance(), id);
+    }
 
 }

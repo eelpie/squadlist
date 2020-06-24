@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
@@ -27,124 +30,143 @@ import java.io.IOException;
 @Controller
 public class FacebookSigninController {
 
-	private final static Logger log = Logger.getLogger(FacebookSigninController.class);
+    private final static Logger log = Logger.getLogger(FacebookSigninController.class);
 
-	private final UrlBuilder urlBuilder;
-	private final FacebookOauthStateService facebookOauthStateService;
-	private final LoggedInUserService loggedInUserService;
-	private final FacebookLinkedAccountsService facebookLinkedAccountsService;
-	private final InstanceSpecificApiClient api;
+    private final UrlBuilder urlBuilder;
+    private final FacebookOauthStateService facebookOauthStateService;
+    private final LoggedInUserService loggedInUserService;
+    private final FacebookLinkedAccountsService facebookLinkedAccountsService;
 
-	private String facebookClientId;
-	private String facebookClientSecret;
+    private String facebookClientId;
+    private String facebookClientSecret;
 
-	private final static Version FACEBOOK_API_VERSION = Version.LATEST;
+    private InstanceConfig instanceConfig;
+    private SquadlistApi api;
+    private String clientId;
+    private String clientSecret;
 
-	@Autowired
-	public FacebookSigninController(UrlBuilder urlBuilder, FacebookOauthStateService facebookOauthStateService,
-			LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService,
-			InstanceSpecificApiClient api,
-			 @Value("${facebook.clientId}") String facebookClientId,
-			 @Value("${facebook.clientSecret}") String facebookClientSecret) {
-		this.urlBuilder = urlBuilder;
-		this.facebookOauthStateService = facebookOauthStateService;
-		this.loggedInUserService = loggedInUserService;
-		this.facebookLinkedAccountsService = facebookLinkedAccountsService;
-		this.api = api;
-		this.facebookClientId = facebookClientId;
-		this.facebookClientSecret = facebookClientSecret;
-	}
+    private final static Version FACEBOOK_API_VERSION = Version.LATEST;
 
-	@RequestMapping(value="/social/facebook/link", method=RequestMethod.GET)
-	public ModelAndView link() {
-		String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.getLinkFacebookCallbackUrl());
-		log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
-		return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
-	}
+    @Autowired
+    public FacebookSigninController(UrlBuilder urlBuilder, FacebookOauthStateService facebookOauthStateService,
+                                    LoggedInUserService loggedInUserService, FacebookLinkedAccountsService facebookLinkedAccountsService,
+                                    @Value("${facebook.clientId}") String facebookClientId,
+                                    @Value("${facebook.clientSecret}") String facebookClientSecret,
+                                    InstanceConfig instanceConfig,
+                                    SquadlistApiFactory squadlistApiFactory,
+                                    @Value("${client.id}") String clientId,
+                                    @Value("${client.secret}") String clientSecret) throws IOException {
+        this.urlBuilder = urlBuilder;
+        this.facebookOauthStateService = facebookOauthStateService;
+        this.loggedInUserService = loggedInUserService;
+        this.facebookLinkedAccountsService = facebookLinkedAccountsService;
+        this.facebookClientId = facebookClientId;
+        this.facebookClientSecret = facebookClientSecret;
+        this.instanceConfig = instanceConfig;
+        this.api = squadlistApiFactory.createClient();
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
 
-	@RequestMapping(value="/social/facebook/link/callback", method=RequestMethod.GET)
-	public ModelAndView facebookLinkCallback(@RequestParam(required=false) String code, @RequestParam(required=false) String state) throws IOException, UnknownMemberException, SignedInMemberRequiredException {
-		if (code == null || state == null) {
-			log.warn("Not a complete Facebook callback; redirecting back to social settings");
-			return redirectToSocialSettings();
-		}
+    @RequestMapping(value = "/social/facebook/link", method = RequestMethod.GET)
+    public ModelAndView link() {
+        String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.getLinkFacebookCallbackUrl());
+        log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
+        return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
+    }
 
-		log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
-		facebookOauthStateService.clearState(state);
+    @RequestMapping(value = "/social/facebook/link/callback", method = RequestMethod.GET)
+    public ModelAndView facebookLinkCallback(@RequestParam(required = false) String code, @RequestParam(required = false) String state) throws IOException, UnknownMemberException, SignedInMemberRequiredException {
+        if (code == null || state == null) {
+            log.warn("Not a complete Facebook callback; redirecting back to social settings");
+            return redirectToSocialSettings();
+        }
 
-		com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.getLinkFacebookCallbackUrl());
-		log.info("Got access token: " + facebookUserAccessToken);
+        log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
+        facebookOauthStateService.clearState(state);
 
-		final User facebookUser = getFacebookUserById(facebookUserAccessToken);
-		facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInMember().getId(), facebookUser.getId());		// TODO Persist the access token as well to permit us to tell the user which Facebook account they are linked to
+        com.restfb.FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code, urlBuilder.getLinkFacebookCallbackUrl());
+        log.info("Got access token: " + facebookUserAccessToken);
 
-		return redirectToSocialSettings();
-	}
+        final User facebookUser = getFacebookUserById(facebookUserAccessToken);
+        facebookLinkedAccountsService.linkAccount(loggedInUserService.getLoggedInMember().getId(), facebookUser.getId());        // TODO Persist the access token as well to permit us to tell the user which Facebook account they are linked to
 
-	@RequestMapping(value="/social/facebook/signin", method=RequestMethod.GET)
-	public ModelAndView signin() {
-		String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.facebookSigninCallbackUrl());
-		log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
-		return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
-	}
+        return redirectToSocialSettings();
+    }
 
-	@RequestMapping(value="/social/facebook/signin/callback", method=RequestMethod.GET)
-	public ModelAndView facebookSigninCallback(@RequestParam(required=true) String code, @RequestParam(required=true) String state) throws IOException {
-		if (Strings.isNullOrEmpty(code) || Strings.isNullOrEmpty(state)) {
-			return redirectToSignin();
-		}
-		
-		log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
-		facebookOauthStateService.clearState(state);
+    @RequestMapping(value = "/social/facebook/signin", method = RequestMethod.GET)
+    public ModelAndView signin() {
+        String facebookLoginDialogUrl = buildFacebookLoginRedirectUrl(urlBuilder.facebookSigninCallbackUrl());
+        log.info("Redirecting user to facebook auth url: " + facebookLoginDialogUrl);
+        return new ModelAndView(new RedirectView(facebookLoginDialogUrl));
+    }
 
-		FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code,  urlBuilder.facebookSigninCallbackUrl());
-		log.info("Got Facebook access token: " + facebookUserAccessToken);
+    @RequestMapping(value = "/social/facebook/signin/callback", method = RequestMethod.GET)
+    public ModelAndView facebookSigninCallback(@RequestParam(required = true) String code, @RequestParam(required = true) String state) throws IOException {
+        if (Strings.isNullOrEmpty(code) || Strings.isNullOrEmpty(state)) {
+            return redirectToSignin();
+        }
 
-		final String authenticatedUsersAccessToken = api.authWithFacebook(facebookUserAccessToken.getAccessToken());
-		if (authenticatedUsersAccessToken == null) {
-			log.warn("No linked Facebook account");
-			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));	// TODO specific error
-		}
+        log.info("Got facebook auth callback code and state; exchanging for facebook token: " + code + ", " + state);
+        facebookOauthStateService.clearState(state);
 
-		Member authenticatedMember = api.verify(authenticatedUsersAccessToken);
-		if (authenticatedMember != null) {
-			log.info("Auth successful for user: " + authenticatedMember.getId());
-			loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
-			return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));  // TODO can get normal redirect to wanted page?
+        FacebookClient.AccessToken facebookUserAccessToken = getFacebookUserToken(code, urlBuilder.facebookSigninCallbackUrl());
+        log.info("Got Facebook access token: " + facebookUserAccessToken);
 
-		} else {
-			return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));  // TODO specific error
-		}
-	}
+        final String authenticatedUsersAccessToken = authWithFacebook(facebookUserAccessToken.getAccessToken());
+        if (authenticatedUsersAccessToken == null) {
+            log.warn("No linked Facebook account");
+            return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));    // TODO specific error
+        }
 
-	@RequestMapping(value="/social/facebook/remove", method=RequestMethod.GET)
-	public ModelAndView remove() throws UnknownMemberException, SignedInMemberRequiredException {
-		facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());	// TODO Should tell Facebook to invalidate the token as well
-		return redirectToSocialSettings();
-	}
+        Member authenticatedMember = api.verify(authenticatedUsersAccessToken);
+        if (authenticatedMember != null) {
+            log.info("Auth successful for user: " + authenticatedMember.getId());
+            loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
+            return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));  // TODO can get normal redirect to wanted page?
 
-	private String buildFacebookLoginRedirectUrl(String redirectUrl) {
-		ScopeBuilder scopeBuilder = new ScopeBuilder();
-		FacebookClient client = new DefaultFacebookClient(FACEBOOK_API_VERSION);
-		return client.getLoginDialogUrl(facebookClientId, redirectUrl, scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
-	}
+        } else {
+            return new ModelAndView(new RedirectView(urlBuilder.loginUrl() + "?errors=true"));  // TODO specific error
+        }
+    }
 
-	private FacebookClient.AccessToken getFacebookUserToken(String code, String redirectUrl) throws IOException {
-		FacebookClient.AccessToken accessToken = new DefaultFacebookClient(FACEBOOK_API_VERSION).obtainUserAccessToken(facebookClientId, facebookClientSecret, redirectUrl, code);
-		return accessToken;
-	}
+    @RequestMapping(value = "/social/facebook/remove", method = RequestMethod.GET)
+    public ModelAndView remove() throws UnknownMemberException, SignedInMemberRequiredException {
+        facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());    // TODO Should tell Facebook to invalidate the token as well
+        return redirectToSocialSettings();
+    }
 
-	private com.restfb.types.User getFacebookUserById(com.restfb.FacebookClient.AccessToken accessToken) {
-		 final FacebookClient facebookClient = new DefaultFacebookClient(accessToken.getAccessToken(), FACEBOOK_API_VERSION);
-		 return facebookClient.fetchObject("me", com.restfb.types.User.class);
-	}
-	
-	private ModelAndView redirectToSignin() {
-		return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
-	}
+    private String buildFacebookLoginRedirectUrl(String redirectUrl) {
+        ScopeBuilder scopeBuilder = new ScopeBuilder();
+        FacebookClient client = new DefaultFacebookClient(FACEBOOK_API_VERSION);
+        return client.getLoginDialogUrl(facebookClientId, redirectUrl, scopeBuilder) + "&state=" + facebookOauthStateService.registerState();
+    }
 
-	private ModelAndView redirectToSocialSettings() {
-		return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));
-	}
+    private FacebookClient.AccessToken getFacebookUserToken(String code, String redirectUrl) throws IOException {
+        FacebookClient.AccessToken accessToken = new DefaultFacebookClient(FACEBOOK_API_VERSION).obtainUserAccessToken(facebookClientId, facebookClientSecret, redirectUrl, code);
+        return accessToken;
+    }
 
+    private com.restfb.types.User getFacebookUserById(com.restfb.FacebookClient.AccessToken accessToken) {
+        final FacebookClient facebookClient = new DefaultFacebookClient(accessToken.getAccessToken(), FACEBOOK_API_VERSION);
+        return facebookClient.fetchObject("me", com.restfb.types.User.class);
+    }
+
+    private ModelAndView redirectToSignin() {
+        return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
+    }
+
+    private ModelAndView redirectToSocialSettings() {
+        return new ModelAndView(new RedirectView(urlBuilder.socialMediaAccounts()));
+    }
+
+    private String authWithFacebook(String facebookAccessToken) {
+        try {
+            return api.requestAccessTokenWithFacebook(instanceConfig.getInstance(), facebookAccessToken, clientId, clientSecret);
+
+        } catch (Exception e) {
+            log.error("Uncaught error", e);    // TODO
+            return null;
+        }
+    }
 }
