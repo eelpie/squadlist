@@ -4,13 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -49,7 +46,7 @@ public class ViewFactory {
         }
 
         try {
-            mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi));
+            mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

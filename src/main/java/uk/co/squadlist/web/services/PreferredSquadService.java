@@ -2,6 +2,7 @@ package uk.co.squadlist.web.services;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,15 +45,16 @@ public class PreferredSquadService {
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(loggedInUserService.getLoggedInMember(), instanceSpecificApiClient);
+        return resolvedPreferredSquad(loggedInUserService.getLoggedInMember(), instanceSpecificApiClient.getSquads());
     }
 
-    public Squad resolvedPreferredSquad(Member loggedInMember, InstanceSpecificApiClient instanceSpecificApiClient) {
-        final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
-        if (selectedSquad != null) {
-            try {
-                return squadlistApi.getSquad(selectedSquad);
-            } catch (UnknownSquadException e) {
+    public Squad resolvedPreferredSquad(Member loggedInMember, List<Squad> squads) {
+        final String selectedSquadId = (String) request.getSession().getAttribute(SELECTED_SQUAD);
+        if (selectedSquadId != null) {
+            Optional<Squad> selectedSquad = squads.stream().filter(s -> s.getId() == selectedSquadId).findFirst();
+            if (selectedSquad.isPresent()) {
+                return selectedSquad.get();
+            } else {
                 clearPreferredSquad();
             }
         }
@@ -61,11 +63,8 @@ public class PreferredSquadService {
             return loggedInMember.getSquads().iterator().next();
         }
 
-        final List<Squad> allSquads = instanceSpecificApiClient.getSquads();
-        if (!allSquads.isEmpty()) {
-            return allSquads.iterator().next();
-        }
-        return null;
+        Optional<Squad> firstInstanceSquad = squads.stream().findFirst();
+        return firstInstanceSquad.orElse(null);
     }
 
     public void setPreferredSquad(Squad selectedSquad) {
