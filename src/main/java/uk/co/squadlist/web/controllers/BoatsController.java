@@ -7,26 +7,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.views.ViewFactory;
 
 @Controller
 public class BoatsController {
 
-	private InstanceSpecificApiClient api;
 	private ViewFactory viewFactory;
-
-	public BoatsController() {
-	}
+	private LoggedInUserService loggedInUserService;
 
 	@Autowired
-	public BoatsController(InstanceSpecificApiClient api, ViewFactory viewFactory) {
-		this.api = api;
+	public BoatsController(ViewFactory viewFactory, LoggedInUserService loggedInUserService) {
 		this.viewFactory = viewFactory;
+		this.loggedInUserService = loggedInUserService;
 	}
 
 	@RequestMapping("/boats/{id}")
 	public ModelAndView outing(@PathVariable String id) throws Exception {
-		return viewFactory.getViewForLoggedInUser("boat").addObject("boat", api.getBoat(id));
+		InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+		return viewFactory.getViewForLoggedInUser("boat").addObject("boat", loggedInUserApi.getBoat(id));
 	}
 
 }

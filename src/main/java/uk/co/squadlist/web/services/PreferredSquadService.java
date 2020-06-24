@@ -27,35 +27,33 @@ public class PreferredSquadService {
 
     private static final String SELECTED_SQUAD = "selectedSquad";
 
-    private final InstanceSpecificApiClient instanceSpecificApiClient;
     private final SquadlistApi squadlistApi;
     private final HttpServletRequest request;
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public PreferredSquadService(InstanceSpecificApiClient instanceSpecificApiClient, HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) throws IOException {
-        this.instanceSpecificApiClient = instanceSpecificApiClient;
+    public PreferredSquadService(HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) throws IOException {
         this.request = request;
         this.loggedInUserService = loggedInUserService;
         this.squadlistApi = squadlistApiFactory.createClient();
     }
 
-    public Squad resolveSquad(String squadId) throws UnknownSquadException, SignedInMemberRequiredException {
+    public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownSquadException, SignedInMemberRequiredException {
         if (!Strings.isNullOrEmpty(squadId)) {
             final Squad selectedSquad = squadlistApi.getSquad(squadId);
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(loggedInUserService.getLoggedInMember());
+        return resolvedPreferredSquad(loggedInUserService.getLoggedInMember(), instanceSpecificApiClient);
     }
 
-    public Squad resolvedPreferredSquad(Member loggedInMember) {
+    public Squad resolvedPreferredSquad(Member loggedInMember, InstanceSpecificApiClient instanceSpecificApiClient) {
         final String selectedSquad = (String) request.getSession().getAttribute(SELECTED_SQUAD);
         if (selectedSquad != null) {
             try {
                 return squadlistApi.getSquad(selectedSquad);
             } catch (UnknownSquadException e) {
-                clearPreferedSquad();
+                clearPreferredSquad();
             }
         }
 
@@ -76,7 +74,7 @@ public class PreferredSquadService {
 
     }
 
-    private void clearPreferedSquad() {
+    private void clearPreferredSquad() {
         request.getSession().removeAttribute(SELECTED_SQUAD);
     }
 

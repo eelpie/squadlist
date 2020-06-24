@@ -30,7 +30,6 @@ public class EntryDetailsController {
 
     private final static Logger log = Logger.getLogger(EntryDetailsController.class);
 
-    private final InstanceSpecificApiClient instanceSpecificApiClient;
     private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;
     private final EntryDetailsModelPopulator entryDetailsModelPopulator;
@@ -39,11 +38,10 @@ public class EntryDetailsController {
     private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public EntryDetailsController(InstanceSpecificApiClient instanceSpecificApiClient, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
+    public EntryDetailsController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   EntryDetailsModelPopulator entryDetailsModelPopulator,
                                   CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory,
                                   LoggedInUserService loggedInUserService) {
-        this.instanceSpecificApiClient = instanceSpecificApiClient;
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.entryDetailsModelPopulator = entryDetailsModelPopulator;
@@ -54,19 +52,19 @@ public class EntryDetailsController {
 
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
 
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
-                addObject("squads", instanceSpecificApiClient.getSquads()).
-                addObject("governingBody", governingBodyFactory.getGoverningBody());
+                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
         entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv);
         return mv;
     }
 
     @RequestMapping("/entrydetails/ajax")
     public ModelAndView ajax(@RequestBody String json) throws Exception {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         List<Member> selectedMembers = Lists.newArrayList();
 
@@ -87,7 +85,7 @@ public class EntryDetailsController {
         if (!selectedMembers.isEmpty()) {
             mv.addObject("members", selectedMembers);
 
-            final GoverningBody governingBody = governingBodyFactory.getGoverningBody();
+            final GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
 
             int crewSize = selectedMembers.size();
             final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
@@ -116,20 +114,22 @@ public class EntryDetailsController {
 
     @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         viewFactory.getViewForLoggedInUser("entryDetails");  // TODO
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
-        List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers);
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody);
+
         csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
     }
 
     @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET) // TODO Unused
     public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
-        SquadlistApi loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         List<Member> selectedMembers = Lists.newArrayList();
         final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
@@ -139,7 +139,11 @@ public class EntryDetailsController {
             selectedMembers.add(loggedInUserApi.getMember(selectedMemberId));
         }
 
-        csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers));
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        csvOutputRenderer.renderCsvResponse(response,
+                entryDetailsModelPopulator.getEntryDetailsHeaders(),
+                entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers, governingBody)
+        );
     }
 
 }

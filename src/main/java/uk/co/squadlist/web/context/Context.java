@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
+
+import java.io.IOException;
 
 @Component
 public class Context {
@@ -20,13 +24,14 @@ public class Context {
 
 	private final static Logger log = Logger.getLogger(Context.class);
 
-	private InstanceSpecificApiClient api;
-
 	private final HttpServletRequest request;
+	private final SquadlistApi squadlistApi;
+	private final InstanceConfig instanceConfig;
 
 	@Autowired
-	public Context(InstanceSpecificApiClient api, HttpServletRequest request) {
-		this.api = api;
+	public Context(SquadlistApiFactory squadlistApiFactory, InstanceConfig instanceConfig, HttpServletRequest request) throws IOException {
+		this.instanceConfig = instanceConfig;
+		this.squadlistApi = squadlistApiFactory.createClient();
 		this.request = request;
 	}
 
@@ -45,7 +50,7 @@ public class Context {
 		if (instance != null) {
 			return instance;
 		}
-		instance = api.getInstance();
+		instance = squadlistApi.getInstance(instanceConfig.getInstance());
 		request.setAttribute(INSTANCE, instance);
 		return instance;
 	}

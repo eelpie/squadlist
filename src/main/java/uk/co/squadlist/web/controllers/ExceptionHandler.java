@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import com.google.common.base.Strings;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import org.apache.log4j.Logger;
@@ -34,7 +35,12 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     public ExceptionHandler(UrlBuilder urlBuilder, @Value("${sentryDSN}") String sentryDSN) {
         this.urlBuilder = urlBuilder;
         log.info("Setting up Sentry client with DSN: " + sentryDSN);
-        this.sentryClient = SentryClientFactory.sentryClient(sentryDSN);
+
+        if (!Strings.isNullOrEmpty(sentryDSN)) {
+            this.sentryClient = SentryClientFactory.sentryClient(sentryDSN);
+        } else {
+            this.sentryClient = null;
+        }
     }
 
     @Override
@@ -78,9 +84,10 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
         String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
 
-        log.info("Sending sentry exception for path: " + path, e);
-        sentryClient.sendException(e);
-
+        if (sentryClient != null) {
+            log.info("Sending sentry exception for path: " + path, e);
+            sentryClient.sendException(e);
+        }
         log.error("Returning 500 error for path: " + path, e);
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ModelAndView("500").addObject("googleAnalyticsAccount", googleAnalyticsAccount);

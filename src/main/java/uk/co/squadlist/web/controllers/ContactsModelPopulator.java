@@ -59,16 +59,14 @@ public class ContactsModelPopulator {
     private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
     private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
-    private InstanceSpecificApiClient instanceSpecificApiClient;
     private LoggedInUserService loggedInUserService;
     private PermissionsService permissionsService;
     private ActiveMemberFilter activeMemberFilter;
     private SquadlistApi squadlistApi;
 
     @Autowired
-    public ContactsModelPopulator(InstanceSpecificApiClient instanceSpecificApiClient, LoggedInUserService loggedInUserService, PermissionsService permissionsService,
+    public ContactsModelPopulator(LoggedInUserService loggedInUserService, PermissionsService permissionsService,
                                   ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
-        this.instanceSpecificApiClient = instanceSpecificApiClient;
         this.loggedInUserService = loggedInUserService;
         this.permissionsService = permissionsService;
         this.activeMemberFilter = activeMemberFilter;
@@ -76,9 +74,8 @@ public class ContactsModelPopulator {
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
-    public void populateModel(final Squad squad, final ModelAndView mv) throws UnknownInstanceException, SignedInMemberRequiredException {
+    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance) throws UnknownInstanceException, SignedInMemberRequiredException {
 		List<Member> squadMembers = squadlistApi.getSquadMembers(squad.getId());
-		Instance instance = instanceSpecificApiClient.getInstance();
 		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
 		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));

@@ -15,15 +15,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
-import uk.co.squadlist.web.services.github.GithubService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
@@ -38,164 +39,169 @@ import java.util.Set;
 @Controller
 public class AdminController {
 
-  private final static Logger log = Logger.getLogger(AdminController.class);
+    private final static Logger log = Logger.getLogger(AdminController.class);
 
-  private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
-  private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");
+    private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
+    private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");
 
-  private final static Splitter COMMA_SPLITTER = Splitter.on(",");
+    private final static Splitter COMMA_SPLITTER = Splitter.on(",");
 
-  private InstanceSpecificApiClient api;
-  private ViewFactory viewFactory;
-  private ActiveMemberFilter activeMemberFilter;
-  private CsvOutputRenderer csvOutputRenderer;
-  private UrlBuilder urlBuilder;
-  private GithubService githubService;
-  private Context context;
-  private DateFormatter dateFormatter;
-  private GoverningBodyFactory governingBodyFactory;
+    private final ViewFactory viewFactory;
+    private final ActiveMemberFilter activeMemberFilter;
+    private final CsvOutputRenderer csvOutputRenderer;
+    private final UrlBuilder urlBuilder;
+    private final Context context;
+    private final DateFormatter dateFormatter;
+    private final GoverningBodyFactory governingBodyFactory;
+    private final LoggedInUserService loggedInUserService;
 
-  public AdminController() {
-  }
-
-  @Autowired
-  public AdminController(InstanceSpecificApiClient api, ViewFactory viewFactory,
-                         ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
-                         UrlBuilder urlBuilder, GithubService githubService,
-                         Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory) {
-    this.api = api;
-    this.viewFactory = viewFactory;
-    this.activeMemberFilter = activeMemberFilter;
-    this.csvOutputRenderer = csvOutputRenderer;
-    this.urlBuilder = urlBuilder;
-    this.githubService = githubService;
-    this.context = context;
-    this.dateFormatter = dateFormatter;
-    this.governingBodyFactory = governingBodyFactory;
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin", method = RequestMethod.GET)
-  public ModelAndView member() throws Exception {
-    final ModelAndView mv = viewFactory.getViewForLoggedInUser("admin");
-    mv.addObject("squads", api.getSquads());
-    mv.addObject("availabilityOptions", api.getAvailabilityOptions());
-    mv.addObject("title", "Admin");
-
-    final List<Member> members = api.getMembers();
-    mv.addObject("members", members);
-    mv.addObject("activeMembers", activeMemberFilter.extractActive(members));
-    mv.addObject("inactiveMembers", activeMemberFilter.extractInactive(members));
-    mv.addObject("admins", extractAdminUsersFrom(members));
-    mv.addObject("governingBody", governingBodyFactory.getGoverningBody());
-    mv.addObject("statistics", api.statistics());
-    mv.addObject("boats", api.getBoats());
-
-    mv.addObject("openIssues", githubService.getOpenIssues());
-    mv.addObject("closedIssues", githubService.getClosedIssues());
-    mv.addObject("language", context.getLanguage());
-    return mv;
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin/instance", method = RequestMethod.GET)
-  public ModelAndView instance() throws Exception {
-    final InstanceDetails instanceDetails = new InstanceDetails();
-    instanceDetails.setMemberOrdering(api.getInstance().getMemberOrdering());
-    instanceDetails.setGoverningBody(api.getInstance().getGoverningBody());
-    return renderEditInstanceDetailsForm(instanceDetails);
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin/instance", method = RequestMethod.POST)
-  public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
-    if (result.hasErrors()) {
-      return renderEditInstanceDetailsForm(instanceDetails);
+    @Autowired
+    public AdminController(ViewFactory viewFactory,
+                           ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
+                           UrlBuilder urlBuilder,
+                           Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
+                           LoggedInUserService loggedInUserService) {
+        this.viewFactory = viewFactory;
+        this.activeMemberFilter = activeMemberFilter;
+        this.csvOutputRenderer = csvOutputRenderer;
+        this.urlBuilder = urlBuilder;
+        this.context = context;
+        this.dateFormatter = dateFormatter;
+        this.governingBodyFactory = governingBodyFactory;
+        this.loggedInUserService = loggedInUserService;
     }
 
-    Instance instance = api.getInstance();
-    instance.setMemberOrdering(instanceDetails.getMemberOrdering());  // TODO validate
-    instance.setGoverningBody(instanceDetails.getGoverningBody());  // TODO validate
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public ModelAndView member() throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final List<Member> members = loggedInUserApi.getMembers();
 
-    api.updateInstance(instance);
-
-    return redirectToAdminScreen();
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
-  public ModelAndView setAdminsPrompt() throws Exception {
-    List<Member> adminMembers = Lists.newArrayList();
-    List<Member> availableMembers = Lists.newArrayList();
-    for (Member member : api.getMembers()) {
-      if (member.getAdmin()) {
-        adminMembers.add(member);
-      } else {
-        availableMembers.add(member);
-      }
-    }
-    return viewFactory.getViewForLoggedInUser("editAdmins").addObject("admins", adminMembers).addObject("availableMembers", availableMembers);
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin/admins", method = RequestMethod.POST)
-  public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
-    log.info("Setting admins request: " + admins);
-    final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
-
-    log.info("Setting admins to: " + updatedAdmins);
-    api.setAdmins(updatedAdmins);
-
-    return redirectToAdminScreen();
-  }
-
-  @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
-  @RequestMapping(value = "/admin/export/members.csv", method = RequestMethod.GET)
-  public void membersCSV(HttpServletResponse response) throws Exception {
-    final List<List<String>> rows = Lists.newArrayList();
-    for (Member member : api.getMembers()) {
-      rows.add(Arrays.asList(member.getFirstName(),
-              member.getLastName(),
-              member.getKnownAs(),
-              member.getEmailAddress(),
-              member.getGender(),
-              member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
-              member.getEmergencyContactName(),
-              member.getEmergencyContactNumber(),
-              member.getWeight() != null ? member.getWeight().toString() : "",
-              member.getSweepOarSide(),
-              member.getSculling(),
-              member.getRegistrationNumber(),
-              member.getRowingPoints(),
-              member.getScullingPoints(),
-              member.getRole()
-      ));
+        return viewFactory.getViewForLoggedInUser("admin").
+                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
+                addObject("title", "Admin").
+                addObject("members", members).
+                addObject("activeMembers", activeMemberFilter.extractActive(members)).
+                addObject("inactiveMembers", activeMemberFilter.extractInactive(members)).
+                addObject("admins", extractAdminUsersFrom(members)).
+                addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance())).
+                addObject("statistics", loggedInUserApi.statistics()).
+                addObject("boats", loggedInUserApi.getBoats()).
+                addObject("language", context.getLanguage());
     }
 
-    csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
-            "Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
-            "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
-  }
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin/instance", method = RequestMethod.GET)
+    public ModelAndView instance() throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-  private List<Member> extractAdminUsersFrom(List<Member> members) {
-    List<Member> admins = Lists.newArrayList();
-    for (Member member : members) {
-      if (member.getAdmin() != null && member.getAdmin()) {  // TODO should be boolean is the API knows that it is always present.
-        admins.add(member);
-      }
+        final InstanceDetails instanceDetails = new InstanceDetails();
+        instanceDetails.setMemberOrdering(loggedInUserApi.getInstance().getMemberOrdering());
+        instanceDetails.setGoverningBody(loggedInUserApi.getInstance().getGoverningBody());
+        return renderEditInstanceDetailsForm(instanceDetails);
     }
-    return admins;
-  }
 
-  private ModelAndView redirectToAdminScreen() {
-    return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
-  }
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin/instance", method = RequestMethod.POST)
+    public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-  private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException {
-    return viewFactory.getViewForLoggedInUser("editInstance").
-            addObject("instanceDetails", instanceDetails).
-            addObject("memberOrderings", MEMBER_ORDERINGS).
-            addObject("governingBodies", GOVERNING_BODIES);
-  }
+        if (result.hasErrors()) {
+            return renderEditInstanceDetailsForm(instanceDetails);
+        }
+
+        Instance instance = loggedInUserApi.getInstance();
+        instance.setMemberOrdering(instanceDetails.getMemberOrdering());  // TODO validate
+        instance.setGoverningBody(instanceDetails.getGoverningBody());  // TODO validate
+
+        loggedInUserApi.updateInstance(instance);
+
+        return redirectToAdminScreen();
+    }
+
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
+    public ModelAndView setAdminsPrompt() throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+
+        List<Member> adminMembers = Lists.newArrayList();
+        List<Member> availableMembers = Lists.newArrayList();
+        for (Member member : loggedInUserApi.getMembers()) {
+            if (member.getAdmin()) {
+                adminMembers.add(member);
+            } else {
+                availableMembers.add(member);
+            }
+        }
+        return viewFactory.getViewForLoggedInUser("editAdmins").
+                addObject("admins", adminMembers).
+                addObject("availableMembers", availableMembers);
+    }
+
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin/admins", method = RequestMethod.POST)
+    public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+
+        log.info("Setting admins request: " + admins);
+        final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
+
+        log.info("Setting admins to: " + updatedAdmins);
+        loggedInUserApi.setAdmins(updatedAdmins);
+
+        return redirectToAdminScreen();
+    }
+
+    @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
+    @RequestMapping(value = "/admin/export/members.csv", method = RequestMethod.GET)
+    public void membersCSV(HttpServletResponse response) throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+
+        final List<List<String>> rows = Lists.newArrayList();
+        for (Member member : loggedInUserApi.getMembers()) {
+            rows.add(Arrays.asList(member.getFirstName(),
+                    member.getLastName(),
+                    member.getKnownAs(),
+                    member.getEmailAddress(),
+                    member.getGender(),
+                    member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth()) : "",
+                    member.getEmergencyContactName(),
+                    member.getEmergencyContactNumber(),
+                    member.getWeight() != null ? member.getWeight().toString() : "",
+                    member.getSweepOarSide(),
+                    member.getSculling(),
+                    member.getRegistrationNumber(),
+                    member.getRowingPoints(),
+                    member.getScullingPoints(),
+                    member.getRole()
+            ));
+        }
+
+        csvOutputRenderer.renderCsvResponse(response, Lists.newArrayList("First name", "Last name", "Known as", "Email",
+                "Gender", "Date of birth", "Emergency contact name", "Emergency contact number",
+                "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
+    }
+
+    private List<Member> extractAdminUsersFrom(List<Member> members) {
+        List<Member> admins = Lists.newArrayList();
+        for (Member member : members) {
+            if (member.getAdmin() != null && member.getAdmin()) {  // TODO should be boolean is the API knows that it is always present.
+                admins.add(member);
+            }
+        }
+        return admins;
+    }
+
+    private ModelAndView redirectToAdminScreen() {
+        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+    }
+
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
+        return viewFactory.getViewForLoggedInUser("editInstance").
+                addObject("instanceDetails", instanceDetails).
+                addObject("memberOrderings", MEMBER_ORDERINGS).
+                addObject("governingBodies", GOVERNING_BODIES);
+    }
 
 }
