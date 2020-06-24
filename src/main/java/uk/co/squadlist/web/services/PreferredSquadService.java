@@ -51,12 +51,11 @@ public class PreferredSquadService {
     public Squad resolvedPreferredSquad(Member loggedInMember, List<Squad> squads) {
         final String selectedSquadId = (String) request.getSession().getAttribute(SELECTED_SQUAD);
         if (selectedSquadId != null) {
-            Optional<Squad> selectedSquad = squads.stream().filter(s -> s.getId() == selectedSquadId).findFirst();
+            Optional<Squad> selectedSquad = squads.stream().filter(s -> s.getId().equals(selectedSquadId)).findFirst();
             if (selectedSquad.isPresent()) {
                 return selectedSquad.get();
-            } else {
-                clearPreferredSquad();
             }
+            clearPreferredSquad();
         }
 
         if (!loggedInMember.getSquads().isEmpty()) {
