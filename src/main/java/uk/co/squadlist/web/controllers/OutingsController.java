@@ -2,7 +2,8 @@ package uk.co.squadlist.web.controllers;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -43,7 +44,7 @@ import java.util.Map;
 @Controller
 public class OutingsController {
 
-    private final static Logger log = Logger.getLogger(OutingsController.class);
+    private final static Logger log = LogManager.getLogger(OutingsController.class);
 
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
@@ -288,7 +289,10 @@ public class OutingsController {
         final Outing outing = loggedInUserApi.getOuting(outingId);
 
         if (!outing.isClosed()) {
-            final OutingAvailability result = loggedInUserApi.setOutingAvailability(loggedInUserService.getLoggedInMember(), outing, getAvailabilityOptionById(availability, loggedInUserApi));
+            Member member = loggedInUserService.getLoggedInMember();
+            AvailabilityOption availabilityOption = getAvailabilityOptionById(availability, loggedInUserApi);
+            final OutingAvailability result = loggedInUserApi.setOutingAvailability(member, outing, availabilityOption);
+            log.info("Set availability for " + member.getUsername() + " / " + outing.getId() + ": " + availabilityOption.getLabel());
             return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
         }
 

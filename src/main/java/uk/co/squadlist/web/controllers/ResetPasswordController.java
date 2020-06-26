@@ -1,27 +1,25 @@
 package uk.co.squadlist.web.controllers;
 
-import org.apache.log4j.Logger;
+import com.google.common.base.Strings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
-
-import com.google.common.base.Strings;
 
 import java.io.IOException;
 
 @Controller
 public class ResetPasswordController {
 	
-	private final static Logger log = Logger.getLogger(ResetPasswordController.class);
+	private final static Logger log = LogManager.getLogger(ResetPasswordController.class);
 
 	private final InstanceConfig instanceConfig;
 	private final SquadlistApi squadlistApi;

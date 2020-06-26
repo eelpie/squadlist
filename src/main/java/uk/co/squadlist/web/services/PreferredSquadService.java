@@ -6,7 +6,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ import com.google.common.base.Strings;
 @Component
 public class PreferredSquadService {
 
-    private final static Logger log = Logger.getLogger(PreferredSquadService.class);
+    private final static Logger log = LogManager.getLogger(PreferredSquadService.class);
 
     private static final String SELECTED_SQUAD = "selectedSquad";
 

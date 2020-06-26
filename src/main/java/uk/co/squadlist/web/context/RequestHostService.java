@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.context;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class RequestHostService {
 
-	private final static Logger log = Logger.getLogger(RequestHostService.class);
+	private final static Logger log = LogManager.getLogger(RequestHostService.class);
 
 	private static final String X_FORWARDED_HOST = "x-forwarded-host";
 

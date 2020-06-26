@@ -1,15 +1,16 @@
 package uk.co.squadlist.web.context;
 
 import com.google.common.base.Strings;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Component
 public class InstanceConfig {
 
-	private final static Logger log = Logger.getLogger(InstanceConfig.class);
+	private final static Logger log = LogManager.getLogger(InstanceConfig.class);
 
 	private final RequestHostService requestHostService;
 

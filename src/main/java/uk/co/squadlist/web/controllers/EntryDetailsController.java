@@ -2,7 +2,8 @@ package uk.co.squadlist.web.controllers;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -28,7 +28,7 @@ import java.util.List;
 @Controller
 public class EntryDetailsController {
 
-    private final static Logger log = Logger.getLogger(EntryDetailsController.class);
+    private final static Logger log = LogManager.getLogger(EntryDetailsController.class);
 
     private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;

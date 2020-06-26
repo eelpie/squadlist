@@ -1,7 +1,8 @@
 package uk.co.squadlist.web;
 
 import com.google.common.collect.Maps;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ import java.util.Map;
 @EnableAutoConfiguration
 public class Main {
 	
-	private final static Logger log = Logger.getLogger(Main.class);
+	private final static Logger log = LogManager.getLogger(Main.class);
 			  
 	private static ApplicationContext ctx;
 

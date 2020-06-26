@@ -2,7 +2,8 @@ package uk.co.squadlist.web.controllers;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.IllegalFieldValueException;
@@ -41,7 +42,7 @@ import java.util.List;
 @Controller
 public class MembersController {
 
-    private final static Logger log = Logger.getLogger(MembersController.class);
+    private final static Logger log = LogManager.getLogger(MembersController.class);
 
     private static final List<String> GENDER_OPTIONS = Lists.newArrayList("female", "male");
     private static final List<String> ROLES_OPTIONS = Lists.newArrayList("Rower", "Rep", "Coach", "Cox", "Non rowing");

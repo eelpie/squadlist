@@ -1,17 +1,15 @@
 package uk.co.squadlist.web.context;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
@@ -22,7 +20,7 @@ public class Context {
 	private static final String ENGLISH = "en";
 	private static final String FRENCH = "fr";
 
-	private final static Logger log = Logger.getLogger(Context.class);
+	private final static Logger log = LogManager.getLogger(Context.class);
 
 	private final HttpServletRequest request;
 	private final SquadlistApi squadlistApi;

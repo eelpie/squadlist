@@ -1,25 +1,25 @@
 package uk.co.squadlist.web.localisation.text;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Properties;
 
 @Component
 public class PropertiesFileParser {
 	
-	private static final Charset UTF8 = Charset.forName("UTF-8");
-	private final static Logger log = Logger.getLogger(PropertiesFileParser.class);
+	private final static Charset UTF8 = Charset.forName("UTF-8");
+	private final static Logger log = LogManager.getLogger(PropertiesFileParser.class);
 
 	public Map<String, String> readTextPropertiesFromFile(final String propertiesFilename) {
 		try {

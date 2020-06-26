@@ -1,7 +1,8 @@
 package uk.co.squadlist.web.controllers;
 
-import com.google.common.base.Strings;
-import org.apache.log4j.Logger;
+import com.google.common.base.Strings;;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -29,7 +30,7 @@ import java.util.List;
 @Controller
 public class AvailabilityOptionsController {
 
-    private final static Logger log = Logger.getLogger(AvailabilityOptionsController.class);
+    private final static Logger log = LogManager.getLogger(AvailabilityOptionsController.class);
 
     private final ViewFactory viewFactory;
     private final UrlBuilder urlBuilder;

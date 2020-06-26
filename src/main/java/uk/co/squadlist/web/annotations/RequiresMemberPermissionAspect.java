@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.annotations;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -18,7 +19,7 @@ import uk.co.squadlist.web.services.PermissionsService;
 @Aspect
 public class RequiresMemberPermissionAspect {
 
-	private final static Logger log = Logger.getLogger(RequiresMemberPermissionAspect.class);
+	private final static Logger log = LogManager.getLogger(RequiresMemberPermissionAspect.class);
 
 	private LoggedInUserService loggedInUserService;
 	private PermissionsService permissionsService;

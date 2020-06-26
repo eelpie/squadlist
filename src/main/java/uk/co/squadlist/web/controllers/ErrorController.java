@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
-    private final static Logger log = Logger.getLogger(ErrorController.class);
+    private final static Logger log = LogManager.getLogger(ErrorController.class);
 
     private final HttpServletRequest request;
 

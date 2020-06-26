@@ -1,20 +1,20 @@
 package uk.co.squadlist.web.annotations;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.exceptions.PermissionDeniedException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 
 @Component
 @Aspect
 public class RequiresSignedInMemberAspect {
 
-    private static Logger log = Logger.getLogger(RequiresSignedInMemberAspect.class);
+    private static Logger log = LogManager.getLogger(RequiresSignedInMemberAspect.class);
 
     private LoggedInUserService loggedInUserService;
 

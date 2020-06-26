@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.controllers.social;
-
-import org.apache.log4j.Logger;
+;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.SquadlistApi;
@@ -13,7 +14,7 @@ import java.io.IOException;
 @Component
 public class FacebookLinkedAccountsService {
 	
-	private final static Logger log = Logger.getLogger(FacebookLinkedAccountsService.class);
+	private final static Logger log = LogManager.getLogger(FacebookLinkedAccountsService.class);
 
 	private final SquadlistApi api;
 	

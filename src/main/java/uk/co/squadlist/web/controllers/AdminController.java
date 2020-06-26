@@ -3,7 +3,8 @@ package uk.co.squadlist.web.controllers;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -39,7 +40,7 @@ import java.util.Set;
 @Controller
 public class AdminController {
 
-    private final static Logger log = Logger.getLogger(AdminController.class);
+    private final static Logger log = LogManager.getLogger(AdminController.class);
 
     private static final List<String> MEMBER_ORDERINGS = Lists.newArrayList("firstName", "lastName");
     private static final List<String> GOVERNING_BODIES = Lists.newArrayList("british-rowing", "rowing-ireland");

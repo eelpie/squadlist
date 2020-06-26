@@ -3,7 +3,9 @@ package uk.co.squadlist.web.controllers;
 import com.google.common.base.Strings;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -22,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
 
-    private final static Logger log = Logger.getLogger(ExceptionHandler.class);
+    private final static Logger log = LogManager.getLogger(ExceptionHandler.class);
 
     private final UrlBuilder urlBuilder;
 

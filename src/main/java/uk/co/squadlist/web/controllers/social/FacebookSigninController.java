@@ -6,7 +6,8 @@ import com.restfb.FacebookClient;
 import com.restfb.Version;
 import com.restfb.scope.ScopeBuilder;
 import com.restfb.types.User;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -30,7 +30,7 @@ import java.io.IOException;
 @Controller
 public class FacebookSigninController {
 
-    private final static Logger log = Logger.getLogger(FacebookSigninController.class);
+    private final static Logger log = LogManager.getLogger(FacebookSigninController.class);
 
     private final UrlBuilder urlBuilder;
     private final FacebookOauthStateService facebookOauthStateService;
