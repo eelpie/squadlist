@@ -292,7 +292,7 @@ public class OutingsController {
             Member member = loggedInUserService.getLoggedInMember();
             AvailabilityOption availabilityOption = getAvailabilityOptionById(availability, loggedInUserApi);
             final OutingAvailability result = loggedInUserApi.setOutingAvailability(member, outing, availabilityOption);
-            log.info("Set availability for " + member.getUsername() + " / " + outing.getId() + ": " + availabilityOption.getLabel());
+            log.info("Set availability for " + member.getUsername() + " / " + outing.getId() + ": " + availabilityOption);
             return viewFactory.getViewForLoggedInUser("includes/availability").addObject("availability", result.getAvailabilityOption());
         }
 
