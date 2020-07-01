@@ -1,30 +1,30 @@
 package uk.co.squadlist.web.services;
 
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import uk.co.squadlist.client.swagger.ApiException;
+import uk.co.squadlist.web.api.SquadlistApiFactory;
 
-import de.rrze.jpwgen.options.PwGeneratorOptionBuilder;
-import de.rrze.jpwgen.utils.PwHelper;
+import java.util.List;
 
 @Component
-public class PasswordGenerator {		// TODO push to the API and call as a service
+public class PasswordGenerator {
 
-	private final static List <String> BLACK_LIST = Lists.newArrayList("password", "badpassword");
-	
-	public String generateRandomPassword(int length) {		
-		final PwGeneratorOptionBuilder options = new PwGeneratorOptionBuilder()
-			.setNumberOfPasswords(10).setMaxAttempts(100)
-			.setOnly1Digit()
-			.setPasswordLength(length)
-			.setDoNotEndWithSmallLetter().setIncludeAmbiguous(false)
-			.setIncludeSymbols(false).setUseRandom()
-			.setDoNotStartWithDigit();
-		
-		final List <String> passwords = PwHelper.process(options.build(), BLACK_LIST);
-		return passwords.get(0);
-	}
-	
+    private SquadlistApiFactory squadlistApiFactory;
+
+    @Autowired
+    public PasswordGenerator(SquadlistApiFactory squadlistApiFactory) {
+        this.squadlistApiFactory = squadlistApiFactory;
+    }
+
+    public String generateRandomPassword() {
+        try {
+            List<String> suggestions = squadlistApiFactory.createUnauthenticatedSwaggerClient().passwordSuggestionsGet();
+            return suggestions.get(0);  // This is ok because the list is randomised.
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
