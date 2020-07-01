@@ -1,21 +1,18 @@
 package uk.co.squadlist.web.controllers;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -23,11 +20,8 @@ import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class ContactsModelPopulator {
@@ -62,20 +56,18 @@ public class ContactsModelPopulator {
     private LoggedInUserService loggedInUserService;
     private PermissionsService permissionsService;
     private ActiveMemberFilter activeMemberFilter;
-    private SquadlistApi squadlistApi;
 
     @Autowired
     public ContactsModelPopulator(LoggedInUserService loggedInUserService, PermissionsService permissionsService,
-                                  ActiveMemberFilter activeMemberFilter, SquadlistApiFactory squadlistApiFactory) throws IOException {
+                                  ActiveMemberFilter activeMemberFilter) {
         this.loggedInUserService = loggedInUserService;
         this.permissionsService = permissionsService;
         this.activeMemberFilter = activeMemberFilter;
-        this.squadlistApi = squadlistApiFactory.createClient();
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
-    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance) throws UnknownInstanceException, SignedInMemberRequiredException {
-		List<Member> squadMembers = squadlistApi.getSquadMembers(squad.getId());
+    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownInstanceException, SignedInMemberRequiredException {
+		List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
 		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
 		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));

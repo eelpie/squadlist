@@ -55,7 +55,7 @@ public class ContactsController {
                 addObject("squads", allSquads);
         if (!allSquads.isEmpty()) {
             log.info("Squad to show: " + squadToShow);
-            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance());
+            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance(), loggedInUserApi);
         }
         return mv;
     }
