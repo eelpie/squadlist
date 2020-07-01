@@ -14,13 +14,6 @@
         <version>1.2.8.RELEASE</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>local-dependencies</id>
-            <url>file:${basedir}/lib/repository</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
