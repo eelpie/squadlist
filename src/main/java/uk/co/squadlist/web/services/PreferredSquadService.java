@@ -29,7 +29,6 @@ public class PreferredSquadService {
 
     private static final String SELECTED_SQUAD = "selectedSquad";
 
-    private final SquadlistApi squadlistApi;
     private final HttpServletRequest request;
     private final LoggedInUserService loggedInUserService;
 
@@ -37,12 +36,11 @@ public class PreferredSquadService {
     public PreferredSquadService(HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) throws IOException {
         this.request = request;
         this.loggedInUserService = loggedInUserService;
-        this.squadlistApi = squadlistApiFactory.createClient();
     }
 
     public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownSquadException, SignedInMemberRequiredException {
         if (!Strings.isNullOrEmpty(squadId)) {
-            final Squad selectedSquad = squadlistApi.getSquad(squadId);
+            final Squad selectedSquad = instanceSpecificApiClient.getSquad(squadId);
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
