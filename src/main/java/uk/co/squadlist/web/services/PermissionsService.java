@@ -31,7 +31,7 @@ public class PermissionsService {
 	}
 
 	public boolean hasPermission(Member loggedInMember, Permission permission) throws UnknownMemberException {
-		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 		if (permission == Permission.ADD_MEMBER) {
@@ -51,7 +51,7 @@ public class PermissionsService {
 	}
 
 	public boolean hasMemberPermission(Member loggedInMember, Permission permission, String memberId) throws UnknownMemberException {
-		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 
@@ -63,7 +63,7 @@ public class PermissionsService {
 	}
 
 	public boolean hasSquadPermission(Member loggedInMember, Permission permission, Squad squad) throws UnknownMemberException, UnknownSquadException {
-		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 
@@ -78,7 +78,7 @@ public class PermissionsService {
 	}
 
 	public boolean hasOutingPermission(Member loggedInMember, Permission permission, String outingId) throws UnknownOutingException {
-		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 
@@ -91,7 +91,7 @@ public class PermissionsService {
 	}
 
 	public boolean canSeePhoneNumberForRower(Member loggedInMember, Member member) {
-		if (loggedInMember.getAdmin() != null && loggedInMember.getAdmin()) {
+		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 		if (loggedInMember.equals(member)) {
@@ -104,21 +104,21 @@ public class PermissionsService {
 	}
 
 	public boolean canAddNewOuting(Member member) {
-		if (member.getAdmin() != null && member.getAdmin()) {
+		if (isAdmin(member)) {
 			return true;
 		}
 		return userIsCoachOrSquadRep(member);
 	}
 
 	public boolean canSeeAllSquadsAvailability(Member loggedInRower) {
-		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
+		if (isAdmin(loggedInRower)) {
 			return true;
 		}
 		return userIsCoach(loggedInRower);
 	}
 
 	public boolean canChangeRoleFor(Member loggedInRower, Member member) {
-		if (loggedInRower.getAdmin() != null && loggedInRower.getAdmin()) {
+		if (isAdmin(loggedInRower)) {
 			return true;
 		}
 		if (userIsCoach(loggedInRower)) {
@@ -128,14 +128,14 @@ public class PermissionsService {
 	}
 
 	public boolean canEditOuting(Member member, Outing outing) {
-		if (member.getAdmin() != null && member.getAdmin()) {
+		if (isAdmin(member)) {
 			return true;
 		}
 		return userIsCoach(member) || isSquadRepForOuting(member, outing);
 	}
 
 	public boolean canSeeEntryFormDetailsForSquad(Member member, Squad squad) {
-		if (member.getAdmin() != null && member.getAdmin()) {
+		if (isAdmin(member)) {
 			return true;
 		}
 		return userIsCoach(member) || isSquadRepForThisSquad(member, squad);
@@ -146,27 +146,25 @@ public class PermissionsService {
 	}
 	
 	private boolean canEditMembersDetails(Member loggedInRower, String memberId) throws UnknownMemberException {
-		final boolean isAdmin = loggedInRower.getAdmin() != null && loggedInRower.getAdmin();
-		if (isAdmin) {
+        if (isAdmin(loggedInRower)) {
 			return true;
 		}
-		
-		final boolean isCoach =  userIsCoach(loggedInRower);
-		if (isCoach) {
+        if (userIsCoach(loggedInRower)) {
 			return true;
 		}
-		
-		final boolean isSameRower = loggedInRower.getId().equals(memberId);
-		if (isSameRower) {
+        if (loggedInRower.getId().equals(memberId)) {
 			return true;
 		}
 		
 		final Member member = squadlistApi.getMember(memberId);
-		final boolean isSquadRepForRower = isSquadRepForRower(loggedInRower, member);
-		return isSquadRepForRower;
+        return isSquadRepForRower(loggedInRower, member);
 	}
-	
-	private boolean isMemberOfSquad(Member member, Squad squad) {
+
+    private boolean isAdmin(Member loggedInRower) {
+        return loggedInRower.getAdmin() != null && loggedInRower.getAdmin();
+    }
+
+    private boolean isMemberOfSquad(Member member, Squad squad) {
 		return member.getSquads().contains(squad);
 	}
 
