@@ -44,7 +44,7 @@ public class PermissionsService {
 			return canAddNewOuting(loggedInMember);
 		}
 		if (permission == Permission.VIEW_ENTRY_DETAILS) {
-			return canSeeEntryFormDetails(loggedInMember);
+			return canSeeEntryFormDetailsLink(loggedInMember);
 		}
 
 		return false;
@@ -220,7 +220,7 @@ public class PermissionsService {
 		return false;
 	}
 
-	private boolean canSeeEntryFormDetails(Member loggedInMember) {
+	private boolean canSeeEntryFormDetailsLink(Member loggedInMember) {
 		List<Squad> squads = squadlistApi.getSquads(instanceConfig.getInstance());
 		for (Squad squad : squads) {
 			if (canSeeEntryFormDetailsForSquad(loggedInMember, squad)) {
