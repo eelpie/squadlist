@@ -42,11 +42,11 @@ public class PermissionsHelper {
 		return permissionsService.hasOutingPermission(loggedInMember, permission, outing);
 	}
 	
-	public boolean hasMemberPermission(Member member, String permissionName) throws UnknownMemberException, SignedInMemberRequiredException {
+	public boolean hasMemberPermission(Member member, String permissionName) throws SignedInMemberRequiredException {
 		final Permission permission = Permission.valueOf(permissionName);
 		final Member loggedInMember = loggedInUserService.getLoggedInMember();
 		log.debug("Checking view permission " + permission +  " for member " + member.getId() + " for " + loggedInMember.getUsername());
-		return permissionsService.hasMemberPermission(loggedInMember, permission, member.getId());
+		return permissionsService.hasMemberPermission(loggedInMember, permission, member);
 	}
 	
 }

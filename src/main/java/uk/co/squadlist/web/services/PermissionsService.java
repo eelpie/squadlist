@@ -2,11 +2,7 @@ package uk.co.squadlist.web.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.exceptions.UnknownOutingException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -19,13 +15,6 @@ public class PermissionsService {
 
 	private static final String REP = "Rep";
 	private static final String COACH = "Coach";	// TODO push to an enum
-
-	private final SquadlistApi squadlistApi;
-
-	@Autowired
-	public PermissionsService(SquadlistApiFactory squadlistApiFactory) throws IOException {
-		this.squadlistApi = squadlistApiFactory.createClient();
-	}
 
 	public boolean hasPermission(Member loggedInMember, Permission permission) {
 		if (isAdmin(loggedInMember)) {
@@ -47,19 +36,19 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasMemberPermission(Member loggedInMember, Permission permission, String memberId) throws UnknownMemberException {
+	public boolean hasMemberPermission(Member loggedInMember, Permission permission, Member member) {
 		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 
 		if (permission == Permission.VIEW_MEMBER_DETAILS || permission == Permission.EDIT_MEMBER_DETAILS) {
-			return canEditMembersDetails(loggedInMember, memberId);
+			return canEditMembersDetails(loggedInMember, member);
 		}
 
 		return false;
 	}
 
-	public boolean hasSquadPermission(Member loggedInMember, Permission permission, Squad squad) throws UnknownMemberException, UnknownSquadException {
+	public boolean hasSquadPermission(Member loggedInMember, Permission permission, Squad squad) {
 		if (isAdmin(loggedInMember)) {
 			return true;
 		}
@@ -129,12 +118,10 @@ public class PermissionsService {
 		return true;	// TODO
 	}
 	
-	private boolean canEditMembersDetails(Member loggedInRower, String memberId) throws UnknownMemberException {
-        if (isAdmin(loggedInRower) || (userIsCoach(loggedInRower)) || loggedInRower.getId().equals(memberId)) {
+	private boolean canEditMembersDetails(Member loggedInRower, Member member) {
+        if (isAdmin(loggedInRower) || (userIsCoach(loggedInRower)) || loggedInRower.getId().equals(member.getId())) {
 			return true;
 		}
-		
-		final Member member = squadlistApi.getMember(memberId);
         return isSquadRepForRower(loggedInRower, member);
 	}
 

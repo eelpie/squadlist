@@ -22,13 +22,6 @@ public class PermissionsServiceTest {
 	private static final String ADMIN_ID = "admin-id";
 	private static final String COACH_ID = "coach-id";
 	private static final String ROWER_ID = "auser";
-	
-	@Mock
-	private SquadlistApiFactory squadlistApiFactory;
-	@Mock
-	private InstanceConfig instanceConfig;
-	@Mock
-	private SquadlistApi squadlistApi;
 
 	private Member admin;
 	private Member coach;
@@ -36,10 +29,8 @@ public class PermissionsServiceTest {
 
 	private PermissionsService permissionsService;
 
-
-
 	@Before
-	public void setup() throws UnknownMemberException, IOException {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		
 		this.admin = new Member();
@@ -56,30 +47,22 @@ public class PermissionsServiceTest {
 		rower.setAdmin(false);
 		rower.setRole("Rower");
 
-		when(squadlistApiFactory.createClient()).thenReturn(squadlistApi);
-				
-		this.permissionsService = new PermissionsService(squadlistApiFactory, instanceConfig);
+		this.permissionsService = new PermissionsService();
 	}
 
 	@Test
-	public void adminsCanEditMemberDetails() throws Exception {
-		when(squadlistApi.getMember(ADMIN_ID)).thenReturn(admin);
-		
-		assertTrue(permissionsService.hasMemberPermission(admin, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+	public void adminsCanEditMemberDetails() {
+		assertTrue(permissionsService.hasMemberPermission(admin, Permission.EDIT_MEMBER_DETAILS, rower));
 	}
 	
 	@Test
-	public void coachesCanEditMemberDetails() throws Exception {
-		when(squadlistApi.getMember(COACH_ID)).thenReturn(coach);
-		
-		assertTrue(permissionsService.hasMemberPermission(coach, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+	public void coachesCanEditMemberDetails() {
+		assertTrue(permissionsService.hasMemberPermission(coach, Permission.EDIT_MEMBER_DETAILS, rower));
 	}
 	
 	@Test
-	public void roweerCanEditThereOwnMemberDetails() throws Exception {
-		when(squadlistApi.getMember(ROWER_ID)).thenReturn(rower);
-		
-		assertTrue(permissionsService.hasMemberPermission(rower, Permission.EDIT_MEMBER_DETAILS, ROWER_ID));
+	public void roweerCanEditThereOwnMemberDetails() {
+		assertTrue(permissionsService.hasMemberPermission(rower, Permission.EDIT_MEMBER_DETAILS, rower));
 	}
 	
 }
