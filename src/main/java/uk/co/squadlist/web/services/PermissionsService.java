@@ -74,12 +74,11 @@ public class PermissionsService {
 		return false;
 	}
 
-	public boolean hasOutingPermission(Member loggedInMember, Permission permission, String outingId) throws UnknownOutingException {
+	public boolean hasOutingPermission(Member loggedInMember, Permission permission, Outing outing) {
 		if (isAdmin(loggedInMember)) {
 			return true;
 		}
 
-		final Outing outing = squadlistApi.getOuting(outingId);
 		if (permission == Permission.EDIT_OUTING) {
 			return canEditOuting(loggedInMember, outing);
 		}
