@@ -105,7 +105,7 @@ public class MembersController {
             return renderNewMemberForm(loggedInUserApi);
         }
 
-        final String initialPassword = passwordGenerator.generateRandomPassword(10);
+        final String initialPassword = passwordGenerator.generateRandomPassword();
 
         try {
             final Member newMember = loggedInUserApi.createMember(memberDetails.getFirstName(), // TODO should be a user API client
