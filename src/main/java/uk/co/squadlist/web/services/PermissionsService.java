@@ -221,13 +221,7 @@ public class PermissionsService {
 	}
 
 	private boolean canSeeEntryFormDetailsLink(Member loggedInMember) {
-		List<Squad> squads = squadlistApi.getSquads(instanceConfig.getInstance());
-		for (Squad squad : squads) {
-			if (canSeeEntryFormDetailsForSquad(loggedInMember, squad)) {
-				return true;
-			}
-		}
-		return false;
+		return isAdmin(loggedInMember) || userIsCoach(loggedInMember) || userIsSquadRep(loggedInMember);
 	}
 
 }
