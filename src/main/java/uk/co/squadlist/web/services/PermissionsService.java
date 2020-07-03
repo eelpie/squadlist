@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
@@ -22,15 +21,13 @@ public class PermissionsService {
 	private static final String COACH = "Coach";	// TODO push to an enum
 
 	private final SquadlistApi squadlistApi;
-	private final InstanceConfig instanceConfig;
 
 	@Autowired
-	public PermissionsService(SquadlistApiFactory squadlistApiFactory, InstanceConfig instanceConfig) throws IOException {
+	public PermissionsService(SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.squadlistApi = squadlistApiFactory.createClient();
-		this.instanceConfig = instanceConfig;
 	}
 
-	public boolean hasPermission(Member loggedInMember, Permission permission) throws UnknownMemberException {
+	public boolean hasPermission(Member loggedInMember, Permission permission) {
 		if (isAdmin(loggedInMember)) {
 			return true;
 		}
@@ -91,12 +88,10 @@ public class PermissionsService {
 	}
 
 	public boolean canSeePhoneNumberForRower(Member loggedInMember, Member member) {
-		if (isAdmin(loggedInMember)) {
+		if (isAdmin(loggedInMember) || loggedInMember.equals(member)) {
 			return true;
 		}
-		if (loggedInMember.equals(member)) {
-			return true;
-		}
+
 		final boolean targetIsCoachOrSquadRep = userIsCoach(member) || userIsSquadRep(member);
 		final boolean isCoach = userIsCoach(loggedInMember);
 		final boolean areInSameSquad = areInSameSquads(loggedInMember, member);
@@ -110,22 +105,15 @@ public class PermissionsService {
 		return userIsCoachOrSquadRep(member);
 	}
 
-	public boolean canSeeAllSquadsAvailability(Member loggedInRower) {
-		if (isAdmin(loggedInRower)) {
-			return true;
-		}
-		return userIsCoach(loggedInRower);
-	}
-
 	public boolean canChangeRoleFor(Member loggedInRower, Member member) {
 		if (isAdmin(loggedInRower)) {
 			return true;
 		}
-		if (userIsCoach(loggedInRower)) {
-			return true;
-		}
-		return false;
-	}
+		if (loggedInRower.getId().equals(member.getId())) {
+		    return false;
+        }
+        return userIsCoach(loggedInRower);
+    }
 
 	public boolean canEditOuting(Member member, Outing outing) {
 		if (isAdmin(member)) {
@@ -135,10 +123,7 @@ public class PermissionsService {
 	}
 
 	public boolean canSeeEntryFormDetailsForSquad(Member member, Squad squad) {
-		if (isAdmin(member)) {
-			return true;
-		}
-		return userIsCoach(member) || isSquadRepForThisSquad(member, squad);
+		return isAdmin(member) || userIsCoach(member) || isSquadRepForThisSquad(member, squad);
 	}
 
 	public boolean canSeeContactDetailsForSquad(Member member, Squad squad) {
@@ -146,13 +131,7 @@ public class PermissionsService {
 	}
 	
 	private boolean canEditMembersDetails(Member loggedInRower, String memberId) throws UnknownMemberException {
-        if (isAdmin(loggedInRower)) {
-			return true;
-		}
-        if (userIsCoach(loggedInRower)) {
-			return true;
-		}
-        if (loggedInRower.getId().equals(memberId)) {
+        if (isAdmin(loggedInRower) || (userIsCoach(loggedInRower)) || loggedInRower.getId().equals(memberId)) {
 			return true;
 		}
 		
