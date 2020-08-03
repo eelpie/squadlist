@@ -30,7 +30,7 @@ public class RequestHostService {
 		log.info("All request headers: " + on.join(headerNames.asIterator()));
 
 		final String xForwardedHost = request.getHeader(X_FORWARDED_HOST);
-		if (Strings.isNullOrEmpty(xForwardedHost)) {
+		if (!Strings.isNullOrEmpty(xForwardedHost)) {
 			log.debug("Request x-forwarded-host is: " + xForwardedHost);
 			return xForwardedHost;
 		}
