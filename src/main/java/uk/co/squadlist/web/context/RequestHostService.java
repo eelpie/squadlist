@@ -1,11 +1,13 @@
 package uk.co.squadlist.web.context;
 
+import com.google.common.base.Joiner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 
 @Component
 public class RequestHostService {
@@ -22,6 +24,10 @@ public class RequestHostService {
 	}
 
 	public String getRequestHost() {
+		Enumeration<String> headerNames = request.getHeaderNames();
+		Joiner on = Joiner.on(", ");
+		log.info("All request headers: " + on.join(headerNames.asIterator()));
+
 		final String serverName = request.getHeader(X_FORWARDED_HOST);
 		log.debug("Request host is: " + serverName);
 		return serverName;
