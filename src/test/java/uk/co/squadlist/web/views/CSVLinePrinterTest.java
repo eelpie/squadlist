@@ -1,14 +1,12 @@
 package uk.co.squadlist.web.views;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import com.google.common.collect.Lists;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
+import static com.google.common.truth.Truth.assertThat;
 
 public class CSVLinePrinterTest {
 
