@@ -25,7 +25,7 @@ public class RequestHostService {
 
 	public String getRequestHost() {
 		// The requested host name is likely to be on the host of forwarded host header
-		Stream<String> vhostHeaders = List.of("host", "x-forwarded-host").stream();
+		Stream<String> vhostHeaders = List.of("x-forwarded-host", "host").stream();
 
 		Optional<String> firstHost = vhostHeaders.map(h -> request.getHeader(h)).filter(v -> !Strings.isNullOrEmpty(v)).findFirst();
 		if (firstHost.isPresent()) {

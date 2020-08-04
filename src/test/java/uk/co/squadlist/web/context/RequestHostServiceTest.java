@@ -10,9 +10,10 @@ import static org.mockito.Mockito.*;
 public class RequestHostServiceTest {
 
     @Test
-    public void shouldUseHostHeaderToIdentifyInstance() {
+    public void shouldUseXForwardedHostHeaderToIdentifyInstance() {
+        // ie. when running behind nginx proxy or similar.
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader("host")).thenReturn("a-club.squadlist.app");
+        when(request.getHeader("x-forwarded-host")).thenReturn("a-club.squadlist.app");
 
         String requestHost = new RequestHostService(request).getRequestHost();
 
@@ -20,10 +21,9 @@ public class RequestHostServiceTest {
     }
 
     @Test
-    public void shouldFallbackToXForwardHostIfHostNotSeen() {
-        // ie. when running behind nginx proxy or similar.
+    public void shouldFallbackToHostIfXForwardHostNotSeen() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader("x-forwarded-host")).thenReturn("another-club.squadlist.app");
+        when(request.getHeader("host")).thenReturn("another-club.squadlist.app");
 
         String requestHost = new RequestHostService(request).getRequestHost();
 
