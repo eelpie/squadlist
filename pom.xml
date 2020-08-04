@@ -199,6 +199,12 @@
             <version>1.10.8</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.truth</groupId>
+            <artifactId>truth</artifactId>
+            <version>1.0.1</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>

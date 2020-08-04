@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.views;
 
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,8 +21,8 @@ public class CSVLinePrinterTest {
 		List<String> headers = Lists.newArrayList("h1", "h2", "h3");
 		final String csv = new CSVLinePrinter().printAsCSV(rows, headers);
 
-		assertTrue(csv.startsWith("h1,h2,h3"));
-		assertTrue(csv.contains("a,\"b,c\",c"));
+		assertThat(csv).startsWith("h1,h2,h3");
+		assertThat(csv).containsMatch("a,\"b,c\",c");
 	}
 
 }
