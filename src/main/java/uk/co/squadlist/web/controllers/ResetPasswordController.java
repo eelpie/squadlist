@@ -46,7 +46,7 @@ public class ResetPasswordController {
         String instance = instanceConfig.getInstance();
         log.info("Resetting password for: " + instance + " / " + username);
         try {
-            squadlistApi.resetPassword(instance, username);    // TODO errors
+            squadlistApi.resetPassword(instance, username.trim());    // TODO errors
             log.info("Reset password call successful for: " + username);
             return new ModelAndView("resetPasswordSent").addObject("title", "Reset password");
 
