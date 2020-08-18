@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
+import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
 
@@ -23,7 +24,7 @@ public class FacebookLinkedAccountsService {
 		this.api = squadlistApiFactory.createClient();
 	}
 	
-	public void linkAccount(String memberId, String facebookId) throws UnknownMemberException {
+	public void linkAccount(String memberId, String facebookId) throws UnknownMemberException, InvalidMemberException {
 		log.info("Linking logged in user " + memberId + " to Facebook user: " + facebookId);
 		
 		final Member updateMember = api.getMember(memberId);
@@ -35,7 +36,7 @@ public class FacebookLinkedAccountsService {
 		return member.getFacebookId() != null;
 	}
 	
-	public void removeLinkage(String memberId) throws UnknownMemberException {
+	public void removeLinkage(String memberId) throws UnknownMemberException, InvalidMemberException {
 		log.info("Removing linked Facebook account for logged in user " + memberId);		
 		Member member = api.getMember(memberId);
 		member.setFacebookId(null);

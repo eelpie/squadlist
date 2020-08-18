@@ -142,7 +142,7 @@ public class InstanceSpecificApiClient {
         return api.getMember(memberId);
     }
 
-    public Member updateMemberDetails(Member member) {
+    public Member updateMemberDetails(Member member) throws InvalidMemberException {
         return api.updateMemberDetails(member);
     }
 
@@ -150,7 +150,7 @@ public class InstanceSpecificApiClient {
         return api.updateMemberProfileImage(member, bytes);
     }
 
-    public Squad updateSquad(Squad squad) {
+    public Squad updateSquad(Squad squad) throws InvalidSquadException {
         return api.updateSquad(squad);
     }
 

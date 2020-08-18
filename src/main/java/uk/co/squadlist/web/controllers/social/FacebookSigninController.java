@@ -20,6 +20,7 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
+import uk.co.squadlist.web.exceptions.InvalidMemberException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.model.Member;
@@ -76,7 +77,7 @@ public class FacebookSigninController {
     }
 
     @RequestMapping(value = "/social/facebook/link/callback", method = RequestMethod.GET)
-    public ModelAndView facebookLinkCallback(@RequestParam(required = false) String code, @RequestParam(required = false) String state) throws IOException, UnknownMemberException, SignedInMemberRequiredException {
+    public ModelAndView facebookLinkCallback(@RequestParam(required = false) String code, @RequestParam(required = false) String state) throws IOException, UnknownMemberException, SignedInMemberRequiredException, InvalidMemberException {
         if (code == null || state == null) {
             log.warn("Not a complete Facebook callback; redirecting back to social settings");
             return redirectToSocialSettings();
@@ -131,7 +132,7 @@ public class FacebookSigninController {
     }
 
     @RequestMapping(value = "/social/facebook/remove", method = RequestMethod.GET)
-    public ModelAndView remove() throws UnknownMemberException, SignedInMemberRequiredException {
+    public ModelAndView remove() throws UnknownMemberException, SignedInMemberRequiredException, InvalidMemberException {
         facebookLinkedAccountsService.removeLinkage(loggedInUserService.getLoggedInMember().getId());    // TODO Should tell Facebook to invalidate the token as well
         return redirectToSocialSettings();
     }

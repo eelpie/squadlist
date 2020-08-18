@@ -117,7 +117,13 @@ public class SquadsController {
 
         squad.setName(squadDetails.getName());
         log.info("Updating squad: " + squad);
-        loggedInUserApi.updateSquad(squad);
+
+        try {
+            loggedInUserApi.updateSquad(squad);
+        } catch (InvalidSquadException e) {
+            log.warn("Invalid squad");
+            return renderEditSquadForm(squad, squadDetails, loggedInUserApi);
+        }
 
         final Set<String> updatedSquadMembers = Sets.newHashSet(COMMA_SPLITTER.split(squadDetails.getMembers()).iterator());
         log.info("Setting squad members to " + updatedSquadMembers.size() + " members: " + updatedSquadMembers);
