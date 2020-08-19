@@ -76,18 +76,20 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
-    public ModelAndView logout() throws Exception {
+    public ModelAndView logout() {
         loggedInUserService.cleanSignedIn();
         return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
     }
 
     private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
-        final ModelAndView mv = new ModelAndView("login");
         final Instance instance = api.getInstance(instanceConfig.getInstance());
-        mv.addObject("title", instance.getName());
-        mv.addObject("username", username);
-        mv.addObject("errors", errors);
-        return mv;
+        String currentUrl = urlBuilder.getBaseUrl();
+        return new ModelAndView("login").
+                addObject("title", instance.getName()).
+                addObject("username", username).
+                addObject("errors", errors).
+                addObject("currentUrl", currentUrl).
+                addObject("newUrl", currentUrl.replace("co.uk", "app"));
     }
 
     private String auth(String username, String password) {
