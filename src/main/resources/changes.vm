@@ -4,9 +4,14 @@
 <div class="container-fluid">
 
 	<div class="row">
-		<div class="col-md-12">
-		<h4>Changes</h4>
+		<div class="col-xs-8">
+		    <h4>Changes</h4>
 		</div>
+        <div class="col-xs-4">
+            <div class="pull-right">
+                <p><a href="mailto:enquires@squadlist.co.uk">Contact Squadlist</a></p>
+            </div>
+        </div>
 	</div>
 	<hr/>
 	
