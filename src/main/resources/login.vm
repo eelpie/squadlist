@@ -73,9 +73,8 @@
 			<br/>				
 
 			<p class="alert alert-warning">
-			19 Aug 2020 <br/> Next week the link for your club's copy of Squadlist list will change from:<br/>
+			24 Aug 2020 <br/> The link for your club's copy of Squadlist has changed from:<br/>
 			$currentUrl to <a href="$newUrl">$newUrl</a><br/>
-		    Your existing bookmarks will still work and no action is required.
 		    </p>
 
 		</div>
