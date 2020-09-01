@@ -70,13 +70,7 @@
 		<div class="col-sm-2"></div>
 		<div class="col-sm-6">
 			<p>
-			<br/>				
-
-			<p class="alert alert-warning">
-			24 Aug 2020 <br/> The link for your club's copy of Squadlist has changed from:<br/>
-			$currentUrl to <a href="$newUrl">$newUrl</a><br/>
-		    </p>
-
+			<br/>
 		</div>
 	</div>
 
