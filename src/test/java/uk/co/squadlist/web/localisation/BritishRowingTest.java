@@ -14,54 +14,54 @@ public class BritishRowingTest {
 	private final BritishRowing britishRowing = new BritishRowing();
 
 	@Test
-	public void canRecogniseValidBRRegistrationNumbers() throws Exception {
+	public void canRecogniseValidBRRegistrationNumbers() {
 		assertNull(britishRowing.checkRegistrationNumber("202605G1020791"));
 	}
 
 	@Test
-	public void shouldReturnValidationMessageForInvalidLookingRegistrationNumber() throws Exception {
+	public void shouldReturnValidationMessageForInvalidLookingRegistrationNumber() {
 		assertEquals("Not in the expected British Rowing format", britishRowing.checkRegistrationNumber("2013343434"));
 	}
 
 	@Test
-	public void shouldDetectValidButExpiredRegistrationNumbers() throws Exception {
+	public void shouldDetectValidButExpiredRegistrationNumbers() {
 		assertEquals("Expired registration", britishRowing.checkRegistrationNumber("201405G1020791"));
 	}
 
 	@Test
-	public void shouldReturnNullProblemsForValidRegistrationNumbers() throws Exception {
+	public void shouldReturnNullProblemsForValidRegistrationNumbers() {
 		assertNull(britishRowing.checkRegistrationNumber("206505G1020791"));
 	}
 
 	@Test
-	public void shouldRecogniseLifeMembershipsAsValidRegistrationNumbers() throws Exception {
+	public void shouldRecogniseLifeMembershipsAsValidRegistrationNumbers() {
 		assertNull(britishRowing.checkRegistrationNumber("206509P1012345"));
 	}
 
 	@Test
-	public void shouldReturnNullProblemsForNonSetRegistrationNumber() throws Exception {
+	public void shouldReturnNullProblemsForNonSetRegistrationNumber() {
 		assertNull(britishRowing.checkRegistrationNumber(null));
 	}
 
 	@Test
-	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() throws Exception {
-		assertEquals(45, britishRowing.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
-		assertEquals(45, britishRowing.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
-		assertEquals(45, britishRowing.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
+	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() {
+		assertEquals(46, britishRowing.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
+		assertEquals(46, britishRowing.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
+		assertEquals(46, britishRowing.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
 	}
 
 	@Test
-	public void canDetermineAgeGradeFromEffectiveAge() throws Exception {
+	public void canDetermineAgeGradeFromEffectiveAge() {
 		assertEquals("Masters B", britishRowing.getAgeGrade(40));
 	}
 
 	@Test
-	public void canDetermineAgeGradeFromDateOfBirth() throws Exception {
+	public void canDetermineAgeGradeFromDateOfBirth() {
 		assertEquals("Masters C", britishRowing.getAgeGrade(new DateTime(1975, 2, 1, 0, 0, 0, 0).toDate()));
 	}
 
 	@Test
-	public void pointsGradesAreBasedOnMaximumPointsAllowed() throws Exception {
+	public void pointsGradesAreBasedOnMaximumPointsAllowed() {
 		assertEquals("Novice", britishRowing.getRowingStatus(Lists.newArrayList("0")));
 		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("1")));
 		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("2")));
@@ -77,14 +77,14 @@ public class BritishRowingTest {
 	}
 
 	@Test
-	public void crewPointsCannotBeInferredIfSomeCrewMembersHaveNotProvidedPointsInformation() throws Exception {
+	public void crewPointsCannotBeInferredIfSomeCrewMembersHaveNotProvidedPointsInformation() {
 		List<String> rowingPoints = Lists.newArrayList("0", "1", null, "1");
 
 		assertNull(britishRowing.getRowingStatus(rowingPoints));
 	}
 
 	@Test
-	public void canCalculateStatusForDifferentCrewSizes() throws Exception {
+	public void canCalculateStatusForDifferentCrewSizes() {
 		assertEquals("Novice", britishRowing.getRowingStatus(Lists.newArrayList("0")));
 		assertEquals("Intermediate 3", britishRowing.getRowingStatus(Lists.newArrayList("1", "0","0", "0")));
 		assertEquals("Intermediate 2", britishRowing.getRowingStatus(Lists.newArrayList("16", "0","0", "0")));

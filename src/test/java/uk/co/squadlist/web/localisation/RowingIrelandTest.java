@@ -14,30 +14,30 @@ public class RowingIrelandTest {
 	private final RowingIreland rowingIreland = new RowingIreland();
 
 	@Test
-	public void officialNameIsRowingSpaceIreland() throws Exception {
+	public void officialNameIsRowingSpaceIreland() {
 		assertEquals("Rowing Ireland", rowingIreland.getName());
 	}
 
 	@Test
-	public void rowingIrelandRegisterationNumbersumbersAreNumbersWithUptoFiveDigits() throws Exception {
+	public void rowingIrelandRegisterationNumbersumbersAreNumbersWithUptoFiveDigits() {
 		assertNull(rowingIreland.checkRegistrationNumber("99999"));
 		assertNull(rowingIreland.checkRegistrationNumber("12345"));
 		assertNull(rowingIreland.checkRegistrationNumber("12"));
 	}
 
 	@Test
-	public void shouldReturnValidationMessageForInvalidLookingRegistrationNumber() throws Exception {
+	public void shouldReturnValidationMessageForInvalidLookingRegistrationNumber() {
 		assertEquals("Not in the expected Rowing Ireland format", rowingIreland.checkRegistrationNumber("abc123"));
 		assertEquals("Not in the expected Rowing Ireland format", rowingIreland.checkRegistrationNumber("1234567"));
 	}
 
 	@Test
-	public void shouldReturnNullProblemsForEmptyRegistrationNumber() throws Exception {
+	public void shouldReturnNullProblemsForEmptyRegistrationNumber() {
 		assertNull(rowingIreland.checkRegistrationNumber(null));
 	}
 
 	@Test
-	public void pointsGradesAreBasedOnMaximumPointsAllowed() throws Exception {
+	public void pointsGradesAreBasedOnMaximumPointsAllowed() {
 		assertEquals("Novice", rowingIreland.getRowingStatus(Lists.newArrayList("0")));
 		assertEquals("Club 2", rowingIreland.getRowingStatus(Lists.newArrayList("200")));
 		assertEquals("Club 2", rowingIreland.getRowingStatus(Lists.newArrayList("250")));
@@ -49,36 +49,36 @@ public class RowingIrelandTest {
 	}
 
 	@Test
-	public void canCalculateStatusForDifferentCrewSizes() throws Exception {
+	public void canCalculateStatusForDifferentCrewSizes() {
 		assertEquals("Club 2", rowingIreland.getRowingStatus(Lists.newArrayList("50", "400", "50", "50")));
 		assertEquals("Club 1", rowingIreland.getRowingStatus(Lists.newArrayList("50", "400", "50", "550")));
 	}
 
 	@Test
-	public void nullPointsImpliesUnknownStatus() throws Exception {
+	public void nullPointsImpliesUnknownStatus() {
 		assertEquals(null, rowingIreland.getRowingStatus(""));
 	}
 
 	@Test
-	public void crewPointsCannotBeInferredIfSomeCrewMembersHaveNotProvidedPointsInformation() throws Exception {
+	public void crewPointsCannotBeInferredIfSomeCrewMembersHaveNotProvidedPointsInformation() {
 		List<String> rowingPoints = Lists.newArrayList("0", "1", null, "1");
 		assertNull(rowingIreland.getRowingStatus(rowingPoints));
 	}
 
 	@Test
-	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() throws Exception {
-		assertEquals(45, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
-		assertEquals(45, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
-		assertEquals(45, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
+	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() {
+		assertEquals(46, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0).toDate()));
+		assertEquals(46, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0).toDate()));
+		assertEquals(46, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0).toDate()));
 	}
 
 	@Test
-	public void canDetermineAgeGradeFromEffectiveAge() throws Exception {
+	public void canDetermineAgeGradeFromEffectiveAge() {
 		assertEquals("Masters B", rowingIreland.getAgeGrade(40));
 	}
 
 	@Test
-	public void canDetermineAgeGradeFromDateOfBirth() throws Exception {
+	public void canDetermineAgeGradeFromDateOfBirth() {
 		assertEquals("Masters C", rowingIreland.getAgeGrade(new DateTime(1975, 2, 1, 0, 0, 0, 0).toDate()));
 	}
 
