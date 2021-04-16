@@ -14,6 +14,13 @@
         <version>1.2.8.RELEASE</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>local-dependencies</id>
+            <url>file:${basedir}/lib/repository</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -52,7 +59,7 @@
         <dependency>
             <groupId>uk.co.squadlist</groupId>
             <artifactId>squadlist-api-swagger-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>2021041601-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
