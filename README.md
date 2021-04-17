@@ -21,3 +21,14 @@ This is a Spring Boot application. It can be run locally using the Maven plugin.
 ```
 mvn spring-boot:run
 ```
+
+## Building container images
+
+We use Google Cloud Build to produce container images.
+To run this build locally:
+
+```
+gcloud components install cloud-build-local
+cloud-build-local --config=cloudbuild.yaml --dryrun=false --push=false .
+```
+

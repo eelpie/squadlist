@@ -1,0 +1,8 @@
+steps:
+- name: 'maven:3-openjdk-11'
+  entrypoint: 'mvn'
+  args: ['install']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'eu.gcr.io/$PROJECT_ID/squadlist', '.']
+images:
+- 'eu.gcr.io/$PROJECT_ID/squadlist'
