@@ -67,21 +67,21 @@ public class ContactsModelPopulator {
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
     public void populateModel(final Squad squad, final ModelAndView mv, Instance instance, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownInstanceException, SignedInMemberRequiredException {
-		List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
-		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
+        List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
+        Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
-		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
-		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
-		final Set<String> emails = Sets.newHashSet();
-		for (Member member : redactedMembers) {
-			if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
-				emails.add(member.getEmailAddress());
-			}
-		}
+        final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
+        final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
+        final Set<String> emails = Sets.newHashSet();
+        for (Member member : redactedMembers) {
+            if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
+                emails.add(member.getEmailAddress());
+            }
+        }
 
-		mv.addObject("title", squad.getName() + " contacts");
-		mv.addObject("squad", squad);
-		mv.addObject("members", redactedMembers);
+        mv.addObject("title", squad.getName() + " contacts");
+        mv.addObject("squad", squad);
+        mv.addObject("members", redactedMembers);
         if (!emails.isEmpty()) {
             mv.addObject("emails", Lists.newArrayList(emails));
         }
