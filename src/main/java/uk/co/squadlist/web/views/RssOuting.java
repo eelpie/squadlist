@@ -47,6 +47,11 @@ public class RssOuting implements RssFeedable {
 	}
 
 	@Override
+	public String getFeatureName() {
+		return null;
+	}
+
+	@Override
 	public String getWebUrl() {
 		return url;
 	}
