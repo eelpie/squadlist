@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
@@ -56,6 +57,16 @@ public class LoggedInUserService {
             throw new SignedInMemberRequiredException();
         }
         return new InstanceSpecificApiClient(squadlistApiFactory.createForToken(token), instanceConfig.getInstance());
+    }
+
+    public DefaultApi getSwaggerApiClientForLoggedInUser() throws SignedInMemberRequiredException {
+        final String token = getLoggedInMembersToken();
+        if (token == null) {
+            log.debug("No signed in user token found");
+            throw new SignedInMemberRequiredException();
+        }
+
+        return squadlistApiFactory.createSwaggerApiClientForToken(token);
     }
 
     private String getLoggedInMembersToken() {

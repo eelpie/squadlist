@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
@@ -55,13 +57,15 @@ public class AdminController {
     private final DateFormatter dateFormatter;
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
                            ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
                            UrlBuilder urlBuilder,
                            Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
-                           LoggedInUserService loggedInUserService) {
+                           LoggedInUserService loggedInUserService,
+                           InstanceConfig instanceConfig) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -70,12 +74,15 @@ public class AdminController {
         this.dateFormatter = dateFormatter;
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public ModelAndView member() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+
         final List<Member> members = loggedInUserApi.getMembers();
 
         return viewFactory.getViewForLoggedInUser("admin").
@@ -87,8 +94,8 @@ public class AdminController {
                 addObject("inactiveMembers", activeMemberFilter.extractInactive(members)).
                 addObject("admins", extractAdminUsersFrom(members)).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance())).
-                addObject("statistics", loggedInUserApi.statistics()).
                 addObject("boats", loggedInUserApi.getBoats()).
+                addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instanceConfig.getInstance())).
                 addObject("language", context.getLanguage());
     }
 

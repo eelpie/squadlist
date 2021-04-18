@@ -160,8 +160,8 @@
 			<hr/>			
 			<h4>Statistics</h4>
 			<ul>
-				<li>Active members: $statistics.get('recentMembersCount')
-				<li>Total outings: $statistics.get('totalOutingsCount')
+				<li>Active members: $statistics.recentMembersCount
+				<li>Total outings: $statistics.totalOutingsCount
 			</ul>
 			
 			<hr/>

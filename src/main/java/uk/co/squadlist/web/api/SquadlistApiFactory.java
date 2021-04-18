@@ -31,6 +31,10 @@ public class SquadlistApiFactory {
 
     public DefaultApi createSwaggerClient() throws IOException {
         String clientAccessToken = new SquadlistApi(apiUrl).requestClientAccessToken(clientId, clientSecret);
+        return createSwaggerApiClientForToken(clientAccessToken);
+    }
+
+    public DefaultApi createSwaggerApiClientForToken(String clientAccessToken) {
         ApiClient apiClient = new ApiClient();
         apiClient.setBasePath(apiUrl);
         apiClient.setAccessToken(clientAccessToken);
