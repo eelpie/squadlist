@@ -3,6 +3,7 @@ package uk.co.squadlist.web.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.client.swagger.ApiClient;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 
 import java.io.IOException;
@@ -26,6 +27,14 @@ public class SquadlistApiFactory {
     public SquadlistApi createClient() throws IOException {
         String clientAccessToken = new SquadlistApi(apiUrl).requestClientAccessToken(clientId, clientSecret);
         return createForToken(clientAccessToken);
+    }
+
+    public DefaultApi createSwaggerClient() throws IOException {
+        String clientAccessToken = new SquadlistApi(apiUrl).requestClientAccessToken(clientId, clientSecret);
+        ApiClient apiClient = new ApiClient();
+        apiClient.setBasePath(apiUrl);
+        apiClient.setAccessToken(clientAccessToken);
+        return new DefaultApi(apiClient);
     }
 
     public SquadlistApi createForToken(String token) {
