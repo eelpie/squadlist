@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
@@ -78,6 +79,13 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
         if (e instanceof PermissionDeniedException) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return new ModelAndView("403");
+        }
+
+        if (e instanceof ApiException) {
+            if (((ApiException) e).getCode() == HttpStatus.NOT_FOUND.value()) {
+                response.setStatus(HttpStatus.NOT_FOUND.value());
+                return new ModelAndView("404");
+            }
         }
 
         if (e instanceof SignedInMemberRequiredException) {
