@@ -95,12 +95,12 @@ public class OutingsController {
             mv.addObject("current", true);
         }
 
-        mv.addObject("title", title);
-        mv.addObject("squad", squadToShow);
-        mv.addObject("startDate", startDate);
-        mv.addObject("endDate", endDate);
-        mv.addObject("month", month);
-        mv.addObject("outingMonths", getOutingMonthsFor(squadToShow, loggedInUserApi));
+        mv.addObject("title", title).
+                addObject("squad", squadToShow).
+                addObject("startDate", startDate).
+                addObject("endDate", endDate).
+                addObject("month", month).
+                addObject("outingMonths", getOutingMonthsFor(squadToShow, loggedInUserApi));
 
         final List<OutingWithSquadAvailability> squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
         mv.addObject("outings", squadOutings);
