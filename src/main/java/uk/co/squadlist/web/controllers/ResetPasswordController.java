@@ -62,7 +62,9 @@ public class ResetPasswordController {
         try {
             final String newPassword = squadlistApi.confirmResetPassword(instanceConfig.getInstance(), token);
             return new ModelAndView("resetPasswordConfirm").addObject("newPassword", newPassword);
+
         } catch (Exception e) {
+            log.warn("Reset password failed", e);
             return new ModelAndView("resetPasswordInvalidToken");
         }
     }
