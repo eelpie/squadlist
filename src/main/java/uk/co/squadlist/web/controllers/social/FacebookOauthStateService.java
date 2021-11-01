@@ -11,7 +11,7 @@ import com.google.common.cache.CacheBuilder;
 @Component
 public class FacebookOauthStateService {
 	
-	private final Cache<String, String> states;
+	private final Cache<String, String> states;	// TODO move to external persistance; this is not stateless
 
 	public FacebookOauthStateService() {		
 		this.states = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(1, TimeUnit.HOURS).build();
