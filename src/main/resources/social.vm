@@ -15,8 +15,7 @@
 			#if($hasLinkedFacebook)
 				<p><a href="$urlBuilder.removeFacebookUrl()">Remove linked Facebook account</a></p>
 			#else
-				<p><a href="$urlBuilder.linkFacebookUrl()">Link your Facebook account</a></p>
-				<p>Why? Linking your Facebook account will allow you to sign in using your Facebook account in addition to your username and password.</p>
+			    <p>No linked Facebook account.</p>
 			#end					
 		</div>
 	</div>

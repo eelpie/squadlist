@@ -6,7 +6,6 @@
 <h5>Third party cookies</h5>
 <p>We use Google Analytics to monitor usage of the system. Google set their own cookies to facilitate the analytics service.</p>
 <p>We pass the name of the club to Google Analytics for each page view. This is to allow us to identify active and inactive copies of the system.</p>
-<p>We support Facebook sign in. Facebook sign in is optional but may require Facebook to set cookies.</p>
 
 <h4>Use of personally identifiable information</h4>
 
@@ -32,9 +31,6 @@ This optional information is only shared within your club and is intended to fac
 <p>The rules of racing may require competitors to be classified by age, gender or weight.
 <p>This (optional) information allows members to be correctly classified as per a governing bodies rules of racing. This information
 may be visible to other members of your club (such as coaches) to facilitate this classification.</p>
-
-<h5>Facebook id</h5>
-<p>If a member has opted to use Facebook to sign into Squadlist we store that member's Facebook id. We do not persist any other data from Facebook.</p>
 
 <h4>Data retention</h4>
 
