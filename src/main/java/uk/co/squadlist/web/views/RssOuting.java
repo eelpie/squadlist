@@ -1,6 +1,8 @@
 package uk.co.squadlist.web.views;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
@@ -19,6 +21,11 @@ public class RssOuting implements RssFeedable {
 	@Override
 	public String getAuthor() {
 		return null;
+	}
+
+	@Override
+	public List<String> getCategories() {
+		return new ArrayList<>();
 	}
 
 	@Override
