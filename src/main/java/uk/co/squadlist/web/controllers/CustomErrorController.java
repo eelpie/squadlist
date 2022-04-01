@@ -42,9 +42,4 @@ public class CustomErrorController implements ErrorController {
         return new ModelAndView("404");
     }
 
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
-
 }
