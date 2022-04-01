@@ -14,7 +14,7 @@ public class PingController {
 
     @RequestMapping("/healthz")
     public ResponseEntity<String> ping() {
-        log.info("Ping returning ok");
+        log.debug("Ping returning ok");
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
