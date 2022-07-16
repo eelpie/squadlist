@@ -1,5 +1,5 @@
 package uk.co.squadlist.web.controllers.social;
-;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import uk.co.squadlist.web.model.Member;
 
 import java.io.IOException;
 
+;
+
 @Component
 public class FacebookLinkedAccountsService {
 	
@@ -23,16 +25,8 @@ public class FacebookLinkedAccountsService {
 	public FacebookLinkedAccountsService(SquadlistApiFactory squadlistApiFactory) throws IOException {
 		this.api = squadlistApiFactory.createClient();
 	}
-	
-	public void linkAccount(String memberId, String facebookId) throws UnknownMemberException, InvalidMemberException {
-		log.info("Linking logged in user " + memberId + " to Facebook user: " + facebookId);
-		
-		final Member updateMember = api.getMember(memberId);
-		updateMember.setFacebookId(facebookId);
-		api.updateMemberDetails(updateMember);
-	}
-	
-	public boolean isLinked(Member member) throws UnknownMemberException {
+
+	public boolean isLinked(Member member) {
 		return member.getFacebookId() != null;
 	}
 	
