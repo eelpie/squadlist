@@ -68,7 +68,6 @@
 	    			   	</a>
 	    			   	<ul class="dropdown-menu">
 							<li><a href="$urlBuilder.changePassword()">$text.text('change.password')</a></li>				
-							<li><a href="$urlBuilder.socialMediaAccounts()">$text.text('social.accounts')</a></li>
                             <li><a href="$urlBuilder.applicationUrl('/changes')">$text.text('whats.changed')</a></li>
 							<li><a href="$urlBuilder.applicationUrl('/logout')">$text.text('logout')</a></li>
 						</ul>

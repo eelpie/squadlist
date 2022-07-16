@@ -175,14 +175,6 @@ public class UrlBuilder {
 		return applicationUrl("/change-password");
 	}
 
-	public String socialMediaAccounts() {
-		return applicationUrl("/social");
-	}
-
-	public String removeFacebookUrl() {
-		return applicationUrl("/social/facebook/remove");
-	}
-
 	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());
 	}
