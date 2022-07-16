@@ -66,7 +66,7 @@ public class SquadsController {
 
         try {
             loggedInUserApi.createSquad(squadDetails.getName());
-            return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+            return redirectionTo(urlBuilder.adminUrl());
 
         } catch (InvalidSquadException e) {
             log.info("Invalid squad");
@@ -91,7 +91,7 @@ public class SquadsController {
 
         final Squad squad = loggedInUserApi.getSquad(id);
         loggedInUserApi.deleteSquad(squad);
-        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+        return redirectionTo(urlBuilder.adminUrl());
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.GET)
@@ -129,7 +129,7 @@ public class SquadsController {
         log.info("Setting squad members to " + updatedSquadMembers.size() + " members: " + updatedSquadMembers);
         loggedInUserApi.setSquadMembers(squad.getId(), updatedSquadMembers);
 
-        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+        return redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
@@ -146,6 +146,12 @@ public class SquadsController {
                 addObject("squadDetails", squadDetails).
                 addObject("squadMembers", squadMembers).
                 addObject("availableMembers", availableMembers);
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

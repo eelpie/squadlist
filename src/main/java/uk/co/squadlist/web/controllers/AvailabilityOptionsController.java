@@ -147,7 +147,7 @@ public class AvailabilityOptionsController {
     }
 
     private ModelAndView redirectToAdmin() {
-        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+        return redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderDeleteForm(final AvailabilityOption a, InstanceSpecificApiClient api) throws HttpFetchException, IOException, SignedInMemberRequiredException, UnknownInstanceException {
@@ -157,6 +157,12 @@ public class AvailabilityOptionsController {
         return viewFactory.getViewForLoggedInUser("deleteAvailabilityOption").
                 addObject("availabilityOption", a).
                 addObject("alternatives", alternatives);
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

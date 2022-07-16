@@ -202,7 +202,7 @@ public class AdminController {
     }
 
     private ModelAndView redirectToAdminScreen() {
-        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+        return redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
@@ -210,6 +210,12 @@ public class AdminController {
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
                 addObject("governingBodies", GOVERNING_BODIES);
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

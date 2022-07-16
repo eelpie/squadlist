@@ -144,7 +144,7 @@ public class MembersController {
 
         log.info("Requesting change password for member: " + member.getId());
         if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
-            return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
+            return redirectionTo(urlBuilder.memberUrl(member));
         } else {
             result.addError(new ObjectError("changePassword", "Change password failed"));
             return renderChangePasswordForm(changePassword);
@@ -273,7 +273,7 @@ public class MembersController {
 
         log.info("Submitting updated member: " + member);
         loggedInUserApi.updateMemberDetails(member);
-        return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
+        return redirectionTo(urlBuilder.memberUrl(member));
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
@@ -361,47 +361,42 @@ public class MembersController {
             loggedInUserApi.updateMemberProfileImage(member, file.getBytes());
         } catch (InvalidImageException e) {
             log.warn("Invalid image file submitted");
-            return new ModelAndView(new RedirectView(urlBuilder.editMemberUrl(member) + "?invalidImage=true"));
+            return redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
         }
-        return new ModelAndView(new RedirectView(urlBuilder.memberUrl(member)));
+        return redirectionTo(urlBuilder.memberUrl(member));
     }
 
     private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException {
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("newMember");
-        mv.addObject("squads", api.getSquads());
-        mv.addObject("title", "Adding a new member");
-        mv.addObject("rolesOptions", ROLES_OPTIONS);
-        return mv;
+        return viewFactory.getViewForLoggedInUser("newMember").
+                addObject("squads", api.getSquads())
+                .addObject("title", "Adding a new member")
+                .addObject("rolesOptions", ROLES_OPTIONS);
     }
 
     private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient api, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException {
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("editMemberDetails");
-        mv.addObject("member", memberDetails);
-        mv.addObject("memberId", memberId);
-        mv.addObject("title", title);
-        mv.addObject("squads", api.getSquads());
-        mv.addObject("governingBody", governingBody);
-
-        mv.addObject("genderOptions", GENDER_OPTIONS);
-        mv.addObject("pointsOptions", governingBody.getPointsOptions());
-        mv.addObject("rolesOptions", ROLES_OPTIONS);
-        mv.addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS);
-        mv.addObject("yesNoOptions", YES_NO_OPTIONS);
-
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
-        mv.addObject("canChangeRole", canChangeRole);
-        mv.addObject("canChangeSquads", canChangeRole);
 
-        mv.addObject("memberSquads", member.getSquads());  // TODO would not be needed id member.squads would form bind
-        return mv;
+        return viewFactory.getViewForLoggedInUser("editMemberDetails").
+                addObject("member", memberDetails).
+                addObject("memberId", memberId).
+                addObject("title", title).
+                addObject("squads", api.getSquads()).
+                addObject("governingBody", governingBody).
+                addObject("genderOptions", GENDER_OPTIONS).
+                addObject("pointsOptions", governingBody.getPointsOptions()).
+                addObject("rolesOptions", ROLES_OPTIONS).
+                addObject("sweepOarSideOptions", SWEEP_OAR_SIDE_OPTIONS).
+                addObject("yesNoOptions", YES_NO_OPTIONS).
+                addObject("canChangeRole", canChangeRole).
+                addObject("canChangeSquads", canChangeRole).
+                addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
     private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException {
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("changePassword");
-        mv.addObject("member", loggedInUserService.getLoggedInMember());
-        mv.addObject("changePassword", changePassword);
-        mv.addObject("title", "Change password");
-        return mv;
+        return viewFactory.getViewForLoggedInUser("changePassword").
+                addObject("member", loggedInUserService.getLoggedInMember()).
+                addObject("changePassword", changePassword).
+                addObject("title", "Change password");
     }
 
     private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, InstanceSpecificApiClient squadlistApi) {
@@ -446,7 +441,13 @@ public class MembersController {
     }
 
     private ModelAndView redirectToAdminScreen() {
-        return new ModelAndView(new RedirectView(urlBuilder.adminUrl()));
+        return redirectionTo(urlBuilder.adminUrl());
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }
