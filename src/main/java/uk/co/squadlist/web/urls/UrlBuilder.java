@@ -175,30 +175,6 @@ public class UrlBuilder {
 		return applicationUrl("/change-password");
 	}
 
-	public String socialMediaAccounts() {
-		return applicationUrl("/social");
-	}
-
-	public String linkFacebookUrl() {
-		return applicationUrl("/social/facebook/link");
-	}
-
-	public String removeFacebookUrl() {
-		return applicationUrl("/social/facebook/remove");
-	}
-
-	public String getLinkFacebookCallbackUrl() {
-		return applicationUrl("/social/facebook/link/callback");
-	}
-
-	public String facebookSigninCallbackUrl() {
-		return applicationUrl("/social/facebook/signin/callback");
-	}
-
-	public String facebookSignin() {
-		return applicationUrl("/social/facebook/signin");
-	}
-
 	public String getBaseUrl() {
 		return baseUrl.replace("INSTANCE", instanceConfig.getVhost());
 	}
