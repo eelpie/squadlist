@@ -68,7 +68,7 @@ public class LoginController {
             if (authenticatedMember != null) {
                 log.info("Auth successful for user: " + username);
                 loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
-                return new ModelAndView(new RedirectView(urlBuilder.getBaseUrl()));
+                return redirectionTo(urlBuilder.getBaseUrl());
             }
         }
 
@@ -78,7 +78,7 @@ public class LoginController {
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
     public ModelAndView logout() {
         loggedInUserService.cleanSignedIn();
-        return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
+        return redirectionTo(urlBuilder.loginUrl());
     }
 
     private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
@@ -97,6 +97,12 @@ public class LoginController {
             log.error("Uncaught error", e);    // TODO
             return null;
         }
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

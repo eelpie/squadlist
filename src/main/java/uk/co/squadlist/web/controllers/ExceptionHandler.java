@@ -89,7 +89,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
         }
 
         if (e instanceof SignedInMemberRequiredException) {
-            return new ModelAndView(new RedirectView(urlBuilder.loginUrl()));
+            return redirectionTo(urlBuilder.loginUrl());
         }
 
         String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
@@ -106,6 +106,12 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     @Override
     public int getOrder() {
         return Integer.MIN_VALUE;
+    }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

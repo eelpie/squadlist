@@ -178,7 +178,7 @@ public class OutingsController {
             }
 
             final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
-            return new ModelAndView(new RedirectView(outingsViewForNewOutingsSquadAndMonth));
+            return redirectionTo(outingsViewForNewOutingsSquadAndMonth);
 
         } catch (InvalidOutingException e) {
             result.addError(new ObjectError("outing", e.getMessage()));
@@ -221,7 +221,7 @@ public class OutingsController {
         loggedInUserApi.deleteOuting(outing.getId());
 
         final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
-        return new ModelAndView(new RedirectView(exitUrl));
+        return redirectionTo(exitUrl);
     }
 
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
@@ -300,7 +300,7 @@ public class OutingsController {
     }
 
     private ModelAndView redirectToOuting(final Outing updatedOuting) {
-        return new ModelAndView(new RedirectView(urlBuilder.outingUrl(updatedOuting)));
+        return redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
     private ModelAndView renderNewOutingForm(OutingDetails outingDetails, InstanceSpecificApiClient api) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException {
@@ -339,5 +339,12 @@ public class OutingsController {
         String notes = outingDetails.getNotes();
         return new Outing(squad, date, notes);
     }
+
+    private ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
+    }
+
 
 }
