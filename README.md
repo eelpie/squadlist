@@ -22,6 +22,12 @@ This is a Spring Boot application. It can be run locally using the Maven plugin.
 mvn spring-boot:run
 ```
 
+## Building the Squadlist API Swagger client
+
+This UI app talks to the Squadlist API (which is currently private and not yet publicly documented) using a client jar generated from the API's OpenAPI definition.
+When a new end point is added to the API, we need to regenerate the client jar before we can call the new end point.a
+
+
 ## Building container images
 
 We use Google Cloud Build to produce container images.
