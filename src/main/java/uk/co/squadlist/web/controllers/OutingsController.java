@@ -115,17 +115,21 @@ public class OutingsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Outing outing = loggedInUserApi.getOuting(id);
+        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(outing.getId());
+        final List<Squad> squads = loggedInUserApi.getSquads();
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing").
+        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
+        final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
+
+        return viewFactory.getViewForLoggedInUser("outing").
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
                 addObject("outing", outing).
                 addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi)).
                 addObject("squad", outing.getSquad()).
-                addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.getId())).
-                addObject("squads", loggedInUserApi.getSquads()).
-                addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.getSquad().getId()))).
-                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
-        return mv;
+                addObject("squadAvailability", outingAvailability).
+                addObject("squads", squads).
+                addObject("members", activeMembers).
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));    // TODO push to date parser - local time
     }
 
     @RequestMapping("/outings/{id}.csv")
