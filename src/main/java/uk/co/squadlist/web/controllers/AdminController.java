@@ -27,14 +27,17 @@ import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.DisplayMember;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +61,7 @@ public class AdminController {
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
     private final InstanceConfig instanceConfig;
+    private final PermissionsService permissionsService;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -65,7 +69,8 @@ public class AdminController {
                            UrlBuilder urlBuilder,
                            Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
                            LoggedInUserService loggedInUserService,
-                           InstanceConfig instanceConfig) {
+                           InstanceConfig instanceConfig,
+                           PermissionsService permissionsService) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -75,6 +80,7 @@ public class AdminController {
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
         this.instanceConfig = instanceConfig;
+        this.permissionsService = permissionsService;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -84,14 +90,28 @@ public class AdminController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final List<Member> members = loggedInUserApi.getMembers();
+        List<Member> activeMembers = activeMemberFilter.extractActive(members);
+        List<Member> inactiveMembers = activeMemberFilter.extractInactive(members);
+
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        List<DisplayMember> activeDisplayMembers = new ArrayList<>();
+        for (Member member: activeMembers) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            activeDisplayMembers.add(new DisplayMember(member, isEditable));
+        }
+        List<DisplayMember> inactiveDisplayMembers = new ArrayList<>();
+        for (Member member: inactiveMembers) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            inactiveDisplayMembers.add(new DisplayMember(member, isEditable));
+        }
 
         return viewFactory.getViewForLoggedInUser("admin").
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
                 addObject("title", "Admin").
                 addObject("members", members).
-                addObject("activeMembers", activeMemberFilter.extractActive(members)).
-                addObject("inactiveMembers", activeMemberFilter.extractInactive(members)).
+                addObject("activeMembers", activeDisplayMembers).
+                addObject("inactiveMembers", inactiveDisplayMembers).
                 addObject("admins", extractAdminUsersFrom(members)).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance())).
                 addObject("boats", loggedInUserApi.getBoats()).

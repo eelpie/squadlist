@@ -24,22 +24,22 @@
 			
 			<h4>$text.text('members') ($activeMembers.size())</h4>			
 			<ul>
-			#foreach( $member in $activeMembers )
-				<li>#parse('includes/member.vm') 
-					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
-					| <a href="$urlBuilder.makeInactive($member)">$text.text('make.inactive')</a>
-					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>
+			#foreach( $displayMember in $activeMembers )
+				<li>#parse('includes/displayMember.vm')
+					| <a href="$urlBuilder.memberResetPasswordUrl($displayMember.member)">$text.text('reset.password')</a>
+					| <a href="$urlBuilder.makeInactive($displayMember.member)">$text.text('make.inactive')</a>
+					| <a href="$urlBuilder.delete($displayMember.member)">$text.text('delete')</a>
 				</li>
 			#end
 			</ul>
 			
 			<h4>$text.text('inactive.members') ($inactiveMembers.size())</h4>
 			<ul>
-			#foreach( $member in $inactiveMembers )
-				<li>#parse('includes/member.vm')
-					| <a href="$urlBuilder.memberResetPasswordUrl($member)">$text.text('reset.password')</a>
-					| <a href="$urlBuilder.makeActive($member)">$text.text('make.active')</a>
-					| <a href="$urlBuilder.delete($member)">$text.text('delete')</a>					
+			#foreach( $displayMember in $inactiveMembers )
+				<li>#parse('includes/displayMember.vm')
+					| <a href="$urlBuilder.memberResetPasswordUrl($displayMember.member)">$text.text('reset.password')</a>
+					| <a href="$urlBuilder.makeActive($displayMember.member)">$text.text('make.active')</a>
+					| <a href="$urlBuilder.delete($displayMember.member)">$text.text('delete')</a>
 				</li>
 			#end
 			</ul>
