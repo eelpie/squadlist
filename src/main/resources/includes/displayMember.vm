@@ -1,0 +1,8 @@
+#if($displayMember.editable)
+    <a href="$urlBuilder.applicationUrl("/member/$displayMember.member.id")"
+        #if ($displayMember.member.availabilityLastUpdated) title="Availability last updated $dateFormatter.timeSince($!$displayMember.member.availabilityLastUpdated)" #end >
+        $displayMember.member.displayName
+    </a>
+#else
+    $displayMember.member.displayName
+#end

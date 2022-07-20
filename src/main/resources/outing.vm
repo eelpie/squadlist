@@ -42,17 +42,17 @@
 			#end
 									
 			<table style="font-size: 14px;" class="table table-striped">				
-				#foreach($member in $members )					
+				#foreach($displayMember in $members)
 					<tr>
 				    	<td>
-				   			#parse('includes/member.vm')
+				   			#parse('includes/displayMember.vm')
 				   		</td>				   		
 				   		<td>
-				   			$!member.sweepOarSide
+				   			$!displayMember.member.sweepOarSide
 				   		</td>
 				   		<td>
 				   			#set($availability = '')
-							#set($availability = $squadAvailability.get(${member.id}))
+							#set($availability = $squadAvailability.get(${displayMember.member.id}))
 							#parse('includes/availability.vm')							
 						</td>
 					</tr>
