@@ -116,15 +116,15 @@ public class OutingsController {
 
         final Outing outing = loggedInUserApi.getOuting(id);
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing");
-        mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
-        mv.addObject("outing", outing);
-        mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi));
-        mv.addObject("squad", outing.getSquad());
-        mv.addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.getId()));
-        mv.addObject("squads", loggedInUserApi.getSquads());
-        mv.addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.getSquad().getId())));
-        mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
+        final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing").
+                addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
+                addObject("outing", outing).
+                addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi)).
+                addObject("squad", outing.getSquad()).
+                addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.getId())).
+                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.getSquad().getId()))).
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
         return mv;
     }
 
