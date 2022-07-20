@@ -90,20 +90,11 @@ public class AdminController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final List<Member> members = loggedInUserApi.getMembers();
-        List<Member> activeMembers = activeMemberFilter.extractActive(members);
-        List<Member> inactiveMembers = activeMemberFilter.extractInactive(members);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        List<DisplayMember> activeDisplayMembers = new ArrayList<>();
-        for (Member member: activeMembers) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            activeDisplayMembers.add(new DisplayMember(member, isEditable));
-        }
-        List<DisplayMember> inactiveDisplayMembers = new ArrayList<>();
-        for (Member member: inactiveMembers) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            inactiveDisplayMembers.add(new DisplayMember(member, isEditable));
-        }
+        List<DisplayMember> activeDisplayMembers = toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
+        List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
+        List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
         return viewFactory.getViewForLoggedInUser("admin").
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -112,7 +103,7 @@ public class AdminController {
                 addObject("members", members).
                 addObject("activeMembers", activeDisplayMembers).
                 addObject("inactiveMembers", inactiveDisplayMembers).
-                addObject("admins", extractAdminUsersFrom(members)).
+                addObject("admins", adminUsers).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance())).
                 addObject("boats", loggedInUserApi.getBoats()).
                 addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instanceConfig.getInstance())).
@@ -236,6 +227,15 @@ public class AdminController {
         RedirectView redirectView = new RedirectView(url);
         redirectView.setExposeModelAttributes(false);
         return new ModelAndView(redirectView);
+    }
+
+    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+        List<DisplayMember> displayMembers = new ArrayList<>();
+        for (Member member : members) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            displayMembers.add(new DisplayMember(member, isEditable));
+        }
+        return displayMembers;
     }
 
 }

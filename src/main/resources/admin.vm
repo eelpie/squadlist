@@ -87,8 +87,8 @@
 							
 			<h4>$text.text('admins')</h4>			
 			<ul>
-			#foreach($member in $admins)
-				<li>#parse('includes/member.vm')</li>
+			#foreach($displayMember in $admins)
+				<li>#parse('includes/displayMember.vm')</li>
 			#end
 			</ul>
 			<hr/>
