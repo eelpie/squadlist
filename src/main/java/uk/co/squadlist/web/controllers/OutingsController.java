@@ -25,21 +25,17 @@ import uk.co.squadlist.web.model.*;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
-import uk.co.squadlist.web.views.CsvOutputRenderer;
-import uk.co.squadlist.web.views.DateFormatter;
-import uk.co.squadlist.web.views.DateHelper;
-import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.*;
+import uk.co.squadlist.web.views.model.DisplayMember;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class OutingsController {
@@ -54,12 +50,13 @@ public class OutingsController {
     private final OutingAvailabilityCountsService outingAvailabilityCountsService;
     private final ActiveMemberFilter activeMemberFilter;
     private final CsvOutputRenderer csvOutputRenderer;
+    private final PermissionsService permissionsService;
 
     @Autowired
     public OutingsController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
                              DateFormatter dateFormatter, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                              OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
-                             CsvOutputRenderer csvOutputRenderer) {
+                             CsvOutputRenderer csvOutputRenderer, PermissionsService permissionsService) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.dateFormatter = dateFormatter;
@@ -68,6 +65,7 @@ public class OutingsController {
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
+        this.permissionsService = permissionsService;
     }
 
     @RequestMapping("/outings")
@@ -115,17 +113,28 @@ public class OutingsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Outing outing = loggedInUserApi.getOuting(id);
+        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(outing.getId());
+        final List<Squad> squads = loggedInUserApi.getSquads();
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("outing");
-        mv.addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate()));
-        mv.addObject("outing", outing);
-        mv.addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi));
-        mv.addObject("squad", outing.getSquad());
-        mv.addObject("squadAvailability", loggedInUserApi.getOutingAvailability(outing.getId()));
-        mv.addObject("squads", loggedInUserApi.getSquads());
-        mv.addObject("members", activeMemberFilter.extractActive(loggedInUserApi.getSquadMembers(outing.getSquad().getId())));
-        mv.addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));  // TODO push to date parser - local time
-        return mv;
+        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
+        final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
+
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        List<DisplayMember> displayMembers = new ArrayList<>();
+        for (Member member: activeMembers) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            displayMembers.add(new DisplayMember(member, isEditable));
+        }
+
+        return viewFactory.getViewForLoggedInUser("outing").
+                addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
+                addObject("outing", outing).
+                addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi)).
+                addObject("squad", outing.getSquad()).
+                addObject("squadAvailability", outingAvailability).
+                addObject("squads", squads).
+                addObject("members", displayMembers).
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));    // TODO push to date parser - local time
     }
 
     @RequestMapping("/outings/{id}.csv")

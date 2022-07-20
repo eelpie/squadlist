@@ -25,7 +25,7 @@ mvn spring-boot:run
 ## Building the Squadlist API Swagger client
 
 This UI app talks to the Squadlist API (which is currently private and not yet publicly documented) using a client jar generated from the API's OpenAPI definition.
-When a new end point is added to the API, we need to regenerate the client jar before we can call the new end point.a
+When a new end point is added to the API, we need to regenerate the client jar before we can call the new end point.
 
 
 ## Building container images
