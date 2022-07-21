@@ -58,7 +58,7 @@ public class EntryDetailsController {
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
-        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv);
+        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv, loggedInUserService.getLoggedInMember());
         return mv;
     }
 
@@ -116,7 +116,7 @@ public class EntryDetailsController {
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-        viewFactory.getViewForLoggedInUser("entryDetails");  // TODO
+        viewFactory.getViewForLoggedInUser("entryDetails");  // TODO This call is probably only been used for access control
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());

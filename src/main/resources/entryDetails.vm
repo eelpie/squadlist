@@ -39,39 +39,38 @@
 				</thead>
 									
 				<form>
-					#foreach( $member in $members )						
+					#foreach( $displayMember in $members )
 						<tr>
-							<td><input type="checkbox" class="selected" value="$member.id" /></td>
-					    	<td>#parse('includes/member.vm')</td>
+							<td><input type="checkbox" class="selected" value="$displayMember.member.id" /></td>
+					    	<td>#parse('includes/displayMember.vm')</td>
 					    	<td>					    
-					    		#if($member.dateOfBirth)
-					    			$dateFormatter.dayMonthYear($member.dateOfBirth)
+					    		#if($displayMember.member.dateOfBirth)
+					    			$dateFormatter.dayMonthYear($displayMember.member.dateOfBirth)
 					    			</br>
 					    			#set($ageGrade = "")				    		
-					    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($member.dateOfBirth))) 
-					    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($member.dateOfBirth)</span>
+					    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($displayMember.member.dateOfBirth)))
+					    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($displayMember.member.dateOfBirth)</span>
 					    			#if($ageGrade) <br/> $ageGrade #end
 					    		#end
 					    	</td>
-					    	<td>$!member.weight</td>
-					    	<td><span #if($member.rowingPoints) title="$governingBody.getRowingStatus($member.rowingPoints)" #end >$!member.rowingPoints</span>
-					    		<br/>#if($member.rowingPoints) $!governingBody.getRowingStatus($member.rowingPoints) #end
+					    	<td>$!displayMember.member.weight</td>
+					    	<td><span #if($displayMember.member.rowingPoints) title="$governingBody.getRowingStatus($displayMember.member.rowingPoints)" #end >$!displayMember.member.rowingPoints</span>
+					    		<br/>#if($displayMember.member.rowingPoints) $!governingBody.getRowingStatus($displayMember.member.rowingPoints) #end
 					    	</td>
-					    	<td><span #if($member.scullingPoints) title="$governingBody.getRowingStatus($member.scullingPoints)" #end >$!member.scullingPoints</span>
-						    	#if($member.scullingPoints) <br/>$!governingBody.getScullingStatus($member.scullingPoints) #end
+					    	<td><span #if($displayMember.member.scullingPoints) title="$governingBody.getRowingStatus($displayMember.member.scullingPoints)" #end >$!displayMember.member.scullingPoints</span>
+						    	#if($displayMember.member.scullingPoints) <br/>$!governingBody.getScullingStatus($displayMember.member.scullingPoints) #end
 					    	</td>
 					    	<td>
 					    		#set($registrationNumberProblems = '')
-					    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($member.registrationNumber))				    		
+					    		#set($registrationNumberProblems = $governingBody.checkRegistrationNumber($displayMember.member.registrationNumber))
 					    		#if($registrationNumberProblems && $registrationNumberProblems != '')
-						    		$!member.registrationNumber
+						    		$!displayMember.member.registrationNumber
 						    		<div class="alert alert-danger">
 						    			$registrationNumberProblems
 						    		</div>						    	
 						    	#end						    					    		
 					    	</td>
-					    </tr>   
-					    
+					    </tr>
 					#end
 				</form>
 				
