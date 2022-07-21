@@ -1,13 +1,10 @@
 package uk.co.squadlist.web.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
 
-import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -73,17 +70,6 @@ public class PermissionsService {
 		}
 
 		return false;
-	}
-
-	public boolean canSeePhoneNumberForRower(Member loggedInMember, Member member) {
-		if (isAdmin(loggedInMember) || loggedInMember.equals(member)) {
-			return true;
-		}
-
-		final boolean targetIsCoachOrSquadRep = userIsCoach(member) || userIsSquadRep(member);
-		final boolean isCoach = userIsCoach(loggedInMember);
-		final boolean areInSameSquad = areInSameSquads(loggedInMember, member);
-		return targetIsCoachOrSquadRep || isCoach || areInSameSquad;
 	}
 
 	public boolean canAddNewOuting(Member member) {
