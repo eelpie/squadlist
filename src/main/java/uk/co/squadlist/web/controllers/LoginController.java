@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
@@ -19,7 +21,9 @@ import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Map;
 
 @Controller
 public class LoginController {
@@ -51,14 +55,23 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})
     // TODO SEO this onto the root url
-    public ModelAndView login() throws Exception {
-        return renderLoginScreen(false, null);
+    public ModelAndView login(HttpServletRequest request) throws Exception {
+        boolean error = false;
+        String username = null;
+        Map inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        if (inputFlashMap != null) {
+            Boolean flashedError = (Boolean) inputFlashMap.get("error");
+            error = flashedError != null ? flashedError : false;
+            username = (String) inputFlashMap.get("username");
+        }
+        return renderLoginScreen(error, username);
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
     public ModelAndView loginSubmit(
             @RequestParam(value = "username", required = true) String username,
-            @RequestParam(value = "password", required = true) String password) throws Exception {
+            @RequestParam(value = "password", required = true) String password,
+            RedirectAttributes redirectAttributes) {
 
         log.info("Attempting to auth user: " + username);
         final String authenticatedUsersAccessToken = auth(username, password);
@@ -71,8 +84,9 @@ public class LoginController {
                 return redirectionTo(urlBuilder.getBaseUrl());
             }
         }
-
-        return renderLoginScreen(true, username);
+        redirectAttributes.addFlashAttribute("error", true);
+        redirectAttributes.addFlashAttribute("username", username);
+        return redirectionTo(urlBuilder.loginUrl());
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
