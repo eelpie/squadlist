@@ -33,23 +33,22 @@
 						<th>$text.text('phone')</th>						
 					</tr>
 				</thead>
-							
-				#foreach( $member in $members )
+				#foreach( $displayMember in $members )
 					<tr>
 				    	<td>
-				    		#parse('includes/member.vm') 
-				    		#if($member.role && $member.role != 'Rower')
-					    		($!member.role)
+				    		#parse('includes/displayMember.vm')
+				    		#if($displayMember.member.role && $displayMember.member.role != 'Rower')
+					    		($!displayMember.member.role)
 					    	#end
 				    	</td>
 				    	<td>
-				    		#if($member.emailAddress)
-					    		<a href="mailto:$member.emailAddress">$member.emailAddress</a>
+				    		#if($displayMember.member.emailAddress)
+					    		<a href="mailto:$displayMember.member.emailAddress">$displayMember.member.emailAddress</a>
 					    	#end
 				    	</td>
 						<td>
-							#if($member.contactNumber)
-								<a href="tel:$member.contactNumber">$member.contactNumber</a>
+							#if($displayMember.member.contactNumber)
+								<a href="tel:$displayMember.member.contactNumber">$displayMember.member.contactNumber</a>
 							#end
 						</td>
 					</tr>

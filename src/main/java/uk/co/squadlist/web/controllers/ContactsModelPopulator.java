@@ -12,14 +12,15 @@ import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
+import uk.co.squadlist.web.views.model.DisplayMember;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,9 +54,9 @@ public class ContactsModelPopulator {
     private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
     private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
-    private LoggedInUserService loggedInUserService;
-    private PermissionsService permissionsService;
-    private ActiveMemberFilter activeMemberFilter;
+    private final LoggedInUserService loggedInUserService;
+    private final PermissionsService permissionsService;
+    private final ActiveMemberFilter activeMemberFilter;
 
     @Autowired
     public ContactsModelPopulator(LoggedInUserService loggedInUserService, PermissionsService permissionsService,
@@ -66,22 +67,22 @@ public class ContactsModelPopulator {
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
-    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownInstanceException, SignedInMemberRequiredException {
-		List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
-		Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
+    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance, InstanceSpecificApiClient instanceSpecificApiClient, Member loggedInMember) throws SignedInMemberRequiredException {
+        List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
+        Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
-		final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
-		final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
-		final Set<String> emails = Sets.newHashSet();
-		for (Member member : redactedMembers) {
-			if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
-				emails.add(member.getEmailAddress());
-			}
-		}
+        final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
+        final List<Member> redactedMembers = redactContentDetailsForMembers(loggedInUserService.getLoggedInMember(), activeMembers);
+        final Set<String> emails = Sets.newHashSet();
+        for (Member member : redactedMembers) {
+            if (!Strings.isNullOrEmpty(member.getEmailAddress())) {
+                emails.add(member.getEmailAddress());
+            }
+        }
 
-		mv.addObject("title", squad.getName() + " contacts");
-		mv.addObject("squad", squad);
-		mv.addObject("members", redactedMembers);
+        mv.addObject("title", squad.getName() + " contacts");
+        mv.addObject("squad", squad);
+        mv.addObject("members", toDisplayMembers(redactedMembers, loggedInMember));
         if (!emails.isEmpty()) {
             mv.addObject("emails", Lists.newArrayList(emails));
         }
@@ -96,6 +97,15 @@ public class ContactsModelPopulator {
             redactedMembers.add(member);
         }
         return redactedMembers;
+    }
+
+    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+        List<DisplayMember> displayMembers = new ArrayList<>();
+        for (Member member : members) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            displayMembers.add(new DisplayMember(member, isEditable));
+        }
+        return displayMembers;
     }
 
 }

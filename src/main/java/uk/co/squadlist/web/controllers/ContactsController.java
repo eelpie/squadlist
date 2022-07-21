@@ -18,12 +18,12 @@ import java.util.List;
 @Controller
 public class ContactsController {
 
-    private static Logger log = LogManager.getLogger(ContactsController.class);
+    private static final Logger log = LogManager.getLogger(ContactsController.class);
 
-    private PreferredSquadService preferredSquadService;
-    private ViewFactory viewFactory;
-    private ContactsModelPopulator contactsModelPopulator;
-    private LoggedInUserService loggedInUserService;
+    private final PreferredSquadService preferredSquadService;
+    private final ViewFactory viewFactory;
+    private final ContactsModelPopulator contactsModelPopulator;
+    private final LoggedInUserService loggedInUserService;
 
     @Autowired
     public ContactsController(PreferredSquadService preferredSquadService, ViewFactory viewFactory, ContactsModelPopulator contactsModelPopulator,
@@ -55,7 +55,7 @@ public class ContactsController {
                 addObject("squads", allSquads);
         if (!allSquads.isEmpty()) {
             log.info("Squad to show: " + squadToShow);
-            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance(), loggedInUserApi);
+            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance(), loggedInUserApi, loggedInUserService.getLoggedInMember());
         }
         return mv;
     }
