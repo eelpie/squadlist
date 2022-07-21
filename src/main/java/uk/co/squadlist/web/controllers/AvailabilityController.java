@@ -12,11 +12,15 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.*;
+import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.DisplayMember;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +32,18 @@ public class AvailabilityController {
     private final ViewFactory viewFactory;
     private final ActiveMemberFilter activeMemberFilter;
     private final LoggedInUserService loggedInUserService;
+    private final PermissionsService permissionsService;
 
     @Autowired
     public AvailabilityController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   ActiveMemberFilter activeMemberFilter,
-                                  LoggedInUserService loggedInUserService) {
+                                  LoggedInUserService loggedInUserService,
+                                  PermissionsService permissionsService) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.loggedInUserService = loggedInUserService;
+        this.permissionsService = permissionsService;
     }
 
     @RequestMapping("/availability")
@@ -61,7 +68,7 @@ public class AvailabilityController {
 
             mv.addObject("squad", squad);
             mv.addObject("title", squad.getName() + " availability");
-            mv.addObject("members", activeSquadMembers);
+            mv.addObject("members", toDisplayMembers(activeSquadMembers, loggedInUserService.getLoggedInMember()));
             if (activeSquadMembers.isEmpty()) {
                 return mv;
             }
@@ -96,6 +103,15 @@ public class AvailabilityController {
             }
         }
         return allAvailability;
+    }
+
+    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+        List<DisplayMember> displayMembers = new ArrayList<>();
+        for (Member member : members) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            displayMembers.add(new DisplayMember(member, isEditable));
+        }
+        return displayMembers;
     }
 
 }

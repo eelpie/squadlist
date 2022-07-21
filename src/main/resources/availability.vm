@@ -79,12 +79,12 @@
 								#end
 							</thead>
 					
-							#foreach($member in $members)
+							#foreach($displayMember in $members)
 								<tr>				
-									<td>#parse('includes/member.vm')</td>				
+									<td>#parse('includes/displayMember.vm')</td>
 									#foreach($outing in $outings)
 										#set($availability = '')
-										#set($key = "${outing.id}-$member.id")
+										#set($key = "${outing.id}-$displayMember.member.id")
 										#set($availability = $squadAvailability.get($key))
 										<td>
 											#parse('includes/availability.vm')

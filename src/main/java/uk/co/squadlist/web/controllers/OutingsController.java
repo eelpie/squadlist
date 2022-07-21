@@ -120,11 +120,7 @@ public class OutingsController {
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        List<DisplayMember> displayMembers = new ArrayList<>();
-        for (Member member: activeMembers) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            displayMembers.add(new DisplayMember(member, isEditable));
-        }
+        List<DisplayMember> displayMembers = toDisplayMembers(activeMembers, loggedInUser);
 
         return viewFactory.getViewForLoggedInUser("outing").
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
@@ -355,5 +351,13 @@ public class OutingsController {
         return new ModelAndView(redirectView);
     }
 
+    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+        List<DisplayMember> displayMembers = new ArrayList<>();
+        for (Member member : members) {
+            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
+            displayMembers.add(new DisplayMember(member, isEditable));
+        }
+        return displayMembers;
+    }
 
 }
