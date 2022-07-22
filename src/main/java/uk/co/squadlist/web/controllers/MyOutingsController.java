@@ -69,13 +69,6 @@ public class MyOutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
 
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
-            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
-        }
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
-            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
-        }
-
         return viewFactory.getViewForLoggedInUser("myOutings").
                 addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
@@ -108,6 +101,13 @@ public class MyOutingsController {
         navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
         navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
         navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
+            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
+        }
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
+            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
+        }
         return navItems;
     }
 
