@@ -8,6 +8,7 @@ import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.OutingAvailability;
@@ -65,11 +66,8 @@ public class MyOutingsController {
         final Date endDate = DateHelper.oneYearFromNow().toDate();
         List<OutingAvailability> availabilityFor = loggedInUserApi.getAvailabilityFor(loggedInUser.getId(), startDate, endDate);
 
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUserService.getLoggedInMember().getId(), loggedInUserApi);
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-
-        List<NavItem> navItems = navItemsFor(loggedInUser, pendingOutingsCountFor, memberDetailsProblems, preferredSquad);
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
 
         if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
             navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
@@ -100,7 +98,10 @@ public class MyOutingsController {
         return mv;
     }
 
-    private List<NavItem> navItemsFor(Member loggedInUser, int pendingOutingsCountFor, int memberDetailsProblems, Squad preferredSquad) throws URISyntaxException {
+    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
         List<NavItem> navItems = new ArrayList<>();
         navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", true));
         navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
