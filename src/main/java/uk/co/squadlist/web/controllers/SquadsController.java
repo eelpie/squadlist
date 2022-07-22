@@ -17,6 +17,7 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
@@ -24,12 +25,18 @@ import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
+import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,12 +50,27 @@ public class SquadsController {
     private final UrlBuilder urlBuilder;
     private final ViewFactory viewFactory;
     private final LoggedInUserService loggedInUserService;
+    private final PermissionsService permissionsService;
+    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+    private final PreferredSquadService preferredSquadService;
+    private final GoverningBodyFactory governingBodyFactory;
 
     @Autowired
-    public SquadsController(UrlBuilder urlBuilder, ViewFactory viewFactory, LoggedInUserService loggedInUserService) {
+    public SquadsController(UrlBuilder urlBuilder,
+                            ViewFactory viewFactory,
+                            LoggedInUserService loggedInUserService,
+                            PermissionsService permissionsService,
+                            OutingAvailabilityCountsService outingAvailabilityCountsService,
+                            PreferredSquadService preferredSquadService,
+                            GoverningBodyFactory governingBodyFactory
+                            ) {
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.loggedInUserService = loggedInUserService;
+        this.permissionsService = permissionsService;
+        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+        this.preferredSquadService = preferredSquadService;
+        this.governingBodyFactory = governingBodyFactory;
     }
 
     @RequestMapping(value = "/squad/new", method = RequestMethod.GET)
@@ -95,7 +117,7 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.GET)
-    public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException {
+    public ModelAndView editSquad(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
@@ -107,7 +129,7 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.POST)
-    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, IOException, HttpFetchException, SignedInMemberRequiredException, UnknownInstanceException {
+    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, IOException, HttpFetchException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad squad = loggedInUserApi.getSquad(id);
@@ -136,12 +158,20 @@ public class SquadsController {
         return viewFactory.getViewForLoggedInUser("newSquad").addObject("squadDetails", squadDetails);
     }
 
-    private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails, InstanceSpecificApiClient squadlistApi) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderEditSquadForm(final Squad squad, final SquadDetails squadDetails, InstanceSpecificApiClient squadlistApi) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         final List<Member> squadMembers = squadlistApi.getSquadMembers(squad.getId());
         final List<Member> availableMembers = squadlistApi.getMembers();
         availableMembers.removeAll(squadMembers);
 
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("editSquad").
+                addObject("title", "Editing a squad").
+                addObject("navItems", navItems).
                 addObject("squad", squad).
                 addObject("squadDetails", squadDetails).
                 addObject("squadMembers", squadMembers).
@@ -152,6 +182,26 @@ public class SquadsController {
         RedirectView redirectView = new RedirectView(url);
         redirectView.setExposeModelAttributes(false);
         return new ModelAndView(redirectView);
+    }
+
+    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
+        List<NavItem> navItems = new ArrayList<>();
+        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
+        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
+        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
+            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
+        }
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
+            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, true));
+        }
+        return navItems;
     }
 
 }

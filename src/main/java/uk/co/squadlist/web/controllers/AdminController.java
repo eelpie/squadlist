@@ -231,8 +231,16 @@ public class AdminController {
         return redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("editInstance").
+                addObject("title", "Edit instance settings").
+                addObject("navItems", navItems).
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
                 addObject("governingBodies", GOVERNING_BODIES);
