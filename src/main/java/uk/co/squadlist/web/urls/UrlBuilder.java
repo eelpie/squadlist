@@ -186,6 +186,13 @@ public class UrlBuilder {
 		return appendSquad(prefferredSquad, contactsUrl());
 	}
 
+	public String entryDetailsUrl() {
+		return applicationUrl("/entrydetails");
+	}
+	public String entryDetailsUrl(Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, entryDetailsUrl());
+	}
+
 	public String outingsUrl(Squad prefferredSquad) throws URISyntaxException {
 		final URIBuilder url = new URIBuilder(outingsUrl());
 		if (prefferredSquad != null) {
