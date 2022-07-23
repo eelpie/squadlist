@@ -24,7 +24,7 @@
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 						
 			<span>
-				#if($permissionsHelper.hasOutingPermission($outing, 'EDIT_OUTING'))				
+				#if($canEditOuting)
 					<a href="$urlBuilder.outingEditUrl($outing)">$text.text('edit.outing')</a>
 					#if($outing.closed) 
 						| <a href="$urlBuilder.outingReopenUrl($outing)">$text.text('reopen.outing')</a> 
@@ -61,7 +61,7 @@
 		</div>		
 	</div>
 	
-	#if($permissionsHelper.hasOutingPermission($outing, 'EDIT_OUTING'))				
+	#if($canEditOuting)
 		<div class="row">
 			<div class="col-xs-12">
 				<p align="right"><a href="$urlBuilder.outingAvailabilityCsv($outing)">Export as CSV</a><p/>

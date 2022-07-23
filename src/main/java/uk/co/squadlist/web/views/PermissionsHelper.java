@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -32,12 +31,4 @@ public class PermissionsHelper {
 		log.debug("Checking view permission " + permission +  " for " + loggedInMember.getUsername());
 		return permissionsService.hasPermission(loggedInMember, permission);
 	}
-	
-	public boolean hasOutingPermission(Outing outing, String permissionName) throws SignedInMemberRequiredException {
-		final Permission permission = Permission.valueOf(permissionName);
-		final Member loggedInMember = loggedInUserService.getLoggedInMember();
-		log.debug("Checking view permission " + permission +  " for outing " + outing.getId() + " for " + loggedInMember.getUsername());
-		return permissionsService.hasOutingPermission(loggedInMember, permission, outing);
-	}
-
 }

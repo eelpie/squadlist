@@ -137,6 +137,8 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         List<DisplayMember> displayMembers = toDisplayMembers(activeMembers, loggedInUser);
 
+        final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, outing);
+
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
 
@@ -144,6 +146,7 @@ public class OutingsController {
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
                 addObject("navItems", navItems).
                 addObject("outing", outing).
+                addObject("canEditOuting", canEditOuting).
                 addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi)).
                 addObject("squad", outing.getSquad()).
                 addObject("squadAvailability", outingAvailability).
