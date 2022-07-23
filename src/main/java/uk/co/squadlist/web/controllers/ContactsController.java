@@ -105,7 +105,7 @@ public class ContactsController {
         navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
         navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
         navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, true));
 
         if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
             navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
