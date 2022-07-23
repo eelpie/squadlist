@@ -84,14 +84,18 @@ public class MembersController {
     @RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Member members = loggedInUserApi.getMember(id);
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("memberDetails");
-        mv.addObject("member", members);
-        mv.addObject("title", members.getFirstName() + " " + members.getLastName());
-        mv.addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
-        return mv;
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
+        return viewFactory.getViewForLoggedInUser("memberDetails").
+                addObject("member", members).
+                addObject("title", members.getFirstName() + " " + members.getLastName()).
+                addObject("navItems", navItems).
+                addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
@@ -124,7 +128,13 @@ public class MembersController {
                     memberDetails.getRole()
             );
 
+            Member loggedInMember = loggedInUserService.getLoggedInMember();
+            final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
+            List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+
             return viewFactory.getViewForLoggedInUser("memberAdded").
+                    addObject("title", "Member added").
+                    addObject("navItems", navItems).
                     addObject("member", newMember).
                     addObject("initialPassword", initialPassword);
 
@@ -317,10 +327,15 @@ public class MembersController {
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
-                addObject("member", member).
-                addObject("title", "Delete member - " + member.getDisplayName());
+                addObject("title", "Delete member - " + member.getDisplayName()).
+                addObject("navItems", navItems).
+                addObject("member", member);
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
@@ -391,19 +406,25 @@ public class MembersController {
         List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
 
         return viewFactory.getViewForLoggedInUser("newMember").
-                addObject("squads", api.getSquads())
-                .addObject("title", "Adding a new member")
-                .addObject("navItems", navItems)
-                .addObject("rolesOptions", ROLES_OPTIONS);
+                addObject("squads", api.getSquads()).
+                addObject("title", "Adding a new member").
+                addObject("navItems", navItems).
+                addObject("rolesOptions", ROLES_OPTIONS);
     }
 
-    private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient api, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient api, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
+
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
 
         return viewFactory.getViewForLoggedInUser("editMemberDetails").
                 addObject("member", memberDetails).
                 addObject("memberId", memberId).
                 addObject("title", title).
+                addObject("navItems", navItems).
                 addObject("squads", api.getSquads()).
                 addObject("governingBody", governingBody).
                 addObject("genderOptions", GENDER_OPTIONS).
@@ -454,12 +475,18 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.POST)
     public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         final Member member = loggedInUserApi.getMember(id);
 
         final String newPassword = loggedInUserApi.resetMemberPassword(member);
 
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("memberPasswordReset").
+                addObject("title", "Password reset details").
+                addObject("navItems", navItems).
                 addObject("member", member).
                 addObject("password", newPassword);
     }
