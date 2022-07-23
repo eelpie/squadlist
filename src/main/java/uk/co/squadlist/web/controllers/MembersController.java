@@ -28,14 +28,15 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.model.forms.MemberSquad;
-import uk.co.squadlist.web.services.PasswordGenerator;
-import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PermissionsService;
+import uk.co.squadlist.web.services.*;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class MembersController {
     private PasswordGenerator passwordGenerator;
     private PermissionsService permissionsService;
     private GoverningBodyFactory governingBodyFactory;
+    private OutingAvailabilityCountsService outingAvailabilityCountsService;
+    private PreferredSquadService preferredSquadService;
 
     public MembersController() {
     }
@@ -64,13 +67,17 @@ public class MembersController {
                              ViewFactory viewFactory,
                              PasswordGenerator passwordGenerator,
                              PermissionsService permissionsService,
-                             GoverningBodyFactory governingBodyFactory) {
+                             GoverningBodyFactory governingBodyFactory,
+                             OutingAvailabilityCountsService outingAvailabilityCountsService,
+                             PreferredSquadService preferredSquadService) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.passwordGenerator = passwordGenerator;
         this.permissionsService = permissionsService;
         this.governingBodyFactory = governingBodyFactory;
+        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+        this.preferredSquadService = preferredSquadService;
     }
 
     @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
@@ -280,11 +287,16 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
 
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
                 addObject("member", member).
-                addObject("title", "Make member inactive - " + member.getDisplayName());
+                addObject("title", "Make member inactive - " + member.getDisplayName()).
+                addObject("navItems", navItems);
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
@@ -327,11 +339,17 @@ public class MembersController {
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         final Member member = loggedInUserApi.getMember(id);
 
         return viewFactory.getViewForLoggedInUser("makeMemberActivePrompt").
                 addObject("member", member).
-                addObject("title", "Make member active - " + member.getDisplayName());
+                addObject("title", "Make member active - " + member.getDisplayName()).
+                addObject("navItems", navItems);
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
@@ -448,6 +466,26 @@ public class MembersController {
         RedirectView redirectView = new RedirectView(url);
         redirectView.setExposeModelAttributes(false);
         return new ModelAndView(redirectView);
+    }
+
+    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
+        List<NavItem> navItems = new ArrayList<>();
+        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
+        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
+        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
+            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
+        }
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
+            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
+        }
+        return navItems;
     }
 
 }
