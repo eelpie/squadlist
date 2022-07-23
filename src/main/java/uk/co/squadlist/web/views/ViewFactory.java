@@ -16,17 +16,13 @@ import uk.co.squadlist.web.services.PreferredSquadService;
 public class ViewFactory {
 
     private final LoggedInUserService loggedInUserService;
-    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
     private final PreferredSquadService preferredSquadService;
-    private final GoverningBodyFactory governingBodyFactory;
 
     @Autowired
-    public ViewFactory(LoggedInUserService loggedInUserService, OutingAvailabilityCountsService outingAvailabilityCountsService,
-                       PreferredSquadService preferredSquadService, GoverningBodyFactory governingBodyFactory) {
+    public ViewFactory(LoggedInUserService loggedInUserService,
+                       PreferredSquadService preferredSquadService) {
         this.loggedInUserService = loggedInUserService;
-        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.preferredSquadService = preferredSquadService;
-        this.governingBodyFactory = governingBodyFactory;
     }
 
     public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException, UnknownInstanceException {
@@ -35,15 +31,6 @@ public class ViewFactory {
 
         final ModelAndView mv = new ModelAndView(templateName);
         mv.addObject("loggedInUser", loggedInUser.getId());
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);  // TODO should be a post handler?
-        if (pendingOutingsCountFor > 0) {
-            mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
-        }
-
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-        if (memberDetailsProblems > 0) {
-            mv.addObject("memberDetailsProblems", memberDetailsProblems);
-        }
 
         try {
             mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads()));
