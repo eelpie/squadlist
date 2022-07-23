@@ -437,11 +437,18 @@ public class MembersController {
                 addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
-    private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("changePassword").
+                addObject("title", "Change password").
+                addObject("navItems", navItems).
                 addObject("member", loggedInUserService.getLoggedInMember()).
-                addObject("changePassword", changePassword).
-                addObject("title", "Change password");
+                addObject("changePassword", changePassword);
     }
 
     private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, InstanceSpecificApiClient squadlistApi) {
@@ -467,8 +474,17 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
+
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").addObject("member", member);
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+
+        return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").
+                addObject("title", "Reset a member's password").
+                addObject("navItems", navItems).
+                addObject("member", member);
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
