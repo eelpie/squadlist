@@ -26,58 +26,6 @@
 	</ul>
 #end
 
-#macro(navTabs $selectedTab)
-	<nav class="navbar navbar-default" role="navigation">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-	    		</button>
-			</div>
-		
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">		     
-		    		<li #if($selectedTab == 'My outings') class="active" #end>
-		    			<a href="$urlBuilder.applicationUrl('/')">$text.text('my.outings')
-		    				<span id="pendingOutings" class="badge">$!pendingOutingsCount</span>
-		 	 	  		</a>		    	
-			    	</li>			    				    	
-			    	<li>
-			    		<a href="$urlBuilder.applicationUrl('/member/')${loggedInUser}/edit">$text.text('my.details')
-			    			<span id="memberDetailsProblems" class="badge">$!memberDetailsProblems</span>
-			    		</a>		    	
-			    	</li>			    	
-			    	<li #if($selectedTab == 'Outings') class="active" #end><a href="$urlBuilder.outingsUrl($preferredSquad)">$text.text('outings')</a></li>	
-					<li #if($selectedTab == 'Availability') class="active" #end><a href="$urlBuilder.availabilityUrl($preferredSquad)">$text.text('availability')</a></li>
-					<li #if($selectedTab == 'Contacts') class="active" #end><a href="$urlBuilder.contactsUrl($preferredSquad)">$text.text('contacts')</a></li>	
-					#if($permissionsHelper.hasPermission('VIEW_ENTRY_DETAILS'))
-						<li #if($selectedTab == 'Entry details') class="active" #end><a href="$urlBuilder.applicationUrl("/entrydetails/$preferredSquad.id")">$text.text('entry.details')</a></li>
-					#end
-					#if($permissionsHelper.hasPermission('VIEW_ADMIN_SCREEN'))				
-						<li #if($selectedTab == 'Admin') class="active" #end><a href="$urlBuilder.applicationUrl('/admin')">$text.text('admin')</a></li>
-					#end					
-			   	</ul>
-			   	<ul class="nav navbar-nav navbar-right">
-		        	<li class="dropdown">
-		        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-		        			<span class="glyphicon glyphicon-cog" style="color: black"></span>
-	    			   			<b class="caret"></b>
-	    			   	</a>
-	    			   	<ul class="dropdown-menu">
-							<li><a href="$urlBuilder.changePassword()">$text.text('change.password')</a></li>				
-                            <li><a href="$urlBuilder.applicationUrl('/changes')">$text.text('whats.changed')</a></li>
-							<li><a href="$urlBuilder.applicationUrl('/logout')">$text.text('logout')</a></li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>	
-#end
-
 #macro(inputRow $field $label)
 	#springBind($field)
 	<div class="form-group">
