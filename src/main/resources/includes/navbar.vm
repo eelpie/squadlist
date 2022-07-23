@@ -1,0 +1,38 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                #foreach($navItem in $navItems)
+                   <li #if($navItem.selected) class="active" #end>
+                        <a href="$navItem.url">$text.text($navItem.label)
+                            #if($navItem.count && $navItem.countId)
+                                <span id="$navItem.countId" class="badge">$navItem.count</span>
+                            #end
+                        </a>
+                   </li>
+               #end
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-cog" style="color: black"></span>
+                            <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="$urlBuilder.changePassword()">$text.text('change.password')</a></li>
+                        <li><a href="$urlBuilder.applicationUrl('/changes')">$text.text('whats.changed')</a></li>
+                        <li><a href="$urlBuilder.applicationUrl('/logout')">$text.text('logout')</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

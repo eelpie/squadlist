@@ -1,5 +1,5 @@
 #parse('includes/head.vm')
-#navTabs('My outings')
+#parse('includes/navbar.vm')
 
 <span id="spinner" style="display: none"><img src="$urlBuilder.staticUrl('wait30.gif')"></span>
 												

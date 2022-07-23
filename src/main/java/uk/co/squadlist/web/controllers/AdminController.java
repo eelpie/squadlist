@@ -25,18 +25,23 @@ import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
+import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
+import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.DisplayMember;
+import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,6 +67,8 @@ public class AdminController {
     private final LoggedInUserService loggedInUserService;
     private final InstanceConfig instanceConfig;
     private final PermissionsService permissionsService;
+    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+    private final PreferredSquadService preferredSquadService;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -70,7 +77,9 @@ public class AdminController {
                            Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
-                           PermissionsService permissionsService) {
+                           PermissionsService permissionsService,
+                           OutingAvailabilityCountsService outingAvailabilityCountsService,
+                           PreferredSquadService preferredSquadService) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -81,6 +90,8 @@ public class AdminController {
         this.loggedInUserService = loggedInUserService;
         this.instanceConfig = instanceConfig;
         this.permissionsService = permissionsService;
+        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+        this.preferredSquadService = preferredSquadService;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -96,10 +107,14 @@ public class AdminController {
         List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("admin").
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
                 addObject("title", "Admin").
+                addObject("navItems", navItems).
                 addObject("members", members).
                 addObject("activeMembers", activeDisplayMembers).
                 addObject("inactiveMembers", inactiveDisplayMembers).
@@ -142,6 +157,7 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
     public ModelAndView setAdminsPrompt() throws Exception {
+        Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         List<Member> adminMembers = Lists.newArrayList();
@@ -153,7 +169,13 @@ public class AdminController {
                 availableMembers.add(member);
             }
         }
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("editAdmins").
+                addObject("title", "Edit admins").
+                addObject("navItems", navItems).
                 addObject("admins", adminMembers).
                 addObject("availableMembers", availableMembers);
     }
@@ -216,8 +238,16 @@ public class AdminController {
         return redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("editInstance").
+                addObject("title", "Edit instance settings").
+                addObject("navItems", navItems).
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
                 addObject("governingBodies", GOVERNING_BODIES);
@@ -236,6 +266,26 @@ public class AdminController {
             displayMembers.add(new DisplayMember(member, isEditable));
         }
         return displayMembers;
+    }
+
+    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
+        List<NavItem> navItems = new ArrayList<>();
+        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
+        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
+        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
+            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
+        }
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
+            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, true));
+        }
+        return navItems;
     }
 
 }
