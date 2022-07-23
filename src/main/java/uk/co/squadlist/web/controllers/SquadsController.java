@@ -99,11 +99,18 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.GET)
-    public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException {
+    public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
 
         final Squad squad = loggedInUserApi.getSquad(id);
-        return viewFactory.getViewForLoggedInUser("deleteSquadPrompt").addObject("squad", squad).addObject("title", "Delete squad");
+        return viewFactory.getViewForLoggedInUser("deleteSquadPrompt").
+                addObject("title", "Delete squad").
+                addObject("navItems", navItems).
+                addObject("squad", squad);
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
