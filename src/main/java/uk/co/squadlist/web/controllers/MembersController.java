@@ -384,10 +384,16 @@ public class MembersController {
         return redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException {
+    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("newMember").
                 addObject("squads", api.getSquads())
                 .addObject("title", "Adding a new member")
+                .addObject("navItems", navItems)
                 .addObject("rolesOptions", ROLES_OPTIONS);
     }
 
