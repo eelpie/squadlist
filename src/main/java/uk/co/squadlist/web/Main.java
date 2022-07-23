@@ -91,7 +91,7 @@ public class Main {
 	@Bean
 	public VelocityViewResolver velocityViewResolver(CssHelper cssHelper, DateFormatter dateFormatter,
 													 DateHelper dateHelper, LoggedInUserService loggedInUserService,
-													 PermissionsHelper permissionsHelper, SquadNamesHelper squadNamesHelper,
+													 SquadNamesHelper squadNamesHelper,
 													 TextHelper textHelper,
 													 UrlBuilder urlBuilder) {
 		final VelocityViewResolver viewResolver = new VelocityViewResolver();
@@ -104,7 +104,6 @@ public class Main {
 		attributes.put("dateFormatter", dateFormatter);
 		attributes.put("dateHelper", dateHelper);
 		attributes.put("loggedInUserService", loggedInUserService);
-		attributes.put("permissionsHelper", permissionsHelper);
 		attributes.put("squadNamesHelper", squadNamesHelper);
 		attributes.put("text", textHelper);
 		attributes.put("urlBuilder", urlBuilder);

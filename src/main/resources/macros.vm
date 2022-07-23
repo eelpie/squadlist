@@ -1,7 +1,7 @@
-#macro(outingsNav $action)
+#macro(outingsNav $canAddOuting)
 	<ul class="list-inline">
 		<li class="pull-right">
-			#if($permissionsHelper.hasPermission('ADD_OUTING'))			
+			#if($canAddOuting)
 				<a href="$urlBuilder.applicationUrl('/outings/new')">$text.text('add.outing')</a>
 			#end				
 		</li>		

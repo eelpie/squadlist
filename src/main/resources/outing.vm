@@ -20,7 +20,7 @@
 		</div>
 		
 		<div class="col-xs-12">			
-			#outingsNav()
+			#outingsNav($canAddOuting)
 			<h4>$dateFormatter.dayMonthYearTime($outing.date)</h4>
 						
 			<span>

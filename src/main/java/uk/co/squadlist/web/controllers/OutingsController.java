@@ -118,8 +118,9 @@ public class OutingsController {
         final List<OutingWithSquadAvailability> squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
         mv.addObject("outings", squadOutings);
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
-
         mv.addObject("squads", loggedInUserApi.getSquads());
+
+        mv.addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
         return mv;
     }
 
@@ -152,7 +153,8 @@ public class OutingsController {
                 addObject("squadAvailability", outingAvailability).
                 addObject("squads", squads).
                 addObject("members", displayMembers).
-                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));    // TODO push to date parser - local time
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime())).    // TODO push to date parser - local time
+                addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
 
     @RequestMapping("/outings/{id}.csv")
@@ -245,7 +247,8 @@ public class OutingsController {
         return viewFactory.getViewForLoggedInUser("deleteOuting").
                 addObject("title", "Deleting an outing").
                 addObject("navItems", navItems).
-                addObject("outing", outing);
+                addObject("outing", outing).
+                addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
 
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
@@ -368,7 +371,8 @@ public class OutingsController {
                 addObject("outing", outingDetails).
                 addObject("outingObject", outing).
                 addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), api)).
-                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime()));
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime())).
+                addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
 
     private AvailabilityOption getAvailabilityOptionById(String availabilityId, InstanceSpecificApiClient api) throws HttpFetchException, IOException, UnknownAvailabilityOptionException {

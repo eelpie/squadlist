@@ -17,7 +17,7 @@
 
 	<div class="row">
 		<div class="col-xs-2">
-			#outingsNav()
+			#outingsNav($canAddOuting)
 		</div>
 		
 		<div class="col-xs-10">
