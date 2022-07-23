@@ -157,6 +157,7 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
     public ModelAndView setAdminsPrompt() throws Exception {
+        Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         List<Member> adminMembers = Lists.newArrayList();
@@ -168,7 +169,13 @@ public class AdminController {
                 availableMembers.add(member);
             }
         }
+
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+
         return viewFactory.getViewForLoggedInUser("editAdmins").
+                addObject("title", "Edit admins").
+                addObject("navItems", navItems).
                 addObject("admins", adminMembers).
                 addObject("availableMembers", availableMembers);
     }

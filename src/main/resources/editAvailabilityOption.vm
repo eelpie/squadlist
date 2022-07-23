@@ -1,5 +1,5 @@
 #parse('includes/head.vm')
-#navTabs('Admin')
+#parse('includes/navbar.vm')
 
 <div class="container-fluid">
 
