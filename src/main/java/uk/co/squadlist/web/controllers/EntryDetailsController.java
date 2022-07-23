@@ -13,14 +13,22 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
+import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
+import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
+import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -36,18 +44,30 @@ public class EntryDetailsController {
     private final CsvOutputRenderer csvOutputRenderer;
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
+    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
+    private final UrlBuilder urlBuilder;
+    private final PermissionsService permissionsService;
 
     @Autowired
-    public EntryDetailsController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
+    public EntryDetailsController(PreferredSquadService preferredSquadService,
+                                  ViewFactory viewFactory,
                                   EntryDetailsModelPopulator entryDetailsModelPopulator,
-                                  CsvOutputRenderer csvOutputRenderer, GoverningBodyFactory governingBodyFactory,
-                                  LoggedInUserService loggedInUserService) {
+                                  CsvOutputRenderer csvOutputRenderer,
+                                  GoverningBodyFactory governingBodyFactory,
+                                  LoggedInUserService loggedInUserService,
+                                  OutingAvailabilityCountsService outingAvailabilityCountsService,
+                                  UrlBuilder urlBuilder,
+                                  PermissionsService permissionsService
+                                  ) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.entryDetailsModelPopulator = entryDetailsModelPopulator;
         this.csvOutputRenderer = csvOutputRenderer;
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
+        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
+        this.urlBuilder = urlBuilder;
+        this.permissionsService = permissionsService;
     }
 
     @RequestMapping("/entrydetails/{squadId}")
@@ -55,7 +75,13 @@ public class EntryDetailsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
 
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
+        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
+                addObject("title", "Entry details").
+                addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
         entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv, loggedInUserService.getLoggedInMember());
@@ -144,6 +170,26 @@ public class EntryDetailsController {
                 entryDetailsModelPopulator.getEntryDetailsHeaders(),
                 entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers, governingBody)
         );
+    }
+
+    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
+        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
+        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+
+        List<NavItem> navItems = new ArrayList<>();
+        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
+        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
+        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
+        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
+
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
+            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
+        }
+        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
+            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
+        }
+        return navItems;
     }
 
 }
