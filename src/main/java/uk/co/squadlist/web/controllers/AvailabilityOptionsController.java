@@ -13,7 +13,6 @@ import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
@@ -22,18 +21,16 @@ import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
-import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -45,25 +42,19 @@ public class AvailabilityOptionsController {
     private final UrlBuilder urlBuilder;
     private final LoggedInUserService loggedInUserService;
     private final PreferredSquadService preferredSquadService;
-    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
-    private final PermissionsService permissionsService;
-    private final GoverningBodyFactory governingBodyFactory;
+    private final NavItemsBuilder navItemsBuilder;
 
     @Autowired
     public AvailabilityOptionsController(ViewFactory viewFactory,
                                          UrlBuilder urlBuilder,
                                          LoggedInUserService loggedInUserService,
                                          PreferredSquadService preferredSquadService,
-                                         OutingAvailabilityCountsService outingAvailabilityCountsService,
-                                         PermissionsService permissionsService,
-                                         GoverningBodyFactory governingBodyFactory) {
+                                         NavItemsBuilder navItemsBuilder) {
         this.viewFactory = viewFactory;
         this.urlBuilder = urlBuilder;
         this.loggedInUserService = loggedInUserService;
         this.preferredSquadService = preferredSquadService;
-        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
-        this.permissionsService = permissionsService;
-        this.governingBodyFactory = governingBodyFactory;
+        this.navItemsBuilder = navItemsBuilder;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -163,7 +154,7 @@ public class AvailabilityOptionsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("newAvailabilityOption").
                 addObject("title", "Add new availability option").
@@ -175,7 +166,7 @@ public class AvailabilityOptionsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("editAvailabilityOption").
                 addObject("title", "Edit availability options").
@@ -195,7 +186,7 @@ public class AvailabilityOptionsController {
         alternatives.remove(a);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, api.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, api, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("deleteAvailabilityOption").
                 addObject("title", "Delete availability option").
@@ -209,26 +200,5 @@ public class AvailabilityOptionsController {
         redirectView.setExposeModelAttributes(false);
         return new ModelAndView(redirectView);
     }
-
-    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-
-        List<NavItem> navItems = new ArrayList<>();
-        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
-        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
-        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
-
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
-            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
-        }
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
-            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, true));
-        }
-        return navItems;
-    }
-
 
 }

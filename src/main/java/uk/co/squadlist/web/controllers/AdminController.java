@@ -35,6 +35,7 @@ import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.DateFormatter;
+import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
@@ -69,6 +70,7 @@ public class AdminController {
     private final PermissionsService permissionsService;
     private final OutingAvailabilityCountsService outingAvailabilityCountsService;
     private final PreferredSquadService preferredSquadService;
+    private NavItemsBuilder navItemsBuilder;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -79,7 +81,8 @@ public class AdminController {
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
                            OutingAvailabilityCountsService outingAvailabilityCountsService,
-                           PreferredSquadService preferredSquadService) {
+                           PreferredSquadService preferredSquadService,
+                           NavItemsBuilder navItemsBuilder) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -92,6 +95,7 @@ public class AdminController {
         this.permissionsService = permissionsService;
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.preferredSquadService = preferredSquadService;
+        this.navItemsBuilder = navItemsBuilder;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -108,7 +112,7 @@ public class AdminController {
         List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("admin").
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -171,7 +175,7 @@ public class AdminController {
         }
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("editAdmins").
                 addObject("title", "Edit admins").
@@ -243,7 +247,7 @@ public class AdminController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewForLoggedInUser("editInstance").
                 addObject("title", "Edit instance settings").
@@ -266,26 +270,6 @@ public class AdminController {
             displayMembers.add(new DisplayMember(member, isEditable));
         }
         return displayMembers;
-    }
-
-    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-
-        List<NavItem> navItems = new ArrayList<>();
-        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
-        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
-        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
-
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
-            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
-        }
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
-            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, true));
-        }
-        return navItems;
     }
 
 }

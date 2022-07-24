@@ -28,15 +28,18 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.model.forms.MemberSquad;
-import uk.co.squadlist.web.services.*;
+import uk.co.squadlist.web.services.PasswordGenerator;
+import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,8 +59,8 @@ public class MembersController {
     private PasswordGenerator passwordGenerator;
     private PermissionsService permissionsService;
     private GoverningBodyFactory governingBodyFactory;
-    private OutingAvailabilityCountsService outingAvailabilityCountsService;
     private PreferredSquadService preferredSquadService;
+    private NavItemsBuilder navItemsBuilder;
 
     public MembersController() {
     }
@@ -68,16 +71,16 @@ public class MembersController {
                              PasswordGenerator passwordGenerator,
                              PermissionsService permissionsService,
                              GoverningBodyFactory governingBodyFactory,
-                             OutingAvailabilityCountsService outingAvailabilityCountsService,
-                             PreferredSquadService preferredSquadService) {
+                             PreferredSquadService preferredSquadService,
+                             NavItemsBuilder navItemsBuilder) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.passwordGenerator = passwordGenerator;
         this.permissionsService = permissionsService;
         this.governingBodyFactory = governingBodyFactory;
-        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.preferredSquadService = preferredSquadService;
+        this.navItemsBuilder = navItemsBuilder;
     }
 
     @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
@@ -89,7 +92,7 @@ public class MembersController {
         final Member members = loggedInUserApi.getMember(id);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("memberDetails").
                 addObject("member", members).
@@ -130,7 +133,7 @@ public class MembersController {
 
             Member loggedInMember = loggedInUserService.getLoggedInMember();
             final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-            List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
             return viewFactory.getViewForLoggedInUser("memberAdded").
                     addObject("title", "Member added").
@@ -300,7 +303,7 @@ public class MembersController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
@@ -329,7 +332,7 @@ public class MembersController {
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
@@ -357,7 +360,7 @@ public class MembersController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
 
@@ -403,7 +406,7 @@ public class MembersController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("newMember").
                 addObject("squads", api.getSquads()).
@@ -418,7 +421,7 @@ public class MembersController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("editMemberDetails").
                 addObject("member", memberDetails).
@@ -442,7 +445,7 @@ public class MembersController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("changePassword").
                 addObject("title", "Change password").
@@ -479,7 +482,7 @@ public class MembersController {
         final Member member = loggedInUserApi.getMember(id);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").
                 addObject("title", "Reset a member's password").
@@ -498,7 +501,7 @@ public class MembersController {
         final String newPassword = loggedInUserApi.resetMemberPassword(member);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInMember, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
         return viewFactory.getViewForLoggedInUser("memberPasswordReset").
                 addObject("title", "Password reset details").
@@ -515,26 +518,6 @@ public class MembersController {
         RedirectView redirectView = new RedirectView(url);
         redirectView.setExposeModelAttributes(false);
         return new ModelAndView(redirectView);
-    }
-
-    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-
-        List<NavItem> navItems = new ArrayList<>();
-        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
-        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
-        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
-
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
-            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
-        }
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
-            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
-        }
-        return navItems;
     }
 
 }

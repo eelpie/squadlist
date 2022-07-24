@@ -20,7 +20,6 @@ import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.model.*;
 import uk.co.squadlist.web.model.forms.OutingDetails;
@@ -30,10 +29,7 @@ import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
-import uk.co.squadlist.web.views.CsvOutputRenderer;
-import uk.co.squadlist.web.views.DateFormatter;
-import uk.co.squadlist.web.views.DateHelper;
-import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.*;
 import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -57,14 +53,14 @@ public class OutingsController {
     private final ActiveMemberFilter activeMemberFilter;
     private final CsvOutputRenderer csvOutputRenderer;
     private final PermissionsService permissionsService;
-    private final GoverningBodyFactory governingBodyFactory;
+    private final NavItemsBuilder navItemsBuilder;
 
     @Autowired
     public OutingsController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
                              DateFormatter dateFormatter, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                              OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
                              CsvOutputRenderer csvOutputRenderer, PermissionsService permissionsService,
-                             GoverningBodyFactory governingBodyFactory) {
+                             NavItemsBuilder navItemsBuilder) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.dateFormatter = dateFormatter;
@@ -74,7 +70,7 @@ public class OutingsController {
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
         this.permissionsService = permissionsService;
-        this.governingBodyFactory = governingBodyFactory;
+        this.navItemsBuilder = navItemsBuilder;
     }
 
     @RequestMapping("/outings")
@@ -105,7 +101,7 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -141,7 +137,7 @@ public class OutingsController {
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, outing);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         return viewFactory.getViewForLoggedInUser("outing").
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
@@ -242,7 +238,7 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, loggedInUserApi, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         return viewFactory.getViewForLoggedInUser("deleteOuting").
                 addObject("title", "Deleting an outing").
@@ -347,7 +343,7 @@ public class OutingsController {
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
 
         return viewFactory.getViewForLoggedInUser("newOuting").
                 addObject("title", "Add a new outing").
@@ -361,7 +357,7 @@ public class OutingsController {
     private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing, InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsFor(loggedInUser, api, preferredSquad);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
 
         return viewFactory.getViewForLoggedInUser("editOuting").
                 addObject("title", "Editing an outing").
@@ -406,26 +402,6 @@ public class OutingsController {
             displayMembers.add(new DisplayMember(member, isEditable));
         }
         return displayMembers;
-    }
-
-    private List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad) throws URISyntaxException, UnknownInstanceException {
-        final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
-        final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-
-        List<NavItem> navItems = new ArrayList<>();
-        navItems.add(new NavItem("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", false));
-        navItems.add(new NavItem("my.details", urlBuilder.applicationUrl("/member/" + loggedInUser.getId() + "/edit"), memberDetailsProblems, "memberDetailsProblems", false));
-        navItems.add(new NavItem("outings", urlBuilder.outingsUrl(preferredSquad), null, null, true));
-        navItems.add(new NavItem("availability", urlBuilder.availabilityUrl(preferredSquad), null, null, false));
-        navItems.add(new NavItem("contacts", urlBuilder.contactsUrl(preferredSquad), null, null, false));
-
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ENTRY_DETAILS)) {
-            navItems.add(new NavItem("entry.details", urlBuilder.entryDetailsUrl(preferredSquad), null, null, false));
-        }
-        if (permissionsService.hasPermission(loggedInUser, Permission.VIEW_ADMIN_SCREEN)) {
-            navItems.add(new NavItem("admin", urlBuilder.adminUrl(), null, null, false));
-        }
-        return navItems;
     }
 
 }
