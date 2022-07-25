@@ -39,7 +39,7 @@ public class OutingAvailabilityCountsService {
 	public int getPendingOutingsCountFor(String memberId, InstanceSpecificApiClient api) {
 		int pendingCount = 0;
 		for (OutingAvailability outingAvailability : api.getAvailabilityFor(memberId, 
-				DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.oneYearFromNow().toDate())) {
+				DateHelper.startOfCurrentOutingPeriod().toDate(), DateHelper.oneMonthFromNow().toDate())) {
 			if (outingAvailability.getAvailabilityOption() == null) {
 				pendingCount++;
 			}
