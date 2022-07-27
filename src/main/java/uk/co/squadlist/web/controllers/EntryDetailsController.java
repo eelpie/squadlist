@@ -88,7 +88,7 @@ public class EntryDetailsController {
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
-        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv, loggedInUserService.getLoggedInMember());
+        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv, loggedInMember);
         return mv;
     }
 

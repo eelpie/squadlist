@@ -449,7 +449,7 @@ public class MembersController {
         return viewFactory.getViewForLoggedInUser("changePassword").
                 addObject("title", "Change password").
                 addObject("navItems", navItems).
-                addObject("member", loggedInUserService.getLoggedInMember()).
+                addObject("member", loggedInUser).
                 addObject("changePassword", changePassword);
     }
 
