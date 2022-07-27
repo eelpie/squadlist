@@ -222,7 +222,10 @@ public class OutingsController {
 
         final Outing outing = loggedInUserApi.getOuting(id);
 
-        final OutingDetails outingDetails = new OutingDetails(new LocalDateTime(outing.getDate()));
+        LocalDateTime outingLocalDateTime = new LocalDateTime(outing.getDate());    // TODO this is almost certainly a time zone error
+        log.info("Outing date " + outing.getDate() + " cast to localdatetime " + outingLocalDateTime);
+
+        final OutingDetails outingDetails = new OutingDetails(outingLocalDateTime);
         outingDetails.setSquad(outing.getSquad().getId());
         outingDetails.setNotes(outing.getNotes());
 
