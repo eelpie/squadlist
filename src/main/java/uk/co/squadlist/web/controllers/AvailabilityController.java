@@ -85,7 +85,7 @@ public class AvailabilityController {
 
             mv.addObject("squad", squad).
                     addObject("title", squad.getName() + " availability").
-                    addObject("members", toDisplayMembers(activeSquadMembers, loggedInUserService.getLoggedInMember()));
+                    addObject("members", toDisplayMembers(activeSquadMembers, loggedInMember));
 
             if (activeSquadMembers.isEmpty()) {
                 return mv;
