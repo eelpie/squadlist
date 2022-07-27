@@ -179,7 +179,10 @@ public class OutingsController {
     public ModelAndView newOuting() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
-        final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime();
+        Instance instance = loggedInUserApi.getInstance();
+        String timeZone = instance.getTimeZone();
+
+        final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
         outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi).getId());
         return renderNewOutingForm(outingDefaults, loggedInUserApi);

@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +53,8 @@ public class DateHelper {
 		return minutes;
 	}
 
-	public static LocalDateTime defaultOutingStartDateTime() {
-		return new DateTime(DateTime.now().toDateMidnight()).plusDays(1).plusHours(8).toLocalDateTime();
+	public static LocalDateTime defaultOutingStartDateTime(String timeZone) {
+		return new DateTime(DateTime.now(DateTimeZone.forID(timeZone)).toDateMidnight()).plusDays(1).plusHours(8).toLocalDateTime();
 	}
 
 	public static DateTime startOfCurrentOutingPeriod() {
