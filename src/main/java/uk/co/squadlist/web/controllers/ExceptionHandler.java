@@ -3,7 +3,6 @@ package uk.co.squadlist.web.controllers;
 import com.google.common.base.Strings;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +27,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     private final static Logger log = LogManager.getLogger(ExceptionHandler.class);
 
     private final UrlBuilder urlBuilder;
+    private final ViewFactory viewFactory;
 
     @Value("${googleAnalyticsAccount}")
     private String googleAnalyticsAccount;
@@ -35,8 +35,11 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     private final SentryClient sentryClient;
 
     @Autowired
-    public ExceptionHandler(UrlBuilder urlBuilder, @Value("${sentryDSN}") String sentryDSN) {
+    public ExceptionHandler(UrlBuilder urlBuilder,
+                            ViewFactory viewFactory,
+                            @Value("${sentryDSN}") String sentryDSN) {
         this.urlBuilder = urlBuilder;
+        this.viewFactory = viewFactory;
         log.info("Setting up Sentry client with DSN: " + sentryDSN);
 
         if (!Strings.isNullOrEmpty(sentryDSN)) {
@@ -89,7 +92,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
         }
 
         if (e instanceof SignedInMemberRequiredException) {
-            return redirectionTo(urlBuilder.loginUrl());
+            return viewFactory.redirectionTo(urlBuilder.loginUrl());
         }
 
         String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
@@ -106,12 +109,6 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
     @Override
     public int getOrder() {
         return Integer.MIN_VALUE;
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
 }

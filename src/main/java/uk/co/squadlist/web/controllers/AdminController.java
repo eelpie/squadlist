@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -27,7 +26,6 @@ import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
-import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -68,9 +66,8 @@ public class AdminController {
     private final LoggedInUserService loggedInUserService;
     private final InstanceConfig instanceConfig;
     private final PermissionsService permissionsService;
-    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
     private final PreferredSquadService preferredSquadService;
-    private NavItemsBuilder navItemsBuilder;
+    private final NavItemsBuilder navItemsBuilder;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -80,7 +77,6 @@ public class AdminController {
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
-                           OutingAvailabilityCountsService outingAvailabilityCountsService,
                            PreferredSquadService preferredSquadService,
                            NavItemsBuilder navItemsBuilder) {
         this.viewFactory = viewFactory;
@@ -93,7 +89,6 @@ public class AdminController {
         this.loggedInUserService = loggedInUserService;
         this.instanceConfig = instanceConfig;
         this.permissionsService = permissionsService;
-        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
     }
@@ -239,7 +234,7 @@ public class AdminController {
     }
 
     private ModelAndView redirectToAdminScreen() {
-        return redirectionTo(urlBuilder.adminUrl());
+        return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
@@ -255,12 +250,6 @@ public class AdminController {
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
                 addObject("governingBodies", GOVERNING_BODIES);
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
     private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {

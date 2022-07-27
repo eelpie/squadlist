@@ -20,6 +20,7 @@ import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -36,11 +37,13 @@ public class LoginController {
     private final String clientSecret;
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
+    private final ViewFactory viewFactory;
 
     @Autowired
     public LoginController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
                            InstanceConfig instanceConfig,
                            SquadlistApiFactory squadlistApiFactory,
+                           ViewFactory viewFactory,
                            @Value("${client.id}") String clientId,
                            @Value("${client.secret}") String clientSecret
     ) throws IOException {
@@ -48,6 +51,7 @@ public class LoginController {
         this.urlBuilder = urlBuilder;
         this.instanceConfig = instanceConfig;
         this.api = squadlistApiFactory.createClient();
+        this.viewFactory = viewFactory;
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -81,18 +85,18 @@ public class LoginController {
             if (authenticatedMember != null) {
                 log.info("Auth successful for user: " + username);
                 loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
-                return redirectionTo(urlBuilder.getBaseUrl());
+                return viewFactory.redirectionTo(urlBuilder.getBaseUrl());
             }
         }
         redirectAttributes.addFlashAttribute("error", true);
         redirectAttributes.addFlashAttribute("username", username);
-        return redirectionTo(urlBuilder.loginUrl());
+        return viewFactory.redirectionTo(urlBuilder.loginUrl());
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET})
     public ModelAndView logout() {
         loggedInUserService.cleanSignedIn();
-        return redirectionTo(urlBuilder.loginUrl());
+        return viewFactory.redirectionTo(urlBuilder.loginUrl());
     }
 
     private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
@@ -111,12 +115,6 @@ public class LoginController {
             log.error("Uncaught error", e);    // TODO
             return null;
         }
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
 }

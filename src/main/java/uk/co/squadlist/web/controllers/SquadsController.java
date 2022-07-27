@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -79,7 +78,7 @@ public class SquadsController {
 
         try {
             loggedInUserApi.createSquad(squadDetails.getName());
-            return redirectionTo(urlBuilder.adminUrl());
+            return viewFactory.redirectionTo(urlBuilder.adminUrl());
 
         } catch (InvalidSquadException e) {
             log.info("Invalid squad");
@@ -111,7 +110,7 @@ public class SquadsController {
 
         final Squad squad = loggedInUserApi.getSquad(id);
         loggedInUserApi.deleteSquad(squad);
-        return redirectionTo(urlBuilder.adminUrl());
+        return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.GET)
@@ -149,7 +148,7 @@ public class SquadsController {
         log.info("Setting squad members to " + updatedSquadMembers.size() + " members: " + updatedSquadMembers);
         loggedInUserApi.setSquadMembers(squad.getId(), updatedSquadMembers);
 
-        return redirectionTo(urlBuilder.adminUrl());
+        return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
@@ -183,12 +182,6 @@ public class SquadsController {
                 addObject("squadDetails", squadDetails).
                 addObject("squadMembers", squadMembers).
                 addObject("availableMembers", availableMembers);
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
 }

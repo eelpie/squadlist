@@ -3,13 +3,12 @@ package uk.co.squadlist.web.views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 
 @Component
@@ -38,6 +37,12 @@ public class ViewFactory {
             throw new RuntimeException(e);
         }
         return mv;
+    }
+
+    public ModelAndView redirectionTo(String url) {
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setExposeModelAttributes(false);
+        return new ModelAndView(redirectView);
     }
 
 }

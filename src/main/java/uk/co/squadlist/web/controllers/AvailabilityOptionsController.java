@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -176,7 +175,7 @@ public class AvailabilityOptionsController {
     }
 
     private ModelAndView redirectToAdmin() {
-        return redirectionTo(urlBuilder.adminUrl());
+        return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
     private ModelAndView renderDeleteForm(final AvailabilityOption a, InstanceSpecificApiClient api) throws HttpFetchException, IOException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
@@ -193,12 +192,6 @@ public class AvailabilityOptionsController {
                 addObject("navItems", navItems).
                 addObject("availabilityOption", a).
                 addObject("alternatives", alternatives);
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
 }

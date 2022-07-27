@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
@@ -206,7 +205,7 @@ public class OutingsController {
             }
 
             final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
-            return redirectionTo(outingsViewForNewOutingsSquadAndMonth);
+            return viewFactory.redirectionTo(outingsViewForNewOutingsSquadAndMonth);
 
         } catch (InvalidOutingException e) {
             result.addError(new ObjectError("outing", e.getMessage()));
@@ -265,7 +264,7 @@ public class OutingsController {
         loggedInUserApi.deleteOuting(outing.getId());
 
         final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
-        return redirectionTo(exitUrl);
+        return viewFactory.redirectionTo(exitUrl);
     }
 
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
@@ -344,7 +343,7 @@ public class OutingsController {
     }
 
     private ModelAndView redirectToOuting(final Outing updatedOuting) {
-        return redirectionTo(urlBuilder.outingUrl(updatedOuting));
+        return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
     private ModelAndView renderNewOutingForm(OutingDetails outingDetails, InstanceSpecificApiClient api) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
@@ -396,12 +395,6 @@ public class OutingsController {
         Squad squad = outingDetails.getSquad() != null ? loggedInUserApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
         String notes = outingDetails.getNotes();
         return new Outing(squad, date, notes);
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
     }
 
     private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {

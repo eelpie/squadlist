@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -164,7 +163,7 @@ public class MembersController {
 
         log.info("Requesting change password for member: " + member.getId());
         if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
-            return redirectionTo(urlBuilder.memberUrl(member));
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
         } else {
             result.addError(new ObjectError("changePassword", "Change password failed"));
             return renderChangePasswordForm(changePassword);
@@ -293,7 +292,7 @@ public class MembersController {
 
         log.info("Submitting updated member: " + member);
         loggedInUserApi.updateMemberDetails(member);
-        return redirectionTo(urlBuilder.memberUrl(member));
+        return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
@@ -397,9 +396,9 @@ public class MembersController {
             loggedInUserApi.updateMemberProfileImage(member, file.getBytes());
         } catch (InvalidImageException e) {
             log.warn("Invalid image file submitted");
-            return redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
+            return viewFactory.redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
         }
-        return redirectionTo(urlBuilder.memberUrl(member));
+        return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
     private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
@@ -511,13 +510,7 @@ public class MembersController {
     }
 
     private ModelAndView redirectToAdminScreen() {
-        return redirectionTo(urlBuilder.adminUrl());
-    }
-
-    private ModelAndView redirectionTo(String url) {
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setExposeModelAttributes(false);
-        return new ModelAndView(redirectView);
+        return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
 }
