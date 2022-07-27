@@ -60,11 +60,11 @@ public class ContactsController {
     @RequestMapping("/contacts/{squadId}")
     public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
 
@@ -75,7 +75,7 @@ public class ContactsController {
 
         if (!allSquads.isEmpty()) {
             log.info("Squad to show: " + squadToShow);
-            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance(), loggedInUserApi, loggedInUserService.getLoggedInMember());
+            contactsModelPopulator.populateModel(squadToShow, mv, loggedInUserApi.getInstance(), loggedInUserApi, loggedInMember);
         }
         return mv;
     }
