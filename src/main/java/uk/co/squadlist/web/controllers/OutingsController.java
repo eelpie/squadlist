@@ -76,8 +76,9 @@ public class OutingsController {
     public ModelAndView outings(@RequestParam(required = false, value = "squad") String squadId,
                                 @RequestParam(value = "month", required = false) String month) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInUser);
         final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings");
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
@@ -96,8 +97,6 @@ public class OutingsController {
         } else {
             mv.addObject("current", true);
         }
-
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
@@ -177,13 +176,14 @@ public class OutingsController {
     @RequestMapping(value = "/outings/new", method = RequestMethod.GET)  // TODO fails hard if no squads are available
     public ModelAndView newOuting() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         Instance instance = loggedInUserApi.getInstance();
         String timeZone = instance.getTimeZone();
 
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi).getId());
+        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi, loggedInUser).getId());
         return renderNewOutingForm(outingDefaults, loggedInUserApi);
     }
 
@@ -347,9 +347,9 @@ public class OutingsController {
     }
 
     private ModelAndView renderNewOutingForm(OutingDetails outingDetails, InstanceSpecificApiClient api) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
-        final Squad squad = preferredSquadService.resolveSquad(null, api);
-
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+
+        final Squad squad = preferredSquadService.resolveSquad(null, api, loggedInUser);
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
 

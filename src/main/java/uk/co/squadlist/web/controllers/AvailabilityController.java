@@ -68,16 +68,16 @@ public class AvailabilityController {
     @RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-
-        ModelAndView mv = viewFactory.getViewForLoggedInUser("availability");
-        mv.addObject("squads", loggedInUserApi.getSquads());
-
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+
+        ModelAndView mv = viewFactory.getViewForLoggedInUser("availability").
+                addObject("squads", loggedInUserApi.getSquads());
+
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "availability");
         mv.addObject("navItems", navItems);
 
-        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
 
         if (squad != null) {
             List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());

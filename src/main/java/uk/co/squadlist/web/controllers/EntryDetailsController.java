@@ -13,12 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
-import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -28,8 +26,6 @@ import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -77,9 +73,10 @@ public class EntryDetailsController {
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
-
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
+
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "entry.details");
 
@@ -145,10 +142,11 @@ public class EntryDetailsController {
     @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         viewFactory.getViewForLoggedInUser("entryDetails");  // TODO This call is probably only been used for access control
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());

@@ -54,6 +54,7 @@ public class ContactsController {
 
         return viewFactory.getViewForLoggedInUser("contacts").
                 addObject("title", "Contacts").
+                addObject("mavItems", navItems).
                 addObject("squads", allSquads);    // TODO leaves squad null on view
     }
 
@@ -62,7 +63,7 @@ public class ContactsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());

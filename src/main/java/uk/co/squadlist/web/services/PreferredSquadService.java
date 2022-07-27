@@ -1,26 +1,19 @@
 package uk.co.squadlist.web.services;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
-import uk.co.squadlist.web.api.SquadlistApiFactory;
-import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 
-import com.google.common.base.Strings;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PreferredSquadService {
@@ -30,21 +23,19 @@ public class PreferredSquadService {
     private static final String SELECTED_SQUAD = "selectedSquad";
 
     private final HttpServletRequest request;
-    private final LoggedInUserService loggedInUserService;
 
     @Autowired
-    public PreferredSquadService(HttpServletRequest request, LoggedInUserService loggedInUserService, SquadlistApiFactory squadlistApiFactory) throws IOException {
+    public PreferredSquadService(HttpServletRequest request) throws IOException {
         this.request = request;
-        this.loggedInUserService = loggedInUserService;
     }
 
-    public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownSquadException, SignedInMemberRequiredException {
+    public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient, Member loggedInMember) throws UnknownSquadException {
         if (!Strings.isNullOrEmpty(squadId)) {
             final Squad selectedSquad = instanceSpecificApiClient.getSquad(squadId);
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(loggedInUserService.getLoggedInMember(), instanceSpecificApiClient.getSquads());
+        return resolvedPreferredSquad(loggedInMember, instanceSpecificApiClient.getSquads());
     }
 
     public Squad resolvedPreferredSquad(Member loggedInMember, List<Squad> squads) {
