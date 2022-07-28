@@ -53,7 +53,7 @@ public class Context {
 		return instance;
 	}
 
-	public String getLanguage() {
+	public String getLanguage() {	// TODO potential multiple get instance call here. This should be a browser driven choice; not hard coded to the instance.
 		if ("Europe/Amsterdam".equals(getTimeZone())) {
 			return DUTCH;
 		}
