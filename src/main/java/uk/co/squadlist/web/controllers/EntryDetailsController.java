@@ -80,7 +80,7 @@ public class EntryDetailsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "entry.details");
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails", loggedInMember).
+        final ModelAndView mv = viewFactory.getViewFor("entryDetails").
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -109,7 +109,7 @@ public class EntryDetailsController {
             scullingPoints.add(member.getScullingPoints());
         }
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax", loggedInMember);
+        final ModelAndView mv = viewFactory.getViewFor("entryDetailsAjax");
         if (!selectedMembers.isEmpty()) {
             mv.addObject("members", selectedMembers);
 
@@ -145,7 +145,7 @@ public class EntryDetailsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        viewFactory.getViewForLoggedInUser("entryDetails", loggedInMember);  // TODO This call is probably only been used for access control
+        viewFactory.getViewFor("entryDetails");  // TODO This call is probably only been used for access control
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());

@@ -59,7 +59,7 @@ public class AvailabilityController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "availability");
 
-        return viewFactory.getViewForLoggedInUser("availability", loggedInMember).
+        return viewFactory.getViewFor("availability").
                 addObject("title", "Availability").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads());
@@ -70,7 +70,7 @@ public class AvailabilityController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        ModelAndView mv = viewFactory.getViewForLoggedInUser("availability", loggedInMember).
+        ModelAndView mv = viewFactory.getViewFor("availability").
                 addObject("squads", loggedInUserApi.getSquads());
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());

@@ -97,7 +97,7 @@ public class SquadsController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         final Squad squad = loggedInUserApi.getSquad(id);
-        return viewFactory.getViewForLoggedInUser("deleteSquadPrompt", loggedInUser).
+        return viewFactory.getViewFor("deleteSquadPrompt").
                 addObject("title", "Delete squad").
                 addObject("navItems", navItems).
                 addObject("squad", squad);
@@ -158,7 +158,7 @@ public class SquadsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("newSquad", loggedInUser).
+        return viewFactory.getViewFor("newSquad").
                 addObject("title", "Add new squad").
                 addObject("navItems", navItems).
                 addObject("squadDetails", squadDetails);
@@ -175,7 +175,7 @@ public class SquadsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("editSquad", loggedInUser).
+        return viewFactory.getViewFor("editSquad").
                 addObject("title", "Editing a squad").
                 addObject("navItems", navItems).
                 addObject("squad", squad).

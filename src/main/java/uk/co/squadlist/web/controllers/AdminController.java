@@ -109,7 +109,7 @@ public class AdminController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("admin", loggedInUser).
+        return viewFactory.getViewFor("admin").
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
                 addObject("title", "Admin").
@@ -172,7 +172,7 @@ public class AdminController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("editAdmins", loggedInUser).
+        return viewFactory.getViewFor("editAdmins").
                 addObject("title", "Edit admins").
                 addObject("navItems", navItems).
                 addObject("admins", adminMembers).
@@ -244,7 +244,7 @@ public class AdminController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("editInstance", loggedInUser).
+        return viewFactory.getViewFor("editInstance").
                 addObject("title", "Edit instance settings").
                 addObject("navItems", navItems).
                 addObject("instanceDetails", instanceDetails).

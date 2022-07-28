@@ -79,7 +79,7 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInUser);
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("outings", loggedInUser);
+        final ModelAndView mv = viewFactory.getViewFor("outings");
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
             return mv;
@@ -137,7 +137,7 @@ public class OutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
-        return viewFactory.getViewForLoggedInUser("outing", loggedInUser).
+        return viewFactory.getViewFor("outing").
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
                 addObject("navItems", navItems).
                 addObject("outing", outing).
@@ -248,7 +248,7 @@ public class OutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
-        return viewFactory.getViewForLoggedInUser("deleteOuting", loggedInUser).
+        return viewFactory.getViewFor("deleteOuting").
                 addObject("title", "Deleting an outing").
                 addObject("navItems", navItems).
                 addObject("outing", outing).
@@ -336,7 +336,7 @@ public class OutingsController {
             AvailabilityOption availabilityOption = getAvailabilityOptionById(availability, loggedInUserApi);
             final OutingAvailability result = loggedInUserApi.setOutingAvailability(loggedInMember, outing, availabilityOption);
             log.info("Set availability for " + loggedInMember.getUsername() + " / " + outing.getId() + ": " + availabilityOption);
-            return viewFactory.getViewForLoggedInUser("includes/availability", loggedInMember).addObject("availability", result.getAvailabilityOption());
+            return viewFactory.getViewFor("includes/availability").addObject("availability", result.getAvailabilityOption());
         }
 
         throw new OutingClosedException();
@@ -353,7 +353,7 @@ public class OutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
 
-        return viewFactory.getViewForLoggedInUser("newOuting", loggedInUser).
+        return viewFactory.getViewFor("newOuting").
                 addObject("title", "Add a new outing").
                 addObject("navItems", navItems).
                 addObject("squads", api.getSquads()).
@@ -367,7 +367,7 @@ public class OutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
 
-        return viewFactory.getViewForLoggedInUser("editOuting", loggedInUser).
+        return viewFactory.getViewFor("editOuting").
                 addObject("title", "Editing an outing").
                 addObject("navItems", navItems).
                 addObject("squads", api.getSquads()).

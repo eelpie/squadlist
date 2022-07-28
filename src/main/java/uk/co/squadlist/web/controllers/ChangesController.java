@@ -49,7 +49,7 @@ public class ChangesController {
 
         List<Change> changes = squadlistApiFactory.createUnauthenticatedSwaggerClient().changeLogGet();
 
-        return viewFactory.getViewForLoggedInUser("changes", loggedInUser).
+        return viewFactory.getViewFor("changes").
                 addObject("title", "What's changed").
                 addObject("navItems", navItems).
                 addObject("changes", changes);

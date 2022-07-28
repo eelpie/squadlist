@@ -52,7 +52,7 @@ public class ContactsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
 
-        return viewFactory.getViewForLoggedInUser("contacts", loggedInMember).
+        return viewFactory.getViewFor("contacts").
                 addObject("title", "Contacts").
                 addObject("mavItems", navItems).
                 addObject("squads", allSquads);    // TODO leaves squad null on view
@@ -69,7 +69,7 @@ public class ContactsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("contacts", loggedInMember).
+        final ModelAndView mv = viewFactory.getViewFor("contacts").
                 addObject("title", "Contacts").
                 addObject("navItems", navItems).
                 addObject("squads", allSquads);

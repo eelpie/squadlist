@@ -50,7 +50,7 @@ public class GoverningBodyController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("governingBody", loggedInUser).
+        return viewFactory.getViewFor("governingBody").
                 addObject("governingBody", governingBody).
                 addObject("title", governingBody.getName()).
                 addObject("navItems",navItems).

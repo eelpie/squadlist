@@ -155,7 +155,7 @@ public class AvailabilityOptionsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("newAvailabilityOption", loggedInMember).
+        return viewFactory.getViewFor("newAvailabilityOption").
                 addObject("title", "Add new availability option").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
@@ -167,7 +167,7 @@ public class AvailabilityOptionsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("editAvailabilityOption", loggedInMember).
+        return viewFactory.getViewFor("editAvailabilityOption").
                 addObject("title", "Edit availability options").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails).
@@ -187,7 +187,7 @@ public class AvailabilityOptionsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, preferredSquad, "admin");
 
-        return viewFactory.getViewForLoggedInUser("deleteAvailabilityOption", loggedInMember).
+        return viewFactory.getViewFor("deleteAvailabilityOption").
                 addObject("title", "Delete availability option").
                 addObject("navItems", navItems).
                 addObject("availabilityOption", a).
