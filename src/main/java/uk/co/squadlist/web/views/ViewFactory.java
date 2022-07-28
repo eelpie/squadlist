@@ -24,15 +24,12 @@ public class ViewFactory {
         this.preferredSquadService = preferredSquadService;
     }
 
-    public ModelAndView getViewForLoggedInUser(String templateName) throws SignedInMemberRequiredException, UnknownInstanceException {
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+    public ModelAndView getViewForLoggedInUser(String templateName, Member loggedInUser) throws SignedInMemberRequiredException, UnknownInstanceException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         final ModelAndView mv = new ModelAndView(templateName);
-        mv.addObject("loggedInUser", loggedInUser.getId());
-
         try {
-            mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads()));
+            mv.addObject("preferredSquad", preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads()));    // TODO this is questionable; push to navitems?
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

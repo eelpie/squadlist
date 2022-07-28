@@ -30,7 +30,7 @@ public class BoatsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Boat boat = loggedInUserApi.getBoat(id);
 
-        return viewFactory.getViewForLoggedInUser("boat").
+        return viewFactory.getViewForLoggedInUser("boat", loggedInUserService.getLoggedInMember()).
                 addObject("title", "View boat").
                 addObject("navItems", new ArrayList<NavItem>()).
                 addObject("boat", boat);

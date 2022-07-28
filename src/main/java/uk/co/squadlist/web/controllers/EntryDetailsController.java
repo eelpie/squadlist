@@ -80,7 +80,7 @@ public class EntryDetailsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "entry.details");
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails").
+        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetails", loggedInMember).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -92,6 +92,7 @@ public class EntryDetailsController {
     @RequestMapping("/entrydetails/ajax")
     public ModelAndView ajax(@RequestBody String json) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         List<Member> selectedMembers = Lists.newArrayList();
 
@@ -108,7 +109,7 @@ public class EntryDetailsController {
             scullingPoints.add(member.getScullingPoints());
         }
 
-        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax");
+        final ModelAndView mv = viewFactory.getViewForLoggedInUser("entryDetailsAjax", loggedInMember);
         if (!selectedMembers.isEmpty()) {
             mv.addObject("members", selectedMembers);
 
@@ -144,7 +145,7 @@ public class EntryDetailsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        viewFactory.getViewForLoggedInUser("entryDetails");  // TODO This call is probably only been used for access control
+        viewFactory.getViewForLoggedInUser("entryDetails", loggedInMember);  // TODO This call is probably only been used for access control
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());

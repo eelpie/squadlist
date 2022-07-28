@@ -93,7 +93,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("memberDetails").
+        return viewFactory.getViewForLoggedInUser("memberDetails", loggedInUser).
                 addObject("member", members).
                 addObject("title", members.getFirstName() + " " + members.getLastName()).
                 addObject("navItems", navItems).
@@ -134,7 +134,7 @@ public class MembersController {
             final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
             List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-            return viewFactory.getViewForLoggedInUser("memberAdded").
+            return viewFactory.getViewForLoggedInUser("memberAdded", loggedInMember).
                     addObject("title", "Member added").
                     addObject("navItems", navItems).
                     addObject("member", newMember).
@@ -305,7 +305,7 @@ public class MembersController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt").
+        return viewFactory.getViewForLoggedInUser("makeMemberInactivePrompt", loggedInUser).
                 addObject("member", member).
                 addObject("title", "Make member inactive - " + member.getDisplayName()).
                 addObject("navItems", navItems);
@@ -334,7 +334,7 @@ public class MembersController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewForLoggedInUser("deleteMemberPrompt").
+        return viewFactory.getViewForLoggedInUser("deleteMemberPrompt", loggedInMember).
                 addObject("title", "Delete member - " + member.getDisplayName()).
                 addObject("navItems", navItems).
                 addObject("member", member);
@@ -363,7 +363,7 @@ public class MembersController {
 
         final Member member = loggedInUserApi.getMember(id);
 
-        return viewFactory.getViewForLoggedInUser("makeMemberActivePrompt").
+        return viewFactory.getViewForLoggedInUser("makeMemberActivePrompt", loggedInUser).
                 addObject("member", member).
                 addObject("title", "Make member active - " + member.getDisplayName()).
                 addObject("navItems", navItems);
@@ -407,7 +407,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("newMember").
+        return viewFactory.getViewForLoggedInUser("newMember", loggedInUser).
                 addObject("squads", api.getSquads()).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
@@ -422,7 +422,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("editMemberDetails").
+        return viewFactory.getViewForLoggedInUser("editMemberDetails", loggedInUser).
                 addObject("member", memberDetails).
                 addObject("memberId", memberId).
                 addObject("title", title).
@@ -446,7 +446,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("changePassword").
+        return viewFactory.getViewForLoggedInUser("changePassword", loggedInUser).
                 addObject("title", "Change password").
                 addObject("navItems", navItems).
                 addObject("member", loggedInUser).
@@ -483,7 +483,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt").
+        return viewFactory.getViewForLoggedInUser("memberPasswordResetPrompt", loggedInMember).
                 addObject("title", "Reset a member's password").
                 addObject("navItems", navItems).
                 addObject("member", member);
@@ -502,7 +502,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewForLoggedInUser("memberPasswordReset").
+        return viewFactory.getViewForLoggedInUser("memberPasswordReset", loggedInMember).
                 addObject("title", "Password reset details").
                 addObject("navItems", navItems).
                 addObject("member", member).
