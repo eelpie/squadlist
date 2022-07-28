@@ -102,6 +102,7 @@ public class LoginController {
     private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
         final Instance instance = api.getInstance(instanceConfig.getInstance());
         return new ModelAndView("login").
+                addObject("instance", instance).
                 addObject("title", instance.getName()).
                 addObject("username", username).
                 addObject("errors", errors);
