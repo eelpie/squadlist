@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -35,9 +36,10 @@ public class RequiresPermissionAspect {
 		try {						
 			MethodSignature methodSignature = (MethodSignature) jp.getSignature();	
 			Permission permission = requiresPermissionAnnotation.permission();
-	
-			final boolean hasPermission = permissionsService.hasPermission(loggedInUserService.getLoggedInMember(), permission);
-			log.debug(methodSignature.getName() + " requires permission: "  + permission + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
+
+			Member loggedInMember = loggedInUserService.getLoggedInMember();
+			final boolean hasPermission = permissionsService.hasPermission(loggedInMember, permission);
+			log.debug(methodSignature.getName() + " requires permission: "  + permission + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
+import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -35,9 +36,10 @@ public class RequiresSquadPermissionAspect {
 			MethodSignature methodSignature = (MethodSignature) jp.getSignature();	
 			Permission permission = requiresSquadPermissionAnnotation.permission();
 			Squad squad = (Squad) jp.getArgs()[0];
-			
-			final boolean hasPermission = permissionsService.hasSquadPermission(loggedInUserService.getLoggedInMember(), permission, squad);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInUserService.getLoggedInMember().getUsername() + ": " + hasPermission);
+
+			Member loggedInMember = loggedInUserService.getLoggedInMember();
+			final boolean hasPermission = permissionsService.hasSquadPermission(loggedInMember, permission, squad);
+			log.info(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();
