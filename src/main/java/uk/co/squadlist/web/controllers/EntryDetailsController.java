@@ -14,6 +14,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
@@ -74,13 +75,14 @@ public class EntryDetailsController {
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "entry.details");
 
-        final ModelAndView mv = viewFactory.getViewFor("entryDetails").
+        final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -92,7 +94,7 @@ public class EntryDetailsController {
     @RequestMapping("/entrydetails/ajax")
     public ModelAndView ajax(@RequestBody String json) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         List<Member> selectedMembers = Lists.newArrayList();
 
@@ -109,7 +111,7 @@ public class EntryDetailsController {
             scullingPoints.add(member.getScullingPoints());
         }
 
-        final ModelAndView mv = viewFactory.getViewFor("entryDetailsAjax");
+        final ModelAndView mv = viewFactory.getViewFor("entryDetailsAjax", instance);
         if (!selectedMembers.isEmpty()) {
             mv.addObject("members", selectedMembers);
 
@@ -144,8 +146,9 @@ public class EntryDetailsController {
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
-        viewFactory.getViewFor("entryDetails");  // TODO This call is probably only been used for access control
+        viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());

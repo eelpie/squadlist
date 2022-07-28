@@ -8,6 +8,7 @@ import uk.co.squadlist.model.swagger.Change;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -43,13 +44,14 @@ public class ChangesController {
     public ModelAndView changes() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems =  navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         List<Change> changes = squadlistApiFactory.createUnauthenticatedSwaggerClient().changeLogGet();
 
-        return viewFactory.getViewFor("changes").
+        return viewFactory.getViewFor("changes", instance).
                 addObject("title", "What's changed").
                 addObject("navItems", navItems).
                 addObject("changes", changes);

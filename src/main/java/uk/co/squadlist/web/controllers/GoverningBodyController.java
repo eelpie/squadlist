@@ -9,6 +9,7 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -44,13 +45,14 @@ public class GoverningBodyController {
     public ModelAndView member() throws Exception {
         Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final GoverningBody governingBody = governingBodyFactory.governingBodyFor("british-rowing");  // TODO take from path
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewFor("governingBody").
+        return viewFactory.getViewFor("governingBody", instance).
                 addObject("governingBody", governingBody).
                 addObject("title", governingBody.getName()).
                 addObject("navItems",navItems).

@@ -98,6 +98,7 @@ public class AdminController {
     public ModelAndView member() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final List<Member> members = loggedInUserApi.getMembers();
 
@@ -109,7 +110,7 @@ public class AdminController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("admin").
+        return viewFactory.getViewFor("admin", instance).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
                 addObject("title", "Admin").
@@ -158,6 +159,7 @@ public class AdminController {
     public ModelAndView setAdminsPrompt() throws Exception {
         Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         List<Member> adminMembers = Lists.newArrayList();
         List<Member> availableMembers = Lists.newArrayList();
@@ -172,7 +174,7 @@ public class AdminController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("editAdmins").
+        return viewFactory.getViewFor("editAdmins", instance).
                 addObject("title", "Edit admins").
                 addObject("navItems", navItems).
                 addObject("admins", adminMembers).
@@ -240,11 +242,12 @@ public class AdminController {
     private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("editInstance").
+        return viewFactory.getViewFor("editInstance", instance).
                 addObject("title", "Edit instance settings").
                 addObject("navItems", navItems).
                 addObject("instanceDetails", instanceDetails).

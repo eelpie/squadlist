@@ -61,7 +61,7 @@ public class MyOutingsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "my.outings");
 
-        return viewFactory.getViewFor("myOutings").
+        return viewFactory.getViewFor("myOutings", instance).
                 addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", "My outings").
@@ -75,8 +75,10 @@ public class MyOutingsController {
     @RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
+
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        final ModelAndView mv = viewFactory.getViewFor("myOutingsAjax");
+        final ModelAndView mv = viewFactory.getViewFor("myOutingsAjax", instance);
         int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInMember.getId(), loggedInUserApi);
         if (pendingOutingsCountFor > 0) {
             mv.addObject("pendingOutingsCount", pendingOutingsCountFor);

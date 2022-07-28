@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Boat;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -28,9 +29,10 @@ public class BoatsController {
     @RequestMapping("/boats/{id}")
     public ModelAndView outing(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
         Boat boat = loggedInUserApi.getBoat(id);
 
-        return viewFactory.getViewFor("boat").
+        return viewFactory.getViewFor("boat", instance).
                 addObject("title", "View boat").
                 addObject("navItems", new ArrayList<NavItem>()).
                 addObject("boat", boat);

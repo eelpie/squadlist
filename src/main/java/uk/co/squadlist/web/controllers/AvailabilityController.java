@@ -54,12 +54,13 @@ public class AvailabilityController {
     @RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "availability");
 
-        return viewFactory.getViewFor("availability").
+        return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads());
@@ -68,9 +69,10 @@ public class AvailabilityController {
     @RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        final Instance instance = loggedInUserApi.getInstance();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        ModelAndView mv = viewFactory.getViewFor("availability").
+        ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", loggedInUserApi.getSquads());
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());

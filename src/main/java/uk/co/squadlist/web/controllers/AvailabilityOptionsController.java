@@ -17,6 +17,7 @@ import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.AvailabilityOption;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
@@ -152,10 +153,12 @@ public class AvailabilityOptionsController {
     private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
+
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("newAvailabilityOption").
+        return viewFactory.getViewFor("newAvailabilityOption", instance).
                 addObject("title", "Add new availability option").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
@@ -164,10 +167,12 @@ public class AvailabilityOptionsController {
     private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
+
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("editAvailabilityOption").
+        return viewFactory.getViewFor("editAvailabilityOption", instance).
                 addObject("title", "Edit availability options").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails).
@@ -180,6 +185,8 @@ public class AvailabilityOptionsController {
 
     private ModelAndView renderDeleteForm(final AvailabilityOption a, InstanceSpecificApiClient api) throws HttpFetchException, IOException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
         alternatives.remove(a);
@@ -187,7 +194,7 @@ public class AvailabilityOptionsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("deleteAvailabilityOption").
+        return viewFactory.getViewFor("deleteAvailabilityOption", instance).
                 addObject("title", "Delete availability option").
                 addObject("navItems", navItems).
                 addObject("availabilityOption", a).

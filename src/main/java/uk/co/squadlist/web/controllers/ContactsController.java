@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -45,6 +46,7 @@ public class ContactsController {
     @RequestMapping("/contacts")
     public ModelAndView contacts() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
@@ -52,7 +54,7 @@ public class ContactsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
 
-        return viewFactory.getViewFor("contacts").
+        return viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").
                 addObject("mavItems", navItems).
                 addObject("squads", allSquads);    // TODO leaves squad null on view
@@ -62,6 +64,7 @@ public class ContactsController {
     public ModelAndView squadContacts(@PathVariable String squadId) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
@@ -69,7 +72,7 @@ public class ContactsController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
 
-        final ModelAndView mv = viewFactory.getViewFor("contacts").
+        final ModelAndView mv = viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").
                 addObject("navItems", navItems).
                 addObject("squads", allSquads);

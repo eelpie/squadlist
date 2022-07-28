@@ -20,6 +20,7 @@ import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
@@ -92,12 +93,13 @@ public class SquadsController {
     public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         final Squad squad = loggedInUserApi.getSquad(id);
-        return viewFactory.getViewFor("deleteSquadPrompt").
+        return viewFactory.getViewFor("deleteSquadPrompt", instance).
                 addObject("title", "Delete squad").
                 addObject("navItems", navItems).
                 addObject("squad", squad);
@@ -154,11 +156,12 @@ public class SquadsController {
     private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("newSquad").
+        return viewFactory.getViewFor("newSquad", instance).
                 addObject("title", "Add new squad").
                 addObject("navItems", navItems).
                 addObject("squadDetails", squadDetails);
@@ -171,11 +174,12 @@ public class SquadsController {
 
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
-        return viewFactory.getViewFor("editSquad").
+        return viewFactory.getViewFor("editSquad", instance).
                 addObject("title", "Editing a squad").
                 addObject("navItems", navItems).
                 addObject("squad", squad).

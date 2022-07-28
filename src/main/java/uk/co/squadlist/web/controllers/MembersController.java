@@ -22,6 +22,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.localisation.GoverningBody;
+import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -87,13 +88,14 @@ public class MembersController {
     public ModelAndView member(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Member members = loggedInUserApi.getMember(id);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewFor("memberDetails").
+        return viewFactory.getViewFor("memberDetails", instance).
                 addObject("member", members).
                 addObject("title", members.getFirstName() + " " + members.getLastName()).
                 addObject("navItems", navItems).
@@ -131,10 +133,12 @@ public class MembersController {
             );
 
             Member loggedInMember = loggedInUserService.getLoggedInMember();
+            Instance instance = loggedInUserApi.getInstance();
+
             final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
             List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-            return viewFactory.getViewFor("memberAdded").
+            return viewFactory.getViewFor("memberAdded", instance).
                     addObject("title", "Member added").
                     addObject("navItems", navItems).
                     addObject("member", newMember).
@@ -300,12 +304,13 @@ public class MembersController {
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewFor("makeMemberInactivePrompt").
+        return viewFactory.getViewFor("makeMemberInactivePrompt", instance).
                 addObject("member", member).
                 addObject("title", "Make member inactive - " + member.getDisplayName()).
                 addObject("navItems", navItems);
@@ -328,13 +333,14 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewFor("deleteMemberPrompt").
+        return viewFactory.getViewFor("deleteMemberPrompt", instance).
                 addObject("title", "Delete member - " + member.getDisplayName()).
                 addObject("navItems", navItems).
                 addObject("member", member);
@@ -355,6 +361,7 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.GET)
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
@@ -363,7 +370,7 @@ public class MembersController {
 
         final Member member = loggedInUserApi.getMember(id);
 
-        return viewFactory.getViewFor("makeMemberActivePrompt").
+        return viewFactory.getViewFor("makeMemberActivePrompt", instance).
                 addObject("member", member).
                 addObject("title", "Make member active - " + member.getDisplayName()).
                 addObject("navItems", navItems);
@@ -403,11 +410,13 @@ public class MembersController {
 
     private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
-        return viewFactory.getViewFor("newMember").
+        return viewFactory.getViewFor("newMember", instance).
                 addObject("squads", api.getSquads()).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
@@ -418,11 +427,13 @@ public class MembersController {
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, null);
 
-        return viewFactory.getViewFor("editMemberDetails").
+        return viewFactory.getViewFor("editMemberDetails", instance).
                 addObject("member", memberDetails).
                 addObject("memberId", memberId).
                 addObject("title", title).
@@ -442,11 +453,12 @@ public class MembersController {
     private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewFor("changePassword").
+        return viewFactory.getViewFor("changePassword", instance).
                 addObject("title", "Change password").
                 addObject("navItems", navItems).
                 addObject("member", loggedInUser).
@@ -477,13 +489,14 @@ public class MembersController {
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Member member = loggedInUserApi.getMember(id);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewFor("memberPasswordResetPrompt").
+        return viewFactory.getViewFor("memberPasswordResetPrompt", instance).
                 addObject("title", "Reset a member's password").
                 addObject("navItems", navItems).
                 addObject("member", member);
@@ -494,6 +507,7 @@ public class MembersController {
     public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        Instance instance = loggedInUserApi.getInstance();
 
         final Member member = loggedInUserApi.getMember(id);
 
@@ -502,7 +516,7 @@ public class MembersController {
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, null);
 
-        return viewFactory.getViewFor("memberPasswordReset").
+        return viewFactory.getViewFor("memberPasswordReset", instance).
                 addObject("title", "Password reset details").
                 addObject("navItems", navItems).
                 addObject("member", member).
