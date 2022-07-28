@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Component
-public class TextHelper {
+public class TextHelper {	// TODO why does this exist; feelds like something which Spring can probably do itself?
 
 	private static final String DUTCH = "nl";
 	private static final String ENGLISH = "en";
