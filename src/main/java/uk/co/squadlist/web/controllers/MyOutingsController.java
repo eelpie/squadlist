@@ -16,6 +16,7 @@ import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.NavItemsBuilder;
+import uk.co.squadlist.web.views.TextHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -31,6 +32,7 @@ public class MyOutingsController {
     private final UrlBuilder urlBuilder;
     private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
+    private final TextHelper textHelper;
 
     @Autowired
     public MyOutingsController(LoggedInUserService loggedInUserService,
@@ -38,13 +40,15 @@ public class MyOutingsController {
                                OutingAvailabilityCountsService outingAvailabilityCountsService,
                                UrlBuilder urlBuilder,
                                PreferredSquadService preferredSquadService,
-                               NavItemsBuilder navItemsBuilder) {
+                               NavItemsBuilder navItemsBuilder,
+                               TextHelper textHelper) {
         this.loggedInUserService = loggedInUserService;
         this.viewFactory = viewFactory;
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.urlBuilder = urlBuilder;
         this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
+        this.textHelper = textHelper;
     }
 
     @RequiresSignedInMember
@@ -64,7 +68,7 @@ public class MyOutingsController {
         return viewFactory.getViewFor("myOutings", instance).
                 addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
-                addObject("title", "My outings").
+                addObject("title", textHelper.text("my.outings")).
                 addObject("navItems", navItems).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
                 addObject("rssUrl", urlBuilder.outingsRss(loggedInUser.getId(), instance)).

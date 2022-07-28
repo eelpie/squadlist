@@ -31,10 +31,7 @@ import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
-import uk.co.squadlist.web.views.CsvOutputRenderer;
-import uk.co.squadlist.web.views.DateFormatter;
-import uk.co.squadlist.web.views.NavItemsBuilder;
-import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.*;
 import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -68,6 +65,7 @@ public class AdminController {
     private final PermissionsService permissionsService;
     private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
+    private final TextHelper textHelper;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -78,7 +76,8 @@ public class AdminController {
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
                            PreferredSquadService preferredSquadService,
-                           NavItemsBuilder navItemsBuilder) {
+                           NavItemsBuilder navItemsBuilder,
+                           TextHelper textHelper) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -91,6 +90,7 @@ public class AdminController {
         this.permissionsService = permissionsService;
         this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
+        this.textHelper = textHelper;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -113,7 +113,7 @@ public class AdminController {
         return viewFactory.getViewFor("admin", instance).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
-                addObject("title", "Admin").
+                addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).
                 addObject("members", members).
                 addObject("activeMembers", activeDisplayMembers).
@@ -175,7 +175,7 @@ public class AdminController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewFor("editAdmins", instance).
-                addObject("title", "Edit admins").
+                addObject("title", textHelper.text("edit.admins")).
                 addObject("navItems", navItems).
                 addObject("admins", adminMembers).
                 addObject("availableMembers", availableMembers);
@@ -248,7 +248,7 @@ public class AdminController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
 
         return viewFactory.getViewFor("editInstance", instance).
-                addObject("title", "Edit instance settings").
+                addObject("title", textHelper.text("edit.instance.settings")).
                 addObject("navItems", navItems).
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
