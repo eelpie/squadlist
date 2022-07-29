@@ -41,12 +41,11 @@ public class DateFormatter {
     }
 
     public String dayMonthYear(DateTime dateTime) {
-        return getDateFormatter().dayMonthYear(dateTime.toDate());
+        return dayMonthYear(dateTime.toLocalDateTime());
     }
 
-    public String dayMonthYear(java.time.OffsetDateTime offsetDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM YYYY");
-        return formatter.format(offsetDateTime);
+    public String dayMonthYear(LocalDateTime localDateTime) {
+        return DateTimeFormat.forPattern("d MMM YYYY").print(localDateTime);
     }
 
     public String dayMonthYearTime(Date date) {
