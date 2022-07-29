@@ -31,7 +31,7 @@
 				    <div class="col-sm-2"></div>
                                     <div class="col-sm-6">
                                         <input type="checkbox" name="_spring_security_remember_me" id="remember">                                        
-                                        <label for="remember">Keep me signed in</label>
+                                        <label for="remember">$text.text('keep.me.signed.in')</label>
                                     </div>
                                 </div>
 								
