@@ -29,19 +29,11 @@ public class TextHelper {    // TODO why does this exist; feelds like something 
     }
 
     public String text(String key) {
-        log.info("text requested: " + key);
-        Locale locale = context.getLocale();
-        String message = messageSource.getMessage(key, null, key, locale);
-        log.info("Key " + key + " for locale " + locale + " resolved by + " + messageSource.getClass().getCanonicalName() + " to: " + message);
-        return message;
+        return messageSource.getMessage(key, null, key, context.getLocale());
     }
 
     public String text(String key, String... values) {
-        log.info("text requested: " + key);
-        Locale locale = context.getLocale();
-        String message = messageSource.getMessage(key, values, key, locale);
-        log.info("Key " + key + " for locale " + locale + " with values + " + values + " resolved by + " + messageSource.getClass().getCanonicalName() + " to: " + message);
-        return message;
+        return messageSource.getMessage(key, values, key, context.getLocale());
     }
 
 }

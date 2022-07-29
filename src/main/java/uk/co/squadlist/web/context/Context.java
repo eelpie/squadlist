@@ -18,9 +18,6 @@ import java.util.Locale;
 public class Context {
 
 	private static final String INSTANCE = "instance";
-	private static final String DUTCH = "nl";
-	private static final String ENGLISH = "en";
-	private static final String FRENCH = "fr";
 
 	private final static Logger log = LogManager.getLogger(Context.class);
 
@@ -50,7 +47,7 @@ public class Context {
 		}
 	}
 
-	private Instance getInstance() throws UnknownInstanceException {
+	private Instance getInstance() throws UnknownInstanceException {	// TODO this is questionable
 		Instance instance = (Instance) request.getAttribute(INSTANCE);
 		if (instance != null) {
 			return instance;
@@ -61,21 +58,7 @@ public class Context {
 	}
 
 	public Locale getLocale() {
-		Locale locale = localeResolver.resolveLocale(request);
-		log.info("LocaleResolver " + localeResolver.getClass().getCanonicalName() + " resolved locale: " + locale);
-		return locale;
-	}
-
-	public String getLanguage() {	// TODO potential multiple get instance call here. This should be a browser driven choice; not hard coded to the instance.
-		Locale locale = localeResolver.resolveLocale(request);
-		log.info("LocaleResolver " + localeResolver.getClass().getCanonicalName() + " resolved locale: " + locale);
-		if ("Europe/Amsterdam".equals(getTimeZone())) {
-			return DUTCH;
-		}
-		if ("Europe/Paris".equals(getTimeZone())) {
-			return FRENCH;
-		}
-		return ENGLISH;
+		return localeResolver.resolveLocale(request);
 	}
 
 }
