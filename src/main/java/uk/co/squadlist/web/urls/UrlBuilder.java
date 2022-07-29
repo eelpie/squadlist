@@ -129,6 +129,9 @@ public class UrlBuilder {
 	public String outingReopenUrl(Outing outing) {
 		return outingUrl(outing) + "/reopen";
 	}
+	public String outingReopenUrl(uk.co.squadlist.model.swagger.Outing outing) {
+		return outingUrl(outing) + "/reopen";
+	}
 
 	public String outingEditUrl(Outing outing) {
 		return outingUrl(outing) + "/edit";
