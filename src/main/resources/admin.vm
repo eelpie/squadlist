@@ -106,7 +106,6 @@
 			</ul>
 			<ul>				
 				<li>$text.text('governing.body'): <a href="$urlBuilder.governingBody($governingBody)">$governingBody.name</a></li>
-				<li>Language: $language</li>
 			</ul>
 			<p>Please contact us if you are interested in localising for a different language or governing body.</p>
 					

@@ -121,8 +121,7 @@ public class AdminController {
                 addObject("admins", adminUsers).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance())).
                 addObject("boats", loggedInUserApi.getBoats()).
-                addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instanceConfig.getInstance())).
-                addObject("language", context.getLanguage());
+                addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instanceConfig.getInstance()));
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
