@@ -108,6 +108,9 @@ public class UrlBuilder {
 	public String outingAvailabilityCsv(Outing outing) {
 		return outingUrl(outing) + ".csv";
 	}
+	public String outingAvailabilityCsv(uk.co.squadlist.model.swagger.Outing outing) {
+		return outingUrl(outing) + ".csv";
+	}
 
 	public String outingCloseUrl(Outing outing) {
 		return outingUrl(outing) + "/close";
