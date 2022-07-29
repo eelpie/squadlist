@@ -145,7 +145,7 @@ public class OutingsController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         return viewFactory.getViewFor("outing", instance).
-                addObject("title", swaggerOuting.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(swaggerOuting.getDate().toLocalDateTime())).
+                addObject("title", swaggerOuting.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(swaggerOuting.getDate())).
                 addObject("navItems", navItems).
                 addObject("outing", swaggerOuting).
                 addObject("canEditOuting", canEditOuting).

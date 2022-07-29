@@ -35,29 +35,20 @@ public class DateFormatter {
     public String dayMonthTime(Date date) {
         return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
     }
-
     public String dayMonthYear(Date date) {
         return getDateFormatter().dayMonthYear(date);
     }
 
     public String dayMonthYear(DateTime dateTime) {
-        return dayMonthYear(dateTime.toLocalDateTime());
+        return dayMonthYear(dateTime.toDate());
     }
 
-    public String dayMonthYear(LocalDateTime localDateTime) {
-        return DateTimeFormat.forPattern("d MMM YYYY").print(localDateTime);
-    }
 
     public String dayMonthYearTime(Date date) {
         return getDateFormatter().dayMonthYearTime(date);
     }
-
     public String dayMonthYearTime(DateTime dateTime) {
-        return dayMonthYearTime(dateTime.toLocalDateTime());
-    }
-
-    public String dayMonthYearTime(LocalDateTime localDateTime) {
-        return DateTimeFormat.forPattern("d MMM yyyy HH:mm").print(localDateTime);
+        return dayMonthYearTime(dateTime.toDate());
     }
 
     public String fullMonthYear(Date date) {
