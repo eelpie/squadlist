@@ -101,6 +101,9 @@ public class UrlBuilder {
 	public String outingUrl(Outing outing) {
 		return outingsUrl() + "/" + outing.getId();
 	}
+	public String outingUrl(uk.co.squadlist.model.swagger.Outing outing) {
+		return outingsUrl() + "/" + outing.getId();
+	}
 
 	public String outingAvailabilityCsv(Outing outing) {
 		return outingUrl(outing) + ".csv";
@@ -109,8 +112,14 @@ public class UrlBuilder {
 	public String outingCloseUrl(Outing outing) {
 		return outingUrl(outing) + "/close";
 	}
+	public String outingCloseUrl(uk.co.squadlist.model.swagger.Outing outing) {
+		return outingUrl(outing) + "/close";
+	}
 
 	public String deleteOuting(Outing outing) {
+		return outingUrl(outing) + "/delete";
+	}
+	public String deleteOuting(uk.co.squadlist.model.swagger.Outing outing) {
 		return outingUrl(outing) + "/delete";
 	}
 
@@ -121,12 +130,21 @@ public class UrlBuilder {
 	public String outingEditUrl(Outing outing) {
 		return outingUrl(outing) + "/edit";
 	}
+	public String outingEditUrl(uk.co.squadlist.model.swagger.Outing outing) {
+		return outingUrl(outing) + "/edit";
+	}
 
 	public String outings(Squad squad) {
 		return applicationUrl("/outings?squad=" + squad.getId());
 	}
+	public String outings(uk.co.squadlist.model.swagger.Squad squad) {
+		return applicationUrl("/outings?squad=" + squad.getId());
+	}
 
 	public String outings(Squad squad, String month) {
+		return outings(squad) + "&month=" + month;
+	}
+	public String outings(uk.co.squadlist.model.swagger.Squad squad, String month) {
 		return outings(squad) + "&month=" + month;
 	}
 

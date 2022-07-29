@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,12 +53,20 @@ public class DateFormatter {
         return getDateFormatter().dayMonthYearTime(date);
     }
 
+    public String dayMonthYearTime(DateTime dateTime) {
+        return dayMonthYearTime(dateTime.toLocalDateTime());
+    }
+
+    public String dayMonthYearTime(LocalDateTime localDateTime) {
+        return DateTimeFormat.forPattern("d MMM yyyy HH:mm").print(localDateTime);
+    }
+
     public String fullMonthYear(Date date) {
         return getDateFormatter().fullMonthYear(date);
     }
 
     private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
-        return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());
+        return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());    // TODO this is problematic; timezone should be attached to the dates not a system wide concern.
     }
 
 }

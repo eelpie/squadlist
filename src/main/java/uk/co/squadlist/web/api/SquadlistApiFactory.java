@@ -34,10 +34,10 @@ public class SquadlistApiFactory {
         return createSwaggerApiClientForToken(clientAccessToken);
     }
 
-    public DefaultApi createSwaggerApiClientForToken(String clientAccessToken) {
+    public DefaultApi createSwaggerApiClientForToken(String accessToken) {
         ApiClient apiClient = new ApiClient();
         apiClient.setBasePath(apiUrl);
-        apiClient.setAccessToken(clientAccessToken);
+        apiClient.setAccessToken(accessToken);
         return new DefaultApi(apiClient);
     }
 

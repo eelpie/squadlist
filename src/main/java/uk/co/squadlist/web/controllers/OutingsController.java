@@ -15,6 +15,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
@@ -122,34 +123,38 @@ public class OutingsController {
     @RequestMapping("/outings/{id}")
     public ModelAndView outing(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+
         Instance instance = loggedInUserApi.getInstance();
 
-        final Outing outing = loggedInUserApi.getOuting(id);
-        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(outing.getId());
+        Outing oldStyleOuting = loggedInUserApi.getOuting(id);
+        uk.co.squadlist.model.swagger.Outing swaggerOuting = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+
+        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(swaggerOuting.getId());
         final List<Squad> squads = loggedInUserApi.getSquads();
 
-        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
+        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(swaggerOuting.getSquad().getId());
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         List<DisplayMember> displayMembers = toDisplayMembers(activeMembers, loggedInUser);
 
-        final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, outing);
+        final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, oldStyleOuting);
 
         final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         return viewFactory.getViewFor("outing", instance).
-                addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
+                addObject("title", swaggerOuting.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(swaggerOuting.getDate().toLocalDateTime())).
                 addObject("navItems", navItems).
-                addObject("outing", outing).
+                addObject("outing", swaggerOuting).
                 addObject("canEditOuting", canEditOuting).
-                addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), loggedInUserApi)).
-                addObject("squad", outing.getSquad()).
+                addObject("outingMonths", getOutingMonthsFor(oldStyleOuting.getSquad(), loggedInUserApi)).
+                addObject("squad", swaggerOuting.getSquad()).
                 addObject("squadAvailability", outingAvailability).
                 addObject("squads", squads).
                 addObject("members", displayMembers).
-                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime())).    // TODO push to date parser - local time
+                addObject("month", ISODateTimeFormat.yearMonth().print(swaggerOuting.getDate().toLocalDateTime())).    // TODO push to date parser
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
 
