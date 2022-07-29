@@ -77,6 +77,8 @@ public class OutingsController {
     public ModelAndView outings(@RequestParam(required = false, value = "squad") String squadId,
                                 @RequestParam(value = "month", required = false) String month) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
@@ -111,7 +113,8 @@ public class OutingsController {
                 addObject("month", month).
                 addObject("outingMonths", getOutingMonthsFor(squadToShow, loggedInUserApi));
 
-        final List<OutingWithSquadAvailability> squadOutings = loggedInUserApi.getSquadAvailability(squadToShow.getId(), startDate, endDate);
+        List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
+
         mv.addObject("outings", squadOutings);
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
         mv.addObject("squads", loggedInUserApi.getSquads());

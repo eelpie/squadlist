@@ -35,6 +35,10 @@ public class DateFormatter {
     public String dayMonthTime(Date date) {
         return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
     }
+    public String dayMonthTime(DateTime dateTime) {
+        return dayMonthTime(dateTime.toDate());
+    }
+
     public String dayMonthYear(Date date) {
         return getDateFormatter().dayMonthYear(date);
     }
