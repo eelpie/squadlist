@@ -22,6 +22,15 @@ public class ViewFactory {
         return mv;
     }
 
+    public ModelAndView getViewFor(String templateName, uk.co.squadlist.model.swagger.Instance instance) {
+        ModelAndView mv = new ModelAndView(templateName).
+                addObject("instance", instance);
+        if (!Strings.isNullOrEmpty(googleAnalyticsAccount)) {
+            mv.addObject("googleAnalyticsAccount", googleAnalyticsAccount);
+        }
+        return mv;
+    }
+
     public ModelAndView redirectionTo(String url) {
         RedirectView redirectView = new RedirectView(url);
         redirectView.setExposeModelAttributes(false);

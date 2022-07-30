@@ -92,6 +92,7 @@ public class AdminController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final List<Member> members = loggedInUserApi.getMembers();
 
@@ -102,7 +103,7 @@ public class AdminController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
-        return viewFactory.getViewFor("admin", instance).
+        return viewFactory.getViewFor("admin", swaggerInstance).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
