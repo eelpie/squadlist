@@ -50,7 +50,7 @@ public class GoverningBodyController {
 
         final GoverningBody governingBody = governingBodyFactory.governingBodyFor("british-rowing");  // TODO take from path
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("governingBody", instance).
                 addObject("governingBody", governingBody).

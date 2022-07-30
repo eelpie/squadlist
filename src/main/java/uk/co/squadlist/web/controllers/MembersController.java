@@ -95,7 +95,7 @@ public class MembersController {
 
         final Member members = loggedInUserApi.getMember(id);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("memberDetails", instance).
                 addObject("member", members).
@@ -138,7 +138,7 @@ public class MembersController {
             Member loggedInMember = loggedInUserService.getLoggedInMember();
             Instance instance = loggedInUserApi.getInstance();
 
-            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
             return viewFactory.getViewFor("memberAdded", instance).
                     addObject("title", "Member added").
@@ -308,7 +308,7 @@ public class MembersController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewFor("makeMemberInactivePrompt", instance).
@@ -338,7 +338,7 @@ public class MembersController {
         Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
         final Member member = loggedInUserApi.getMember(id);
         return viewFactory.getViewFor("deleteMemberPrompt", instance).
@@ -367,7 +367,7 @@ public class MembersController {
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         final Member member = loggedInUserApi.getMember(id);
 
@@ -409,37 +409,35 @@ public class MembersController {
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient loggedInUserApi) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newMember", instance).
-                addObject("squads", api.getSquads()).
+                addObject("squads", loggedInUserApi.getSquads()).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
                 addObject("rolesOptions", ROLES_OPTIONS);
     }
 
-    private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient api, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient loggedInUserApi, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editMemberDetails", instance).
                 addObject("member", memberDetails).
                 addObject("memberId", memberId).
                 addObject("title", title).
                 addObject("navItems", navItems).
-                addObject("squads", api.getSquads()).
+                addObject("squads", loggedInUserApi.getSquads()).
                 addObject("governingBody", governingBody).
                 addObject("genderOptions", GENDER_OPTIONS).
                 addObject("pointsOptions", governingBody.getPointsOptions()).
@@ -457,7 +455,7 @@ public class MembersController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("changePassword", instance).
                 addObject("title", "Change password").
@@ -495,7 +493,7 @@ public class MembersController {
 
         final Member member = loggedInUserApi.getMember(id);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("memberPasswordResetPrompt", instance).
                 addObject("title", "Reset a member's password").
@@ -515,7 +513,7 @@ public class MembersController {
 
         final String newPassword = loggedInUserApi.resetMemberPassword(member);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("memberPasswordReset", instance).
                 addObject("title", "Password reset details").

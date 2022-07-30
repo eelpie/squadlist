@@ -59,7 +59,7 @@ public class MyOutingsController {
         final Date endDate = DateHelper.oneYearFromNow().toDate();
         List<OutingAvailability> availabilityFor = loggedInUserApi.getAvailabilityFor(loggedInUser.getId(), startDate, endDate);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "my.outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("myOutings", instance).
                 addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).
@@ -75,11 +75,12 @@ public class MyOutingsController {
     @RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final ModelAndView mv = viewFactory.getViewFor("myOutingsAjax", instance);
-        int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInMember.getId(), loggedInUserApi);
+        int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInMember.getId(), swaggerApiClientForLoggedInUser);
         if (pendingOutingsCountFor > 0) {
             mv.addObject("pendingOutingsCount", pendingOutingsCountFor);
         }

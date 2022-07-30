@@ -157,7 +157,7 @@ public class AvailabilityOptionsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newAvailabilityOption", instance).
                 addObject("title", "Add new availability option").
@@ -171,7 +171,7 @@ public class AvailabilityOptionsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editAvailabilityOption", instance).
                 addObject("title", "Edit availability options").
@@ -193,7 +193,7 @@ public class AvailabilityOptionsController {
         final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
         alternatives.remove(a);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("deleteAvailabilityOption", instance).
                 addObject("title", "Delete availability option").

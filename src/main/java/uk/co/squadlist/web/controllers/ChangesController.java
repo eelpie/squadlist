@@ -48,7 +48,7 @@ public class ChangesController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems =  navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems =  navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         List<Change> changes = squadlistApiFactory.createUnauthenticatedSwaggerClient().changeLogGet();
 

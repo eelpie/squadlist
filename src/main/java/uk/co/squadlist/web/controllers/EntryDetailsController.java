@@ -68,7 +68,7 @@ public class EntryDetailsController {
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "entry.details", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, instance);
 
         final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").

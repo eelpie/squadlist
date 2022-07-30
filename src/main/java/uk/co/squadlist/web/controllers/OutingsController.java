@@ -104,7 +104,7 @@ public class OutingsController {
             mv.addObject("current", true);
         }
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -145,7 +145,7 @@ public class OutingsController {
 
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, oldStyleOuting);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("outing", instance).
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
@@ -257,7 +257,7 @@ public class OutingsController {
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("deleteOuting", instance).
                 addObject("title", "Deleting an outing").
@@ -366,7 +366,7 @@ public class OutingsController {
         Instance instance = loggedInUserApi.getInstance();
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
@@ -383,7 +383,7 @@ public class OutingsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").

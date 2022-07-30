@@ -104,7 +104,7 @@ public class AdminController {
         List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("admin", instance).
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -167,7 +167,7 @@ public class AdminController {
             }
         }
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editAdmins", instance).
                 addObject("title", textHelper.text("edit.admins")).
@@ -241,7 +241,7 @@ public class AdminController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editInstance", instance).
                 addObject("title", textHelper.text("edit.instance.settings")).

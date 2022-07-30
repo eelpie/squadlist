@@ -53,7 +53,7 @@ public class ContactsController {
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "contacts", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").
@@ -71,7 +71,7 @@ public class ContactsController {
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "contacts", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
 
         final ModelAndView mv = viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").

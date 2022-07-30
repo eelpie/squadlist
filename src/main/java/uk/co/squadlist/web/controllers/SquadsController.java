@@ -94,7 +94,7 @@ public class SquadsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         final Squad squad = loggedInUserApi.getSquad(id);
         return viewFactory.getViewFor("deleteSquadPrompt", instance).
@@ -158,7 +158,7 @@ public class SquadsController {
 
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newSquad", instance).
                 addObject("title", "Add new squad").
@@ -176,7 +176,7 @@ public class SquadsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editSquad", instance).
                 addObject("title", "Editing a squad").

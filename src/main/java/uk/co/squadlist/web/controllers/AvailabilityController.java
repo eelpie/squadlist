@@ -60,7 +60,7 @@ public class AvailabilityController {
         final Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
@@ -78,7 +78,7 @@ public class AvailabilityController {
         ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", loggedInUserApi.getSquads());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
         mv.addObject("navItems", navItems);
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
