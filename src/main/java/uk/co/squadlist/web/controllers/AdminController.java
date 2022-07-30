@@ -27,7 +27,6 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
-import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.*;
@@ -61,7 +60,6 @@ public class AdminController {
     private final LoggedInUserService loggedInUserService;
     private final InstanceConfig instanceConfig;
     private final PermissionsService permissionsService;
-    private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
     private final TextHelper textHelper;
 
@@ -73,7 +71,6 @@ public class AdminController {
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
-                           PreferredSquadService preferredSquadService,
                            NavItemsBuilder navItemsBuilder,
                            TextHelper textHelper) {
         this.viewFactory = viewFactory;
@@ -85,7 +82,6 @@ public class AdminController {
         this.loggedInUserService = loggedInUserService;
         this.instanceConfig = instanceConfig;
         this.permissionsService = permissionsService;
-        this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
         this.textHelper = textHelper;
     }
