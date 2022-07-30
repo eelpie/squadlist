@@ -81,7 +81,7 @@ public class AvailabilityController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability");
         mv.addObject("navItems", navItems);
 
-        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
+        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
 
         if (squad != null) {
             List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());

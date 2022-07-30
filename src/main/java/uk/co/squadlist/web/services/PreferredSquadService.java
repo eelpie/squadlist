@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,16 +28,16 @@ public class PreferredSquadService {
         this.request = request;
     }
 
-    public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient, Member loggedInMember) throws UnknownSquadException {
+    public Squad resolveSquad(String squadId, InstanceSpecificApiClient instanceSpecificApiClient) throws UnknownSquadException {
         if (!Strings.isNullOrEmpty(squadId)) {
-            final Squad selectedSquad = instanceSpecificApiClient.getSquad(squadId);
+            final Squad selectedSquad = instanceSpecificApiClient.getSquad(squadId);    // TODO can probably just make one list squads call
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(loggedInMember, instanceSpecificApiClient.getSquads());
+        return resolvedPreferredSquad(instanceSpecificApiClient.getSquads());
     }
 
-    public Squad resolvedPreferredSquad(Member loggedInMember, List<Squad> squads) {
+    public Squad resolvedPreferredSquad(List<Squad> squads) {
         final String selectedSquadId = (String) request.getSession().getAttribute(SELECTED_SQUAD);
         if (selectedSquadId != null) {
             Optional<Squad> selectedSquad = squads.stream().filter(s -> s.getId().equals(selectedSquadId)).findFirst();
@@ -46,10 +45,6 @@ public class PreferredSquadService {
                 return selectedSquad.get();
             }
             clearPreferredSquad();
-        }
-
-        if (!loggedInMember.getSquads().isEmpty()) {
-            return loggedInMember.getSquads().iterator().next();
         }
 
         Optional<Squad> firstInstanceSquad = squads.stream().findFirst();

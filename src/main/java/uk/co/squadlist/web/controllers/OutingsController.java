@@ -82,7 +82,7 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInUser);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final ModelAndView mv = viewFactory.getViewFor("outings", instance);
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
@@ -191,7 +191,7 @@ public class OutingsController {
 
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi, loggedInUser).getId());
+        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi).getId());
         return renderNewOutingForm(outingDefaults, loggedInUserApi);
     }
 
@@ -361,7 +361,7 @@ public class OutingsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squad = preferredSquadService.resolveSquad(null, api, loggedInUser);
+        final Squad squad = preferredSquadService.resolveSquad(null, api);
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings");
 
         return viewFactory.getViewFor("newOuting", instance).

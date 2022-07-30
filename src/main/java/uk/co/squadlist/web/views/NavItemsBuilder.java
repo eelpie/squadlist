@@ -43,7 +43,7 @@ public class NavItemsBuilder {
     public List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, String selected) throws URISyntaxException, UnknownInstanceException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUserApi.getSquads());
 
         List<NavItem> navItems = new ArrayList<>();
         navItems.add(makeNavItemFor("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", selected));

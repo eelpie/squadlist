@@ -65,7 +65,7 @@ public class EntryDetailsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "entry.details");
 
@@ -137,7 +137,7 @@ public class EntryDetailsController {
 
         viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());

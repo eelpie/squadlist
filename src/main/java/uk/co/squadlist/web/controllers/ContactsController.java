@@ -65,7 +65,7 @@ public class ContactsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "contacts");
