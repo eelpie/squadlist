@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,22 +35,24 @@ public class DateFormatter {
     public String dayMonthTime(Date date) {
         return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
     }
+    public String dayMonthTime(DateTime dateTime) {
+        return dayMonthTime(dateTime.toDate());
+    }
 
     public String dayMonthYear(Date date) {
         return getDateFormatter().dayMonthYear(date);
     }
 
     public String dayMonthYear(DateTime dateTime) {
-        return getDateFormatter().dayMonthYear(dateTime.toDate());
+        return dayMonthYear(dateTime.toDate());
     }
 
-    public String dayMonthYear(java.time.OffsetDateTime offsetDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM YYYY");
-        return formatter.format(offsetDateTime);
-    }
 
     public String dayMonthYearTime(Date date) {
         return getDateFormatter().dayMonthYearTime(date);
+    }
+    public String dayMonthYearTime(DateTime dateTime) {
+        return dayMonthYearTime(dateTime.toDate());
     }
 
     public String fullMonthYear(Date date) {
@@ -56,7 +60,7 @@ public class DateFormatter {
     }
 
     private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
-        return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());
+        return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());    // TODO this is problematic; timezone should be attached to the dates not a system wide concern.
     }
 
 }
