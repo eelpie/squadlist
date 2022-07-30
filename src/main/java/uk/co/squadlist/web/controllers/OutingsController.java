@@ -134,7 +134,7 @@ public class OutingsController {
         uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
 
         final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
-        final List<Squad> squads = loggedInUserApi.getSquads();
+        final List<uk.co.squadlist.model.swagger.Squad> squads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId()); // TODO this is for the select squads dropdown and should arguble move to the navItems builder?
 
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
