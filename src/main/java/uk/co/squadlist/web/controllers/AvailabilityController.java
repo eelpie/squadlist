@@ -106,7 +106,7 @@ public class AvailabilityController {
             final List<OutingWithSquadAvailability> squadAvailability = loggedInUserApi.getSquadAvailability(squad.getId(), startDate, endDate);
             final List<Outing> outings = loggedInUserApi.getSquadOutings(squad, startDate, endDate);
 
-            mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability, outings));
+            mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
             mv.addObject("outings", outings);
             mv.addObject("outingMonths", loggedInUserApi.getOutingMonths(squad));
             mv.addObject("month", month);
@@ -114,8 +114,9 @@ public class AvailabilityController {
         return mv;
     }
 
-    private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability, final List<Outing> outings) {
+    private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<OutingWithSquadAvailability> squadAvailability) {
         final Map<String, AvailabilityOption> allAvailability = Maps.newHashMap();
+
         for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
             final Map<String, AvailabilityOption> outingAvailability = outingWithSquadAvailability.getAvailability();
             for (String member : outingAvailability.keySet()) {
