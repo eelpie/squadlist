@@ -8,8 +8,10 @@ Provided for reference proposes only.
 ## Localisation
 
 The availability system can be localised for different languages and governing bodies.
+Users have previously provided French and Dutch translations.
 
-To provide and alternative translation, copy the file [en.properties](src/main/webapp/WEB-INF/classes/en.properties) and translate the text fragments.
+To provide an alternative translation, copy the file [messages.properties](src/main/resources/messages.properties) and translate the text fragments.
+Contact us (via the link in the Admin screen) and we can install your translation.
 
 To implement a different governing bodies points and ranking system, provide an alternative implementation of the GoverningBody interface.
 
@@ -25,7 +27,7 @@ mvn spring-boot:run
 ## Building the Squadlist API Swagger client
 
 This UI app talks to the Squadlist API (which is currently private and not yet publicly documented) using a client jar generated from the API's OpenAPI definition.
-When a new end point is added to the API, we need to regenerate the client jar before we can call the new end point.
+When a new end point is added to the API we need to regenerate the client jar before we can call that end point.
 
 ```
 java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate -i https://api.squadlist.app/openapi.json -l java --group-id uk.co.squadlist.client.swagger --api-package uk.co.squadlist.client.swagger.api --model-package uk.co.squadlist.model.swagger --library=okhttp-gson -o /tmp/squadlist-api-swagger-client -DhideGenerationTimestamp=true,dateLibrary=joda --artifact-version=2022072902 --artifact-id=squadlist-api-swagger-client
