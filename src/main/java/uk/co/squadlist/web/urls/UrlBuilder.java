@@ -209,6 +209,9 @@ public class UrlBuilder {
 	public String contactsUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, contactsUrl());
 	}
+	public String contactsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, contactsUrl());
+	}
 
 	public String entryDetailsUrl() {
 		return applicationUrl("/entrydetails");
@@ -216,8 +219,18 @@ public class UrlBuilder {
 	public String entryDetailsUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, entryDetailsUrl());
 	}
+	public String entryDetailsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, entryDetailsUrl());
+	}
 
 	public String outingsUrl(Squad prefferredSquad) throws URISyntaxException {
+		final URIBuilder url = new URIBuilder(outingsUrl());
+		if (prefferredSquad != null) {
+			url.addParameter("squad", prefferredSquad.getId());
+		}
+		return url.build().toString();
+	}
+	public String outingsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) throws URISyntaxException {
 		final URIBuilder url = new URIBuilder(outingsUrl());
 		if (prefferredSquad != null) {
 			url.addParameter("squad", prefferredSquad.getId());
@@ -241,6 +254,9 @@ public class UrlBuilder {
 	}
 
 	public String availabilityUrl(Squad prefferredSquad) {
+		return appendSquad(prefferredSquad, availabilityUrl());
+	}
+	public String availabilityUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, availabilityUrl());
 	}
 
@@ -287,6 +303,9 @@ public class UrlBuilder {
 	}
 
 	private String appendSquad(Squad prefferredSquad, final String baseUrl) {
+		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
+	}
+	private String appendSquad(uk.co.squadlist.model.swagger.Squad prefferredSquad, final String baseUrl) {
 		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
 	}
 

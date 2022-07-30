@@ -15,6 +15,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
@@ -82,7 +83,7 @@ public class OutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final ModelAndView mv = viewFactory.getViewFor("outings", instance);
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
@@ -102,7 +103,7 @@ public class OutingsController {
             mv.addObject("current", true);
         }
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -110,7 +111,7 @@ public class OutingsController {
                 addObject("startDate", startDate).
                 addObject("endDate", endDate).
                 addObject("month", month).
-                addObject("outingMonths", getOutingMonthsFor(squadToShow, loggedInUserApi));
+                addObject("outingMonths", getOutingMonthsFor(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi));
 
         List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
 
@@ -143,7 +144,7 @@ public class OutingsController {
 
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, oldStyleOuting);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("outing", instance).
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
@@ -184,14 +185,14 @@ public class OutingsController {
     @RequestMapping(value = "/outings/new", method = RequestMethod.GET)  // TODO fails hard if no squads are available
     public ModelAndView newOuting() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        Member loggedInUser = loggedInUserService.getLoggedInMember();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         Instance instance = loggedInUserApi.getInstance();
         String timeZone = instance.getTimeZone();
 
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,loggedInUserApi).getId());
+        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,swaggerApiClientForLoggedInUser, instance).getId());
         return renderNewOutingForm(outingDefaults, loggedInUserApi);
     }
 
@@ -249,12 +250,13 @@ public class OutingsController {
     @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
         final Outing outing = loggedInUserApi.getOuting(id);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("deleteOuting", instance).
                 addObject("title", "Deleting an outing").
@@ -356,29 +358,31 @@ public class OutingsController {
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
-    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, InstanceSpecificApiClient api) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, InstanceSpecificApiClient api) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squad = preferredSquadService.resolveSquad(null, api);
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings");
+        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
                 addObject("navItems", navItems).
                 addObject("squads", api.getSquads()).
                 addObject("squad", squad).
-                addObject("outingMonths", getOutingMonthsFor(squad, api)).
+                addObject("outingMonths", getOutingMonthsFor(loggedInUserApi.getSquad(squad.getId()), api)).
                 addObject("outing", outingDetails);
     }
 
-    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing, InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException {
+    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Outing outing, InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").

@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.NavItemsBuilder;
@@ -62,19 +62,20 @@ public class EntryDetailsController {
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "entry.details");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "entry.details", swaggerApiClientForLoggedInUser, instance);
 
         final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
-        entryDetailsModelPopulator.populateModel(squadToShow, loggedInUserApi, mv, loggedInMember);
+        entryDetailsModelPopulator.populateModel(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi, mv, loggedInMember);
         return mv;
     }
 
@@ -132,12 +133,12 @@ public class EntryDetailsController {
     @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
         viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
-        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());

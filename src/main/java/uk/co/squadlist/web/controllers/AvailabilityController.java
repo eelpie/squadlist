@@ -14,7 +14,6 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -57,10 +56,11 @@ public class AvailabilityController {
     @RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Instance instance = loggedInUserApi.getInstance();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
@@ -78,10 +78,10 @@ public class AvailabilityController {
         ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", loggedInUserApi.getSquads());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "availability", swaggerApiClientForLoggedInUser, instance);
         mv.addObject("navItems", navItems);
 
-        final Squad squad = preferredSquadService.resolveSquad(squadId, loggedInUserApi);
+        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
             List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());
@@ -110,7 +110,7 @@ public class AvailabilityController {
 
             mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
             mv.addObject("outings", outings);
-            mv.addObject("outingMonths", loggedInUserApi.getOutingMonths(squad));
+            mv.addObject("outingMonths", loggedInUserApi.getOutingMonths(loggedInUserApi.getSquad(squad.getId())));
             mv.addObject("month", month);
         }
         return mv;
