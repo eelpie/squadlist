@@ -102,8 +102,7 @@ public class OutingsController {
             mv.addObject("current", true);
         }
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -144,8 +143,7 @@ public class OutingsController {
 
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, oldStyleOuting);
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
 
         return viewFactory.getViewFor("outing", instance).
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
@@ -256,8 +254,7 @@ public class OutingsController {
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "outings");
 
         return viewFactory.getViewFor("deleteOuting", instance).
                 addObject("title", "Deleting an outing").
@@ -365,8 +362,7 @@ public class OutingsController {
         Instance instance = loggedInUserApi.getInstance();
 
         final Squad squad = preferredSquadService.resolveSquad(null, api, loggedInUser);
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings");
 
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
@@ -382,8 +378,7 @@ public class OutingsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, api.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, preferredSquad, "outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, api, "outings");
 
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").

@@ -25,7 +25,6 @@ import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -47,20 +46,17 @@ public class SquadsController {
     private final UrlBuilder urlBuilder;
     private final ViewFactory viewFactory;
     private final LoggedInUserService loggedInUserService;
-    private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
 
     @Autowired
     public SquadsController(UrlBuilder urlBuilder,
                             ViewFactory viewFactory,
                             LoggedInUserService loggedInUserService,
-                            PreferredSquadService preferredSquadService,
                             NavItemsBuilder navItemsBuilder
                             ) {
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.loggedInUserService = loggedInUserService;
-        this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
     }
 
@@ -95,8 +91,7 @@ public class SquadsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         final Squad squad = loggedInUserApi.getSquad(id);
         return viewFactory.getViewFor("deleteSquadPrompt", instance).
@@ -158,8 +153,7 @@ public class SquadsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("newSquad", instance).
                 addObject("title", "Add new squad").
@@ -176,8 +170,7 @@ public class SquadsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("editSquad", instance).
                 addObject("title", "Editing a squad").

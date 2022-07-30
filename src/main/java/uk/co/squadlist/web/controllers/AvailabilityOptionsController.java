@@ -19,7 +19,6 @@ import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -155,8 +154,7 @@ public class AvailabilityOptionsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("newAvailabilityOption", instance).
                 addObject("title", "Add new availability option").
@@ -169,8 +167,7 @@ public class AvailabilityOptionsController {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("editAvailabilityOption", instance).
                 addObject("title", "Edit availability options").
@@ -191,8 +188,7 @@ public class AvailabilityOptionsController {
         final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
         alternatives.remove(a);
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, api.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, api, "admin");
 
         return viewFactory.getViewFor("deleteAvailabilityOption", instance).
                 addObject("title", "Delete availability option").

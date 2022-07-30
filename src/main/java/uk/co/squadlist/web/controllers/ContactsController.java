@@ -51,8 +51,7 @@ public class ContactsController {
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "contacts");
 
         return viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").
@@ -69,8 +68,7 @@ public class ContactsController {
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "contacts");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "contacts");
 
         final ModelAndView mv = viewFactory.getViewFor("contacts", instance).
                 addObject("title", "Contacts").

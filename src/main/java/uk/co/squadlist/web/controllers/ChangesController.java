@@ -46,8 +46,7 @@ public class ChangesController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems =  navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
+        List<NavItem> navItems =  navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null);
 
         List<Change> changes = squadlistApiFactory.createUnauthenticatedSwaggerClient().changeLogGet();
 

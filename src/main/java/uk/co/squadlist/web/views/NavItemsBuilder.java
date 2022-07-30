@@ -10,6 +10,7 @@ import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
+import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -24,18 +25,25 @@ public class NavItemsBuilder {
     private final GoverningBodyFactory governingBodyFactory;
     private final UrlBuilder urlBuilder;
     private final PermissionsService permissionsService;
+    private final PreferredSquadService preferredSquadService;
 
     @Autowired
-    public NavItemsBuilder(OutingAvailabilityCountsService outingAvailabilityCountsService, GoverningBodyFactory governingBodyFactory, UrlBuilder urlBuilder, PermissionsService permissionsService) {
+    public NavItemsBuilder(OutingAvailabilityCountsService outingAvailabilityCountsService,
+                           GoverningBodyFactory governingBodyFactory,
+                           UrlBuilder urlBuilder,
+                           PermissionsService permissionsService,
+                           PreferredSquadService preferredSquadService) {
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.governingBodyFactory = governingBodyFactory;
         this.urlBuilder = urlBuilder;
         this.permissionsService = permissionsService;
+        this.preferredSquadService = preferredSquadService;
     }
 
-    public List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, Squad preferredSquad, String selected) throws URISyntaxException, UnknownInstanceException {
+    public List<NavItem> navItemsFor(Member loggedInUser, InstanceSpecificApiClient loggedInUserApi, String selected) throws URISyntaxException, UnknownInstanceException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), loggedInUserApi);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
 
         List<NavItem> navItems = new ArrayList<>();
         navItems.add(makeNavItemFor("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", selected));

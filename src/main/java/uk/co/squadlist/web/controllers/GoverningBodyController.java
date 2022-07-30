@@ -11,7 +11,6 @@ import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -49,8 +48,7 @@ public class GoverningBodyController {
 
         final GoverningBody governingBody = governingBodyFactory.governingBodyFor("british-rowing");  // TODO take from path
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, null);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, null);
 
         return viewFactory.getViewFor("governingBody", instance).
                 addObject("governingBody", governingBody).

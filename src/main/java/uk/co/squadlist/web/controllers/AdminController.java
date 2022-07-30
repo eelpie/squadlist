@@ -17,14 +17,12 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
-import uk.co.squadlist.web.context.Context;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -57,7 +55,6 @@ public class AdminController {
     private final ActiveMemberFilter activeMemberFilter;
     private final CsvOutputRenderer csvOutputRenderer;
     private final UrlBuilder urlBuilder;
-    private final Context context;
     private final DateFormatter dateFormatter;
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
@@ -71,7 +68,7 @@ public class AdminController {
     public AdminController(ViewFactory viewFactory,
                            ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
                            UrlBuilder urlBuilder,
-                           Context context, DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
+                           DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
@@ -82,7 +79,6 @@ public class AdminController {
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
         this.urlBuilder = urlBuilder;
-        this.context = context;
         this.dateFormatter = dateFormatter;
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
@@ -107,8 +103,7 @@ public class AdminController {
         List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("admin", instance).
                 addObject("squads", loggedInUserApi.getSquads()).
@@ -170,8 +165,7 @@ public class AdminController {
             }
         }
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("editAdmins", instance).
                 addObject("title", textHelper.text("edit.admins")).
@@ -243,8 +237,7 @@ public class AdminController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "admin");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "admin");
 
         return viewFactory.getViewFor("editInstance", instance).
                 addObject("title", textHelper.text("edit.instance.settings")).

@@ -10,9 +10,7 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.OutingAvailability;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
-import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.NavItemsBuilder;
@@ -30,7 +28,6 @@ public class MyOutingsController {
     private final ViewFactory viewFactory;
     private final OutingAvailabilityCountsService outingAvailabilityCountsService;
     private final UrlBuilder urlBuilder;
-    private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
     private final TextHelper textHelper;
 
@@ -39,14 +36,12 @@ public class MyOutingsController {
                                ViewFactory viewFactory,
                                OutingAvailabilityCountsService outingAvailabilityCountsService,
                                UrlBuilder urlBuilder,
-                               PreferredSquadService preferredSquadService,
                                NavItemsBuilder navItemsBuilder,
                                TextHelper textHelper) {
         this.loggedInUserService = loggedInUserService;
         this.viewFactory = viewFactory;
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.urlBuilder = urlBuilder;
-        this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
         this.textHelper = textHelper;
     }
@@ -62,8 +57,7 @@ public class MyOutingsController {
         final Date endDate = DateHelper.oneYearFromNow().toDate();
         List<OutingAvailability> availabilityFor = loggedInUserApi.getAvailabilityFor(loggedInUser.getId(), startDate, endDate);
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInUser, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "my.outings");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, "my.outings");
 
         return viewFactory.getViewFor("myOutings", instance).
                 addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).

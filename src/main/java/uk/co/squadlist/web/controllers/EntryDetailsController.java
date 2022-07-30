@@ -79,8 +79,7 @@ public class EntryDetailsController {
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, loggedInUserApi, loggedInMember);
 
-        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(loggedInMember, loggedInUserApi.getSquads());
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, preferredSquad, "entry.details");
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, loggedInUserApi, "entry.details");
 
         final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
