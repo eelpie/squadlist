@@ -17,10 +17,7 @@ import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
-import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
-import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
-import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -42,9 +39,6 @@ public class EntryDetailsController {
     private final CsvOutputRenderer csvOutputRenderer;
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
-    private final OutingAvailabilityCountsService outingAvailabilityCountsService;
-    private final UrlBuilder urlBuilder;
-    private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
 
     @Autowired
@@ -54,9 +48,6 @@ public class EntryDetailsController {
                                   CsvOutputRenderer csvOutputRenderer,
                                   GoverningBodyFactory governingBodyFactory,
                                   LoggedInUserService loggedInUserService,
-                                  OutingAvailabilityCountsService outingAvailabilityCountsService,
-                                  UrlBuilder urlBuilder,
-                                  PermissionsService permissionsService,
                                   NavItemsBuilder navItemsBuilder
                                   ) {
         this.preferredSquadService = preferredSquadService;
@@ -65,9 +56,6 @@ public class EntryDetailsController {
         this.csvOutputRenderer = csvOutputRenderer;
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
-        this.outingAvailabilityCountsService = outingAvailabilityCountsService;
-        this.urlBuilder = urlBuilder;
-        this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
     }
 
