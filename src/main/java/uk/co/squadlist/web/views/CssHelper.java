@@ -13,5 +13,11 @@ public class CssHelper {
 		}
 		return null;
 	}
-	
+	public String classFor(uk.co.squadlist.model.swagger.AvailabilityOption availability) {
+		if (availability != null) {
+			return availability.getColour();
+		}
+		return null;
+	}
+
 }

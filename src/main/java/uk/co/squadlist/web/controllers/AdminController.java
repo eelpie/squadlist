@@ -112,7 +112,7 @@ public class AdminController {
 
         return viewFactory.getViewFor("admin", instance).
                 addObject("squads", loggedInUserApi.getSquads()).
-                addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
+                addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).
                 addObject("members", members).

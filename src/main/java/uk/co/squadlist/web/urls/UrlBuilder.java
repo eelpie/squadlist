@@ -263,8 +263,14 @@ public class UrlBuilder {
 	public String deleteAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/delete");
 	}
+	public String deleteAvailabilityOptionUrl(uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption) {
+		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/delete");
+	}
 
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
+		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
+	}
+	public String editAvailabilityOptionUrl(uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
 
