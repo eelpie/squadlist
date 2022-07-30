@@ -1,16 +1,17 @@
 package uk.co.squadlist.web.controllers;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.OutingAvailability;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
@@ -19,7 +20,6 @@ import uk.co.squadlist.web.views.TextHelper;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -55,18 +55,17 @@ public class MyOutingsController {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
 
-        final Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-        final Date endDate = DateHelper.oneYearFromNow().toDate();
-        List<OutingAvailability> availabilityFor = loggedInUserApi.getAvailabilityFor(loggedInUser.getId(), startDate, endDate);
-
+        DateTime startDate = DateHelper.startOfCurrentOutingPeriod();
+        DateTime endDate = DateHelper.oneYearFromNow();
+        List<OutingWithAvailability> availabilityFor = swaggerApiClientForLoggedInUser.getMemberAvailability(loggedInUser.getId(), startDate, endDate);
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("myOutings", instance).
-                addObject("member", loggedInUserApi.getMember(loggedInUser.getId())).
+                addObject("member", swaggerApiClientForLoggedInUser.membersIdGet(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", textHelper.text("my.outings")).
                 addObject("navItems", navItems).
-                addObject("availabilityOptions", loggedInUserApi.getAvailabilityOptions()).
+                addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("rssUrl", urlBuilder.outingsRss(loggedInUser.getId(), instance)).
                 addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser.getId(), instance));
     }

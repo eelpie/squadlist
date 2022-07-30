@@ -21,5 +21,13 @@ public class SquadNamesHelper {
 		} 
 		return commaJoiner.join(squadNames);
 	}
-	
+
+	public String listSquads(List<uk.co.squadlist.model.swagger.Squad> squads) {
+		final List<String> squadNames = Lists.newArrayList();
+		for (uk.co.squadlist.model.swagger.Squad squad : squads) {
+			squadNames.add(squad.getName());
+		}
+		return commaJoiner.join(squadNames);
+	}
+
 }
