@@ -37,6 +37,7 @@ import uk.co.squadlist.web.views.model.NavItem;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -111,7 +112,7 @@ public class OutingsController {
                 addObject("startDate", startDate).
                 addObject("endDate", endDate).
                 addObject("month", month).
-                addObject("outingMonths", getOutingMonthsFor(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi));
+                addObject("outingMonths", getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser));
 
         List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
 
@@ -151,7 +152,7 @@ public class OutingsController {
                 addObject("navItems", navItems).
                 addObject("outing", outing).
                 addObject("canEditOuting", canEditOuting).
-                addObject("outingMonths", getOutingMonthsFor(oldStyleOuting.getSquad(), loggedInUserApi)).
+                addObject("outingMonths", getOutingMonthsFor(instance, outing.getSquad(), swaggerApiClientForLoggedInUser)).
                 addObject("squad", outing.getSquad()).
                 addObject("squadAvailability", outingAvailability).
                 addObject("squads", squads).
@@ -372,7 +373,7 @@ public class OutingsController {
                 addObject("navItems", navItems).
                 addObject("squads", api.getSquads()).
                 addObject("squad", squad).
-                addObject("outingMonths", getOutingMonthsFor(loggedInUserApi.getSquad(squad.getId()), api)).
+                addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
                 addObject("outing", outingDetails);
     }
 
@@ -391,7 +392,7 @@ public class OutingsController {
                 addObject("squad", outing.getSquad()).
                 addObject("outing", outingDetails).
                 addObject("outingObject", outing).
-                addObject("outingMonths", getOutingMonthsFor(outing.getSquad(), api)).
+                addObject("outingMonths", getOutingMonthsFor(instance, swaggerApiClientForLoggedInUser.getSquad(outing.getSquad().getId()), swaggerApiClientForLoggedInUser)).
                 addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime())).
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
@@ -403,8 +404,13 @@ public class OutingsController {
         return api.getAvailabilityOption(availabilityId);
     }
 
-    private Map<String, Integer> getOutingMonthsFor(final Squad squad, InstanceSpecificApiClient api) {
-        return api.getOutingMonths(squad);
+    private Map<String, Integer> getOutingMonthsFor(Instance instance, uk.co.squadlist.model.swagger.Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+        Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
+        Map<String, Integer> result = new HashMap<>();
+        for (String key: stringBigDecimalMap.keySet()) {
+            result.put(key, stringBigDecimalMap.get(key).intValue());   // TODO can this int format be set in the swagger API defination?
+        }
+        return result;
     }
 
     private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance, InstanceSpecificApiClient loggedInUserApi) throws UnknownSquadException {
