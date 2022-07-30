@@ -131,12 +131,12 @@ public class OutingsController {
         Instance instance = loggedInUserApi.getInstance();
 
         Outing oldStyleOuting = loggedInUserApi.getOuting(id);
-        uk.co.squadlist.model.swagger.Outing swaggerOuting = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
 
-        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(swaggerOuting.getId());
+        final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
         final List<Squad> squads = loggedInUserApi.getSquads();
 
-        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(swaggerOuting.getSquad().getId());
+        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(outing.getSquad().getId());
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
@@ -148,16 +148,16 @@ public class OutingsController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, loggedInUserApi, preferredSquad, "outings");
 
         return viewFactory.getViewFor("outing", instance).
-                addObject("title", swaggerOuting.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(swaggerOuting.getDate())).
+                addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
                 addObject("navItems", navItems).
-                addObject("outing", swaggerOuting).
+                addObject("outing", outing).
                 addObject("canEditOuting", canEditOuting).
                 addObject("outingMonths", getOutingMonthsFor(oldStyleOuting.getSquad(), loggedInUserApi)).
-                addObject("squad", swaggerOuting.getSquad()).
+                addObject("squad", outing.getSquad()).
                 addObject("squadAvailability", outingAvailability).
                 addObject("squads", squads).
                 addObject("members", displayMembers).
-                addObject("month", ISODateTimeFormat.yearMonth().print(swaggerOuting.getDate().toLocalDateTime())).    // TODO push to date parser
+                addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().toLocalDateTime())).    // TODO push to date parser
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
     }
 
