@@ -14,7 +14,6 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -109,7 +108,7 @@ public class AvailabilityController {
             }
 
             final List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
-            final List<Outing> outings = loggedInUserApi.getSquadOutings(squad, startDate, endDate);
+            final List<uk.co.squadlist.model.swagger.Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), new DateTime(startDate), new DateTime(endDate));
 
             mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
             mv.addObject("outings", outings);
