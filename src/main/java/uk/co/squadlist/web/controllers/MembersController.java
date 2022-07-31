@@ -179,6 +179,8 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
     public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member member = loggedInUserApi.getMember(id);
 
@@ -214,7 +216,7 @@ public class MembersController {
         memberDetails.setRole(member.getRole());
         memberDetails.setProfileImage(member.getProfileImage());
 
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
         return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member, loggedInUserApi, governingBody).
                 addObject("invalidImage", invalidImage);
@@ -225,10 +227,12 @@ public class MembersController {
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
         log.info("Received edit member request: " + memberDetails);
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member member = loggedInUserApi.getMember(id);
         final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
-        final GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
         if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
             if (!governingBody.getPointsOptions().contains(memberDetails.getScullingPoints())) {

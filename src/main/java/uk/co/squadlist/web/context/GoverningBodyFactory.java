@@ -1,18 +1,15 @@
 package uk.co.squadlist.web.context;
 
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.localisation.BritishRowing;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.localisation.RowingIreland;
-import uk.co.squadlist.web.model.Instance;
 
 @Component
 public class GoverningBodyFactory {
 
     public GoverningBody getGoverningBody(Instance instance)  {
-        return governingBodyFor(instance.getGoverningBody());
-    }
-    public GoverningBody getGoverningBody(uk.co.squadlist.model.swagger.Instance instance)  {
         return governingBodyFor(instance.getGoverningBody());
     }
 

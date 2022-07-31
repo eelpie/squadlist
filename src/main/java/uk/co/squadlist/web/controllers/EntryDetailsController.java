@@ -75,11 +75,11 @@ public class EntryDetailsController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
+        final ModelAndView mv = viewFactory.getViewFor("entryDetails", swaggerInstance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
-                addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
+                addObject("governingBody", governingBodyFactory.getGoverningBody(swaggerInstance));
         entryDetailsModelPopulator.populateModel(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi, mv, loggedInMember);
         return mv;
     }
@@ -87,7 +87,8 @@ public class EntryDetailsController {
     @RequestMapping("/entrydetails/ajax")
     public ModelAndView ajax(@RequestBody String json) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<Member> selectedMembers = Lists.newArrayList();
 
@@ -140,13 +141,14 @@ public class EntryDetailsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(swaggerInstance);
         List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody);
 
         csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
@@ -155,6 +157,8 @@ public class EntryDetailsController {
     @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET) // TODO Unused
     public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<Member> selectedMembers = Lists.newArrayList();
         final Iterator<String> iterator = Splitter.on(",").split(members).iterator();
@@ -164,7 +168,7 @@ public class EntryDetailsController {
             selectedMembers.add(loggedInUserApi.getMember(selectedMemberId));
         }
 
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
         csvOutputRenderer.renderCsvResponse(response,
                 entryDetailsModelPopulator.getEntryDetailsHeaders(),
                 entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers, governingBody)
