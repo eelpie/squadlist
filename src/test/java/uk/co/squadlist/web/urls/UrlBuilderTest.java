@@ -22,7 +22,7 @@ public class UrlBuilderTest {
 	private InstanceConfig instanceConfig;
 	private SeoLinkBuilder seoLinkBuilder;
 
-	private Instance instance;
+	private uk.co.squadlist.model.swagger.Instance instance;
 
 	@Before
 	public void setup() {
@@ -30,7 +30,7 @@ public class UrlBuilderTest {
 		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
 
-		instance = new Instance("aninstance", "An instance", null, true, Lists.<Subscription>newArrayList(), "british-rowing");
+		this.instance = new uk.co.squadlist.model.swagger.Instance().id("aninstance").name("An instance").governingBody("british-rowing");
 	}
 	
 	@Test

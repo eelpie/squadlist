@@ -235,14 +235,14 @@ public class UrlBuilder {
 		return url.build().toString();
 	}
 
-	public String outingsRss(String userid, Instance instance) throws URISyntaxException {
+	public String outingsRss(String userid, uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException {
 		final URIBuilder url = new URIBuilder(applicationUrl("/rss"));
 		url.addParameter("user", userid);
 		url.addParameter("key", generateFeedKeyFor(userid, instance));
 		return url.build().toString();
 	}
 
-	public String outingsIcal(String userid, Instance instance) throws URISyntaxException {
+	public String outingsIcal(String userid, uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException {
 		String webcalBaseUrl = getBaseUrl().replaceAll("^https?://", "webcal://");
 		final URIBuilder url = new URIBuilder(webcalBaseUrl  + "/ical");
 		url.addParameter("user", userid);
@@ -306,7 +306,7 @@ public class UrlBuilder {
 		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
 	}
 
-	private String generateFeedKeyFor(String userid, Instance instance) {
+	private String generateFeedKeyFor(String userid, uk.co.squadlist.model.swagger.Instance instance) {
 		return DigestUtils.md5Hex(instance.getId() + userid);
 	}
 

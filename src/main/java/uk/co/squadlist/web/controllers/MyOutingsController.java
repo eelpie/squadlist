@@ -6,12 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresSignedInMember;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -54,18 +53,16 @@ public class MyOutingsController {
     @RequiresSignedInMember
     @RequestMapping("/")
     public ModelAndView outings() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         DateTime startDate = DateHelper.startOfCurrentOutingPeriod();
         DateTime endDate = DateHelper.oneYearFromNow();
         List<OutingWithAvailability> availabilityFor = swaggerApiClientForLoggedInUser.getMemberAvailability(loggedInUser.getId(), startDate, endDate);
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, swaggerInstance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
 
-        return viewFactory.getViewFor("myOutings", swaggerInstance).
+        return viewFactory.getViewFor("myOutings", instance).
                 addObject("member", swaggerApiClientForLoggedInUser.membersIdGet(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", textHelper.text("my.outings")).
@@ -78,9 +75,8 @@ public class MyOutingsController {
     @RequiresSignedInMember
     @RequestMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         final ModelAndView mv = viewFactory.getViewFor("myOutingsAjax", instance);
