@@ -201,6 +201,7 @@ public class OutingsController {
     @RequestMapping(value = "/outings/new", method = RequestMethod.POST)
     public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         if (result.hasErrors()) {
             return renderNewOutingForm(outingDetails, loggedInUserApi);
@@ -214,7 +215,7 @@ public class OutingsController {
                 loggedInUserApi.createOuting(newOuting, null);
             }
 
-            final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(newOuting.getSquad(), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
+            final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(swaggerApiClientForLoggedInUser.getSquad(newOuting.getSquad().getId()), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
             return viewFactory.redirectionTo(outingsViewForNewOutingsSquadAndMonth);
 
         } catch (InvalidOutingException e) {
