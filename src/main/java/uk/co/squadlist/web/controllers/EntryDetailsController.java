@@ -68,10 +68,9 @@ public class EntryDetailsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, swaggerInstance);
 
@@ -140,12 +139,11 @@ public class EntryDetailsController {
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
+        viewFactory.getViewFor("entryDetails", swaggerInstance);  // TODO This call is probably only been used for access control
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(swaggerInstance);

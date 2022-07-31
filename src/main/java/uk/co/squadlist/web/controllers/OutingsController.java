@@ -89,8 +89,8 @@ public class OutingsController {
         Instance instance = loggedInUserApi.getInstance();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
-        final ModelAndView mv = viewFactory.getViewFor("outings", instance);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
+        final ModelAndView mv = viewFactory.getViewFor("outings", swaggerInstance);
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
             return mv;
@@ -193,13 +193,14 @@ public class OutingsController {
     public ModelAndView newOuting() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Instance instance = loggedInUserApi.getInstance();
         String timeZone = instance.getTimeZone();
 
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
-        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,swaggerApiClientForLoggedInUser, instance).getId());
+        outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,swaggerApiClientForLoggedInUser, swaggerInstance).getId());
         return renderNewOutingForm(outingDefaults, loggedInUserApi);
     }
 
@@ -375,7 +376,7 @@ public class OutingsController {
         Instance instance = loggedInUserApi.getInstance();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
+        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, swaggerInstance);
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, swaggerInstance);
 
         return viewFactory.getViewFor("newOuting", instance).

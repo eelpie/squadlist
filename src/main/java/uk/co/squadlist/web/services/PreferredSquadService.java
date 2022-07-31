@@ -7,10 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Squad;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -27,11 +23,11 @@ public class PreferredSquadService {
     private final HttpServletRequest request;
 
     @Autowired
-    public PreferredSquadService(HttpServletRequest request) throws IOException {
+    public PreferredSquadService(HttpServletRequest request) {
         this.request = request;
     }
 
-    public uk.co.squadlist.model.swagger.Squad resolveSquad(String squadId, DefaultApi swaggerApiClientForLoggedInUser, Instance instance) throws ApiException {
+    public uk.co.squadlist.model.swagger.Squad resolveSquad(String squadId, DefaultApi swaggerApiClientForLoggedInUser, uk.co.squadlist.model.swagger.Instance instance) throws ApiException {
         if (!Strings.isNullOrEmpty(squadId)) {
             final uk.co.squadlist.model.swagger.Squad selectedSquad = swaggerApiClientForLoggedInUser.getSquad(squadId);    // TODO can probably just make one list squads call
             setPreferredSquad(selectedSquad);
