@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -50,11 +49,10 @@ public class ContactsController {
 
     @RequestMapping("/contacts")
     public ModelAndView contacts() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final List<Squad> allSquads = loggedInUserApi.getSquads();
+        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
@@ -70,10 +68,10 @@ public class ContactsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
-        final List<Squad> allSquads = loggedInUserApi.getSquads();
+        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
 
