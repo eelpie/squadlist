@@ -13,6 +13,7 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
@@ -37,19 +38,22 @@ public class AvailabilityController {
     private final LoggedInUserService loggedInUserService;
     private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public AvailabilityController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   ActiveMemberFilter activeMemberFilter,
                                   LoggedInUserService loggedInUserService,
                                   PermissionsService permissionsService,
-                                  NavItemsBuilder navItemsBuilder) {
+                                  NavItemsBuilder navItemsBuilder,
+                                  InstanceConfig instanceConfig) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.loggedInUserService = loggedInUserService;
         this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequestMapping("/availability")
@@ -57,9 +61,10 @@ public class AvailabilityController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, swaggerInstance);
 
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
@@ -72,12 +77,14 @@ public class AvailabilityController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", loggedInUserApi.getSquads());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, swaggerInstance);
         mv.addObject("navItems", navItems);
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);

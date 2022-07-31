@@ -41,7 +41,8 @@ public class NavItemsBuilder {
         this.preferredSquadService = preferredSquadService;
     }
 
-    public List<NavItem> navItemsFor(Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser, Instance instance) throws URISyntaxException, UnknownInstanceException, ApiException {
+    public List<NavItem> navItemsFor(Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
+                                     uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException, UnknownInstanceException, ApiException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), swaggerApiClientForLoggedInUser);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(instance).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
         final uk.co.squadlist.model.swagger.Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));

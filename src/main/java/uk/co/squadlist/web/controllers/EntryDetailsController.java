@@ -14,6 +14,7 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
@@ -40,6 +41,7 @@ public class EntryDetailsController {
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
     private final NavItemsBuilder navItemsBuilder;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public EntryDetailsController(PreferredSquadService preferredSquadService,
@@ -48,7 +50,8 @@ public class EntryDetailsController {
                                   CsvOutputRenderer csvOutputRenderer,
                                   GoverningBodyFactory governingBodyFactory,
                                   LoggedInUserService loggedInUserService,
-                                  NavItemsBuilder navItemsBuilder
+                                  NavItemsBuilder navItemsBuilder,
+                                  InstanceConfig instanceConfig
                                   ) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
@@ -57,6 +60,7 @@ public class EntryDetailsController {
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequestMapping("/entrydetails/{squadId}")
@@ -65,16 +69,17 @@ public class EntryDetailsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, swaggerInstance);
 
         final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
                 addObject("squads", loggedInUserApi.getSquads()).
-                addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
+                addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
         entryDetailsModelPopulator.populateModel(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi, mv, loggedInMember);
         return mv;
     }
@@ -103,7 +108,7 @@ public class EntryDetailsController {
         if (!selectedMembers.isEmpty()) {
             mv.addObject("members", selectedMembers);
 
-            final GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+            final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
             int crewSize = selectedMembers.size();
             final boolean isFullBoat = governingBody.getBoatSizes().contains(crewSize);
@@ -141,7 +146,7 @@ public class EntryDetailsController {
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
 
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance());
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
         List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody);
 
         csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);

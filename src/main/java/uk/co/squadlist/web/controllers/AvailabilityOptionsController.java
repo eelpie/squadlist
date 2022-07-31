@@ -14,16 +14,15 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.AvailabilityOption;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -42,20 +41,20 @@ public class AvailabilityOptionsController {
     private final ViewFactory viewFactory;
     private final UrlBuilder urlBuilder;
     private final LoggedInUserService loggedInUserService;
-    private final PreferredSquadService preferredSquadService;
     private final NavItemsBuilder navItemsBuilder;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public AvailabilityOptionsController(ViewFactory viewFactory,
                                          UrlBuilder urlBuilder,
                                          LoggedInUserService loggedInUserService,
-                                         PreferredSquadService preferredSquadService,
-                                         NavItemsBuilder navItemsBuilder) {
+                                         NavItemsBuilder navItemsBuilder,
+                                         InstanceConfig instanceConfig) {
         this.viewFactory = viewFactory;
         this.urlBuilder = urlBuilder;
         this.loggedInUserService = loggedInUserService;
-        this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -152,28 +151,26 @@ public class AvailabilityOptionsController {
     }
 
     private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        return viewFactory.getViewFor("newAvailabilityOption", instance).
+        return viewFactory.getViewFor("newAvailabilityOption", swaggerInstance).
                 addObject("title", "Add new availability option").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
     }
 
     private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        return viewFactory.getViewFor("editAvailabilityOption", instance).
+        return viewFactory.getViewFor("editAvailabilityOption", swaggerInstance).
                 addObject("title", "Edit availability options").
                 addObject("navItems", navItems).
                 addObject("availabilityOptionDetails", availabilityOptionDetails).
@@ -186,9 +183,8 @@ public class AvailabilityOptionsController {
 
     private ModelAndView renderDeleteForm(final AvailabilityOption a, InstanceSpecificApiClient api) throws HttpFetchException, IOException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final List<AvailabilityOption> alternatives = api.getAvailabilityOptions();
         alternatives.remove(a);

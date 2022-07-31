@@ -22,9 +22,9 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -33,7 +33,6 @@ import uk.co.squadlist.web.model.forms.MemberSquad;
 import uk.co.squadlist.web.services.PasswordGenerator;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
-import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -61,8 +60,8 @@ public class MembersController {
     private PasswordGenerator passwordGenerator;
     private PermissionsService permissionsService;
     private GoverningBodyFactory governingBodyFactory;
-    private PreferredSquadService preferredSquadService;
     private NavItemsBuilder navItemsBuilder;
+    private InstanceConfig instanceConfig;
 
     public MembersController() {
     }
@@ -73,16 +72,16 @@ public class MembersController {
                              PasswordGenerator passwordGenerator,
                              PermissionsService permissionsService,
                              GoverningBodyFactory governingBodyFactory,
-                             PreferredSquadService preferredSquadService,
-                             NavItemsBuilder navItemsBuilder) {
+                             NavItemsBuilder navItemsBuilder,
+                             InstanceConfig instanceConfig) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.passwordGenerator = passwordGenerator;
         this.permissionsService = permissionsService;
         this.governingBodyFactory = governingBodyFactory;
-        this.preferredSquadService = preferredSquadService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
@@ -91,7 +90,7 @@ public class MembersController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member members = loggedInUserApi.getMember(id);
 
@@ -101,7 +100,7 @@ public class MembersController {
                 addObject("member", members).
                 addObject("title", members.getFirstName() + " " + members.getLastName()).
                 addObject("navItems", navItems).
-                addObject("governingBody", governingBodyFactory.getGoverningBody(loggedInUserApi.getInstance()));
+                addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
@@ -136,11 +135,11 @@ public class MembersController {
             );
 
             Member loggedInMember = loggedInUserService.getLoggedInMember();
-            Instance instance = loggedInUserApi.getInstance();
+            uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
 
-            return viewFactory.getViewFor("memberAdded", instance).
+            return viewFactory.getViewFor("memberAdded", swaggerInstance).
                     addObject("title", "Member added").
                     addObject("navItems", navItems).
                     addObject("member", newMember).
@@ -306,7 +305,7 @@ public class MembersController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -335,13 +334,13 @@ public class MembersController {
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
 
         final Member member = loggedInUserApi.getMember(id);
-        return viewFactory.getViewFor("deleteMemberPrompt", instance).
+        return viewFactory.getViewFor("deleteMemberPrompt", swaggerInstance).
                 addObject("title", "Delete member - " + member.getDisplayName()).
                 addObject("navItems", navItems).
                 addObject("member", member);
@@ -363,7 +362,7 @@ public class MembersController {
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
@@ -412,7 +411,7 @@ public class MembersController {
     private ModelAndView renderNewMemberForm(InstanceSpecificApiClient loggedInUserApi) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -428,7 +427,7 @@ public class MembersController {
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -451,9 +450,8 @@ public class MembersController {
 
     private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -489,7 +487,7 @@ public class MembersController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member member = loggedInUserApi.getMember(id);
 
@@ -507,7 +505,7 @@ public class MembersController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member member = loggedInUserApi.getMember(id);
 

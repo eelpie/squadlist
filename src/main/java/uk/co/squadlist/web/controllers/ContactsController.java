@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
@@ -30,25 +31,28 @@ public class ContactsController {
     private final ContactsModelPopulator contactsModelPopulator;
     private final LoggedInUserService loggedInUserService;
     private final NavItemsBuilder navItemsBuilder;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public ContactsController(PreferredSquadService preferredSquadService,
                               ViewFactory viewFactory,
                               ContactsModelPopulator contactsModelPopulator,
                               LoggedInUserService loggedInUserService,
-                              NavItemsBuilder navItemsBuilder) {
+                              NavItemsBuilder navItemsBuilder,
+                              InstanceConfig instanceConfig) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.contactsModelPopulator = contactsModelPopulator;
         this.loggedInUserService = loggedInUserService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequestMapping("/contacts")
     public ModelAndView contacts() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
@@ -67,13 +71,14 @@ public class ContactsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Squad> allSquads = loggedInUserApi.getSquads();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        final ModelAndView mv = viewFactory.getViewFor("contacts", instance).
+        final ModelAndView mv = viewFactory.getViewFor("contacts", swaggerInstance).
                 addObject("title", "Contacts").
                 addObject("navItems", navItems).
                 addObject("squads", allSquads);

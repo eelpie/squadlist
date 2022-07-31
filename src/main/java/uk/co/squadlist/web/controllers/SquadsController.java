@@ -18,11 +18,11 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.InvalidSquadException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.SquadDetails;
@@ -49,17 +49,20 @@ public class SquadsController {
     private final ViewFactory viewFactory;
     private final LoggedInUserService loggedInUserService;
     private final NavItemsBuilder navItemsBuilder;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public SquadsController(UrlBuilder urlBuilder,
                             ViewFactory viewFactory,
                             LoggedInUserService loggedInUserService,
-                            NavItemsBuilder navItemsBuilder
+                            NavItemsBuilder navItemsBuilder,
+                            InstanceConfig instanceConfig
                             ) {
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.loggedInUserService = loggedInUserService;
         this.navItemsBuilder = navItemsBuilder;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequestMapping(value = "/squad/new", method = RequestMethod.GET)
@@ -92,7 +95,7 @@ public class SquadsController {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
@@ -152,11 +155,10 @@ public class SquadsController {
     }
 
     private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
@@ -172,9 +174,8 @@ public class SquadsController {
         final List<Member> availableMembers = squadlistApi.getMembers();
         availableMembers.removeAll(squadMembers);
 
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 

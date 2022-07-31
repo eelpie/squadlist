@@ -12,6 +12,9 @@ public class GoverningBodyFactory {
     public GoverningBody getGoverningBody(Instance instance)  {
         return governingBodyFor(instance.getGoverningBody());
     }
+    public GoverningBody getGoverningBody(uk.co.squadlist.model.swagger.Instance instance)  {
+        return governingBodyFor(instance.getGoverningBody());
+    }
 
     public GoverningBody governingBodyFor(String id) {
         if ("rowing-ireland".equals(id)) {

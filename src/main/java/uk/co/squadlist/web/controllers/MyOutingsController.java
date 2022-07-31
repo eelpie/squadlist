@@ -10,6 +10,7 @@ import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
+import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
@@ -31,6 +32,7 @@ public class MyOutingsController {
     private final UrlBuilder urlBuilder;
     private final NavItemsBuilder navItemsBuilder;
     private final TextHelper textHelper;
+    private final InstanceConfig instanceConfig;
 
     @Autowired
     public MyOutingsController(LoggedInUserService loggedInUserService,
@@ -38,13 +40,15 @@ public class MyOutingsController {
                                OutingAvailabilityCountsService outingAvailabilityCountsService,
                                UrlBuilder urlBuilder,
                                NavItemsBuilder navItemsBuilder,
-                               TextHelper textHelper) {
+                               TextHelper textHelper,
+                               InstanceConfig instanceConfig) {
         this.loggedInUserService = loggedInUserService;
         this.viewFactory = viewFactory;
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
         this.urlBuilder = urlBuilder;
         this.navItemsBuilder = navItemsBuilder;
         this.textHelper = textHelper;
+        this.instanceConfig = instanceConfig;
     }
 
     @RequiresSignedInMember
@@ -54,13 +58,14 @@ public class MyOutingsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         DateTime startDate = DateHelper.startOfCurrentOutingPeriod();
         DateTime endDate = DateHelper.oneYearFromNow();
         List<OutingWithAvailability> availabilityFor = swaggerApiClientForLoggedInUser.getMemberAvailability(loggedInUser.getId(), startDate, endDate);
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        return viewFactory.getViewFor("myOutings", instance).
+        return viewFactory.getViewFor("myOutings", swaggerInstance).
                 addObject("member", swaggerApiClientForLoggedInUser.membersIdGet(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", textHelper.text("my.outings")).
