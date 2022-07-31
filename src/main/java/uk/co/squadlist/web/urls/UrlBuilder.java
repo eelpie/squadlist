@@ -147,18 +147,15 @@ public class UrlBuilder {
 		return applicationUrl("/outings?squad=" + squad.getId());
 	}
 
-	public String outings(Squad squad, String month) {
-		return outings(squad) + "&month=" + month;
-	}
 	public String outings(uk.co.squadlist.model.swagger.Squad squad, String month) {
 		return outings(squad) + "&month=" + month;
 	}
 
-	public String availability(Squad squad) {
+	public String availability(uk.co.squadlist.model.swagger.Squad squad) {
 		return applicationUrl("/availability/" + squad.getId());
 	}
 
-	public String availability(Squad squad, String month) {
+	public String availability(uk.co.squadlist.model.swagger.Squad squad, String month) {
 		return availability(squad) + "?month=" + month;
 	}
 

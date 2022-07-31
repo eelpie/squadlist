@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -24,10 +25,8 @@ import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Controller
 public class AvailabilityController {
@@ -110,7 +109,7 @@ public class AvailabilityController {
 
             mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
             mv.addObject("outings", outings);
-            mv.addObject("outingMonths", loggedInUserApi.getOutingMonths(loggedInUserApi.getSquad(squad.getId())));
+            mv.addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser));
             mv.addObject("month", month);
         }
         return mv;
@@ -135,6 +134,16 @@ public class AvailabilityController {
             displayMembers.add(new DisplayMember(member, isEditable));
         }
         return displayMembers;
+    }
+
+    // TODO duplication with outings controller
+    private Map<String, Integer> getOutingMonthsFor(Instance instance, uk.co.squadlist.model.swagger.Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+        Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
+        Map<String, Integer> result = new HashMap<>();
+        for (String key: stringBigDecimalMap.keySet()) {
+            result.put(key, stringBigDecimalMap.get(key).intValue());   // TODO can this int format be set in the swagger API defination?
+        }
+        return result;
     }
 
 }

@@ -48,10 +48,6 @@ public class InstanceSpecificApiClient {
         throw new UnknownAvailabilityOptionException();
     }
 
-    public Map<String, Integer> getOutingMonths(Squad squad) {
-        return api.getOutingMonths(instanceId, Lists.newArrayList(squad), DateTime.now().toDateMidnight().minusDays(1).toDate(), DateTime.now().plusYears(20).toDate());
-    }
-
     public List<Outing> getSquadOutings(Squad squad, Date startDate, Date endDate) {
         return api.getOutings(instanceId, Lists.newArrayList(squad), startDate, endDate);
     }
