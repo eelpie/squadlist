@@ -58,18 +58,16 @@ public class AvailabilityController {
 
     @RequestMapping("/availability")
     public ModelAndView availability() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        final Instance instance = loggedInUserApi.getInstance();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, swaggerInstance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
                 addObject("navItems", navItems).
-                addObject("squads", loggedInUserApi.getSquads());
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
     }
 
     @RequestMapping("/availability/{squadId}")
