@@ -61,6 +61,7 @@ public class OutingsController {
     private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
     private final InstanceConfig instanceConfig;
+    private final DisplayMemberFactory displayMemberFactory;
 
     @Autowired
     public OutingsController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
@@ -68,7 +69,8 @@ public class OutingsController {
                              OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
                              CsvOutputRenderer csvOutputRenderer, PermissionsService permissionsService,
                              NavItemsBuilder navItemsBuilder,
-                             InstanceConfig instanceConfig) {
+                             InstanceConfig instanceConfig,
+                             DisplayMemberFactory displayMemberFactory) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.dateFormatter = dateFormatter;
@@ -80,6 +82,7 @@ public class OutingsController {
         this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
         this.instanceConfig = instanceConfig;
+        this.displayMemberFactory = displayMemberFactory;
     }
 
     @RequestMapping("/outings")
@@ -144,7 +147,7 @@ public class OutingsController {
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        List<DisplayMember> displayMembers = toDisplayMembers(activeMembers, loggedInUser);
+        List<DisplayMember> displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInUser);
 
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, outing);
 
@@ -428,15 +431,6 @@ public class OutingsController {
         Squad squad = outingDetails.getSquad() != null ? loggedInUserApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
         String notes = outingDetails.getNotes();
         return new Outing(squad, date, notes);
-    }
-
-    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
-        List<DisplayMember> displayMembers = new ArrayList<>();
-        for (Member member : members) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            displayMembers.add(new DisplayMember(member, isEditable));
-        }
-        return displayMembers;
     }
 
 }

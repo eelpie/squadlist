@@ -1,11 +1,7 @@
 package uk.co.squadlist.web.views.model;
 
 import com.google.common.base.Strings;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import uk.co.squadlist.model.swagger.Member;
-
-import java.util.Date;
 
 public class DisplayMember {
 

@@ -33,24 +33,24 @@ public class AvailabilityController {
     private final ViewFactory viewFactory;
     private final ActiveMemberFilter activeMemberFilter;
     private final LoggedInUserService loggedInUserService;
-    private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
     private final InstanceConfig instanceConfig;
+    private final DisplayMemberFactory displayMemberFactory;
 
     @Autowired
     public AvailabilityController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
                                   ActiveMemberFilter activeMemberFilter,
                                   LoggedInUserService loggedInUserService,
-                                  PermissionsService permissionsService,
                                   NavItemsBuilder navItemsBuilder,
-                                  InstanceConfig instanceConfig) {
+                                  InstanceConfig instanceConfig,
+                                  DisplayMemberFactory displayMemberFactory) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.loggedInUserService = loggedInUserService;
-        this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
         this.instanceConfig = instanceConfig;
+        this.displayMemberFactory = displayMemberFactory;
     }
 
     @RequestMapping("/availability")
@@ -88,7 +88,7 @@ public class AvailabilityController {
 
             mv.addObject("squad", squad).
                     addObject("title", squad.getName() + " availability").
-                    addObject("members", toDisplayMembers(activeSquadMembers, loggedInMember));
+                    addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember));
 
             if (activeSquadMembers.isEmpty()) {
                 return mv;
@@ -125,15 +125,6 @@ public class AvailabilityController {
             }
         }
         return allAvailability;
-    }
-
-    private List<DisplayMember> toDisplayMembers(List<uk.co.squadlist.model.swagger.Member> members, uk.co.squadlist.model.swagger.Member loggedInUser) {
-        List<DisplayMember> displayMembers = new ArrayList<>();
-        for (uk.co.squadlist.model.swagger.Member member : members) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            displayMembers.add(new DisplayMember(member, isEditable));
-        }
-        return displayMembers;
     }
 
     // TODO duplication with outings controller

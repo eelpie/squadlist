@@ -10,17 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
-import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
-import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
-import uk.co.squadlist.web.views.model.DisplayMember;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -54,14 +49,14 @@ public class ContactsModelPopulator {
     private final static Ordering<Member> byRoleThenFirstName = byRole.compound(byFirstName);
     private final static Ordering<Member> byRoleThenLastName = byRole.compound(byLastName);
 
-    private final PermissionsService permissionsService;
     private final ActiveMemberFilter activeMemberFilter;
+    private final DisplayMemberFactory displayMemberFactory;
 
     @Autowired
-    public ContactsModelPopulator(PermissionsService permissionsService,
-                                  ActiveMemberFilter activeMemberFilter) {
-        this.permissionsService = permissionsService;
+    public ContactsModelPopulator(ActiveMemberFilter activeMemberFilter,
+                                  DisplayMemberFactory displayMemberFactory) {
         this.activeMemberFilter = activeMemberFilter;
+        this.displayMemberFactory = displayMemberFactory;
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
@@ -79,19 +74,10 @@ public class ContactsModelPopulator {
 
         mv.addObject("title", squad.getName() + " contacts");
         mv.addObject("squad", squad);
-        mv.addObject("members", toDisplayMembers(activeMembers, loggedInMember));
+        mv.addObject("members", displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember));
         if (!emails.isEmpty()) {
             mv.addObject("emails", Lists.newArrayList(emails));
         }
-    }
-
-    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
-        List<DisplayMember> displayMembers = new ArrayList<>();
-        for (Member member : members) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            displayMembers.add(new DisplayMember(member, isEditable));
-        }
-        return displayMembers;
     }
 
 }

@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +62,7 @@ public class AdminController {
     private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
     private final TextHelper textHelper;
+    private final DisplayMemberFactory displayMemberFactory;
 
     @Autowired
     public AdminController(ViewFactory viewFactory,
@@ -73,7 +73,8 @@ public class AdminController {
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
                            NavItemsBuilder navItemsBuilder,
-                           TextHelper textHelper) {
+                           TextHelper textHelper,
+                           DisplayMemberFactory displayMemberFactory) {
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
@@ -85,6 +86,7 @@ public class AdminController {
         this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
         this.textHelper = textHelper;
+        this.displayMemberFactory = displayMemberFactory;
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
@@ -96,9 +98,9 @@ public class AdminController {
         final List<uk.co.squadlist.model.swagger.Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
 
         final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
-        List<DisplayMember> activeDisplayMembers = toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
-        List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
-        List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
+        List<DisplayMember> activeDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
+        List<DisplayMember> inactiveDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
+        List<DisplayMember> adminUsers = displayMemberFactory.toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
@@ -245,15 +247,6 @@ public class AdminController {
                 addObject("instanceDetails", instanceDetails).
                 addObject("memberOrderings", MEMBER_ORDERINGS).
                 addObject("governingBodies", GOVERNING_BODIES);
-    }
-
-    private List<DisplayMember> toDisplayMembers(List<uk.co.squadlist.model.swagger.Member> members, uk.co.squadlist.model.swagger.Member loggedInUser) {
-        List<DisplayMember> displayMembers = new ArrayList<>();
-        for (uk.co.squadlist.model.swagger.Member member : members) {
-            boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
-            displayMembers.add(new DisplayMember(member, isEditable));
-        }
-        return displayMembers;
     }
 
 }
