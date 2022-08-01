@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.AvailabilityOption;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
@@ -203,7 +204,7 @@ public class OutingsController {
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
         final OutingDetails outingDefaults = new OutingDetails(defaultOutingDateTime);
         outingDefaults.setSquad(preferredSquadService.resolveSquad(null ,swaggerApiClientForLoggedInUser, swaggerInstance).getId());
-        return renderNewOutingForm(outingDefaults, loggedInMember, loggedInUserApi);
+        return renderNewOutingForm(outingDefaults, loggedInMember, instance);
     }
 
     @RequiresPermission(permission = Permission.ADD_OUTING)
@@ -215,7 +216,7 @@ public class OutingsController {
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         if (result.hasErrors()) {
-            return renderNewOutingForm(outingDetails, loggedInMember, loggedInUserApi);
+            return renderNewOutingForm(outingDetails, loggedInMember, instance);
         }
 
         try {
@@ -231,11 +232,11 @@ public class OutingsController {
 
         } catch (InvalidOutingException e) {
             result.addError(new ObjectError("outing", e.getMessage()));
-            return renderNewOutingForm(outingDetails, loggedInMember, loggedInUserApi);
+            return renderNewOutingForm(outingDetails, loggedInMember, instance);
 
         } catch (Exception e) {
             result.addError(new ObjectError("outing", "Unknown error"));
-            return renderNewOutingForm(outingDetails, loggedInMember, loggedInUserApi);
+            return renderNewOutingForm(outingDetails, loggedInMember, instance);
         }
     }
 
@@ -384,9 +385,8 @@ public class OutingsController {
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
-    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, Member loggedInMember, InstanceSpecificApiClient api) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, Member loggedInMember, Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance);
@@ -394,7 +394,7 @@ public class OutingsController {
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
                 addObject("navItems", navItems).
-                addObject("squads", api.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
                 addObject("squad", squad).
                 addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
                 addObject("outing", outingDetails);
