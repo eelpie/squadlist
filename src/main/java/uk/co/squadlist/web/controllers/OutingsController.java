@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.AvailabilityOption;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
@@ -24,7 +25,6 @@ import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
-import uk.co.squadlist.web.model.AvailabilityOption;
 import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.Squad;
@@ -167,19 +167,19 @@ public class OutingsController {
 
     @RequestMapping("/outings/{id}.csv")
     public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final Outing outing = loggedInUserApi.getOuting(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(outing.getSquad().getId());
-        final Map<String, AvailabilityOption> outingAvailability = loggedInUserApi.getOutingAvailability(outing.getId());
+        final Map<String, AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
 
         final List<List<String>> rows = Lists.newArrayList();
         for (Member member : squadMembers) {
+            DisplayMember displayMember = new DisplayMember(member, false);
             rows.add(Arrays.asList(
                     dateFormatter.dayMonthYearTime(outing.getDate()),
                     outing.getSquad().getName(),
-                    member.getDisplayName(),
+                    displayMember.getDisplayName(),
                     member.getRole(),
                     outingAvailability.get(member.getId()) != null ? outingAvailability.get(member.getId()).getLabel() : null
             ));
