@@ -14,17 +14,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.*;
-import uk.co.squadlist.web.model.*;
+import uk.co.squadlist.web.model.AvailabilityOption;
+import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.model.Outing;
+import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
@@ -344,22 +347,24 @@ public class OutingsController {
     public ModelAndView updateAvailability(
             @RequestParam(value = "outing", required = true) String outingId,
             @RequestParam(value = "availability", required = true) String availability) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final Outing outing = loggedInUserApi.getOuting(outingId);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(outingId);
 
         if (!outing.isClosed()) {
-            AvailabilityOption availabilityOption = getAvailabilityOptionById(availability, loggedInUserApi);
+            uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = (!Strings.isNullOrEmpty(availability)) ? swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), availability) : null;
 
-            final OutingAvailability result = loggedInUserApi.setOutingAvailability(loggedInUserApi.getMember(loggedInMember.getId()), outing, availabilityOption);
+            uk.co.squadlist.model.swagger.Availability body = new uk.co.squadlist.model.swagger.Availability().availabilityOption(availabilityOption).member(loggedInMember).outing(outing);
 
-            log.info("Set availability for " + loggedInMember.getUsername() + " / " + outing.getId() + ": " + availabilityOption);
+            log.info("Setting availability for " + loggedInMember.getUsername() + " / " + outing.getId() + " to " + availabilityOption.getLabel());
+            final Map<String, OutingWithAvailability> result = swaggerApiClientForLoggedInUser.setOutingAvailability(body, outing.getId());
+            log.info("Set availability result: " + result);
+
             return viewFactory.getViewFor("includes/availability", instance).
-                    addObject("availability", result.getAvailabilityOption());
+                    addObject("availability", null);
         }
 
         throw new OutingClosedException();
@@ -404,13 +409,6 @@ public class OutingsController {
                 addObject("outingMonths", getOutingMonthsFor(instance, swaggerApiClientForLoggedInUser.getSquad(outing.getSquad().getId()), swaggerApiClientForLoggedInUser)).
                 addObject("month", ISODateTimeFormat.yearMonth().print(outing.getDate().getTime())).
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
-    }
-
-    private AvailabilityOption getAvailabilityOptionById(String availabilityId, InstanceSpecificApiClient api) throws HttpFetchException, IOException, UnknownAvailabilityOptionException {
-        if (Strings.isNullOrEmpty(availabilityId)) {
-            return null;
-        }
-        return api.getAvailabilityOption(availabilityId);
     }
 
     private Map<String, Integer> getOutingMonthsFor(uk.co.squadlist.model.swagger.Instance instance, uk.co.squadlist.model.swagger.Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
