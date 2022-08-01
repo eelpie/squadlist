@@ -87,7 +87,6 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
     @RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
