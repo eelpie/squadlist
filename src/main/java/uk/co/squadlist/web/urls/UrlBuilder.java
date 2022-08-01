@@ -60,6 +60,9 @@ public class UrlBuilder {
 	public String memberResetPasswordUrl(Member member) {
 		return memberUrl(member.getId()) + "/reset";
 	}
+	public String memberResetPasswordUrl(uk.co.squadlist.model.swagger.Member member) {
+		return memberUrl(member.getId()) + "/reset";
+	}
 
 	public String memberUrl(String memberId) {
 		return applicationUrl("/member/" + memberId);
@@ -68,12 +71,21 @@ public class UrlBuilder {
 	public String makeActive(Member member) {
 		return memberUrl(member.getId()) + "/make-active";
 	}
+	public String makeActive(uk.co.squadlist.model.swagger.Member member) {
+		return memberUrl(member.getId()) + "/make-active";
+	}
 
 	public String makeInactive(Member member) {
 		return memberUrl(member.getId()) + "/make-inactive";
 	}
+	public String makeInactive(uk.co.squadlist.model.swagger.Member member) {
+		return memberUrl(member.getId()) + "/make-inactive";
+	}
 
 	public String delete(Member member) {
+		return memberUrl(member.getId()) + "/delete";
+	}
+	public String delete(uk.co.squadlist.model.swagger.Member member) {
 		return memberUrl(member.getId()) + "/delete";
 	}
 
@@ -167,6 +179,9 @@ public class UrlBuilder {
 	}
 
 	public String editMemberUrl(Member member) {
+		return memberUrl(member) + "/edit";
+	}
+	public String editMemberUrl(uk.co.squadlist.model.swagger.Member member) {
 		return memberUrl(member) + "/edit";
 	}
 
