@@ -358,12 +358,12 @@ public class OutingsController {
 
             uk.co.squadlist.model.swagger.Availability body = new uk.co.squadlist.model.swagger.Availability().availabilityOption(availabilityOption).member(loggedInMember).outing(outing);
 
-            log.info("Setting availability for " + loggedInMember.getUsername() + " / " + outing.getId() + " to " + availabilityOption.getLabel());
-            final Map<String, OutingWithAvailability> result = swaggerApiClientForLoggedInUser.setOutingAvailability(body, outing.getId());
+            log.info("Setting availability for " + loggedInMember.getUsername() + " / " + outing.getId() + " to " + availabilityOption);
+            final OutingWithAvailability result = swaggerApiClientForLoggedInUser.setOutingAvailability(body, outing.getId());
             log.info("Set availability result: " + result);
 
             return viewFactory.getViewFor("includes/availability", instance).
-                    addObject("availability", null);
+                    addObject("availability", result.getAvailabilityOption());
         }
 
         throw new OutingClosedException();
