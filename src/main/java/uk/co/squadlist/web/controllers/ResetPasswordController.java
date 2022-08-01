@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import uk.co.squadlist.web.api.SquadlistApi;
+import uk.co.squadlist.client.swagger.ApiException;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
-import uk.co.squadlist.web.model.Instance;
+import uk.co.squadlist.web.urls.UrlBuilder;
+import uk.co.squadlist.web.views.ViewFactory;
 
 import java.io.IOException;
 
@@ -23,41 +25,46 @@ public class ResetPasswordController {
     private final static Logger log = LogManager.getLogger(ResetPasswordController.class);
 
     private final InstanceConfig instanceConfig;
-    private final SquadlistApi squadlistApi;
+    private final DefaultApi squadlistApi;
+    private final ViewFactory viewFactory;
+    private final UrlBuilder urlBuilder;
 
     @Autowired
-    public ResetPasswordController(InstanceConfig instanceConfig, SquadlistApiFactory squadlistApiFactory) throws IOException {
+    public ResetPasswordController(InstanceConfig instanceConfig,
+                                   SquadlistApiFactory squadlistApiFactory,
+                                   ViewFactory viewFactory,
+                                   UrlBuilder urlBuilder) throws IOException {
         this.instanceConfig = instanceConfig;
-        this.squadlistApi = squadlistApiFactory.createClient();
+        this.squadlistApi = squadlistApiFactory.createSwaggerClient();
+        this.viewFactory = viewFactory;
+        this.urlBuilder = urlBuilder;
     }
 
     @RequestMapping(value = "/reset-password", method = RequestMethod.GET)
     public ModelAndView resetPasswordPrompt() throws Exception {
-        final Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
-        return new ModelAndView("resetPassword").
-                addObject("instance", instance).
+        Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
+        return viewFactory.getViewFor("resetPassword", instance).
                 addObject("title", "Reset password");
     }
 
     @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
     public ModelAndView resetPassword(@RequestParam(value = "username", required = false) String username) throws Exception {
-        final Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
+        Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
 
         if (Strings.isNullOrEmpty(username)) {
-            return new ModelAndView("resetPassword").   // TODO use redirect to get pattern
-                    addObject("instance", instance).
-                    addObject("errors", true).
-                    addObject("title", "Reset password");
+            return viewFactory.redirectionTo("/reset-password");
         }
 
         log.info("Resetting password for: " + instance.getId() + " / " + username);
         try {
-            squadlistApi.resetPassword(instance.getId(), username.trim());    // TODO errors
+            squadlistApi.instancesInstanceResetPasswordPost(instance.getId(), username.trim());    // TODO errors
             log.info("Reset password call successful for: " + username);
-            return new ModelAndView("resetPasswordSent").addObject("title", "Reset password");
+            return viewFactory.getViewFor("resetPasswordSent", instance).
+                    addObject("title", "Reset password");
 
-        } catch (UnknownMemberException e) {
-            return new ModelAndView("resetPassword").
+        } catch (ApiException e) {  // TODO more precise; use redirect pattern
+            log.warn(e.getCode() + " / " + e.getResponseBody());
+            return viewFactory.getViewFor("resetPassword", instance).
                     addObject("title", "Reset password").
                     addObject("errors", true);
         }
@@ -68,9 +75,8 @@ public class ResetPasswordController {
         final Instance instance = squadlistApi.getInstance(instanceConfig.getInstance());
 
         try {
-            final String newPassword = squadlistApi.confirmResetPassword(instance.getId(), token);
-            return new ModelAndView("resetPasswordConfirm").
-                    addObject("instance", instance).
+            final String newPassword = squadlistApi.instancesInstanceResetPasswordConfirmPost(instance.getId(), token);
+            return viewFactory.getViewFor("resetPasswordConfirm", instance).
                     addObject("newPassword", newPassword);
 
         } catch (Exception e) {
