@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.springframework.web.servlet.view.RedirectView;
+import uk.co.squadlist.client.swagger.ApiException;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.model.Instance;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -38,6 +39,7 @@ public class LoginController {
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
     private final ViewFactory viewFactory;
+    private final DefaultApi swaggerApi;
 
     @Autowired
     public LoginController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
@@ -51,6 +53,7 @@ public class LoginController {
         this.urlBuilder = urlBuilder;
         this.instanceConfig = instanceConfig;
         this.api = squadlistApiFactory.createClient();
+        this.swaggerApi = squadlistApiFactory.createSwaggerClient();
         this.viewFactory = viewFactory;
 
         this.clientId = clientId;
@@ -58,11 +61,10 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})
-    // TODO SEO this onto the root url
     public ModelAndView login(HttpServletRequest request) throws Exception {
         boolean error = false;
         String username = null;
-        Map inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
             Boolean flashedError = (Boolean) inputFlashMap.get("error");
             error = flashedError != null ? flashedError : false;
@@ -99,10 +101,9 @@ public class LoginController {
         return viewFactory.redirectionTo(urlBuilder.loginUrl());
     }
 
-    private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException {
-        final Instance instance = api.getInstance(instanceConfig.getInstance());
-        return new ModelAndView("login").
-                addObject("instance", instance).
+    private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException, ApiException {
+        final Instance instance = swaggerApi.getInstance(instanceConfig.getInstance());
+        return viewFactory.getViewFor("login", instance).
                 addObject("title", instance.getName()).
                 addObject("username", username).
                 addObject("errors", errors);
