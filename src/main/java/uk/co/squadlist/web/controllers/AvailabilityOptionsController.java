@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -20,7 +21,6 @@ import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.AvailabilityOption;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -101,7 +101,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/new", method = RequestMethod.GET)
-    public ModelAndView availability() throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView availability() throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         AvailabilityOptionDetails availabilityOption = new AvailabilityOptionDetails();
         availabilityOption.setColour("green");
         return renderNewAvailabilityOptionForm(availabilityOption);
@@ -109,7 +109,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/new", method = RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
 
         if (result.hasErrors()) {
@@ -150,7 +150,7 @@ public class AvailabilityOptionsController {
         return redirectToAdmin();
     }
 
-    private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderNewAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -163,7 +163,7 @@ public class AvailabilityOptionsController {
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
     }
 
-    private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderEditAvailabilityOptionForm(AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption a) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());

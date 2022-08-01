@@ -53,6 +53,9 @@ public class UrlBuilder {
 	public String memberUrl(Member member) {
 		return memberUrl(member.getId());
 	}
+	public String memberUrl(uk.co.squadlist.model.swagger.Member member) {
+		return memberUrl(member.getId());
+	}
 
 	public String memberResetPasswordUrl(Member member) {
 		return memberUrl(member.getId()) + "/reset";
@@ -171,7 +174,7 @@ public class UrlBuilder {
 		return memberUrl(memberId) + "/edit";
 	}
 
-	public String entryDetailsCsv(Squad squad) {
+	public String entryDetailsCsv(uk.co.squadlist.model.swagger.Squad squad) {
 		return applicationUrl("/entrydetails/" + squad.getId() + ".csv");
 	}
 

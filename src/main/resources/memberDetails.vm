@@ -18,7 +18,7 @@
 	<p>$text.text('gender'): $!member.gender</p>
 	<p>$text.text('date.of.birth'): 
 		#if($member.dateOfBirth) $dateFormatter.dayMonthYear($member.dateOfBirth) 
-			 #if($governingBody.getAgeGrade($member.dateOfBirth)) 
+			 #if($governingBody.getAgeGrade($member.dateOfBirth))
 			 	($governingBody.getAgeGrade($member.dateOfBirth))
 			 #end
 		#end

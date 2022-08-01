@@ -8,12 +8,13 @@ import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+import uk.co.squadlist.client.swagger.ApiException;
+import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
@@ -64,9 +65,9 @@ public class ContactsModelPopulator {
     }
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
-    public void populateModel(final Squad squad, final ModelAndView mv, Instance instance, InstanceSpecificApiClient instanceSpecificApiClient, Member loggedInMember) throws SignedInMemberRequiredException {
-        List<Member> squadMembers = instanceSpecificApiClient.getSquadMembers(squad.getId());
-        Ordering<Member> byRoleThenName = instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
+    public void populateModel(final Squad squad, final ModelAndView mv, DefaultApi api, Member loggedInMember) throws ApiException {
+        List<Member> squadMembers = api.squadsIdMembersGet(squad.getId());
+        Ordering<Member> byRoleThenName = byRoleThenFirstName; // TODO restore instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
         final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));
         final Set<String> emails = Sets.newHashSet();

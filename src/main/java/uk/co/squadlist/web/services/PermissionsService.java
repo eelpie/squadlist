@@ -1,9 +1,9 @@
 package uk.co.squadlist.web.services;
 
 import org.springframework.stereotype.Component;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
-import uk.co.squadlist.web.model.Squad;
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Outing;
+import uk.co.squadlist.model.swagger.Squad;
 
 import java.util.List;
 
@@ -112,7 +112,7 @@ public class PermissionsService {
 	}
 
     private boolean isAdmin(Member loggedInRower) {
-        return loggedInRower.getAdmin() != null && loggedInRower.getAdmin();
+        return loggedInRower.isAdmin();
     }
 
     private boolean isMemberOfSquad(Member member, Squad squad) {

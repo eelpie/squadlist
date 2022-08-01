@@ -35,6 +35,7 @@ import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,9 +94,9 @@ public class AdminController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final List<Member> members = loggedInUserApi.getMembers();
+        final List<uk.co.squadlist.model.swagger.Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
 
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
         List<DisplayMember> activeDisplayMembers = toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
         List<DisplayMember> inactiveDisplayMembers = toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
@@ -148,7 +149,7 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
     public ModelAndView setAdminsPrompt() throws Exception {
-        Member loggedInUser = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -216,10 +217,10 @@ public class AdminController {
                 "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
     }
 
-    private List<Member> extractAdminUsersFrom(List<Member> members) {
-        List<Member> admins = Lists.newArrayList();
-        for (Member member : members) {
-            if (member.getAdmin() != null && member.getAdmin()) {  // TODO should be boolean is the API knows that it is always present.
+    private List<uk.co.squadlist.model.swagger.Member> extractAdminUsersFrom(List<uk.co.squadlist.model.swagger.Member> members) {
+        List<uk.co.squadlist.model.swagger.Member> admins = Lists.newArrayList();
+        for (uk.co.squadlist.model.swagger.Member member : members) {
+            if (member.isAdmin()) {
                 admins.add(member);
             }
         }
@@ -230,12 +231,12 @@ public class AdminController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
@@ -247,9 +248,9 @@ public class AdminController {
                 addObject("governingBodies", GOVERNING_BODIES);
     }
 
-    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+    private List<DisplayMember> toDisplayMembers(List<uk.co.squadlist.model.swagger.Member> members, uk.co.squadlist.model.swagger.Member loggedInUser) {
         List<DisplayMember> displayMembers = new ArrayList<>();
-        for (Member member : members) {
+        for (uk.co.squadlist.model.swagger.Member member : members) {
             boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
             displayMembers.add(new DisplayMember(member, isEditable));
         }

@@ -4,13 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.model.Member;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -25,23 +26,21 @@ public class LoggedInUserService {
     private final SquadlistApiFactory squadlistApiFactory;
     private final InstanceConfig instanceConfig;
     private final HttpServletRequest request;
-    private final SquadlistApi api;
 
     @Autowired
     public LoggedInUserService(SquadlistApiFactory squadlistApiFactory,
                                InstanceConfig instanceConfig,
                                HttpServletRequest request) throws IOException {
-        this.api = squadlistApiFactory.createClient();
         this.squadlistApiFactory = squadlistApiFactory;
         this.instanceConfig = instanceConfig;
         this.request = request;
     }
 
-    public Member getLoggedInMember() throws SignedInMemberRequiredException {
+    public Member getLoggedInMember() throws SignedInMemberRequiredException, IOException, ApiException {
         String token = getLoggedInMembersToken();
         if (token != null) {
             log.debug("Found signed in user token; need to verify: " + token);
-            Member verifiedMember = api.verify(token);
+            uk.co.squadlist.model.swagger.Member verifiedMember = squadlistApiFactory.createSwaggerApiClientForToken(token).verifyPost();
             log.debug("Verified member: " + verifiedMember);
             return verifiedMember;
         }

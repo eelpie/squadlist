@@ -8,11 +8,10 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Outing;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -39,7 +38,7 @@ public class RequiresOutingPermissionAspect {
             String outingId = (String) jp.getArgs()[0];
 
             Member loggedInMember = loggedInUserService.getLoggedInMember();
-            Outing outing = loggedInUserService.getApiClientForLoggedInUser().getOuting(outingId);
+            Outing outing = loggedInUserService.getSwaggerApiClientForLoggedInUser().outingsIdGet(outingId);
 
             final boolean hasPermission = permissionsService.hasOutingPermission(loggedInMember, permission, outing);
             log.debug(methodSignature.getName() + " requires permission: " + permission + " for outing " + outingId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);

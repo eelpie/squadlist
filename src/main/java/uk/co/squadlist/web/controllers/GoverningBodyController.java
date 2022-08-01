@@ -10,7 +10,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
@@ -41,7 +40,7 @@ public class GoverningBodyController {
 
     @RequestMapping(value = "/governing-body/british-rowing", method = RequestMethod.GET)
     public ModelAndView member() throws Exception {
-        Member loggedInUser = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 

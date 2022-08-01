@@ -13,15 +13,6 @@ public class ViewFactory {
     @Value("${googleAnalyticsAccount}")
     private String googleAnalyticsAccount;
 
-    public ModelAndView getViewFor(String templateName, Instance instance) {
-        ModelAndView mv = new ModelAndView(templateName).
-                addObject("instance", instance);
-        if (!Strings.isNullOrEmpty(googleAnalyticsAccount)) {
-            mv.addObject("googleAnalyticsAccount", googleAnalyticsAccount);
-        }
-        return mv;
-    }
-
     public ModelAndView getViewFor(String templateName, uk.co.squadlist.model.swagger.Instance instance) {
         ModelAndView mv = new ModelAndView(templateName).
                 addObject("instance", instance);

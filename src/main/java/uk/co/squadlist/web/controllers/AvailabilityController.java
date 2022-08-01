@@ -14,8 +14,6 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -61,7 +59,7 @@ public class AvailabilityController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("availability", instance).
@@ -76,7 +74,7 @@ public class AvailabilityController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
@@ -87,8 +85,8 @@ public class AvailabilityController {
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
-            List<Member> squadMembers = loggedInUserApi.getSquadMembers(squad.getId());
-            List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
+            List<uk.co.squadlist.model.swagger.Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(squad.getId());
+            List<uk.co.squadlist.model.swagger.Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
             mv.addObject("squad", squad).
                     addObject("title", squad.getName() + " availability").
@@ -131,9 +129,9 @@ public class AvailabilityController {
         return allAvailability;
     }
 
-    private List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
+    private List<DisplayMember> toDisplayMembers(List<uk.co.squadlist.model.swagger.Member> members, uk.co.squadlist.model.swagger.Member loggedInUser) {
         List<DisplayMember> displayMembers = new ArrayList<>();
-        for (Member member : members) {
+        for (uk.co.squadlist.model.swagger.Member member : members) {
             boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
             displayMembers.add(new DisplayMember(member, isEditable));
         }

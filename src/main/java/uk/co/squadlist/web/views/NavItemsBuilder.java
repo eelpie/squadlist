@@ -6,8 +6,6 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -41,7 +39,7 @@ public class NavItemsBuilder {
         this.preferredSquadService = preferredSquadService;
     }
 
-    public List<NavItem> navItemsFor(Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
+    public List<NavItem> navItemsFor(uk.co.squadlist.model.swagger.Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
                                      uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException, UnknownInstanceException, ApiException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), swaggerApiClientForLoggedInUser);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(instance).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;

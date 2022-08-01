@@ -6,18 +6,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.views.CsvOutputRenderer;
 import uk.co.squadlist.web.views.NavItemsBuilder;
@@ -65,36 +66,33 @@ public class EntryDetailsController {
 
     @RequestMapping("/entrydetails/{squadId}")
     public ModelAndView entrydetails(@PathVariable String squadId) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, swaggerInstance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, instance);
 
-        final ModelAndView mv = viewFactory.getViewFor("entryDetails", swaggerInstance).
+        final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
-                addObject("squads", loggedInUserApi.getSquads()).
-                addObject("governingBody", governingBodyFactory.getGoverningBody(swaggerInstance));
-        entryDetailsModelPopulator.populateModel(loggedInUserApi.getSquad(squadToShow.getId()), loggedInUserApi, mv, loggedInMember);
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
+                addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
+        entryDetailsModelPopulator.populateModel(squadToShow, swaggerApiClientForLoggedInUser, mv, loggedInMember);
         return mv;
     }
 
     @RequestMapping("/entrydetails/ajax")
     public ModelAndView ajax(@RequestBody String json) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<Member> selectedMembers = Lists.newArrayList();
 
         JsonNode readTree = new ObjectMapper().readTree(json);
-        Iterator<JsonNode> iterator = readTree.iterator();
-        while (iterator.hasNext()) {
-            selectedMembers.add(loggedInUserApi.getMember(iterator.next().asText()));
+        for (JsonNode jsonNode : readTree) {
+            selectedMembers.add(swaggerApiClientForLoggedInUser.membersIdGet(jsonNode.asText()));
         }
 
         List<String> rowingPoints = Lists.newArrayList();
@@ -122,7 +120,8 @@ public class EntryDetailsController {
 
                 List<Date> datesOfBirth = Lists.newArrayList();
                 for (Member member : selectedMembers) {
-                    datesOfBirth.add(member.getDateOfBirth());
+                    Date dobAsDate = member.getDateOfBirth() != null ? ISODateTimeFormat.dateTimeNoMillis().parseDateTime(member.getDateOfBirth()).toDate() : null;	// TODO push to API
+                    datesOfBirth.add(dobAsDate);
                 }
 
                 Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
@@ -137,14 +136,13 @@ public class EntryDetailsController {
 
     @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         viewFactory.getViewFor("entryDetails", swaggerInstance);  // TODO This call is probably only been used for access control
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
-        final List<Member> squadMembers = loggedInUserApi.getSquadMembers(squadToShow.getId());
+        final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(swaggerInstance);
         List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody);
@@ -154,7 +152,6 @@ public class EntryDetailsController {
 
     @RequestMapping(value = "/entrydetails/selected.csv", method = RequestMethod.GET) // TODO Unused
     public void entrydetailsSelectedCSV(@RequestParam String members, HttpServletResponse response) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -163,7 +160,7 @@ public class EntryDetailsController {
         while (iterator.hasNext()) {
             final String selectedMemberId = iterator.next();
             log.info("Selected member id: " + selectedMemberId);
-            selectedMembers.add(loggedInUserApi.getMember(selectedMemberId));
+            selectedMembers.add(swaggerApiClientForLoggedInUser.membersIdGet(selectedMemberId));
         }
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
