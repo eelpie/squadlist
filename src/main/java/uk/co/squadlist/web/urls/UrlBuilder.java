@@ -92,6 +92,9 @@ public class UrlBuilder {
 	public String delete(Squad squad) {
 		return applicationUrl("/squad/" + squad.getId() + "/delete");
 	}
+	public String delete(uk.co.squadlist.model.swagger.Squad squad) {
+		return applicationUrl("/squad/" + squad.getId() + "/delete");
+	}
 
 	public String newMemberUrl() {
 		return applicationUrl("/member/new");
@@ -102,6 +105,9 @@ public class UrlBuilder {
 	}
 
 	public String editSquadUrl(Squad squad) {
+		return applicationUrl("/squad/" + squad.getId() + "/edit");
+	}
+	public String editSquadUrl(uk.co.squadlist.model.swagger.Squad squad) {
 		return applicationUrl("/squad/" + squad.getId() + "/edit");
 	}
 
