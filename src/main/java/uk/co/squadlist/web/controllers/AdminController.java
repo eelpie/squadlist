@@ -90,7 +90,6 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public ModelAndView member() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -104,7 +103,7 @@ public class AdminController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("admin", instance).
-                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
                 addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).
@@ -113,7 +112,7 @@ public class AdminController {
                 addObject("inactiveMembers", inactiveDisplayMembers).
                 addObject("admins", adminUsers).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(instance)).
-                addObject("boats", loggedInUserApi.getBoats()).
+                addObject("boats", Lists.newArrayList()).
                 addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instanceConfig.getInstance()));
     }
 
