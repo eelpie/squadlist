@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -23,8 +25,6 @@ import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -119,23 +119,27 @@ public class AdminController {
     @RequestMapping(value = "/admin/instance", method = RequestMethod.GET)
     public ModelAndView instance() throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final InstanceDetails instanceDetails = new InstanceDetails();
         instanceDetails.setMemberOrdering(loggedInUserApi.getInstance().getMemberOrdering());
         instanceDetails.setGoverningBody(loggedInUserApi.getInstance().getGoverningBody());
-        return renderEditInstanceDetailsForm(instanceDetails);
+        return renderEditInstanceDetailsForm(instanceDetails, instance);
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/instance", method = RequestMethod.POST)
     public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         if (result.hasErrors()) {
-            return renderEditInstanceDetailsForm(instanceDetails);
+            return renderEditInstanceDetailsForm(instanceDetails, swaggerInstance);
         }
 
-        Instance instance = loggedInUserApi.getInstance();
+        uk.co.squadlist.web.model.Instance instance = loggedInUserApi.getInstance();
         instance.setMemberOrdering(instanceDetails.getMemberOrdering());  // TODO validate
         instance.setGoverningBody(instanceDetails.getGoverningBody());  // TODO validate
 
@@ -148,14 +152,13 @@ public class AdminController {
     @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
     public ModelAndView setAdminsPrompt() throws Exception {
         uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<Member> adminMembers = Lists.newArrayList();
         List<Member> availableMembers = Lists.newArrayList();
-        for (Member member : loggedInUserApi.getMembers()) {
-            if (member.getAdmin()) {
+        for (Member member : swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId())) {
+            if (member.isAdmin()) {
                 adminMembers.add(member);
             } else {
                 availableMembers.add(member);
@@ -188,11 +191,11 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/export/members.csv", method = RequestMethod.GET)
     public void membersCSV(HttpServletResponse response) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        Instance instance = loggedInUserApi.getInstance();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final List<List<String>> rows = Lists.newArrayList();
-        for (Member member : loggedInUserApi.getMembers()) {
+        for (Member member : swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId())) {
             DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
             rows.add(Arrays.asList(member.getFirstName(),
                     member.getLastName(),
@@ -231,10 +234,8 @@ public class AdminController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException, UnknownInstanceException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
 
