@@ -105,8 +105,7 @@ public class MembersController {
     @RequiresPermission(permission = Permission.ADD_MEMBER)
     @RequestMapping(value = "/member/new", method = RequestMethod.GET)
     public ModelAndView newMember(@ModelAttribute("memberDetails") MemberDetails memberDetails) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        return renderNewMemberForm(loggedInUserApi);
+        return renderNewMemberForm();
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
@@ -118,7 +117,7 @@ public class MembersController {
         final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
         if (result.hasErrors()) {
             log.info("New member submission has errors: " + result.getAllErrors());
-            return renderNewMemberForm(loggedInUserApi);
+            return renderNewMemberForm();
         }
 
         final String initialPassword = passwordGenerator.generateRandomPassword();
@@ -147,7 +146,7 @@ public class MembersController {
         } catch (InvalidMemberException e) {
             log.warn("Invalid member exception: " + e.getMessage());
             result.addError(new ObjectError("memberDetails", e.getMessage()));
-            return renderNewMemberForm(loggedInUserApi);
+            return renderNewMemberForm();
         }
     }
 
@@ -415,7 +414,7 @@ public class MembersController {
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient loggedInUserApi) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -423,7 +422,7 @@ public class MembersController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newMember", instance).
-                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsIdMembersGet(instance.getId())).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
                 addObject("rolesOptions", ROLES_OPTIONS);
