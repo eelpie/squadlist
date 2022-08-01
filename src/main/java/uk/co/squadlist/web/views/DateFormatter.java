@@ -26,6 +26,9 @@ public class DateFormatter {
     public String timeSince(Date date) {
         return getDateFormatter().timeSince(date);
     }
+    public String timeSince(DateTime dateTime) {
+        return timeSince(dateTime.toDate());
+    }
 
     public String month(String month) {
         final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);
