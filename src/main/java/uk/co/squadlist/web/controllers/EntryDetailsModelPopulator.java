@@ -1,11 +1,13 @@
 package uk.co.squadlist.web.controllers;
 
 import com.google.common.collect.Lists;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -20,15 +22,12 @@ import java.util.List;
 @Component
 public class EntryDetailsModelPopulator {
 
-	private final DateFormatter dateFormatter;
 	private final ActiveMemberFilter activeMemberFilter;
 	private final DisplayMemberFactory displayMemberFactory;
 
 	@Autowired
-	public EntryDetailsModelPopulator(DateFormatter dateFormatter,
-									  ActiveMemberFilter activeMemberFilter,
+	public EntryDetailsModelPopulator(ActiveMemberFilter activeMemberFilter,
 									  DisplayMemberFactory displayMemberFactory) {
-		this.dateFormatter = dateFormatter;
 		this.activeMemberFilter = activeMemberFilter;
 		this.displayMemberFactory = displayMemberFactory;
 	}
@@ -43,12 +42,14 @@ public class EntryDetailsModelPopulator {
 	}
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody) throws ApiException {
+	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody, Instance instance) throws ApiException {
 		List<uk.co.squadlist.model.swagger.Member> squadMembers = api.squadsIdMembersGet(squadToShow.getId());
-		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody);
+		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody, instance);
 	}
 
-	public List<List<String>> getEntryDetailsRows(List<uk.co.squadlist.model.swagger.Member> members, GoverningBody governingBody) {	// TOOD permissions
+	public List<List<String>> getEntryDetailsRows(List<uk.co.squadlist.model.swagger.Member> members, GoverningBody governingBody, Instance instance) {
+		DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
+
 		final List<List<String>> rows = Lists.newArrayList();
 		for (uk.co.squadlist.model.swagger.Member member : members) {
 

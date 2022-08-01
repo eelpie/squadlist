@@ -133,15 +133,15 @@ public class EntryDetailsController {
     @RequestMapping(value = "/entrydetails/{squadId}.csv", method = RequestMethod.GET)
     public void entrydetailsCSV(@PathVariable String squadId, HttpServletResponse response) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        viewFactory.getViewFor("entryDetails", swaggerInstance);  // TODO This call is probably only been used for access control
+        viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, swaggerInstance);
+        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(squadToShow.getId());
 
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(swaggerInstance);
-        List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody);
+        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
+        List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody, instance);
 
         csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.getEntryDetailsHeaders(), entryDetailsRows);
     }
@@ -162,7 +162,7 @@ public class EntryDetailsController {
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
         csvOutputRenderer.renderCsvResponse(response,
                 entryDetailsModelPopulator.getEntryDetailsHeaders(),
-                entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers, governingBody)
+                entryDetailsModelPopulator.getEntryDetailsRows(selectedMembers, governingBody, instance)
         );
     }
 

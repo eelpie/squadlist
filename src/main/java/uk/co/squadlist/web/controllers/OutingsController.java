@@ -53,7 +53,6 @@ public class OutingsController {
 
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
-    private final DateFormatter dateFormatter;
     private final PreferredSquadService preferredSquadService;
     private final ViewFactory viewFactory;
     private final OutingAvailabilityCountsService outingAvailabilityCountsService;
@@ -66,7 +65,8 @@ public class OutingsController {
 
     @Autowired
     public OutingsController(LoggedInUserService loggedInUserService, UrlBuilder urlBuilder,
-                             DateFormatter dateFormatter, PreferredSquadService preferredSquadService, ViewFactory viewFactory,
+                             PreferredSquadService preferredSquadService,
+                             ViewFactory viewFactory,
                              OutingAvailabilityCountsService outingAvailabilityCountsService, ActiveMemberFilter activeMemberFilter,
                              CsvOutputRenderer csvOutputRenderer, PermissionsService permissionsService,
                              NavItemsBuilder navItemsBuilder,
@@ -74,7 +74,6 @@ public class OutingsController {
                              DisplayMemberFactory displayMemberFactory) {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
-        this.dateFormatter = dateFormatter;
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.outingAvailabilityCountsService = outingAvailabilityCountsService;
@@ -102,6 +101,7 @@ public class OutingsController {
 
         Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
         Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
+        DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
 
         String title = squadToShow.getName() + " outings";
         if (month != null) {
@@ -154,6 +154,7 @@ public class OutingsController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
 
+        DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
         return viewFactory.getViewFor("outing", instance).
                 addObject("title", outing.getSquad().getName() + " - " + dateFormatter.dayMonthYearTime(outing.getDate())).
                 addObject("navItems", navItems).
@@ -171,10 +172,12 @@ public class OutingsController {
     @RequestMapping("/outings/{id}.csv")
     public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(outing.getSquad().getId());
         final Map<String, AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
+
+        DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
 
         final List<List<String>> rows = Lists.newArrayList();
         for (Member member : squadMembers) {

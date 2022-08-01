@@ -13,14 +13,13 @@ import org.springframework.stereotype.Component;
 
 import uk.co.squadlist.web.context.Context;
 
-@Component
 public class DateFormatter {
 
-    private final Context context;
+    private final DateTimeZone timeZone;
 
     @Autowired
-    public DateFormatter(Context context) {
-        this.context = context;
+    public DateFormatter(DateTimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 
     public String timeSince(Date date) {
@@ -36,7 +35,7 @@ public class DateFormatter {
     }
 
     public String dayMonthTime(Date date) {
-        return new DateTime(date, DateTimeZone.forID(context.getTimeZone())).toString("EEE dd MMM kk:mm");
+        return new DateTime(date, timeZone).toString("EEE dd MMM kk:mm");
     }
     public String dayMonthTime(DateTime dateTime) {
         return dayMonthTime(dateTime.toDate());
@@ -63,7 +62,7 @@ public class DateFormatter {
     }
 
     private uk.co.eelpieconsulting.common.dates.DateFormatter getDateFormatter() {
-        return new uk.co.eelpieconsulting.common.dates.DateFormatter(context.getTimeZone());    // TODO this is problematic; timezone should be attached to the dates not a system wide concern.
+        return new uk.co.eelpieconsulting.common.dates.DateFormatter(timeZone);
     }
 
 }

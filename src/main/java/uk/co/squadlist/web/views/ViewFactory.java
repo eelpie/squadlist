@@ -1,11 +1,11 @@
 package uk.co.squadlist.web.views;
 
 import com.google.common.base.Strings;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.co.squadlist.web.model.Instance;
 
 @Component
 public class ViewFactory {
@@ -15,7 +15,9 @@ public class ViewFactory {
 
     public ModelAndView getViewFor(String templateName, uk.co.squadlist.model.swagger.Instance instance) {
         ModelAndView mv = new ModelAndView(templateName).
-                addObject("instance", instance);
+                addObject("instance", instance).
+                addObject("dateFormatter", new DateFormatter(DateTimeZone.forID(instance.getTimeZone())));
+
         if (!Strings.isNullOrEmpty(googleAnalyticsAccount)) {
             mv.addObject("googleAnalyticsAccount", googleAnalyticsAccount);
         }

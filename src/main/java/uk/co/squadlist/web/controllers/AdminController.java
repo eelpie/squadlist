@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -55,11 +56,9 @@ public class AdminController {
     private final ActiveMemberFilter activeMemberFilter;
     private final CsvOutputRenderer csvOutputRenderer;
     private final UrlBuilder urlBuilder;
-    private final DateFormatter dateFormatter;
     private final GoverningBodyFactory governingBodyFactory;
     private final LoggedInUserService loggedInUserService;
     private final InstanceConfig instanceConfig;
-    private final PermissionsService permissionsService;
     private final NavItemsBuilder navItemsBuilder;
     private final TextHelper textHelper;
     private final DisplayMemberFactory displayMemberFactory;
@@ -68,7 +67,7 @@ public class AdminController {
     public AdminController(ViewFactory viewFactory,
                            ActiveMemberFilter activeMemberFilter, CsvOutputRenderer csvOutputRenderer,
                            UrlBuilder urlBuilder,
-                           DateFormatter dateFormatter, GoverningBodyFactory governingBodyFactory,
+                           GoverningBodyFactory governingBodyFactory,
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
                            PermissionsService permissionsService,
@@ -79,11 +78,9 @@ public class AdminController {
         this.activeMemberFilter = activeMemberFilter;
         this.csvOutputRenderer = csvOutputRenderer;
         this.urlBuilder = urlBuilder;
-        this.dateFormatter = dateFormatter;
         this.governingBodyFactory = governingBodyFactory;
         this.loggedInUserService = loggedInUserService;
         this.instanceConfig = instanceConfig;
-        this.permissionsService = permissionsService;
         this.navItemsBuilder = navItemsBuilder;
         this.textHelper = textHelper;
         this.displayMemberFactory = displayMemberFactory;
@@ -192,9 +189,11 @@ public class AdminController {
     @RequestMapping(value = "/admin/export/members.csv", method = RequestMethod.GET)
     public void membersCSV(HttpServletResponse response) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        Instance instance = loggedInUserApi.getInstance();
 
         final List<List<String>> rows = Lists.newArrayList();
         for (Member member : loggedInUserApi.getMembers()) {
+            DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
             rows.add(Arrays.asList(member.getFirstName(),
                     member.getLastName(),
                     member.getKnownAs(),
