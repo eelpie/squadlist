@@ -6,10 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
+import uk.co.squadlist.model.swagger.Boat;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Boat;
 import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
@@ -33,11 +32,10 @@ public class BoatsController {
 
     @RequestMapping("/boats/{id}")
     public ModelAndView outing(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        Boat boat = loggedInUserApi.getBoat(id);
+        Boat boat = swaggerApiClientForLoggedInUser.instancesInstanceBoatsIdGet(instance.getId(), id);
 
         return viewFactory.getViewFor("boat", instance).
                 addObject("title", "View boat").
