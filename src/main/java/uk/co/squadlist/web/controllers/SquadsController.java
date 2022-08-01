@@ -91,15 +91,14 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.GET)
-    public ModelAndView deletePrompt(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView deletePrompt(@PathVariable String id) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
-        final Squad squad = loggedInUserApi.getSquad(id);
+        final uk.co.squadlist.model.swagger.Squad squad = swaggerApiClientForLoggedInUser.getSquad(id);
         return viewFactory.getViewFor("deleteSquadPrompt", instance).
                 addObject("title", "Delete squad").
                 addObject("navItems", navItems).
@@ -108,11 +107,13 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView delete(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, ApiException {
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final Squad squad = loggedInUserApi.getSquad(id);
-        loggedInUserApi.deleteSquad(squad);
+        final uk.co.squadlist.model.swagger.Squad squad = swaggerApiClientForLoggedInUser.getSquad(id);
+
+        swaggerApiClientForLoggedInUser.deleteSquad(squad.getId());
+
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
