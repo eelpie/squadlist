@@ -196,7 +196,6 @@ public class OutingsController {
     @RequiresPermission(permission = Permission.ADD_OUTING)
     @RequestMapping(value = "/outings/new", method = RequestMethod.GET)  // TODO fails hard if no squads are available
     public ModelAndView newOuting() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
@@ -246,7 +245,6 @@ public class OutingsController {
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
     @RequestMapping(value = "/outings/{id}/edit", method = RequestMethod.GET)
     public ModelAndView outingEdit(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
@@ -262,17 +260,16 @@ public class OutingsController {
         outingDetails.setSquad(outing.getSquad().getId());
         outingDetails.setNotes(outing.getNotes());
 
-        return renderEditOutingForm(outingDetails, loggedInMember, outing, loggedInUserApi, instance);
+        return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
     }
 
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
     @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Outing outing = loggedInUserApi.getOuting(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
@@ -337,7 +334,7 @@ public class OutingsController {
         final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
 
         if (result.hasErrors()) {
-            return renderEditOutingForm(outingDetails, loggedInMember, outing, loggedInUserApi, instance);
+            return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
         }
         try {
             final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, loggedInUserApi);
@@ -348,12 +345,12 @@ public class OutingsController {
 
         } catch (InvalidOutingException e) {
             result.addError(new ObjectError("outing", e.getMessage()));
-            return renderEditOutingForm(outingDetails, loggedInMember, outing, loggedInUserApi, instance);
+            return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
 
         } catch (Exception e) {
             log.error(e);
             result.addError(new ObjectError("outing", "Unknown exception"));
-            return renderEditOutingForm(outingDetails, loggedInMember, outing, loggedInUserApi, instance);
+            return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
         }
     }
 
@@ -403,7 +400,7 @@ public class OutingsController {
                 addObject("outing", outingDetails);
     }
 
-    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, InstanceSpecificApiClient api, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance);
@@ -411,7 +408,7 @@ public class OutingsController {
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").
                 addObject("navItems", navItems).
-                addObject("squads", api.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
                 addObject("squad", outing.getSquad()).
                 addObject("outing", outingDetails).
                 addObject("outingObject", outing).
