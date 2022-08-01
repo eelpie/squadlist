@@ -33,13 +33,4 @@ public class DisplayMember {
         }
     }
 
-    public Date getDateOfBirth() {
-        if (member.getDateOfBirth() != null) {
-            DateTime dobAsDate = ISODateTimeFormat.dateTimeNoMillis().parseDateTime(member.getDateOfBirth());
-            return dobAsDate.toDate();
-        } else {
-            return null;
-        }
-    }
-
 }

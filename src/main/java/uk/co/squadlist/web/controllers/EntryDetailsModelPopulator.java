@@ -54,12 +54,10 @@ public class EntryDetailsModelPopulator {
 		final List<List<String>> rows = Lists.newArrayList();
 		for (uk.co.squadlist.model.swagger.Member member : members) {
 
-			DateTime dobAsDate = member.getDateOfBirth() != null ? ISODateTimeFormat.dateTimeNoMillis().parseDateTime(member.getDateOfBirth()) : null;	// TODO push to API
-
-    		final Integer effectiveAge = dobAsDate != null ? governingBody.getEffectiveAge(dobAsDate.toDate()) : null;
+			final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;
     		final String ageGrade = effectiveAge != null ? governingBody.getAgeGrade(effectiveAge) : null;
 
-			String formattedDob = dobAsDate != null ? dateFormatter.dayMonthYear(dobAsDate.toDate()) : "";
+			String formattedDob = member.getDateOfBirth() != null ? dateFormatter.dayMonthYear(member.getDateOfBirth().toDate()) : "";
 			rows.add(Arrays.asList(member.getFirstName(), member.getLastName(),
 					formattedDob,
     				effectiveAge != null ? effectiveAge.toString() : "",

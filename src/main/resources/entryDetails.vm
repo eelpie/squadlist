@@ -45,11 +45,11 @@
 					    	<td>#parse('includes/displayMember.vm')</td>
 					    	<td>					    
 					    		#if($displayMember.member.dateOfBirth)
-					    			$dateFormatter.dayMonthYear($displayMember.dateOfBirth)
+					    			$dateFormatter.dayMonthYear($displayMember.member.dateOfBirth)
 					    			</br>
 					    			#set($ageGrade = "")				    		
-					    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($displayMember.dateOfBirth)))
-					    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($displayMember.dateOfBirth)</span>
+					    			#set($ageGrade = $governingBody.getAgeGrade($governingBody.getEffectiveAge($displayMember.member.dateOfBirth)))
+					    			<span #if($ageGrade) title="$ageGrade" #end>$governingBody.getEffectiveAge($displayMember.member.dateOfBirth)</span>
 					    			#if($ageGrade) <br/> $ageGrade #end
 					    		#end
 					    	</td>

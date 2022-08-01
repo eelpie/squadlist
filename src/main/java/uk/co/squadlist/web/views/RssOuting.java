@@ -1,12 +1,12 @@
 package uk.co.squadlist.web.views;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
+import uk.co.squadlist.model.swagger.Outing;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
-import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
-import uk.co.squadlist.web.model.Outing;
 
 public class RssOuting implements RssFeedable {
 	
@@ -30,7 +30,7 @@ public class RssOuting implements RssFeedable {
 
 	@Override
 	public Date getDate() {
-		return outing.getDate();
+		return outing.getDate().toDate();
 	}
 
 	@Override

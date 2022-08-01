@@ -7,14 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Member;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
@@ -26,7 +24,6 @@ import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,10 +115,9 @@ public class EntryDetailsController {
                 mv.addObject("scullingPoints", governingBody.getTotalPoints(scullingPoints));
                 mv.addObject("scullingStatus", governingBody.getScullingStatus(scullingPoints));
 
-                List<Date> datesOfBirth = Lists.newArrayList();
+                List<DateTime> datesOfBirth = Lists.newArrayList();
                 for (Member member : selectedMembers) {
-                    Date dobAsDate = member.getDateOfBirth() != null ? ISODateTimeFormat.dateTimeNoMillis().parseDateTime(member.getDateOfBirth()).toDate() : null;	// TODO push to API
-                    datesOfBirth.add(dobAsDate);
+                    datesOfBirth.add(member.getDateOfBirth());
                 }
 
                 Integer effectiveAge = governingBody.getEffectiveAge(datesOfBirth);
