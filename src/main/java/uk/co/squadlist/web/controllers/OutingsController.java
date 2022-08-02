@@ -224,10 +224,9 @@ public class OutingsController {
         try {
             final uk.co.squadlist.model.swagger.Outing newOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
             if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
-                // TODO deal with repeats parameter
-                swaggerApiClientForLoggedInUser.createOuting(newOuting);
+                swaggerApiClientForLoggedInUser.createOuting(newOuting, outingDetails.getRepeatsCount());
             } else {
-                swaggerApiClientForLoggedInUser.createOuting(newOuting);
+                swaggerApiClientForLoggedInUser.createOuting(newOuting, null);
             }
 
             final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(swaggerApiClientForLoggedInUser.getSquad(newOuting.getSquad().getId()), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
@@ -235,7 +234,7 @@ public class OutingsController {
 
         } catch (ApiException e) {
             log.warn(e.getCode() + ": " + e.getResponseBody());
-            result.addError(new ObjectError("outing", e.getMessage())); // TODO error handling
+            result.addError(new ObjectError("outing",e.getResponseBody()));
             return renderNewOutingForm(outingDetails, loggedInMember, instance);
 
         } catch (Exception e) {
