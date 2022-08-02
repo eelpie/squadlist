@@ -25,9 +25,10 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.*;
+import uk.co.squadlist.web.exceptions.OutingClosedException;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Outing;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
@@ -212,7 +213,6 @@ public class OutingsController {
     @RequiresPermission(permission = Permission.ADD_OUTING)
     @RequestMapping(value = "/outings/new", method = RequestMethod.POST)
     public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -222,18 +222,20 @@ public class OutingsController {
         }
 
         try {
-            final Outing newOuting = buildOutingFromOutingDetails(outingDetails, instance, loggedInUserApi);
+            final uk.co.squadlist.model.swagger.Outing newOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
             if (outingDetails.getRepeats() != null && outingDetails.getRepeats() && outingDetails.getRepeatsCount() != null) {
-                loggedInUserApi.createOuting(newOuting, outingDetails.getRepeatsCount());
+                // TODO deal with repeats parameter
+                swaggerApiClientForLoggedInUser.createOuting(newOuting);
             } else {
-                loggedInUserApi.createOuting(newOuting, null);
+                swaggerApiClientForLoggedInUser.createOuting(newOuting);
             }
 
             final String outingsViewForNewOutingsSquadAndMonth = urlBuilder.outings(swaggerApiClientForLoggedInUser.getSquad(newOuting.getSquad().getId()), new DateTime(newOuting.getDate()).toString("yyyy-MM"));
             return viewFactory.redirectionTo(outingsViewForNewOutingsSquadAndMonth);
 
-        } catch (InvalidOutingException e) {
-            result.addError(new ObjectError("outing", e.getMessage()));
+        } catch (ApiException e) {
+            log.warn(e.getCode() + ": " + e.getResponseBody());
+            result.addError(new ObjectError("outing", e.getMessage())); // TODO error handling
             return renderNewOutingForm(outingDetails, loggedInMember, instance);
 
         } catch (Exception e) {
@@ -337,14 +339,14 @@ public class OutingsController {
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
         }
         try {
-            final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, loggedInUserApi);
+            final uk.co.squadlist.model.swagger.Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
             updatedOuting.setId(id);
 
-            loggedInUserApi.updateOuting(updatedOuting);
+            //loggedInUserApi.updateOuting(updatedOuting);
             return redirectToOuting(updatedOuting);
 
-        } catch (InvalidOutingException e) {
-            result.addError(new ObjectError("outing", e.getMessage()));
+        } catch (ApiException e) {
+            result.addError(new ObjectError("outing", e.getMessage())); // TODO error handling
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
 
         } catch (Exception e) {
@@ -382,6 +384,9 @@ public class OutingsController {
     }
 
     private ModelAndView redirectToOuting(final Outing updatedOuting) {
+        return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
+    }
+    private ModelAndView redirectToOuting(final uk.co.squadlist.model.swagger.Outing updatedOuting) {
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
@@ -426,11 +431,11 @@ public class OutingsController {
         return result;
     }
 
-    private Outing buildOutingFromOutingDetails(OutingDetails outingDetails, uk.co.squadlist.model.swagger.Instance instance, InstanceSpecificApiClient loggedInUserApi) throws UnknownSquadException {
-        Date date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone())).toDate();
-        Squad squad = outingDetails.getSquad() != null ? loggedInUserApi.getSquad(outingDetails.getSquad()) : null;  // TODO validation
+    private uk.co.squadlist.model.swagger.Outing buildOutingFromOutingDetails(OutingDetails outingDetails, uk.co.squadlist.model.swagger.Instance instance, DefaultApi api) throws ApiException {
+        DateTime date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone()));
+        uk.co.squadlist.model.swagger.Squad squad = outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null;  // TODO validation
         String notes = outingDetails.getNotes();
-        return new Outing(squad, date, notes);
+        return new uk.co.squadlist.model.swagger.Outing().squad(squad).date(date).notes(notes);
     }
 
 }
