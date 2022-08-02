@@ -38,7 +38,7 @@ public class RequiresOutingPermissionAspect {
             String outingId = (String) jp.getArgs()[0];
 
             Member loggedInMember = loggedInUserService.getLoggedInMember();
-            Outing outing = loggedInUserService.getSwaggerApiClientForLoggedInUser().outingsIdGet(outingId);
+            Outing outing = loggedInUserService.getSwaggerApiClientForLoggedInUser().getOuting(outingId);
 
             final boolean hasPermission = permissionsService.hasOutingPermission(loggedInMember, permission, outing);
             log.debug(methodSignature.getName() + " requires permission: " + permission + " for outing " + outingId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);

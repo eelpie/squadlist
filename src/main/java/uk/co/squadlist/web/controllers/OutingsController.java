@@ -22,7 +22,6 @@ import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.OutingClosedException;
@@ -140,7 +139,7 @@ public class OutingsController {
 
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
         final List<uk.co.squadlist.model.swagger.Squad> squads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId()); // TODO this is for the select squads dropdown and should arguble move to the navItems builder?
@@ -174,7 +173,7 @@ public class OutingsController {
     public void outingCsv(@PathVariable String id, HttpServletResponse response) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(outing.getSquad().getId());
         final Map<String, AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
 
@@ -249,7 +248,7 @@ public class OutingsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         String timeZone = instance.getTimeZone();
@@ -270,7 +269,7 @@ public class OutingsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
@@ -286,10 +285,10 @@ public class OutingsController {
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
     @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.POST)
     public ModelAndView deleteOuting(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        final Outing outing = loggedInUserApi.getOuting(id);
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
-        loggedInUserApi.deleteOuting(outing.getId());
+        swaggerApiClientForLoggedInUser.deleteOuting(outing.getId());
 
         final String exitUrl = outing.getSquad() == null ? urlBuilder.outings(outing.getSquad()) : urlBuilder.outingsUrl();
         return viewFactory.redirectionTo(exitUrl);
@@ -298,13 +297,13 @@ public class OutingsController {
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
     @RequestMapping(value = "/outings/{id}/close", method = RequestMethod.GET)
     public ModelAndView closeOuting(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final Outing outing = loggedInUserApi.getOuting(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         log.info("Closing outing: " + outing);
         outing.setClosed(true);
-        loggedInUserApi.updateOuting(outing);
+        swaggerApiClientForLoggedInUser.updateOuting(outing, id);
 
         return redirectToOuting(outing);
     }
@@ -312,13 +311,13 @@ public class OutingsController {
     @RequiresOutingPermission(permission = Permission.EDIT_OUTING)
     @RequestMapping(value = "/outings/{id}/reopen", method = RequestMethod.GET)
     public ModelAndView reopenOuting(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final Outing outing = loggedInUserApi.getOuting(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         log.info("Reopening outing: " + outing);
         outing.setClosed(false);
-        loggedInUserApi.updateOuting(outing);
+        swaggerApiClientForLoggedInUser.updateOuting(outing, id);
 
         return redirectToOuting(outing);
     }
@@ -329,10 +328,9 @@ public class OutingsController {
                                          @Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(id);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         if (result.hasErrors()) {
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
@@ -340,12 +338,11 @@ public class OutingsController {
         try {
             final uk.co.squadlist.model.swagger.Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
             updatedOuting.setId(id);
-
-            //loggedInUserApi.updateOuting(updatedOuting);
+            swaggerApiClientForLoggedInUser.updateOuting(updatedOuting, id);
             return redirectToOuting(updatedOuting);
 
         } catch (ApiException e) {
-            result.addError(new ObjectError("outing", e.getMessage())); // TODO error handling
+            result.addError(new ObjectError("outing", e.getResponseBody()));
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
 
         } catch (Exception e) {
@@ -364,7 +361,7 @@ public class OutingsController {
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.outingsIdGet(outingId);
+        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(outingId);
 
         if (!outing.isClosed()) {
             uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = (!Strings.isNullOrEmpty(availability)) ? swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), availability) : null;
