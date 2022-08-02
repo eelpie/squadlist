@@ -156,7 +156,7 @@ public class MembersController {
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
-    public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
+    public ModelAndView chancePasswordSubmit(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
         if (result.hasErrors()) {
             return renderChangePasswordForm(changePassword);
         }
