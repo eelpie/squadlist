@@ -19,15 +19,18 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.*;
+import uk.co.squadlist.web.exceptions.InvalidImageException;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.exceptions.UnknownInstanceException;
+import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.model.forms.MemberSquad;
@@ -41,8 +44,8 @@ import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -114,8 +117,10 @@ public class MembersController {
     public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
         InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
+        final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
         if (result.hasErrors()) {
             log.info("New member submission has errors: " + result.getAllErrors());
             return renderNewMemberForm();
@@ -124,28 +129,26 @@ public class MembersController {
         final String initialPassword = passwordGenerator.generateRandomPassword();
 
         try {
-            final uk.co.squadlist.web.model.Member newMember = loggedInUserApi.createMember(memberDetails.getFirstName(), // TODO should be a user API client
-                    memberDetails.getLastName(),
-                    requestedSquads,
-                    memberDetails.getEmailAddress(),
-                    initialPassword,
-                    null,
-                    memberDetails.getRole()
-            );
+            Member newMember = new Member().
+                    firstName(memberDetails.getFirstName()).
+                    lastName(memberDetails.getLastName()).
+                    squads(requestedSquads).
+                    emailAddress(memberDetails.getEmailAddress()).
+                    password(initialPassword).
+                    role(memberDetails.getRole());
 
-            Member loggedInMember = loggedInUserService.getLoggedInMember();
-            uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+            Member createdMember = swaggerApiClientForLoggedInUser.instancesInstanceMembersPost(newMember, instance.getId());
 
-            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
-            return viewFactory.getViewFor("memberAdded", swaggerInstance).
+            return viewFactory.getViewFor("memberAdded", instance).
                     addObject("title", "Member added").
                     addObject("navItems", navItems).
-                    addObject("member", newMember).
+                    addObject("member", createdMember).
                     addObject("initialPassword", initialPassword);
 
-        } catch (InvalidMemberException e) {
-            log.warn("Invalid member exception: " + e.getMessage());
+        } catch (ApiException e) {
+            log.warn("Invalid member exception: " + e.getResponseBody());
             result.addError(new ObjectError("memberDetails", e.getMessage()));
             return renderNewMemberForm();
         }
@@ -224,12 +227,11 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
         log.info("Received edit member request: " + memberDetails);
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
-        final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
+        final List<uk.co.squadlist.model.swagger.Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
         final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
         if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
@@ -243,14 +245,14 @@ public class MembersController {
             }
         }
 
-        Date updatedDateOfBirth = null;
+        DateTime updatedDateOfBirth = null;
         if (memberDetails.getDateOfBirthDay() != null &&
                 memberDetails.getDateOfBirthMonth() != null &&
                 memberDetails.getDateOfBirthYear() != null) {
             try {
                 updatedDateOfBirth = new DateTime(memberDetails.getDateOfBirthYear(),
                         memberDetails.getDateOfBirthMonth(), memberDetails.getDateOfBirthDay(), 0, 0, 0,
-                        DateTimeZone.UTC).toDate();
+                        DateTimeZone.UTC);
                 member.setDateOfBirth(updatedDateOfBirth);
             } catch (IllegalFieldValueException e) {
                 result.addError(new ObjectError("member.dateOfBirthYear", "Invalid date"));
@@ -271,7 +273,8 @@ public class MembersController {
         member.setDateOfBirth(updatedDateOfBirth);
 
         try {
-            member.setWeight(!Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null);  // TODO validate
+            Integer asInteger = !Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null;
+            member.setWeight(asInteger != null ? new BigDecimal(asInteger) : null);  // TODO validate
         } catch (IllegalArgumentException iae) {
             log.warn(iae);
         }
@@ -296,7 +299,18 @@ public class MembersController {
             member.setSquads(squads);
         }
 
-        loggedInUserApi.updateMemberDetails(member);
+        try {
+            swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
+        } catch (ApiException e) {
+            log.warn("Invalid member exception: " + e.getResponseBody());
+            result.addError(new ObjectError("memberDetails", e.getMessage()));
+
+            return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
+                    swaggerApiClientForLoggedInUser.membersIdGet(member.getId()),
+                    governingBody).
+                    addObject("invalidImage", false);
+        }
+
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
@@ -460,8 +474,8 @@ public class MembersController {
                 addObject("changePassword", changePassword);
     }
 
-    private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, InstanceSpecificApiClient squadlistApi) {
-        final List<Squad> squads = Lists.newArrayList();
+    private List<uk.co.squadlist.model.swagger.Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, DefaultApi api) {
+        final List<uk.co.squadlist.model.swagger.Squad> squads = Lists.newArrayList();
         if (memberDetails.getSquads() == null) {
             return squads;
         }
@@ -469,8 +483,8 @@ public class MembersController {
         for (MemberSquad requestedSquad : memberDetails.getSquads()) {
             log.info("Requested squad: " + requestedSquad);
             try {
-                squads.add(squadlistApi.getSquad(requestedSquad.getId()));  // TODO Validate instance
-            } catch (UnknownSquadException e) {
+                squads.add(api.getSquad(requestedSquad.getId()));  // TODO Validate instance
+            } catch (ApiException e) {
                 log.warn("Rejecting unknown squad: " + requestedSquad);
                 result.addError(new ObjectError("memberDetails.squad", "Unknown squad"));
             }
