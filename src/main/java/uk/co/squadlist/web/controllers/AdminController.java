@@ -85,11 +85,11 @@ public class AdminController {
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public ModelAndView member() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final List<uk.co.squadlist.model.swagger.Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
+        final List<Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
 
-        final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
         List<DisplayMember> activeDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
         List<DisplayMember> inactiveDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = displayMemberFactory.toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
@@ -143,7 +143,7 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/admins", method = RequestMethod.GET)
     public ModelAndView setAdminsPrompt() throws Exception {
-        uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -213,9 +213,9 @@ public class AdminController {
                 "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows);
     }
 
-    private List<uk.co.squadlist.model.swagger.Member> extractAdminUsersFrom(List<uk.co.squadlist.model.swagger.Member> members) {
-        List<uk.co.squadlist.model.swagger.Member> admins = Lists.newArrayList();
-        for (uk.co.squadlist.model.swagger.Member member : members) {
+    private List<Member> extractAdminUsersFrom(List<Member> members) {
+        List<Member> admins = Lists.newArrayList();
+        for (Member member : members) {
             if (member.isAdmin()) {
                 admins.add(member);
             }
@@ -230,7 +230,7 @@ public class AdminController {
     private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException, UnknownInstanceException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final uk.co.squadlist.model.swagger.Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
