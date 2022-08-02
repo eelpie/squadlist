@@ -338,14 +338,13 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
         return viewFactory.getViewFor("deleteMemberPrompt", swaggerInstance).
                 addObject("title", "Delete member - " + member.getDisplayName()).
                 addObject("navItems", navItems).
@@ -355,11 +354,11 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.POST)
     public ModelAndView delete(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
+        Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
 
-        loggedInUserApi.deleteMember(member);
+        swaggerApiClientForLoggedInUser.deleteMember(member.getId());
         return redirectToAdminScreen();
     }
 
