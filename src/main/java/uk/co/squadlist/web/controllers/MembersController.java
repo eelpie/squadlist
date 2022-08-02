@@ -487,12 +487,11 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.web.model.Member  member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
