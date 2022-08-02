@@ -27,7 +27,6 @@ import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.*;
@@ -70,7 +69,6 @@ public class AdminController {
                            GoverningBodyFactory governingBodyFactory,
                            LoggedInUserService loggedInUserService,
                            InstanceConfig instanceConfig,
-                           PermissionsService permissionsService,
                            NavItemsBuilder navItemsBuilder,
                            TextHelper textHelper,
                            DisplayMemberFactory displayMemberFactory) {
@@ -118,32 +116,29 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/instance", method = RequestMethod.GET)
     public ModelAndView instance() throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final InstanceDetails instanceDetails = new InstanceDetails();
-        instanceDetails.setMemberOrdering(loggedInUserApi.getInstance().getMemberOrdering());
-        instanceDetails.setGoverningBody(loggedInUserApi.getInstance().getGoverningBody());
+        instanceDetails.setMemberOrdering(instance.getMemberOrdering());
+        instanceDetails.setGoverningBody(instance.getGoverningBody());
         return renderEditInstanceDetailsForm(instanceDetails, instance);
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/instance", method = RequestMethod.POST)
     public ModelAndView instanceSubmit(@Valid @ModelAttribute("instanceDetails") InstanceDetails instanceDetails, BindingResult result) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         if (result.hasErrors()) {
-            return renderEditInstanceDetailsForm(instanceDetails, swaggerInstance);
+            return renderEditInstanceDetailsForm(instanceDetails, instance);
         }
 
-        uk.co.squadlist.web.model.Instance instance = loggedInUserApi.getInstance();
         instance.setMemberOrdering(instanceDetails.getMemberOrdering());  // TODO validate
         instance.setGoverningBody(instanceDetails.getGoverningBody());  // TODO validate
 
-        loggedInUserApi.updateInstance(instance);
+        swaggerApiClientForLoggedInUser.updateInstance(instance, instance.getId());
 
         return redirectToAdminScreen();
     }
