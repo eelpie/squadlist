@@ -308,7 +308,6 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -365,7 +364,6 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.GET)
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -373,7 +371,7 @@ public class MembersController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
 
         return viewFactory.getViewFor("makeMemberActivePrompt", instance).
                 addObject("member", member).
