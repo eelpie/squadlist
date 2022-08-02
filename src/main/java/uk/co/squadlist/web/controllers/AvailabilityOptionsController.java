@@ -62,7 +62,7 @@ public class AvailabilityOptionsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
+        final AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
 
         final AvailabilityOptionDetails availabilityOptionDetails = new AvailabilityOptionDetails();
         availabilityOptionDetails.setName(availabilityOption.getLabel());
@@ -77,7 +77,7 @@ public class AvailabilityOptionsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
+        final AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
 
         return renderDeleteForm(instance, loggedInUserService.getLoggedInMember(), availabilityOption);
     }
@@ -88,7 +88,7 @@ public class AvailabilityOptionsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
+        final AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
 
         if (!Strings.isNullOrEmpty(alternative)) {
             final AvailabilityOption alternativeOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), alternative);
@@ -143,7 +143,7 @@ public class AvailabilityOptionsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
+        final AvailabilityOption availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), id);
         if (result.hasErrors()) {
             return renderEditAvailabilityOptionForm(instance, availabilityOptionDetails, availabilityOption);
         }
@@ -173,7 +173,7 @@ public class AvailabilityOptionsController {
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
     }
 
-    private ModelAndView renderEditAvailabilityOptionForm(Instance instance, AvailabilityOptionDetails availabilityOptionDetails, uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditAvailabilityOptionForm(Instance instance, AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption availabilityOption) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
@@ -190,10 +190,10 @@ public class AvailabilityOptionsController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderDeleteForm(Instance instance, Member loggedInMember, uk.co.squadlist.model.swagger.AvailabilityOption selected) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderDeleteForm(Instance instance, Member loggedInMember, AvailabilityOption selected) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final List<uk.co.squadlist.model.swagger.AvailabilityOption> alternatives = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId());
+        final List<AvailabilityOption> alternatives = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId());
         alternatives.remove(selected);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
