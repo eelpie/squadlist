@@ -31,6 +31,7 @@ import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
+import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
@@ -51,19 +52,22 @@ public class SquadsController {
     private final LoggedInUserService loggedInUserService;
     private final NavItemsBuilder navItemsBuilder;
     private final InstanceConfig instanceConfig;
+    private final DisplayMemberFactory displayMemberFactory;
 
     @Autowired
     public SquadsController(UrlBuilder urlBuilder,
                             ViewFactory viewFactory,
                             LoggedInUserService loggedInUserService,
                             NavItemsBuilder navItemsBuilder,
-                            InstanceConfig instanceConfig
+                            InstanceConfig instanceConfig,
+                            DisplayMemberFactory displayMemberFactory
                             ) {
         this.urlBuilder = urlBuilder;
         this.viewFactory = viewFactory;
         this.loggedInUserService = loggedInUserService;
         this.navItemsBuilder = navItemsBuilder;
         this.instanceConfig = instanceConfig;
+        this.displayMemberFactory = displayMemberFactory;
     }
 
     @RequestMapping(value = "/squad/new", method = RequestMethod.GET)
@@ -191,8 +195,8 @@ public class SquadsController {
                 addObject("navItems", navItems).
                 addObject("squad", squad).
                 addObject("squadDetails", squadDetails).
-                addObject("squadMembers", squadMembers).
-                addObject("availableMembers", availableMembers);
+                addObject("squadMembers", displayMemberFactory.toDisplayMembers(squadMembers, loggedInUser)).
+                addObject("availableMembers", displayMemberFactory.toDisplayMembers(availableMembers, loggedInUser));
     }
 
 }

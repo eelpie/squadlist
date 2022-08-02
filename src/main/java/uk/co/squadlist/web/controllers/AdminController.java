@@ -86,10 +86,9 @@ public class AdminController {
     public ModelAndView member() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final List<Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
-
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
         List<DisplayMember> activeDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractActive(members), loggedInUser);
         List<DisplayMember> inactiveDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = displayMemberFactory.toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
@@ -101,7 +100,6 @@ public class AdminController {
                 addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).
-                addObject("members", members).
                 addObject("activeMembers", activeDisplayMembers).
                 addObject("inactiveMembers", inactiveDisplayMembers).
                 addObject("admins", adminUsers).
@@ -162,8 +160,8 @@ public class AdminController {
         return viewFactory.getViewFor("editAdmins", instance).
                 addObject("title", textHelper.text("edit.admins")).
                 addObject("navItems", navItems).
-                addObject("admins", adminMembers).
-                addObject("availableMembers", availableMembers);
+                addObject("admins", displayMemberFactory.toDisplayMembers(adminMembers, loggedInUser)).
+                addObject("availableMembers", displayMemberFactory.toDisplayMembers(availableMembers, loggedInUser));
     }
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
