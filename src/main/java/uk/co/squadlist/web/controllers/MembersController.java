@@ -115,7 +115,6 @@ public class MembersController {
     @RequiresPermission(permission = Permission.ADD_MEMBER)
     @RequestMapping(value = "/member/new", method = RequestMethod.POST)
     public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
@@ -333,12 +332,12 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.POST)
     public ModelAndView makeInactive(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         log.info("Making member inactive: " + id);
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
         member.setInactive(true);
-        loggedInUserApi.updateMemberDetails(member);
+        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
 
         return redirectToAdminScreen();
     }
@@ -391,12 +390,12 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.POST)
     public ModelAndView makeActive(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         log.info("Making member active: " + id);
-        final uk.co.squadlist.web.model.Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.membersIdGet(id);
         member.setInactive(false);
-        loggedInUserApi.updateMemberDetails(member);
+        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
         return redirectToAdminScreen();
     }
 
