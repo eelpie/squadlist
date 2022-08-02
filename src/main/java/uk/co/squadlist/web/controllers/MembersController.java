@@ -419,7 +419,7 @@ public class MembersController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newMember", instance).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsIdMembersGet(instance.getId())).
+                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
                 addObject("rolesOptions", ROLES_OPTIONS);
