@@ -155,24 +155,30 @@ public class MembersController {
 
     @RequestMapping(value = "/change-password", method = RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
-        return renderChangePasswordForm(new ChangePassword());
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
+        return renderChangePasswordForm(instance, loggedInUser, new ChangePassword());
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
     public ModelAndView changePasswordSubmit(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
+        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
         if (result.hasErrors()) {
-            return renderChangePasswordForm(changePassword);
+            return renderChangePasswordForm(instance, loggedInUser, changePassword);
         }
 
-        final Member member = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-
-        log.info("Requesting change password for member: " + member.getId());
-        if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
-            return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
+        log.info("Requesting change password for member: " + loggedInUser.getId());
+        if (loggedInUserApi.changePassword(loggedInUser.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(loggedInUser));
         } else {
             result.addError(new ObjectError("changePassword", "Change password failed"));
-            return renderChangePasswordForm(changePassword);
+            return renderChangePasswordForm(instance, loggedInUser, changePassword);
         }
     }
 
@@ -459,10 +465,8 @@ public class MembersController {
                 addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
-    private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
