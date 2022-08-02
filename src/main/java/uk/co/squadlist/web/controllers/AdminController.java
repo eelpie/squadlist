@@ -2,7 +2,6 @@ package uk.co.squadlist.web.controllers;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
@@ -19,7 +18,6 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.annotations.RequiresPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class AdminController {
@@ -172,13 +169,14 @@ public class AdminController {
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/admin/admins", method = RequestMethod.POST)
     public ModelAndView setAdmins(@RequestParam String admins) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         log.info("Setting admins request: " + admins);
-        final Set<String> updatedAdmins = Sets.newHashSet(COMMA_SPLITTER.split(admins).iterator());
+        final List<String> updatedAdmins = Lists.newArrayList(COMMA_SPLITTER.split(admins).iterator());
 
         log.info("Setting admins to: " + updatedAdmins);
-        loggedInUserApi.setAdmins(updatedAdmins);
+        swaggerApiClientForLoggedInUser.setInstanceAdmins(updatedAdmins, instance.getId());
 
         return redirectToAdminScreen();
     }
