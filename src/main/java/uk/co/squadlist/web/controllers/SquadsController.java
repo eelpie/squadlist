@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
@@ -23,7 +22,6 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.services.Permission;
@@ -73,7 +71,7 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/new", method = RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownInstanceException, SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -95,7 +93,7 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.GET)
-    public ModelAndView deletePrompt(@PathVariable String id) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    public ModelAndView deletePrompt(@PathVariable String id) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -122,7 +120,7 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.GET)
-    public ModelAndView editSquad(@PathVariable String id) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    public ModelAndView editSquad(@PathVariable String id) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -135,7 +133,7 @@ public class SquadsController {
     }
 
     @RequestMapping(value = "/squad/{id}/edit", method = RequestMethod.POST)
-    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws UnknownSquadException, IOException, HttpFetchException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView editSquadSubmit(@PathVariable String id, @Valid @ModelAttribute("squadDetails") SquadDetails squadDetails, BindingResult result) throws IOException, SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -162,7 +160,7 @@ public class SquadsController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewSquadForm(SquadDetails squadDetails) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
@@ -176,7 +174,7 @@ public class SquadsController {
                 addObject("squadDetails", squadDetails);
     }
 
-    private ModelAndView renderEditSquadForm(final uk.co.squadlist.model.swagger.Squad squad, final SquadDetails squadDetails, DefaultApi api, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditSquadForm(final uk.co.squadlist.model.swagger.Squad squad, final SquadDetails squadDetails, DefaultApi api, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final List<Member> squadMembers = api.getSquadMembers(squad.getId());
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final List<Member> availableMembers = api.instancesInstanceMembersGet(instance.getId());

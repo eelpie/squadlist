@@ -18,7 +18,6 @@ import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -101,7 +100,7 @@ public class LoginController {
         return viewFactory.redirectionTo(urlBuilder.loginUrl());
     }
 
-    private ModelAndView renderLoginScreen(boolean errors, String username) throws UnknownInstanceException, ApiException {
+    private ModelAndView renderLoginScreen(boolean errors, String username) throws ApiException {
         final Instance instance = swaggerApi.getInstance(instanceConfig.getInstance());
         return viewFactory.getViewFor("login", instance).
                 addObject("title", instance.getName()).

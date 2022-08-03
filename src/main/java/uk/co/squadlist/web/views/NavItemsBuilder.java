@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
@@ -40,7 +39,7 @@ public class NavItemsBuilder {
     }
 
     public List<NavItem> navItemsFor(uk.co.squadlist.model.swagger.Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
-                                     uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException, UnknownInstanceException, ApiException {
+                                     uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException, ApiException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), swaggerApiClientForLoggedInUser);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(instance).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
         final uk.co.squadlist.model.swagger.Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(swaggerApiClientForLoggedInUser.getSquads(instance.getId()));

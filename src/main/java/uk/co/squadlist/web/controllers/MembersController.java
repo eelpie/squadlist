@@ -26,7 +26,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
@@ -430,7 +429,7 @@ public class MembersController {
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -445,7 +444,7 @@ public class MembersController {
     }
 
     private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, String memberId, String title, Member member,
-                                                     GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+                                                     GoverningBody governingBody) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUser, member);
 
@@ -470,7 +469,7 @@ public class MembersController {
                 addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
-    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);

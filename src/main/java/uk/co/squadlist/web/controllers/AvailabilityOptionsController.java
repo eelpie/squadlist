@@ -19,7 +19,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.forms.AvailabilityOptionDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -58,7 +57,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/{id}/edit", method = RequestMethod.GET)
-    public ModelAndView editPrompt(@PathVariable String id) throws IOException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView editPrompt(@PathVariable String id) throws IOException, SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -73,7 +72,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/{id}/delete", method = RequestMethod.GET)
-    public ModelAndView deletePrompt(@PathVariable String id) throws HttpFetchException, IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView deletePrompt(@PathVariable String id) throws IOException, SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -105,7 +104,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/new", method = RequestMethod.GET)
-    public ModelAndView availability() throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    public ModelAndView availability() throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
@@ -117,7 +116,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/new", method = RequestMethod.POST)
-    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    public ModelAndView newSquadSubmit(@Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
@@ -139,7 +138,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/{id}/edit", method = RequestMethod.POST)
-    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws HttpFetchException, IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    public ModelAndView editPost(@PathVariable String id, @Valid @ModelAttribute("availabilityOptionDetails") AvailabilityOptionDetails availabilityOptionDetails, BindingResult result) throws IOException, SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -162,7 +161,7 @@ public class AvailabilityOptionsController {
         return redirectToAdmin();
     }
 
-    private ModelAndView renderNewAvailabilityOptionForm(Instance instance, Member loggedInMember, AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewAvailabilityOptionForm(Instance instance, Member loggedInMember, AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
@@ -173,7 +172,7 @@ public class AvailabilityOptionsController {
                 addObject("availabilityOptionDetails", availabilityOptionDetails);
     }
 
-    private ModelAndView renderEditAvailabilityOptionForm(Instance instance, AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption availabilityOption) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditAvailabilityOptionForm(Instance instance, AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption availabilityOption) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
@@ -190,7 +189,7 @@ public class AvailabilityOptionsController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderDeleteForm(Instance instance, Member loggedInMember, AvailabilityOption selected) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderDeleteForm(Instance instance, Member loggedInMember, AvailabilityOption selected) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final List<AvailabilityOption> alternatives = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId());

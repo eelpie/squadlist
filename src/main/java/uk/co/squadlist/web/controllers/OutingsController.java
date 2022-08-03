@@ -23,7 +23,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.OutingClosedException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
@@ -379,7 +378,7 @@ public class OutingsController {
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
-    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, Member loggedInMember, Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderNewOutingForm(OutingDetails outingDetails, Member loggedInMember, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
@@ -394,7 +393,7 @@ public class OutingsController {
                 addObject("outing", outingDetails);
     }
 
-    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance);

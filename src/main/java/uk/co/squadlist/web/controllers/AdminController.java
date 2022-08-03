@@ -22,7 +22,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownInstanceException;
 import uk.co.squadlist.web.model.forms.InstanceDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
@@ -225,7 +224,7 @@ public class AdminController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException, UnknownInstanceException {
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
