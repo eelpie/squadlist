@@ -1,11 +1,10 @@
 package uk.co.squadlist.web.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -83,14 +82,13 @@ public class EntryDetailsController {
     }
 
     @RequestMapping("/entrydetails/ajax")
-    public ModelAndView ajax(@RequestBody String json) throws Exception {
+    public ModelAndView ajax(@RequestBody JsonNode json) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<Member> selectedMembers = Lists.newArrayList();
 
-        JsonNode readTree = new ObjectMapper().readTree(json);
-        for (JsonNode jsonNode : readTree) {
+        for (JsonNode jsonNode : json) {
             selectedMembers.add(swaggerApiClientForLoggedInUser.getMember(jsonNode.asText()));
         }
 

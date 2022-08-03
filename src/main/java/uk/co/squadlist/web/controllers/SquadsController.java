@@ -22,7 +22,6 @@ import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
-import uk.co.squadlist.web.exceptions.UnknownSquadException;
 import uk.co.squadlist.web.model.forms.SquadDetails;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.urls.UrlBuilder;
@@ -109,7 +108,7 @@ public class SquadsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/squad/{id}/delete", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable String id) throws UnknownSquadException, SignedInMemberRequiredException, ApiException {
+    public ModelAndView delete(@PathVariable String id) throws SignedInMemberRequiredException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         final uk.co.squadlist.model.swagger.Squad squad = swaggerApiClientForLoggedInUser.getSquad(id);
