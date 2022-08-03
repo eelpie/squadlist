@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.localisation.GoverningBody;
@@ -33,8 +34,8 @@ public class EntryDetailsModelPopulator {
 	}
 
 	@RequiresSquadPermission(permission = Permission.VIEW_SQUAD_ENTRY_DETAILS)
-	public void populateModel(final Squad squadToShow, DefaultApi api, final ModelAndView mv, uk.co.squadlist.model.swagger.Member loggedInMember) throws ApiException {
-		List<uk.co.squadlist.model.swagger.Member> activeMembers = activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId()));
+	public void populateModel(final Squad squadToShow, DefaultApi api, final ModelAndView mv, Member loggedInMember) throws ApiException {
+		List<Member> activeMembers = activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId()));
 		List<DisplayMember> displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember);
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
@@ -43,15 +44,15 @@ public class EntryDetailsModelPopulator {
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody, Instance instance) throws ApiException {
-		List<uk.co.squadlist.model.swagger.Member> squadMembers = api.getSquadMembers(squadToShow.getId());
+		List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
 		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody, instance);
 	}
 
-	public List<List<String>> getEntryDetailsRows(List<uk.co.squadlist.model.swagger.Member> members, GoverningBody governingBody, Instance instance) {
+	public List<List<String>> getEntryDetailsRows(List<Member> members, GoverningBody governingBody, Instance instance) {
 		DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
 
 		final List<List<String>> rows = Lists.newArrayList();
-		for (uk.co.squadlist.model.swagger.Member member : members) {
+		for (Member member : members) {
 
 			final Integer effectiveAge = member.getDateOfBirth() != null ? governingBody.getEffectiveAge(member.getDateOfBirth()) : null;
     		final String ageGrade = effectiveAge != null ? governingBody.getAgeGrade(effectiveAge) : null;

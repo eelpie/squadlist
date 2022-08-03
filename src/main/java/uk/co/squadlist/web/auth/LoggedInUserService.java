@@ -36,7 +36,7 @@ public class LoggedInUserService {
         String token = getLoggedInMembersToken();
         if (token != null) {
             log.debug("Found signed in user token; need to verify: " + token);
-            uk.co.squadlist.model.swagger.Member verifiedMember = squadlistApiFactory.createSwaggerApiClientForToken(token).verifyPost();
+            Member verifiedMember = squadlistApiFactory.createSwaggerApiClientForToken(token).verifyPost();
             log.debug("Verified member: " + verifiedMember);
             return verifiedMember;
         }

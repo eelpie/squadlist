@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Boat;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.views.ViewFactory;
@@ -33,7 +34,7 @@ public class BoatsController {
     @RequestMapping("/boats/{id}")
     public ModelAndView outing(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Boat boat = swaggerApiClientForLoggedInUser.instancesInstanceBoatsIdGet(instance.getId(), id);
 

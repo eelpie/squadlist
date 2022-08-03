@@ -7,9 +7,9 @@ import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.model.swagger.*;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -53,14 +53,8 @@ public class UrlBuilder {
 	public String memberUrl(Member member) {
 		return memberUrl(member.getId());
 	}
-	public String memberUrl(uk.co.squadlist.model.swagger.Member member) {
-		return memberUrl(member.getId());
-	}
 
 	public String memberResetPasswordUrl(Member member) {
-		return memberUrl(member.getId()) + "/reset";
-	}
-	public String memberResetPasswordUrl(uk.co.squadlist.model.swagger.Member member) {
 		return memberUrl(member.getId()) + "/reset";
 	}
 
@@ -71,28 +65,16 @@ public class UrlBuilder {
 	public String makeActive(Member member) {
 		return memberUrl(member.getId()) + "/make-active";
 	}
-	public String makeActive(uk.co.squadlist.model.swagger.Member member) {
-		return memberUrl(member.getId()) + "/make-active";
-	}
 
 	public String makeInactive(Member member) {
-		return memberUrl(member.getId()) + "/make-inactive";
-	}
-	public String makeInactive(uk.co.squadlist.model.swagger.Member member) {
 		return memberUrl(member.getId()) + "/make-inactive";
 	}
 
 	public String delete(Member member) {
 		return memberUrl(member.getId()) + "/delete";
 	}
-	public String delete(uk.co.squadlist.model.swagger.Member member) {
-		return memberUrl(member.getId()) + "/delete";
-	}
 
 	public String delete(Squad squad) {
-		return applicationUrl("/squad/" + squad.getId() + "/delete");
-	}
-	public String delete(uk.co.squadlist.model.swagger.Squad squad) {
 		return applicationUrl("/squad/" + squad.getId() + "/delete");
 	}
 
@@ -107,9 +89,6 @@ public class UrlBuilder {
 	public String editSquadUrl(Squad squad) {
 		return applicationUrl("/squad/" + squad.getId() + "/edit");
 	}
-	public String editSquadUrl(uk.co.squadlist.model.swagger.Squad squad) {
-		return applicationUrl("/squad/" + squad.getId() + "/edit");
-	}
 
 	public String adminUrl() {
 		return applicationUrl("/admin");
@@ -122,61 +101,40 @@ public class UrlBuilder {
 	public String outingUrl(Outing outing) {
 		return outingsUrl() + "/" + outing.getId();
 	}
-	public String outingUrl(uk.co.squadlist.model.swagger.Outing outing) {
-		return outingsUrl() + "/" + outing.getId();
-	}
 
 	public String outingAvailabilityCsv(Outing outing) {
-		return outingUrl(outing) + ".csv";
-	}
-	public String outingAvailabilityCsv(uk.co.squadlist.model.swagger.Outing outing) {
 		return outingUrl(outing) + ".csv";
 	}
 
 	public String outingCloseUrl(Outing outing) {
 		return outingUrl(outing) + "/close";
 	}
-	public String outingCloseUrl(uk.co.squadlist.model.swagger.Outing outing) {
-		return outingUrl(outing) + "/close";
-	}
 
 	public String deleteOuting(Outing outing) {
-		return outingUrl(outing) + "/delete";
-	}
-	public String deleteOuting(uk.co.squadlist.model.swagger.Outing outing) {
 		return outingUrl(outing) + "/delete";
 	}
 
 	public String outingReopenUrl(Outing outing) {
 		return outingUrl(outing) + "/reopen";
 	}
-	public String outingReopenUrl(uk.co.squadlist.model.swagger.Outing outing) {
-		return outingUrl(outing) + "/reopen";
-	}
 
 	public String outingEditUrl(Outing outing) {
-		return outingUrl(outing) + "/edit";
-	}
-	public String outingEditUrl(uk.co.squadlist.model.swagger.Outing outing) {
 		return outingUrl(outing) + "/edit";
 	}
 
 	public String outings(Squad squad) {
 		return applicationUrl("/outings?squad=" + squad.getId());
 	}
-	public String outings(uk.co.squadlist.model.swagger.Squad squad) {
-		return applicationUrl("/outings?squad=" + squad.getId());
-	}
 
-	public String outings(uk.co.squadlist.model.swagger.Squad squad, String month) {
+	public String outings(Squad squad, String month) {
 		return outings(squad) + "&month=" + month;
 	}
 
-	public String availability(uk.co.squadlist.model.swagger.Squad squad) {
+	public String availability(Squad squad) {
 		return applicationUrl("/availability/" + squad.getId());
 	}
 
-	public String availability(uk.co.squadlist.model.swagger.Squad squad, String month) {
+	public String availability(Squad squad, String month) {
 		return availability(squad) + "?month=" + month;
 	}
 
@@ -185,9 +143,6 @@ public class UrlBuilder {
 	}
 
 	public String editMemberUrl(Member member) {
-		return memberUrl(member) + "/edit";
-	}
-	public String editMemberUrl(uk.co.squadlist.model.swagger.Member member) {
 		return memberUrl(member) + "/edit";
 	}
 
@@ -230,9 +185,6 @@ public class UrlBuilder {
 	public String contactsUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, contactsUrl());
 	}
-	public String contactsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
-		return appendSquad(prefferredSquad, contactsUrl());
-	}
 
 	public String entryDetailsUrl() {
 		return applicationUrl("/entrydetails");
@@ -240,18 +192,8 @@ public class UrlBuilder {
 	public String entryDetailsUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, entryDetailsUrl());
 	}
-	public String entryDetailsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
-		return appendSquad(prefferredSquad, entryDetailsUrl());
-	}
 
 	public String outingsUrl(Squad prefferredSquad) throws URISyntaxException {
-		final URIBuilder url = new URIBuilder(outingsUrl());
-		if (prefferredSquad != null) {
-			url.addParameter("squad", prefferredSquad.getId());
-		}
-		return url.build().toString();
-	}
-	public String outingsUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) throws URISyntaxException {
 		final URIBuilder url = new URIBuilder(outingsUrl());
 		if (prefferredSquad != null) {
 			url.addParameter("squad", prefferredSquad.getId());
@@ -277,9 +219,6 @@ public class UrlBuilder {
 	public String availabilityUrl(Squad prefferredSquad) {
 		return appendSquad(prefferredSquad, availabilityUrl());
 	}
-	public String availabilityUrl(uk.co.squadlist.model.swagger.Squad prefferredSquad) {
-		return appendSquad(prefferredSquad, availabilityUrl());
-	}
 
 	public String governingBody(GoverningBody governingBody) {
 		return applicationUrl("/governing-body/" + seoLinkBuilder.makeSeoLinkFor(governingBody.getName()));
@@ -300,14 +239,8 @@ public class UrlBuilder {
 	public String deleteAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/delete");
 	}
-	public String deleteAvailabilityOptionUrl(uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption) {
-		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/delete");
-	}
 
 	public String editAvailabilityOptionUrl(AvailabilityOption availabilityOption) {
-		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
-	}
-	public String editAvailabilityOptionUrl(uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption) {
 		return applicationUrl("/availability-option/" + availabilityOption.getId() + "/edit");
 	}
 
@@ -324,9 +257,6 @@ public class UrlBuilder {
 	}
 
 	private String appendSquad(Squad prefferredSquad, final String baseUrl) {
-		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
-	}
-	private String appendSquad(uk.co.squadlist.model.swagger.Squad prefferredSquad, final String baseUrl) {
 		return prefferredSquad != null ? baseUrl + "/" + prefferredSquad.getId() : baseUrl;
 	}
 

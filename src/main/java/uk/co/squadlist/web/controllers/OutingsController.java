@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
-import uk.co.squadlist.model.swagger.AvailabilityOption;
-import uk.co.squadlist.model.swagger.Instance;
-import uk.co.squadlist.model.swagger.Member;
-import uk.co.squadlist.model.swagger.OutingWithAvailability;
+import uk.co.squadlist.model.swagger.*;
 import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
@@ -27,7 +24,6 @@ import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.OutingClosedException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.exceptions.UnknownInstanceException;
-import uk.co.squadlist.web.model.Outing;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
@@ -90,9 +86,9 @@ public class OutingsController {
                                 @RequestParam(value = "month", required = false) String month) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
+        final Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final ModelAndView mv = viewFactory.getViewFor("outings", instance);
         if (squadToShow == null) {
             mv.addObject("title", "Outings");
@@ -336,7 +332,7 @@ public class OutingsController {
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
         }
         try {
-            final uk.co.squadlist.model.swagger.Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
+            final Outing updatedOuting = buildOutingFromOutingDetails(outingDetails, instance, swaggerApiClientForLoggedInUser);
             updatedOuting.setId(id);
             swaggerApiClientForLoggedInUser.updateOuting(updatedOuting, id);
             return redirectToOuting(updatedOuting);
@@ -380,9 +376,6 @@ public class OutingsController {
     }
 
     private ModelAndView redirectToOuting(final Outing updatedOuting) {
-        return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
-    }
-    private ModelAndView redirectToOuting(final uk.co.squadlist.model.swagger.Outing updatedOuting) {
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting));
     }
 
