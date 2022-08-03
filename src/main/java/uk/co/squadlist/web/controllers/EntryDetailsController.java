@@ -138,7 +138,7 @@ public class EntryDetailsController {
         viewFactory.getViewFor("entryDetails", instance);  // TODO This call is probably only been used for access control
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
-        final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(squadToShow.getId());
+        final List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squadToShow.getId());
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
         List<List<String>> entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody, instance);

@@ -85,7 +85,7 @@ public class AvailabilityController {
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
-            List<uk.co.squadlist.model.swagger.Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(squad.getId());
+            List<uk.co.squadlist.model.swagger.Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<uk.co.squadlist.model.swagger.Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
             mv.addObject("squad", squad).

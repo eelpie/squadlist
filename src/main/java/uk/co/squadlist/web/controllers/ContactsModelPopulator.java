@@ -61,7 +61,7 @@ public class ContactsModelPopulator {
 
     @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
     public void populateModel(final Squad squad, final ModelAndView mv, DefaultApi api, Member loggedInMember) throws ApiException {
-        List<Member> squadMembers = api.squadsIdMembersGet(squad.getId());
+        List<Member> squadMembers = api.getSquadMembers(squad.getId());
         Ordering<Member> byRoleThenName = byRoleThenFirstName; // TODO restore instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;
 
         final List<Member> activeMembers = byRoleThenName.sortedCopy(activeMemberFilter.extractActive(squadMembers));

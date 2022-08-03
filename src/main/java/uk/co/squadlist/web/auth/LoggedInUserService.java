@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Member;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
-import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
@@ -24,7 +22,6 @@ public class LoggedInUserService {
     private static final String SIGNED_IN_USER_ACCESS_TOKEN = "signedInAccessToken";
 
     private final SquadlistApiFactory squadlistApiFactory;
-    private final InstanceConfig instanceConfig;
     private final HttpServletRequest request;
 
     @Autowired
@@ -32,7 +29,6 @@ public class LoggedInUserService {
                                InstanceConfig instanceConfig,
                                HttpServletRequest request) throws IOException {
         this.squadlistApiFactory = squadlistApiFactory;
-        this.instanceConfig = instanceConfig;
         this.request = request;
     }
 
@@ -47,15 +43,6 @@ public class LoggedInUserService {
 
         log.debug("No signed in user token found");
         throw new SignedInMemberRequiredException();
-    }
-
-    public InstanceSpecificApiClient getApiClientForLoggedInUser() throws SignedInMemberRequiredException {
-        final String token = getLoggedInMembersToken();
-        if (token == null) {
-            log.debug("No signed in user token found");
-            throw new SignedInMemberRequiredException();
-        }
-        return new InstanceSpecificApiClient(squadlistApiFactory.createForToken(token), instanceConfig.getInstance());
     }
 
     public DefaultApi getSwaggerApiClientForLoggedInUser() throws SignedInMemberRequiredException {

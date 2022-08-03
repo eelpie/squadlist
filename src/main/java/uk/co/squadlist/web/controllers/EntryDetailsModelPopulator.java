@@ -34,7 +34,7 @@ public class EntryDetailsModelPopulator {
 
 	@RequiresSquadPermission(permission = Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public void populateModel(final Squad squadToShow, DefaultApi api, final ModelAndView mv, uk.co.squadlist.model.swagger.Member loggedInMember) throws ApiException {
-		List<uk.co.squadlist.model.swagger.Member> activeMembers = activeMemberFilter.extractActive(api.squadsIdMembersGet(squadToShow.getId()));
+		List<uk.co.squadlist.model.swagger.Member> activeMembers = activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId()));
 		List<DisplayMember> displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember);
 		mv.addObject("squad", squadToShow);
 		mv.addObject("title", squadToShow.getName() + " entry details");
@@ -43,7 +43,7 @@ public class EntryDetailsModelPopulator {
 
 	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody, Instance instance) throws ApiException {
-		List<uk.co.squadlist.model.swagger.Member> squadMembers = api.squadsIdMembersGet(squadToShow.getId());
+		List<uk.co.squadlist.model.swagger.Member> squadMembers = api.getSquadMembers(squadToShow.getId());
 		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody, instance);
 	}
 
