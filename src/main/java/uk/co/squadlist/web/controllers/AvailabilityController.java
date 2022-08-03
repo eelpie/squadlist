@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.services.Permission;
-import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.NavItemsBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
-import uk.co.squadlist.web.views.model.DisplayMember;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AvailabilityController {
@@ -74,11 +75,12 @@ public class AvailabilityController {
 
         uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        ModelAndView mv = viewFactory.getViewFor("availability", instance).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
-
+        List<Squad> squads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());   // TODO duplicate call in resolve squads
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
-        mv.addObject("navItems", navItems);
+
+        ModelAndView mv = viewFactory.getViewFor("availability", instance).
+                addObject("squads", squads).
+                addObject("navItems", navItems);
 
         final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
