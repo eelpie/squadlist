@@ -1,7 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
 import org.springframework.stereotype.Component;
-import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.views.model.DisplayMember;

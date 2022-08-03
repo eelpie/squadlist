@@ -7,8 +7,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.web.context.Context;
 
-import java.util.Locale;
-
 @Component
 public class TextHelper {    // TODO why does this exist; feelds like something which Spring can probably do itself?
 

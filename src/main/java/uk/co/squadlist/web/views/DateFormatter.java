@@ -1,17 +1,11 @@
 package uk.co.squadlist.web.views;
 
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import uk.co.squadlist.web.context.Context;
+import java.util.Date;
 
 public class DateFormatter {
 
