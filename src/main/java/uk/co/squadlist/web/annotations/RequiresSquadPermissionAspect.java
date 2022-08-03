@@ -8,10 +8,10 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.exceptions.PermissionDeniedException;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 
@@ -39,7 +39,7 @@ public class RequiresSquadPermissionAspect {
 
 			Member loggedInMember = loggedInUserService.getLoggedInMember();
 			final boolean hasPermission = permissionsService.hasSquadPermission(loggedInMember, permission, squad);
-			log.info(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
+			log.debug(methodSignature.getName() + " requires permission: "  + permission + " for squad " + squad + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);
 			
 			if (!hasPermission) {
 				throw new PermissionDeniedException();

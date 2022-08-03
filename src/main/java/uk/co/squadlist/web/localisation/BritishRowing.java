@@ -8,7 +8,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.Years;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -99,7 +98,7 @@ public class BritishRowing extends BaseGoverningBody implements GoverningBody {
 	}
 
 	@Override
-	public int getEffectiveAge(Date dateOfBirth) {
+	public int getEffectiveAge(DateTime dateOfBirth) {
 		final LocalDate localDateOfBirth = new LocalDate(dateOfBirth);
 		final LocalDate localEndOfYear = new LocalDate(new DateTime().withDate(DateTime.now().getYear(), 12, 31).toDate());
 
@@ -119,7 +118,7 @@ public class BritishRowing extends BaseGoverningBody implements GoverningBody {
 	}
 
 	@Override
-	public String getAgeGrade(Date dateOfBirth) {
+	public String getAgeGrade(DateTime dateOfBirth) {
 		return getAgeGrade(getEffectiveAge(dateOfBirth));
 	}
 
@@ -148,9 +147,9 @@ public class BritishRowing extends BaseGoverningBody implements GoverningBody {
 	}
 
 	@Override
-	public Integer getEffectiveAge(List<Date> datesOfBirth) {
+	public Integer getEffectiveAge(List<DateTime> datesOfBirth) {
 		Integer youngestAge = null;
-		for (Date dateOfBirth : datesOfBirth) {
+		for (DateTime dateOfBirth : datesOfBirth) {
 			if (dateOfBirth == null) {
 				return null;
 			}

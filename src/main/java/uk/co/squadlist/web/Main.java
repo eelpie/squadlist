@@ -22,7 +22,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.co.eelpieconsulting.spring.VelocityViewResolver;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.urls.UrlBuilder;
-import uk.co.squadlist.web.views.*;
+import uk.co.squadlist.web.views.CssHelper;
+import uk.co.squadlist.web.views.DateHelper;
+import uk.co.squadlist.web.views.SquadNamesHelper;
+import uk.co.squadlist.web.views.TextHelper;
 
 import javax.servlet.MultipartConfigElement;
 import java.util.Map;
@@ -89,8 +92,9 @@ public class Main {
 	}
 
 	@Bean
-	public VelocityViewResolver velocityViewResolver(CssHelper cssHelper, DateFormatter dateFormatter,
-													 DateHelper dateHelper, LoggedInUserService loggedInUserService,
+	public VelocityViewResolver velocityViewResolver(CssHelper cssHelper,
+													 DateHelper dateHelper,
+													 LoggedInUserService loggedInUserService,
 													 SquadNamesHelper squadNamesHelper,
 													 TextHelper textHelper,
 													 UrlBuilder urlBuilder) {
@@ -101,7 +105,6 @@ public class Main {
 
 		final Map<String, Object> attributes = Maps.newHashMap();
 		attributes.put("cssHelper", cssHelper);
-		attributes.put("dateFormatter", dateFormatter);
 		attributes.put("dateHelper", dateHelper);
 		attributes.put("loggedInUserService", loggedInUserService);
 		attributes.put("squadNamesHelper", squadNamesHelper);

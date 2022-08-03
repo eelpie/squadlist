@@ -7,9 +7,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
-import uk.co.squadlist.web.model.Instance;
-import uk.co.squadlist.web.model.Subscription;
-import uk.co.squadlist.web.model.Tariff;
 
 import java.util.List;
 

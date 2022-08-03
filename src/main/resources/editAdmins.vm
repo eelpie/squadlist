@@ -51,7 +51,7 @@
 							<div class="col-xs-5">
 								<ul id="sortable1" class="connectedSortable">
 									#foreach($member in $admins)
-										<li id="$member.id" class="ui-state-default">$member.displayName</li>
+										<li id="$member.member.id" class="ui-state-default">$member.displayName</li>
 									#end
 								</ul>
 							</div>
@@ -59,7 +59,7 @@
 							<div class="col-xs-5">
 								<ul id="sortable2" class="connectedSortable">										    
 									#foreach($member in $availableMembers)
-										<li id="$member.id" class="ui-state-highlight">$member.displayName</li>
+										<li id="$member.member.id" class="ui-state-highlight">$member.displayName</li>
 									#end
 								</ul>
 							</div>

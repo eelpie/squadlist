@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
@@ -63,7 +63,7 @@ public class MyOutingsController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("myOutings", instance).
-                addObject("member", swaggerApiClientForLoggedInUser.membersIdGet(loggedInUser.getId())).
+                addObject("member", swaggerApiClientForLoggedInUser.getMember(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", textHelper.text("my.outings")).
                 addObject("navItems", navItems).

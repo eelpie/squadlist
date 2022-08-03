@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Squad;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,30 +28,30 @@ public class PreferredSquadService {
         this.request = request;
     }
 
-    public uk.co.squadlist.model.swagger.Squad resolveSquad(String squadId, DefaultApi swaggerApiClientForLoggedInUser, uk.co.squadlist.model.swagger.Instance instance) throws ApiException {
+    public Squad resolveSquad(String squadId, DefaultApi swaggerApiClientForLoggedInUser, Instance instance) throws ApiException {
         if (!Strings.isNullOrEmpty(squadId)) {
-            final uk.co.squadlist.model.swagger.Squad selectedSquad = swaggerApiClientForLoggedInUser.getSquad(squadId);    // TODO can probably just make one list squads call
+            final Squad selectedSquad = swaggerApiClientForLoggedInUser.getSquad(squadId);    // TODO can probably just make one list squads call
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
+        return resolvedPreferredSquad(swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
     }
 
-    public uk.co.squadlist.model.swagger.Squad resolvedPreferredSquad(List<uk.co.squadlist.model.swagger.Squad> squads) {
+    public Squad resolvedPreferredSquad(List<Squad> squads) {
         final String selectedSquadId = (String) request.getSession().getAttribute(SELECTED_SQUAD);
         if (selectedSquadId != null) {
-            Optional<uk.co.squadlist.model.swagger.Squad> selectedSquad = squads.stream().filter(s -> s.getId().equals(selectedSquadId)).findFirst();
+            Optional<Squad> selectedSquad = squads.stream().filter(s -> s.getId().equals(selectedSquadId)).findFirst();
             if (selectedSquad.isPresent()) {
                 return selectedSquad.get();
             }
             clearPreferredSquad();
         }
 
-        Optional<uk.co.squadlist.model.swagger.Squad> firstInstanceSquad = squads.stream().findFirst();
+        Optional<Squad> firstInstanceSquad = squads.stream().findFirst();
         return firstInstanceSquad.orElse(null);
     }
 
-    public void setPreferredSquad(uk.co.squadlist.model.swagger.Squad selectedSquad) {
+    public void setPreferredSquad(Squad selectedSquad) {
         log.debug("Setting selected squad to: " + selectedSquad.getId());
         request.getSession().setAttribute(SELECTED_SQUAD, selectedSquad.getId());
 

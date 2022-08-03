@@ -17,16 +17,16 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
-import uk.co.squadlist.web.api.InstanceSpecificApiClient;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.*;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.model.Member;
-import uk.co.squadlist.web.model.Squad;
 import uk.co.squadlist.web.model.forms.ChangePassword;
 import uk.co.squadlist.web.model.forms.MemberDetails;
 import uk.co.squadlist.web.model.forms.MemberSquad;
@@ -39,9 +39,11 @@ import uk.co.squadlist.web.views.ViewFactory;
 import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.Date;
+import java.nio.file.Files;
 import java.util.List;
 
 @Controller
@@ -87,18 +89,17 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
     @RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member members = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("memberDetails", instance).
-                addObject("member", members).
-                addObject("title", members.getFirstName() + " " + members.getLastName()).
+                addObject("member", member).
+                addObject("title", member.getFirstName() + " " + member.getLastName()).
                 addObject("navItems", navItems).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
     }
@@ -106,83 +107,87 @@ public class MembersController {
     @RequiresPermission(permission = Permission.ADD_MEMBER)
     @RequestMapping(value = "/member/new", method = RequestMethod.GET)
     public ModelAndView newMember(@ModelAttribute("memberDetails") MemberDetails memberDetails) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
-        return renderNewMemberForm(loggedInUserApi);
+        return renderNewMemberForm();
     }
 
     @RequiresPermission(permission = Permission.ADD_MEMBER)
     @RequestMapping(value = "/member/new", method = RequestMethod.POST)
     public ModelAndView newMemberSubmit(@Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
+        final List<Squad> requestedSquads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
         if (result.hasErrors()) {
             log.info("New member submission has errors: " + result.getAllErrors());
-            return renderNewMemberForm(loggedInUserApi);
+            return renderNewMemberForm();
         }
 
         final String initialPassword = passwordGenerator.generateRandomPassword();
 
         try {
-            final Member newMember = loggedInUserApi.createMember(memberDetails.getFirstName(), // TODO should be a user API client
-                    memberDetails.getLastName(),
-                    requestedSquads,
-                    memberDetails.getEmailAddress(),
-                    initialPassword,
-                    null,
-                    memberDetails.getRole()
-            );
+            Member newMember = new Member().
+                    firstName(memberDetails.getFirstName()).
+                    lastName(memberDetails.getLastName()).
+                    squads(requestedSquads).
+                    emailAddress(memberDetails.getEmailAddress()).
+                    password(initialPassword).
+                    role(memberDetails.getRole());
 
-            Member loggedInMember = loggedInUserService.getLoggedInMember();
-            uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+            Member createdMember = swaggerApiClientForLoggedInUser.instancesInstanceMembersPost(newMember, instance.getId());
 
-            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
-            return viewFactory.getViewFor("memberAdded", swaggerInstance).
+            return viewFactory.getViewFor("memberAdded", instance).
                     addObject("title", "Member added").
                     addObject("navItems", navItems).
-                    addObject("member", newMember).
+                    addObject("member", createdMember).
                     addObject("initialPassword", initialPassword);
 
-        } catch (InvalidMemberException e) {
-            log.warn("Invalid member exception: " + e.getMessage());
+        } catch (ApiException e) {
+            log.warn("Invalid member exception: " + e.getResponseBody());
             result.addError(new ObjectError("memberDetails", e.getMessage()));
-            return renderNewMemberForm(loggedInUserApi);
+            return renderNewMemberForm();
         }
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.GET)
     public ModelAndView changePassword() throws Exception {
-        return renderChangePasswordForm(new ChangePassword());
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
+        return renderChangePasswordForm(instance, loggedInUser, new ChangePassword());
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
-    public ModelAndView editMember(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
+    public ModelAndView changePasswordSubmit(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
         if (result.hasErrors()) {
-            return renderChangePasswordForm(changePassword);
+            return renderChangePasswordForm(instance, loggedInUser, changePassword);
         }
 
-        final Member member = loggedInUserService.getLoggedInMember();
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        log.info("Requesting change password for member: " + loggedInUser.getId());
+        try {
+            swaggerApiClientForLoggedInUser.changePassword(loggedInUser.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(loggedInUser));
 
-        log.info("Requesting change password for member: " + member.getId());
-        if (loggedInUserApi.changePassword(member.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword())) {
-            return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
-        } else {
+        } catch (ApiException e) {
             result.addError(new ObjectError("changePassword", "Change password failed"));
-            return renderChangePasswordForm(changePassword);
+            return renderChangePasswordForm(instance, loggedInUser, changePassword);
         }
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
     public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
         final MemberDetails memberDetails = new MemberDetails();
         memberDetails.setFirstName(member.getFirstName());
@@ -194,7 +199,7 @@ public class MembersController {
         memberDetails.setDateOfBirthMonth(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getMonthOfYear() : null);
         memberDetails.setDateOfBirthYear(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getYear() : null);
 
-        memberDetails.setWeight(member.getWeight() != null ? Integer.toString(member.getWeight()) : null);
+        memberDetails.setWeight(member.getWeight() != null ? Integer.toString(member.getWeight().intValue()) : null);
         memberDetails.setEmailAddress(member.getEmailAddress());
         memberDetails.setContactNumber(member.getContactNumber());
         memberDetails.setRegistrationNumber(member.getRegistrationNumber());
@@ -202,8 +207,6 @@ public class MembersController {
         memberDetails.setSculling(member.getSculling());
         memberDetails.setScullingPoints(member.getScullingPoints());
         memberDetails.setSweepOarSide(member.getSweepOarSide());
-
-        memberDetails.setPostcode(member.getAddress() != null ? member.getAddress().get("postcode") : null);
 
         List<MemberSquad> memberSquads = Lists.newArrayList();
         for (Squad squad : member.getSquads()) {
@@ -218,7 +221,9 @@ public class MembersController {
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
-        return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member, loggedInUserApi, governingBody).
+        return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
+                swaggerApiClientForLoggedInUser.getMember(member.getId()),
+                governingBody).
                 addObject("invalidImage", invalidImage);
     }
 
@@ -226,12 +231,11 @@ public class MembersController {
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
         log.info("Received edit member request: " + memberDetails);
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member member = loggedInUserApi.getMember(id);
-        final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, loggedInUserApi);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
+        final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
         final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
         if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
@@ -245,14 +249,14 @@ public class MembersController {
             }
         }
 
-        Date updatedDateOfBirth = null;
+        DateTime updatedDateOfBirth = null;
         if (memberDetails.getDateOfBirthDay() != null &&
                 memberDetails.getDateOfBirthMonth() != null &&
                 memberDetails.getDateOfBirthYear() != null) {
             try {
                 updatedDateOfBirth = new DateTime(memberDetails.getDateOfBirthYear(),
                         memberDetails.getDateOfBirthMonth(), memberDetails.getDateOfBirthDay(), 0, 0, 0,
-                        DateTimeZone.UTC).toDate();
+                        DateTimeZone.UTC);
                 member.setDateOfBirth(updatedDateOfBirth);
             } catch (IllegalFieldValueException e) {
                 result.addError(new ObjectError("member.dateOfBirthYear", "Invalid date"));
@@ -260,7 +264,8 @@ public class MembersController {
         }
 
         if (result.hasErrors()) {
-            return renderEditMemberDetailsForm(memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(), member, loggedInUserApi, governingBody);
+            return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
+                    swaggerApiClientForLoggedInUser.getMember(member.getId()), governingBody);
         }
 
         log.info("Updating member details: " + member.getId());
@@ -272,7 +277,8 @@ public class MembersController {
         member.setDateOfBirth(updatedDateOfBirth);
 
         try {
-            member.setWeight(!Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null);  // TODO validate
+            Integer asInteger = !Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null;
+            member.setWeight(asInteger != null ? new BigDecimal(asInteger) : null);  // TODO validate
         } catch (IllegalArgumentException iae) {
             log.warn(iae);
         }
@@ -287,7 +293,7 @@ public class MembersController {
         member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
         member.setSweepOarSide(memberDetails.getSweepOarSide());
 
-        final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
+        final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), swaggerApiClientForLoggedInUser.getMember(member.getId()));
         if (canChangeRole) {
             member.setRole(memberDetails.getRole());
         }
@@ -297,23 +303,31 @@ public class MembersController {
             member.setSquads(squads);
         }
 
-        member.getAddress().put("postcode", memberDetails.getPostcode());
+        try {
+            swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
+        } catch (ApiException e) {
+            log.warn("Invalid member exception: " + e.getResponseBody());
+            result.addError(new ObjectError("memberDetails", e.getMessage()));
 
-        loggedInUserApi.updateMemberDetails(member);
+            return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
+                    swaggerApiClientForLoggedInUser.getMember(member.getId()),
+                    governingBody).
+                    addObject("invalidImage", false);
+        }
+
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
         return viewFactory.getViewFor("makeMemberInactivePrompt", instance).
                 addObject("member", member).
                 addObject("title", "Make member inactive - " + member.getDisplayName()).
@@ -323,12 +337,12 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.POST)
     public ModelAndView makeInactive(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         log.info("Making member inactive: " + id);
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
         member.setInactive(true);
-        loggedInUserApi.updateMemberDetails(member);
+        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
 
         return redirectToAdminScreen();
     }
@@ -336,14 +350,13 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, swaggerInstance);
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
         return viewFactory.getViewFor("deleteMemberPrompt", swaggerInstance).
                 addObject("title", "Delete member - " + member.getDisplayName()).
                 addObject("navItems", navItems).
@@ -353,26 +366,25 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.POST)
     public ModelAndView delete(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        final Member member = loggedInUserApi.getMember(id);
+        Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
-        loggedInUserApi.deleteMember(member);
+        swaggerApiClientForLoggedInUser.deleteMember(member.getId());
         return redirectToAdminScreen();
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.GET)
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
         return viewFactory.getViewFor("makeMemberActivePrompt", instance).
                 addObject("member", member).
@@ -383,36 +395,41 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.POST)
     public ModelAndView makeActive(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         log.info("Making member active: " + id);
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
         member.setInactive(false);
-        loggedInUserApi.updateMemberDetails(member);
+        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
         return redirectToAdminScreen();
     }
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit/profileimage", method = RequestMethod.POST)
-    public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws UnknownMemberException, IOException, SignedInMemberRequiredException {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
+    public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws IOException, SignedInMemberRequiredException, ApiException {
+        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
         log.info("Received update member profile image request: " + id);
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
         final MultipartFile file = request.getFile("image");
 
         log.info("Submitting updated member: " + member);
+        File imageFile = Files.createTempFile("profileimage", ".tmp").toFile();
+        file.transferTo(imageFile);
         try {
-            loggedInUserApi.updateMemberProfileImage(member, file.getBytes());
-        } catch (InvalidImageException e) {
+            swaggerApiClientForLoggedInUser.updateProfileImage(member.getId(), imageFile);
+            imageFile.delete();
+
+        } catch (ApiException e) {
             log.warn("Invalid image file submitted");
+            imageFile.delete();
             return viewFactory.redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
         }
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm(InstanceSpecificApiClient loggedInUserApi) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
+    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -420,18 +437,18 @@ public class MembersController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("newMember", instance).
-                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("title", "Adding a new member").
                 addObject("navItems", navItems).
                 addObject("rolesOptions", ROLES_OPTIONS);
     }
 
-    private ModelAndView renderEditMemberDetailsForm(MemberDetails memberDetails, String memberId, String title, Member member, InstanceSpecificApiClient loggedInUserApi, GoverningBody governingBody) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
-        final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), member);
-
+    private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, String memberId, String title, Member member,
+                                                     GoverningBody governingBody) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUser, member);
+
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -440,7 +457,7 @@ public class MembersController {
                 addObject("memberId", memberId).
                 addObject("title", title).
                 addObject("navItems", navItems).
-                addObject("squads", loggedInUserApi.getSquads()).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("governingBody", governingBody).
                 addObject("genderOptions", GENDER_OPTIONS).
                 addObject("pointsOptions", governingBody.getPointsOptions()).
@@ -452,10 +469,8 @@ public class MembersController {
                 addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
-    private ModelAndView renderChangePasswordForm(ChangePassword changePassword) throws SignedInMemberRequiredException, UnknownInstanceException, URISyntaxException, ApiException {
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -466,8 +481,8 @@ public class MembersController {
                 addObject("changePassword", changePassword);
     }
 
-    private List<Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, InstanceSpecificApiClient squadlistApi) {
-        final List<Squad> squads = Lists.newArrayList();
+    private List<uk.co.squadlist.model.swagger.Squad> extractAndValidateRequestedSquads(MemberDetails memberDetails, BindingResult result, DefaultApi api) {
+        final List<uk.co.squadlist.model.swagger.Squad> squads = Lists.newArrayList();
         if (memberDetails.getSquads() == null) {
             return squads;
         }
@@ -475,8 +490,8 @@ public class MembersController {
         for (MemberSquad requestedSquad : memberDetails.getSquads()) {
             log.info("Requested squad: " + requestedSquad);
             try {
-                squads.add(squadlistApi.getSquad(requestedSquad.getId()));  // TODO Validate instance
-            } catch (UnknownSquadException e) {
+                squads.add(api.getSquad(requestedSquad.getId()));  // TODO Validate instance
+            } catch (ApiException e) {
                 log.warn("Rejecting unknown squad: " + requestedSquad);
                 result.addError(new ObjectError("memberDetails.squad", "Unknown squad"));
             }
@@ -488,12 +503,11 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 
@@ -506,14 +520,13 @@ public class MembersController {
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.POST)
     public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
-        InstanceSpecificApiClient loggedInUserApi = loggedInUserService.getApiClientForLoggedInUser();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final Member member = loggedInUserApi.getMember(id);
+        final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
-        final String newPassword = loggedInUserApi.resetMemberPassword(member);
+        final String newPassword = swaggerApiClientForLoggedInUser.resetMemberPassword(instance.getId(), member.getId());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance);
 

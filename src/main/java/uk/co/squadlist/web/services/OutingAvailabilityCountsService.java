@@ -7,6 +7,7 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.AvailabilityOption;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
+import uk.co.squadlist.model.swagger.OutingWithSquadAvailability;
 import uk.co.squadlist.web.views.DateHelper;
 
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.Map;
 @Component
 public class OutingAvailabilityCountsService {
 
-	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadOutings) {
+	public Map<String, Map<String, Long>> buildOutingAvailabilityCounts(List<OutingWithSquadAvailability> squadOutings) {
 		final Map<String, Map<String, Long>> results = Maps.newHashMap();
 		
-		for (uk.co.squadlist.model.swagger.OutingWithSquadAvailability outingWithAvailability : squadOutings) {
+		for (OutingWithSquadAvailability outingWithAvailability : squadOutings) {
 			final AtomicLongMap<String> counts = AtomicLongMap.create();			
-			final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
+			final Map<String, AvailabilityOption> membersAvailabilityForThisOuting = outingWithAvailability.getAvailability();
 			for (AvailabilityOption availabilityOption : membersAvailabilityForThisOuting.values()) {
 				if (availabilityOption != null && availabilityOption.getColour() != null) {	// Should the API persist these?
 					counts.addAndGet(availabilityOption.getColour(), 1);

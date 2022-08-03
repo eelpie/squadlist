@@ -11,7 +11,7 @@ import java.util.List;
 @Component
 public class PasswordGenerator {
 
-    private SquadlistApiFactory squadlistApiFactory;
+    private final SquadlistApiFactory squadlistApiFactory;
 
     @Autowired
     public PasswordGenerator(SquadlistApiFactory squadlistApiFactory) {

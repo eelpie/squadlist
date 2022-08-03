@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.views.model;
 
-import uk.co.squadlist.web.model.Member;
+import com.google.common.base.Strings;
+import uk.co.squadlist.model.swagger.Member;
 
 public class DisplayMember {
 
@@ -18,6 +19,14 @@ public class DisplayMember {
 
     public boolean isEditable() {
         return editable;
+    }
+
+    public String getDisplayName() {
+        if (!Strings.isNullOrEmpty(member.getKnownAs())) {
+            return member.getKnownAs();
+        } else {
+            return member.getFirstName() + " " + member.getLastName();
+        }
     }
 
 }

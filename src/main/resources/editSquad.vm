@@ -64,7 +64,7 @@
 							<div class="col-xs-5">
 								<ul id="sortable1" class="connectedSortable">
 									#foreach($member in $squadMembers)
-										<li id="$member.id" class="ui-state-default">$member.displayName #if($member.inactive) (inactive)#end</li>
+										<li id="$member.member.id" class="ui-state-default">$member.displayName #if($member.member.inactive) (inactive)#end</li>
 									#end
 								</ul>
 							</div>
@@ -72,7 +72,7 @@
 							<div class="col-xs-5">
 								<ul id="sortable2" class="connectedSortable">										    
 									#foreach($member in $availableMembers)
-										<li id="$member.id" class="ui-state-highlight">$member.displayName #if($member.inactive) (inactive)#end</li>
+										<li id="$member.member.id" class="ui-state-highlight">$member.displayName #if($member.member.inactive) (inactive)#end</li>
 									#end
 								</ul>
 							</div>
