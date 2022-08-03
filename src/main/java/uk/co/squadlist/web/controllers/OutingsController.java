@@ -127,7 +127,7 @@ public class OutingsController {
 
         mv.addObject("outings", squadOutings);
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
-        mv.addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
+        mv.addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
 
         mv.addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
         return mv;
@@ -142,7 +142,7 @@ public class OutingsController {
         uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
-        final List<uk.co.squadlist.model.swagger.Squad> squads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId()); // TODO this is for the select squads dropdown and should arguble move to the navItems builder?
+        final List<uk.co.squadlist.model.swagger.Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId()); // TODO this is for the select squads dropdown and should arguble move to the navItems builder?
 
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.squadsIdMembersGet(outing.getSquad().getId());
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
@@ -395,7 +395,7 @@ public class OutingsController {
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
                 addObject("navItems", navItems).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("squad", squad).
                 addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
                 addObject("outing", outingDetails);
@@ -409,7 +409,7 @@ public class OutingsController {
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").
                 addObject("navItems", navItems).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("squad", outing.getSquad()).
                 addObject("outing", outingDetails).
                 addObject("outingObject", outing).

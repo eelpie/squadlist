@@ -86,7 +86,7 @@ public class SquadsController {
 
         try {
             SquadSubmission submission = new SquadSubmission().instance(instance).name(squadDetails.getName());
-            swaggerApiClientForLoggedInUser.squadsPostWithHttpInfo(submission);
+            swaggerApiClientForLoggedInUser.createSquad(submission);
             return viewFactory.redirectionTo(urlBuilder.adminUrl());
 
         } catch (ApiException e) {  // TODO more precise catch

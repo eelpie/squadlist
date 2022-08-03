@@ -96,7 +96,7 @@ public class AdminController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("admin", instance).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).

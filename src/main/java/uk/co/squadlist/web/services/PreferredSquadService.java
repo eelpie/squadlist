@@ -33,7 +33,7 @@ public class PreferredSquadService {
             setPreferredSquad(selectedSquad);
             return selectedSquad;
         }
-        return resolvedPreferredSquad(swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
+        return resolvedPreferredSquad(swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
     }
 
     public uk.co.squadlist.model.swagger.Squad resolvedPreferredSquad(List<uk.co.squadlist.model.swagger.Squad> squads) {

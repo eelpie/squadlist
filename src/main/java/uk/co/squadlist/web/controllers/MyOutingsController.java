@@ -63,7 +63,7 @@ public class MyOutingsController {
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "my.outings", swaggerApiClientForLoggedInUser, instance);
 
         return viewFactory.getViewFor("myOutings", instance).
-                addObject("member", swaggerApiClientForLoggedInUser.membersIdGet(loggedInUser.getId())).
+                addObject("member", swaggerApiClientForLoggedInUser.getMember(loggedInUser.getId())).
                 addObject("outings", availabilityFor).
                 addObject("title", textHelper.text("my.outings")).
                 addObject("navItems", navItems).

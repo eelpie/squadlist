@@ -51,7 +51,7 @@ public class ContactsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
-        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());
+        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
@@ -69,7 +69,7 @@ public class ContactsController {
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         final uk.co.squadlist.model.swagger.Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
-        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());
+        final List<uk.co.squadlist.model.swagger.Squad> allSquads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance);
 

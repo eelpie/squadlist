@@ -66,7 +66,7 @@ public class FeedsController {
             throw new UnknownMemberException();
         }
 
-        final Member member = squadlistSwaggerApi.membersIdGet(user);
+        final Member member = squadlistSwaggerApi.getMember(user);
         final Instance instance = squadlistSwaggerApi.getInstance(instanceConfig.getInstance());
 
         final List<OutingWithAvailability> availabilityFor = squadlistSwaggerApi.getMemberAvailability(member.getId(),

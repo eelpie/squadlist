@@ -65,7 +65,7 @@ public class AvailabilityController {
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
                 addObject("navItems", navItems).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId()));
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
     }
 
     @RequestMapping("/availability/{squadId}")
@@ -75,7 +75,7 @@ public class AvailabilityController {
 
         uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        List<Squad> squads = swaggerApiClientForLoggedInUser.squadsGet(instance.getId());   // TODO duplicate call in resolve squads
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());   // TODO duplicate call in resolve squads
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
 
         ModelAndView mv = viewFactory.getViewFor("availability", instance).

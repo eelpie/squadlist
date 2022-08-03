@@ -37,7 +37,7 @@ public class RequiresMemberPermissionAspect {
 			String memberId = (String) jp.getArgs()[0];
 
 			final Member loggedInMember = loggedInUserService.getLoggedInMember();
-			final Member member = loggedInUserService.getSwaggerApiClientForLoggedInUser().membersIdGet(memberId);
+			final Member member = loggedInUserService.getSwaggerApiClientForLoggedInUser().getMember(memberId);
 
 			final boolean hasPermission = permissionsService.hasMemberPermission(loggedInMember, permission, member);
 			log.debug(methodSignature.getName() + " requires permission: "  + permission + " for member " + memberId + "; logged in user is: " + loggedInMember.getUsername() + ": " + hasPermission);

@@ -74,7 +74,7 @@ public class EntryDetailsController {
         final ModelAndView mv = viewFactory.getViewFor("entryDetails", instance).
                 addObject("title", "Entry details").
                 addObject("navItems", navItems).
-                addObject("squads", swaggerApiClientForLoggedInUser.squadsGet(instance.getId())).
+                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
                 addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
         entryDetailsModelPopulator.populateModel(squadToShow, swaggerApiClientForLoggedInUser, mv, loggedInMember);
         return mv;
@@ -89,7 +89,7 @@ public class EntryDetailsController {
 
         JsonNode readTree = new ObjectMapper().readTree(json);
         for (JsonNode jsonNode : readTree) {
-            selectedMembers.add(swaggerApiClientForLoggedInUser.membersIdGet(jsonNode.asText()));
+            selectedMembers.add(swaggerApiClientForLoggedInUser.getMember(jsonNode.asText()));
         }
 
         List<String> rowingPoints = Lists.newArrayList();
@@ -156,7 +156,7 @@ public class EntryDetailsController {
         while (iterator.hasNext()) {
             final String selectedMemberId = iterator.next();
             log.info("Selected member id: " + selectedMemberId);
-            selectedMembers.add(swaggerApiClientForLoggedInUser.membersIdGet(selectedMemberId));
+            selectedMembers.add(swaggerApiClientForLoggedInUser.getMember(selectedMemberId));
         }
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
