@@ -25,7 +25,6 @@ public class CsvOutputRenderer {
     	PrintWriter writer = response.getWriter();
 		writer.print(output);
 		writer.flush();
-		return;
 	}
 
 }
