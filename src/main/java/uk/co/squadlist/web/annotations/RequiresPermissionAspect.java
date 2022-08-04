@@ -29,7 +29,7 @@ public class RequiresPermissionAspect {
 		this.loggedInUserService = loggedInUserService;
 		this.permissionsService = permissionsService;
 	}
-
+	
 
 	@Before("@annotation( requiresPermissionAnnotation ) ")
 	public void processSystemRequest(final JoinPoint jp, RequiresPermission requiresPermissionAnnotation) throws Throwable {		

@@ -18,7 +18,7 @@
 				<div class="alert alert-warning">$error</div>
 			#end
 									
-			<form method="POST" action="$urlBuilder.editMemberUrl($memberId)" class="form-horizontal" accept-charset="UTF-8">				
+			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal" accept-charset="UTF-8">
 				#inputRow("member.firstName", $text.text('first.name'))
 				#inputRow("member.lastName",  $text.text('last.name'))
 				#inputRow("member.knownAs",  $text.text('known.as'))
@@ -109,7 +109,7 @@
 					</div>
 					<div class="controls">
 						<button type="submit" class="btn btn-primary">$text.text('update.details')</button>
-						#cancel($urlBuilder.memberUrl($memberId))			
+						#cancel($urlBuilder.memberUrl($member))
 					</div>
 				</div>				
 			</form>
@@ -120,7 +120,7 @@
 		
 	<div class="row">
 		<div class="col-xs-12">
-			<form class="form-horizontal" method="POST" action="$urlBuilder.editMemberUrl($memberId)/profileimage"  enctype="multipart/form-data" />
+			<form class="form-horizontal" method="POST" action="$urlBuilder.editMemberUrl($member)/profileimage"  enctype="multipart/form-data" />
 				<div class="control-group">
 					<div class="col-sm-2">
 					    <label class="col-sm-2 control-label">$text.text('profile.image')</label>

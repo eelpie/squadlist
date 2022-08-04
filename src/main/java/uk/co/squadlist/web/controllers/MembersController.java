@@ -221,9 +221,10 @@ public class MembersController {
 
         GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
 
-        return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
-                swaggerApiClientForLoggedInUser.getMember(member.getId()),
-                governingBody).
+        return renderEditMemberDetailsForm(instance,
+                memberDetails,
+                member,
+                governingBody, swaggerApiClientForLoggedInUser).
                 addObject("invalidImage", invalidImage);
     }
 
@@ -264,8 +265,8 @@ public class MembersController {
         }
 
         if (result.hasErrors()) {
-            return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
-                    swaggerApiClientForLoggedInUser.getMember(member.getId()), governingBody);
+            return renderEditMemberDetailsForm(instance, memberDetails,
+                    swaggerApiClientForLoggedInUser.getMember(member.getId()), governingBody, swaggerApiClientForLoggedInUser);
         }
 
         log.info("Updating member details: " + member.getId());
@@ -309,9 +310,9 @@ public class MembersController {
             log.warn("Invalid member exception: " + e.getResponseBody());
             result.addError(new ObjectError("memberDetails", e.getMessage()));
 
-            return renderEditMemberDetailsForm(instance, memberDetails, member.getId(), member.getFirstName() + " " + member.getLastName(),
+            return renderEditMemberDetailsForm(instance, memberDetails,
                     swaggerApiClientForLoggedInUser.getMember(member.getId()),
-                    governingBody).
+                    governingBody, swaggerApiClientForLoggedInUser).
                     addObject("invalidImage", false);
         }
 
@@ -443,18 +444,16 @@ public class MembersController {
                 addObject("rolesOptions", ROLES_OPTIONS);
     }
 
-    private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, String memberId, String title, Member member,
-                                                     GoverningBody governingBody) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, Member member,
+                                                     GoverningBody governingBody, DefaultApi swaggerApiClientForLoggedInUser) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUser, member);
 
-        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance);
 
+        String title = member.getFirstName() + " " + member.getLastName();  // TODO push to member class
         return viewFactory.getViewFor("editMemberDetails", instance).
                 addObject("member", memberDetails).
-                addObject("memberId", memberId).
                 addObject("title", title).
                 addObject("navItems", navItems).
                 addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
