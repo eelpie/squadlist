@@ -98,6 +98,14 @@
 				#end
 			</div>
 		</div>
+
+        #if($showExport)
+            <div class="row">
+                <div class="col-xs-12">
+                    <p align="right"><a href="$urlBuilder.availabilityCsv($squad, $month)">Export as CSV</a><p/>
+                </div>
+            </div>
+        #end
 		
 	#else				
 		<div class="row">

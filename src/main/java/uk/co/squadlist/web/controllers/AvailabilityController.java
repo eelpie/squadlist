@@ -17,6 +17,8 @@ import uk.co.squadlist.model.swagger.*;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.services.Permission;
+import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.services.PreferredSquadService;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.*;
@@ -40,7 +42,8 @@ public class AvailabilityController {
     private final NavItemsBuilder navItemsBuilder;
     private final InstanceConfig instanceConfig;
     private final DisplayMemberFactory displayMemberFactory;
-    private CsvOutputRenderer csvOutputRenderer;
+    private final CsvOutputRenderer csvOutputRenderer;
+    private final PermissionsService permissionsService;
 
     @Autowired
     public AvailabilityController(PreferredSquadService preferredSquadService, ViewFactory viewFactory,
@@ -49,7 +52,8 @@ public class AvailabilityController {
                                   NavItemsBuilder navItemsBuilder,
                                   InstanceConfig instanceConfig,
                                   DisplayMemberFactory displayMemberFactory,
-                                  CsvOutputRenderer csvOutputRenderer) {
+                                  CsvOutputRenderer csvOutputRenderer,
+                                  PermissionsService permissionsService) {
         this.preferredSquadService = preferredSquadService;
         this.viewFactory = viewFactory;
         this.activeMemberFilter = activeMemberFilter;
@@ -58,6 +62,7 @@ public class AvailabilityController {
         this.instanceConfig = instanceConfig;
         this.displayMemberFactory = displayMemberFactory;
         this.csvOutputRenderer = csvOutputRenderer;
+        this.permissionsService = permissionsService;
     }
 
     @RequestMapping("/availability")
@@ -104,6 +109,7 @@ public class AvailabilityController {
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), startDate, endDate);
             Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, startDate, endDate);
 
+            boolean showExport = permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad);
             return viewFactory.getViewFor("availability", instance).
                     addObject("squads", squads).
                     addObject("title", squad.getName() + " availability").
@@ -113,7 +119,9 @@ public class AvailabilityController {
                     addObject("squadAvailability", memberOutingAvailabilityMap).
                     addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
                     addObject("current", current).
-                    addObject("month", month);
+                    addObject("squad", squad).
+                    addObject("month", month).
+                    addObject("showExport", showExport);
 
         } else {
             return null;    // TODO this should 404
