@@ -133,9 +133,15 @@ public class UrlBuilder {
 	public String availability(Squad squad) {
 		return applicationUrl("/availability/" + squad.getId());
 	}
+	public String availabilityCsv(Squad squad) {
+		return availability(squad) + ".csv";
+	}
 
 	public String availability(Squad squad, String month) {
 		return availability(squad) + "?month=" + month;
+	}
+	public String availabilityCsv(Squad squad, String month) {
+		return availabilityCsv(squad) + (month != null ? "?month=" + month : "");
 	}
 
 	public String editInstanceSettings() {
