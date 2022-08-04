@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
-import uk.co.squadlist.model.swagger.Instance;
-import uk.co.squadlist.model.swagger.Member;
-import uk.co.squadlist.model.swagger.Squad;
+import uk.co.squadlist.model.swagger.*;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.services.PreferredSquadService;
@@ -108,8 +106,8 @@ public class AvailabilityController {
                 mv.addObject("current", true);
             }
 
-            final List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
-            final List<uk.co.squadlist.model.swagger.Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), new DateTime(startDate), new DateTime(endDate));
+            final List<OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
+            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), new DateTime(startDate), new DateTime(endDate));
 
             mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
             mv.addObject("outings", outings);
@@ -119,11 +117,11 @@ public class AvailabilityController {
         return mv;
     }
 
-    private Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> decorateOutingsWithMembersAvailability(final List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadAvailability) {
-        final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> allAvailability = Maps.newHashMap();
+    private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadAvailability) {
+        final Map<String, AvailabilityOption> allAvailability = Maps.newHashMap();
 
-        for (uk.co.squadlist.model.swagger.OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
-            final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = outingWithSquadAvailability.getAvailability();
+        for (OutingWithSquadAvailability outingWithSquadAvailability : squadAvailability) {
+            final Map<String, AvailabilityOption> outingAvailability = outingWithSquadAvailability.getAvailability();
             for (String member : outingAvailability.keySet()) {
                 allAvailability.put(outingWithSquadAvailability.getOuting().getId() + "-" + member, outingAvailability.get(member));
             }

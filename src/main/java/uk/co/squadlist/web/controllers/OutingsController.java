@@ -119,7 +119,7 @@ public class OutingsController {
                 addObject("month", month).
                 addObject("outingMonths", getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser));
 
-        List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
+        List<OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
 
         mv.addObject("outings", squadOutings);
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
@@ -136,7 +136,7 @@ public class OutingsController {
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
+        Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
 
