@@ -1,6 +1,7 @@
 package uk.co.squadlist.web.controllers;
 
 import org.springframework.stereotype.Component;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.PermissionsService;
 import uk.co.squadlist.web.views.model.DisplayMember;
@@ -17,9 +18,9 @@ public class DisplayMemberFactory {
         this.permissionsService = permissionsService;
     }
 
-    public List<DisplayMember> toDisplayMembers(List<uk.co.squadlist.model.swagger.Member> members, uk.co.squadlist.model.swagger.Member loggedInUser) {
+    public List<DisplayMember> toDisplayMembers(List<Member> members, Member loggedInUser) {
         List<DisplayMember> displayMembers = new ArrayList<>();
-        for (uk.co.squadlist.model.swagger.Member member : members) {
+        for (Member member : members) {
             boolean isEditable = permissionsService.hasMemberPermission(loggedInUser, Permission.EDIT_MEMBER_DETAILS, member);
             displayMembers.add(new DisplayMember(member, isEditable));
         }

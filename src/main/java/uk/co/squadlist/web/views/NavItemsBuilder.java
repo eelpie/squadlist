@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
+import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
 import uk.co.squadlist.web.services.Permission;
@@ -38,11 +41,11 @@ public class NavItemsBuilder {
         this.preferredSquadService = preferredSquadService;
     }
 
-    public List<NavItem> navItemsFor(uk.co.squadlist.model.swagger.Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
-                                     uk.co.squadlist.model.swagger.Instance instance) throws URISyntaxException, ApiException {
+    public List<NavItem> navItemsFor(Member loggedInUser, String selected, DefaultApi swaggerApiClientForLoggedInUser,
+                                     Instance instance, List<Squad> squads) throws URISyntaxException, ApiException {
         final int pendingOutingsCountFor = outingAvailabilityCountsService.getPendingOutingsCountFor(loggedInUser.getId(), swaggerApiClientForLoggedInUser);
         final int memberDetailsProblems = governingBodyFactory.getGoverningBody(instance).checkRegistrationNumber(loggedInUser.getRegistrationNumber()) != null ? 1 : 0;
-        final uk.co.squadlist.model.swagger.Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
+        final Squad preferredSquad = preferredSquadService.resolvedPreferredSquad(squads);
 
         List<NavItem> navItems = new ArrayList<>();
         navItems.add(makeNavItemFor("my.outings", urlBuilder.applicationUrl("/"), pendingOutingsCountFor, "pendingOutings", selected));

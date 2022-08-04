@@ -86,6 +86,7 @@ public class OutingsController {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         final Squad squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
         final ModelAndView mv = viewFactory.getViewFor("outings", instance);
@@ -108,7 +109,7 @@ public class OutingsController {
             mv.addObject("current", true);
         }
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -122,7 +123,7 @@ public class OutingsController {
 
         mv.addObject("outings", squadOutings);
         mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
-        mv.addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId()));
+        mv.addObject("squads", squads);
 
         mv.addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
         return mv;
@@ -132,12 +133,12 @@ public class OutingsController {
     public ModelAndView outing(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
 
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Map<String, uk.co.squadlist.model.swagger.AvailabilityOption> outingAvailability = swaggerApiClientForLoggedInUser.getOutingAvailability(outing.getId());
-        final List<uk.co.squadlist.model.swagger.Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId()); // TODO this is for the select squads dropdown and should arguble move to the navItems builder?
 
         final List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(outing.getSquad().getId());
         final List<Member> activeMembers = activeMemberFilter.extractActive(squadMembers);
@@ -147,7 +148,7 @@ public class OutingsController {
 
         final boolean canEditOuting = permissionsService.hasOutingPermission(loggedInUser, Permission.EDIT_OUTING, outing);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
         return viewFactory.getViewFor("outing", instance).
@@ -192,10 +193,10 @@ public class OutingsController {
     @RequestMapping(value = "/outings/new", method = RequestMethod.GET)  // TODO fails hard if no squads are available
     public ModelAndView newOuting() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance swaggerInstance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         String timeZone = instance.getTimeZone();
 
         final LocalDateTime defaultOutingDateTime = DateHelper.defaultOutingStartDateTime(timeZone);
@@ -209,7 +210,7 @@ public class OutingsController {
     public ModelAndView newOutingSubmit(@Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         if (result.hasErrors()) {
             return renderNewOutingForm(outingDetails, loggedInMember, instance);
@@ -245,7 +246,7 @@ public class OutingsController {
 
         final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         String timeZone = instance.getTimeZone();
 
         LocalDateTime outingLocalDateTime = new LocalDateTime(outing.getDate(),  DateTimeZone.forID(timeZone));
@@ -262,13 +263,14 @@ public class OutingsController {
     @RequestMapping(value = "/outings/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deleteOutingPrompt(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("deleteOuting", instance).
                 addObject("title", "Deleting an outing").
@@ -322,7 +324,7 @@ public class OutingsController {
     public ModelAndView editOutingSubmit(@PathVariable String id,
                                          @Valid @ModelAttribute("outing") OutingDetails outingDetails, BindingResult result) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(id);
@@ -352,7 +354,7 @@ public class OutingsController {
             @RequestParam(value = "outing", required = true) String outingId,
             @RequestParam(value = "availability", required = true) String availability) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        uk.co.squadlist.model.swagger.Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         Member loggedInMember = loggedInUserService.getLoggedInMember();
 
@@ -380,9 +382,10 @@ public class OutingsController {
 
     private ModelAndView renderNewOutingForm(OutingDetails outingDetails, Member loggedInMember, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance);
+        final Squad squad = preferredSquadService.resolveSquad(null, swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("newOuting", instance).
                 addObject("title", "Add a new outing").
@@ -393,10 +396,11 @@ public class OutingsController {
                 addObject("outing", outingDetails);
     }
 
-    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, uk.co.squadlist.model.swagger.Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("editOuting", instance).
                 addObject("title", "Editing an outing").
@@ -410,7 +414,7 @@ public class OutingsController {
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInMember, Permission.ADD_OUTING));
     }
 
-    private Map<String, Integer> getOutingMonthsFor(uk.co.squadlist.model.swagger.Instance instance, uk.co.squadlist.model.swagger.Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+    private Map<String, Integer> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
         Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
         Map<String, Integer> result = new HashMap<>();
         for (String key: stringBigDecimalMap.keySet()) {
@@ -419,9 +423,9 @@ public class OutingsController {
         return result;
     }
 
-    private uk.co.squadlist.model.swagger.Outing buildOutingFromOutingDetails(OutingDetails outingDetails, uk.co.squadlist.model.swagger.Instance instance, DefaultApi api) throws ApiException {
+    private uk.co.squadlist.model.swagger.Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance, DefaultApi api) throws ApiException {
         DateTime date = outingDetails.toLocalTime().toDateTime(DateTimeZone.forID(instance.getTimeZone()));
-        uk.co.squadlist.model.swagger.Squad squad = outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null;  // TODO validation
+        Squad squad = outingDetails.getSquad() != null ? api.getSquad(outingDetails.getSquad()) : null;  // TODO validation
         String notes = outingDetails.getNotes();
         return new uk.co.squadlist.model.swagger.Outing().squad(squad).date(date).notes(notes);
     }

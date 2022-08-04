@@ -13,6 +13,7 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.AvailabilityOption;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
@@ -162,8 +163,9 @@ public class AvailabilityOptionsController {
 
     private ModelAndView renderNewAvailabilityOptionForm(Instance instance, Member loggedInMember, AvailabilityOptionDetails availabilityOptionDetails) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("newAvailabilityOption", instance).
                 addObject("title", "Add new availability option").
@@ -174,8 +176,9 @@ public class AvailabilityOptionsController {
     private ModelAndView renderEditAvailabilityOptionForm(Instance instance, AvailabilityOptionDetails availabilityOptionDetails, AvailabilityOption availabilityOption) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("editAvailabilityOption", instance).
                 addObject("title", "Edit availability options").
@@ -190,11 +193,12 @@ public class AvailabilityOptionsController {
 
     private ModelAndView renderDeleteForm(Instance instance, Member loggedInMember, AvailabilityOption selected) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         final List<AvailabilityOption> alternatives = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId());
         alternatives.remove(selected);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("deleteAvailabilityOption", instance).
                 addObject("title", "Delete availability option").

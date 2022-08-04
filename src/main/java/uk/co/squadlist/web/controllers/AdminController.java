@@ -17,6 +17,7 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
+import uk.co.squadlist.model.swagger.Squad;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
@@ -85,6 +86,7 @@ public class AdminController {
     public ModelAndView member() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
         final List<Member> members = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.getId());
@@ -92,10 +94,10 @@ public class AdminController {
         List<DisplayMember> inactiveDisplayMembers = displayMemberFactory.toDisplayMembers(activeMemberFilter.extractInactive(members), loggedInUser);
         List<DisplayMember> adminUsers = displayMemberFactory.toDisplayMembers(extractAdminUsersFrom(members), loggedInUser);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("admin", instance).
-                addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
+                addObject("squads", squads).
                 addObject("availabilityOptions", swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsGet(instance.getId())).
                 addObject("title", textHelper.text("admin")).
                 addObject("navItems", navItems).
@@ -143,6 +145,7 @@ public class AdminController {
         Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         List<Member> adminMembers = Lists.newArrayList();
         List<Member> availableMembers = Lists.newArrayList();
@@ -154,7 +157,7 @@ public class AdminController {
             }
         }
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("editAdmins", instance).
                 addObject("title", textHelper.text("edit.admins")).
@@ -226,10 +229,11 @@ public class AdminController {
 
     private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("editInstance", instance).
                 addObject("title", textHelper.text("edit.instance.settings")).

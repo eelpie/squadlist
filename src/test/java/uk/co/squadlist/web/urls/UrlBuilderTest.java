@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.localisation.BritishRowing;
 
@@ -19,7 +20,7 @@ public class UrlBuilderTest {
 	private InstanceConfig instanceConfig;
 	private SeoLinkBuilder seoLinkBuilder;
 
-	private uk.co.squadlist.model.swagger.Instance instance;
+	private Instance instance;
 
 	@Before
 	public void setup() {
@@ -27,7 +28,7 @@ public class UrlBuilderTest {
 		when(instanceConfig.getVhost()).thenReturn("twrc");
 		seoLinkBuilder = new SeoLinkBuilder();
 
-		this.instance = new uk.co.squadlist.model.swagger.Instance().id("aninstance").name("An instance").governingBody("british-rowing");
+		this.instance = new Instance().id("aninstance").name("An instance").governingBody("british-rowing");
 	}
 	
 	@Test

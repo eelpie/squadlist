@@ -60,9 +60,10 @@ public class AvailabilityController {
     public ModelAndView availability() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
+
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance, squads);
 
         return viewFactory.getViewFor("availability", instance).
                 addObject("title", "Availability").
@@ -74,21 +75,20 @@ public class AvailabilityController {
     public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        uk.co.squadlist.model.swagger.Member loggedInMember = loggedInUserService.getLoggedInMember();
-
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());   // TODO duplicate call in resolve squads
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance);
+        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance, squads);
 
         ModelAndView mv = viewFactory.getViewFor("availability", instance).
                 addObject("squads", squads).
                 addObject("navItems", navItems);
 
-        final uk.co.squadlist.model.swagger.Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
+        final Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
-            List<uk.co.squadlist.model.swagger.Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
-            List<uk.co.squadlist.model.swagger.Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
+            List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
+            List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
             mv.addObject("squad", squad).
                     addObject("title", squad.getName() + " availability").
@@ -132,7 +132,7 @@ public class AvailabilityController {
     }
 
     // TODO duplication with outings controller
-    private Map<String, Integer> getOutingMonthsFor(uk.co.squadlist.model.swagger.Instance instance, uk.co.squadlist.model.swagger.Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+    private Map<String, Integer> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
         Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
         Map<String, Integer> result = new HashMap<>();
         for (String key: stringBigDecimalMap.keySet()) {
