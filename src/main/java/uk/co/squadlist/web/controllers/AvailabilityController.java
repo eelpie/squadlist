@@ -78,23 +78,15 @@ public class AvailabilityController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, "availability", swaggerApiClientForLoggedInUser, instance, squads);
 
-        ModelAndView mv = viewFactory.getViewFor("availability", instance).
-                addObject("squads", squads).
-                addObject("navItems", navItems);
-
         final Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
+            ModelAndView mv = viewFactory.getViewFor("availability", instance).
+                    addObject("squads", squads).
+                    addObject("navItems", navItems);
+
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
-
-            mv.addObject("squad", squad).
-                    addObject("title", squad.getName() + " availability").
-                    addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember));
-
-            if (activeSquadMembers.isEmpty()) {
-                return mv;
-            }
 
             Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
             Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
@@ -107,14 +99,26 @@ public class AvailabilityController {
             }
 
             final List<OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
+            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squadAvailability);
+
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), new DateTime(startDate), new DateTime(endDate));
 
-            mv.addObject("squadAvailability", decorateOutingsWithMembersAvailability(squadAvailability));
-            mv.addObject("outings", outings);
-            mv.addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser));
-            mv.addObject("month", month);
+            mv.addObject("squad", squad).
+                    addObject("title", squad.getName() + " availability").
+                    addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember)).
+                    addObject("outings", outings).
+                    addObject("squadAvailability", memberOutingAvailabilityMap).
+                    addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
+                    addObject("month", month);
+
+            return mv;
+
+        } else {
+            return viewFactory.getViewFor("availability", instance).
+                    addObject("squads", squads).
+                    addObject("navItems", navItems);
+
         }
-        return mv;
     }
 
     private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(final List<uk.co.squadlist.model.swagger.OutingWithSquadAvailability> squadAvailability) {
