@@ -19,16 +19,16 @@
 			#end
 									
 			<form method="POST" action="$urlBuilder.editMemberUrl($member)" class="form-horizontal" accept-charset="UTF-8">
-				#inputRow("member.firstName", $text.text('first.name'))
-				#inputRow("member.lastName",  $text.text('last.name'))
-				#inputRow("member.knownAs",  $text.text('known.as'))
+				#inputRow("memberDetails.firstName", $text.text('first.name'))
+				#inputRow("memberDetails.lastName",  $text.text('last.name'))
+				#inputRow("memberDetails.knownAs",  $text.text('known.as'))
 				
 				#selectRow($text.text('gender'), 'member.gender', $genderOptions)
 								
 				<div class="form-group">
 				    <label for="inputEmail3" class="col-sm-2 control-label"> $text.text('date.of.birth')</label>
 				    <div class="col-sm-2">
-				    	#springBind("member.dateOfBirthDay")   			
+				    	#springBind("memberDetails.dateOfBirthDay")   			
 						<select name="${status.expression}" class="form-control">						
 							<option value="">
 							#foreach($day in $dateHelper.days)
@@ -38,7 +38,7 @@
 						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 					</div>
 					<div class="col-sm-2">
-						#springBind("member.dateOfBirthMonth")									
+						#springBind("memberDetails.dateOfBirthMonth")									
 						#set($months =  $dateHelper.months)
 						<select name="${status.expression}" class="form-control">
 							<option value="">						
@@ -49,7 +49,7 @@
 						#foreach($error in $status.errorMessages) <p class="alert">$error</p>#end
 					</div>
 					<div class="col-sm-2">
-						#springBind("member.dateOfBirthYear")			
+						#springBind("memberDetails.dateOfBirthYear")			
 						<select name="${status.expression}" class="form-control">
 							<option value="">						
 							#foreach($year in $dateHelper.dateOfBirthYears)
@@ -60,10 +60,10 @@
 					</div>
 				</div>
 				
-				#inputRow("member.emailAddress", $text.text('email.address'))
-				#inputRow("member.contactNumber", $text.text('contact.number'))
-				#inputRow("member.emergencyContactName", $text.text('emergency.contact.name'))
-				#inputRow("member.emergencyContactNumber", $text.text('emergency.contact.number'))
+				#inputRow("memberDetails.emailAddress", $text.text('email.address'))
+				#inputRow("memberDetails.contactNumber", $text.text('contact.number'))
+				#inputRow("memberDetails.emergencyContactName", $text.text('emergency.contact.name'))
+				#inputRow("memberDetails.emergencyContactNumber", $text.text('emergency.contact.number'))
 												
 				#selectRowMap($text.text('weight'), 'member.weight', $governingBody.weights)				
 								
@@ -93,7 +93,7 @@
 				#end
 				
 				#if($canChangeSquads)				
-					#springBind("member.squads")															
+					#springBind("memberDetails.squads")															
 					#squadsCheckboxGroup				
 				#else
 					<div class="form-group">

@@ -230,7 +230,7 @@ public class MembersController {
 
     @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.POST)
-    public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("member") MemberDetails memberDetails, BindingResult result) throws Exception {
+    public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
         log.info("Received edit member request: " + memberDetails);
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -453,7 +453,8 @@ public class MembersController {
 
         String title = member.getFirstName() + " " + member.getLastName();  // TODO push to member class
         return viewFactory.getViewFor("editMemberDetails", instance).
-                addObject("member", memberDetails).
+                addObject("member", member).
+                addObject("memberDetails", memberDetails).
                 addObject("title", title).
                 addObject("navItems", navItems).
                 addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.getId())).
