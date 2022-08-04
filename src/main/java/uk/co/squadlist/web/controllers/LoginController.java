@@ -14,11 +14,11 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
+import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.model.Member;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -32,11 +32,11 @@ public class LoginController {
     private final static Logger log = LogManager.getLogger(LoginController.class);
 
     private final InstanceConfig instanceConfig;
-    private final SquadlistApi api;
     private final String clientId;
     private final String clientSecret;
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
+    private final SquadlistApiFactory squadlistApiFactory;
     private final ViewFactory viewFactory;
     private final DefaultApi swaggerApi;
 
@@ -51,8 +51,8 @@ public class LoginController {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
         this.instanceConfig = instanceConfig;
-        this.api = squadlistApiFactory.createClient();
         this.swaggerApi = squadlistApiFactory.createSwaggerClient();
+        this.squadlistApiFactory = squadlistApiFactory;
         this.viewFactory = viewFactory;
 
         this.clientId = clientId;
@@ -74,21 +74,34 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.POST})
     public ModelAndView loginSubmit(
-            @RequestParam(value = "username", required = true) String username,
-            @RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
             RedirectAttributes redirectAttributes) {
 
+        // Use the OAuth password flow to swap our user's username and password for an access token
         log.info("Attempting to auth user: " + username);
         final String authenticatedUsersAccessToken = auth(username, password);
-        log.info("Auth got access token: " + authenticatedUsersAccessToken);
+        log.info("Auth got access token for: " + username);
+
         if (authenticatedUsersAccessToken != null) {
-            Member authenticatedMember = api.verify(authenticatedUsersAccessToken);
-            if (authenticatedMember != null) {
-                log.info("Auth successful for user: " + username);
-                loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
-                return viewFactory.redirectionTo(urlBuilder.getBaseUrl());
+            try {
+                // Call the API verify end point with the new access token to obtain the signed in user
+                log.info("Verifying access token to find signed in user");
+                Member authenticatedMember = squadlistApiFactory.createSwaggerApiClientForToken(authenticatedUsersAccessToken).verifyPost();
+                if (authenticatedMember != null) {
+                    log.info("Auth successful for user: " + username);
+                    loggedInUserService.setSignedIn(authenticatedUsersAccessToken);
+                    return viewFactory.redirectionTo(urlBuilder.getBaseUrl());
+
+                } else {
+                    log.warn("Verified user was null; this should not happen for valid access tokens");
+                }
+
+            } catch (ApiException e) {
+                log.warn("ApiException during verify: " + e.getCode() + " / " + e.getResponseBody());
             }
         }
+
         redirectAttributes.addFlashAttribute("error", true);
         redirectAttributes.addFlashAttribute("username", username);
         return viewFactory.redirectionTo(urlBuilder.loginUrl());
@@ -110,6 +123,7 @@ public class LoginController {
 
     private String auth(String username, String password) {
         try {
+            final SquadlistApi api = squadlistApiFactory.createClient();
             return api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
 
         } catch (Exception e) {
