@@ -81,13 +81,10 @@ public class AvailabilityController {
         final Squad squad = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance);
 
         if (squad != null) {
-            ModelAndView mv = viewFactory.getViewFor("availability", instance).
-                    addObject("squads", squads).
-                    addObject("navItems", navItems);
-
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
+            boolean current = false;
             Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
             Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
             if (month != null) {
@@ -95,7 +92,7 @@ public class AvailabilityController {
                 startDate = monthDateTime.toDate();
                 endDate = monthDateTime.plusMonths(1).toDate();
             } else {
-                mv.addObject("current", true);
+                current = true;
             }
 
             final List<OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
@@ -103,19 +100,21 @@ public class AvailabilityController {
 
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), new DateTime(startDate), new DateTime(endDate));
 
-            mv.addObject("squad", squad).
+            return viewFactory.getViewFor("availability", instance).
+                    addObject("squads", squads).
                     addObject("title", squad.getName() + " availability").
+                    addObject("navItems", navItems).addObject("squad", squad).
                     addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember)).
                     addObject("outings", outings).
                     addObject("squadAvailability", memberOutingAvailabilityMap).
                     addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
+                    addObject("current", current).
                     addObject("month", month);
-
-            return mv;
 
         } else {
             return viewFactory.getViewFor("availability", instance).
                     addObject("squads", squads).
+                    addObject("title", squad.getName() + " availability").
                     addObject("navItems", navItems);
 
         }
