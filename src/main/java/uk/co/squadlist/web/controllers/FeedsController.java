@@ -1,6 +1,5 @@
 package uk.co.squadlist.web.controllers;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.UnknownMemberException;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.DateHelper;
 import uk.co.squadlist.web.views.RssOuting;
@@ -43,11 +41,7 @@ public class FeedsController {
     }
 
     @RequestMapping("/ical")
-    public void outingsIcal(@RequestParam(value = "user", required = false) String user, HttpServletResponse response) throws Exception {
-        if (Strings.isNullOrEmpty(user)) {
-            throw new UnknownMemberException();
-        }
-
+    public void outingsIcal(@RequestParam String user, HttpServletResponse response) throws Exception {
         final String calendar = squadlistSwaggerApi.getMemberOutingsCalendar(user,
                 DateHelper.startOfCurrentOutingPeriod(),
                 DateHelper.oneYearFromNow());
@@ -61,11 +55,7 @@ public class FeedsController {
     }
 
     @RequestMapping("/rss")
-    public ModelAndView outingsRss(@RequestParam(value = "user", required = false) String user) throws Exception {
-        if (Strings.isNullOrEmpty(user)) {
-            throw new UnknownMemberException();
-        }
-
+    public ModelAndView outingsRss(@RequestParam(value = "user", required = true) String user) throws Exception {
         final Member member = squadlistSwaggerApi.getMember(user);
         final Instance instance = squadlistSwaggerApi.getInstance(instanceConfig.getInstance());
 
