@@ -1,5 +1,8 @@
 package uk.co.squadlist.web.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,6 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
-import uk.co.squadlist.web.api.SquadlistApi;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
@@ -34,6 +36,7 @@ public class LoginController {
     private final InstanceConfig instanceConfig;
     private final String clientId;
     private final String clientSecret;
+    private final String apiUrl;
     private final LoggedInUserService loggedInUserService;
     private final UrlBuilder urlBuilder;
     private final SquadlistApiFactory squadlistApiFactory;
@@ -46,7 +49,8 @@ public class LoginController {
                            SquadlistApiFactory squadlistApiFactory,
                            ViewFactory viewFactory,
                            @Value("${client.id}") String clientId,
-                           @Value("${client.secret}") String clientSecret
+                           @Value("${client.secret}") String clientSecret,
+                           @Value("${apiUrl}") String apiUrl
     ) throws IOException {
         this.loggedInUserService = loggedInUserService;
         this.urlBuilder = urlBuilder;
@@ -57,6 +61,7 @@ public class LoginController {
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.apiUrl = apiUrl;
     }
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.HEAD})
@@ -122,12 +127,40 @@ public class LoginController {
     }
 
     private String auth(String username, String password) {
+        // swagger-codegen does not appear to provide implementations of the auth flows so we need to handcraft these calls
         try {
-            final SquadlistApi api = squadlistApiFactory.createClient();
-            return api.requestAccessToken(instanceConfig.getInstance(), username, password, clientId, clientSecret);
+            String instance = instanceConfig.getInstance();
+
+            RequestBody formBody = new FormEncodingBuilder()
+                    .add("grant_type", "password")
+                    .add("username", instance + "/" + username)
+                    .add("password", password).build();
+
+            Request request = new Request.Builder().
+                    url(apiUrl + "/oauth/token").
+                    addHeader("Authorization", Credentials.basic(clientId, clientSecret)).
+                    post(formBody).
+                    build();
+
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == 200) {
+                String responseBody = response.body().string();
+                log.info("Successful auth response");
+                JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
+                String accessToken = jsonNode.get("access_token").asText();
+                log.debug("Parsed access token: " + accessToken);
+                return accessToken;
+
+            } else {
+                String responseBody = response.body().string();
+                log.warn("Response from auth call: " + response.code() + " / " + responseBody);
+                throw new RuntimeException("Invalid auth");
+            }
 
         } catch (Exception e) {
-            log.error("Uncaught error", e);    // TODO
+            log.error("Uncaught error", e);
             return null;
         }
     }

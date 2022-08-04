@@ -13,7 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.ApiException;
-import uk.co.squadlist.web.exceptions.*;
+import uk.co.squadlist.web.exceptions.PermissionDeniedException;
+import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
+import uk.co.squadlist.web.exceptions.UnknownAvailabilityOptionException;
+import uk.co.squadlist.web.exceptions.UnknownOutingException;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.ViewFactory;
 
@@ -55,27 +58,12 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered {
                                          Object handler,
                                          Exception e) {
         log.debug("Handling exception of type: " + e.getClass());
-        if (e instanceof UnknownInstanceException) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            return new ModelAndView("unknownInstance");
-        }
+
         if (e instanceof UnknownAvailabilityOptionException) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return new ModelAndView("404");
         }
-        if (e instanceof UnknownBoatException) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            return new ModelAndView("404");
-        }
         if (e instanceof UnknownOutingException) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            return new ModelAndView("404");
-        }
-        if (e instanceof UnknownSquadException) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            return new ModelAndView("404");
-        }
-        if (e instanceof UnknownMemberException) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return new ModelAndView("404");
         }
