@@ -19,7 +19,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import uk.co.eelpieconsulting.spring.VelocityViewResolver;
+import uk.co.eelpieconsulting.spring.views.velocity.VelocityViewResolver;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.urls.UrlBuilder;
 import uk.co.squadlist.web.views.CssHelper;
