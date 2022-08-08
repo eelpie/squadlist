@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -25,7 +24,7 @@ public class RequestHostService {
 
 	public String getRequestHost() {
 		// The requested host name is likely to be on the host of forwarded host header
-		Stream<String> vhostHeaders = List.of("x-forwarded-host", "host").stream();
+		Stream<String> vhostHeaders = Stream.of("x-forwarded-host", "host");
 
 		Optional<String> firstHost = vhostHeaders.map(h -> request.getHeader(h)).filter(v -> !Strings.isNullOrEmpty(v)).findFirst();
 		if (firstHost.isPresent()) {
