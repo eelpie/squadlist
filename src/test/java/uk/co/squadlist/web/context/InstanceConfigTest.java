@@ -39,7 +39,7 @@ public class InstanceConfigTest {
 	}
 
 	@Test
-	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() throws Exception {
+	public void inDevelopmentEnvironmentsWeCanHardCodeTheInstanceNameSoThatWeCanDeployOnNonLiveUrls() {
 		instanceConfig = new InstanceConfig(requestHostService, "manuallyconfiguredinstance");
 
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");

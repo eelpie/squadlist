@@ -434,7 +434,7 @@ public class MembersController {
         return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderNewMemberForm() throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -450,7 +450,7 @@ public class MembersController {
     }
 
     private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, Member member,
-                                                     GoverningBody governingBody, DefaultApi swaggerApiClientForLoggedInUser) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+                                                     GoverningBody governingBody, DefaultApi swaggerApiClientForLoggedInUser) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUser, member);
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());

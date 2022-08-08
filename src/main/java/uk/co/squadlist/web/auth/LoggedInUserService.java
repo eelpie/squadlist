@@ -8,11 +8,9 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.web.api.SquadlistApiFactory;
-import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @Component
 public class LoggedInUserService {

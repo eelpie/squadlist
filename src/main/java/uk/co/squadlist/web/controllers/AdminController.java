@@ -227,7 +227,7 @@ public class AdminController {
         return viewFactory.redirectionTo(urlBuilder.adminUrl());
     }
 
-    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditInstanceDetailsForm(final InstanceDetails instanceDetails, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
