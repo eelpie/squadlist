@@ -32,7 +32,7 @@ public class UrlBuilderTest {
 	}
 	
 	@Test
-	public void canInsertInstanceIntoBaseUrl() throws Exception {
+	public void canInsertInstanceIntoBaseUrl() {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://INSTANCE.squadlist.co.uk", instanceConfig, seoLinkBuilder, null, null);
 		assertEquals("https://twrc.squadlist.co.uk/meh", urlBuilder.applicationUrl("/meh"));
 	}
@@ -56,13 +56,13 @@ public class UrlBuilderTest {
 	}
 
 	@Test
-	public void canLinkToGoverningBodyPage() throws Exception {
+	public void canLinkToGoverningBodyPage() {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://localhost", instanceConfig, seoLinkBuilder, null, null);
 		assertEquals("https://localhost/governing-body/british-rowing", urlBuilder.governingBody(new BritishRowing()));
 	}
 
 	@Test
-	public void canComposeMailtoListUrl() throws Exception {
+	public void canComposeMailtoListUrl() {
 		final UrlBuilder urlBuilder = new UrlBuilder("https://localhost", instanceConfig, seoLinkBuilder, null, null);
 		final List<String> emails = Lists.newArrayList("auser@localhost", "anotheruser@localhost");
 		assertEquals("mailto:auser@localhost,anotheruser@localhost", urlBuilder.mailto(emails));

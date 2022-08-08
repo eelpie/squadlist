@@ -10,7 +10,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 @Component
 public class NoCacheHandler extends HandlerInterceptorAdapter {
 
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
 		response.addHeader("Cache-Control", "no-store");
 	}
 

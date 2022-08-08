@@ -11,7 +11,7 @@ import org.junit.Test;
 public class DateHelperTest {
 
 	@Test
-	public void canOutputListOfMonthNames() throws Exception {
+	public void canOutputListOfMonthNames() {
 		final Map<Integer, String> months = DateHelper.getMonths();
 
 		assertEquals(12, months.size());
@@ -20,7 +20,7 @@ public class DateHelperTest {
 	}
 
 	@Test
-	public void canOutputListOfUpcomingYears() throws Exception {
+	public void canOutputListOfUpcomingYears() {
 		final List<String> years = DateHelper.getYears();
 
 		assertEquals(3, years.size());

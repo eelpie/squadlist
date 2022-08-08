@@ -83,7 +83,7 @@ public class AvailabilityOptionsController {
 
     @RequiresPermission(permission = Permission.VIEW_ADMIN_SCREEN)
     @RequestMapping(value = "/availability-option/{id}/delete", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable String id, @RequestParam(required = false) String alternative) throws IOException, UnknownAvailabilityOptionException, SignedInMemberRequiredException, ApiException {
+    public ModelAndView delete(@PathVariable String id, @RequestParam(required = false) String alternative) throws SignedInMemberRequiredException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 

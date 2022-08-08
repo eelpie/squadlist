@@ -25,14 +25,14 @@ public class InstanceConfigTest {
 	}
 
 	@Test
-	public void liveMultiTenantedInstanceShouldBeInferredFromTheRequestHostname() throws Exception {
+	public void liveMultiTenantedInstanceShouldBeInferredFromTheRequestHostname() {
 		when(requestHostService.getRequestHost()).thenReturn("aninstance.squadlist.co.uk");
 
 		assertEquals("aninstance", instanceConfig.getInstance());
 	}
 
 	@Test
-	public void shouldHandleHyphensInIds() throws Exception {
+	public void shouldHandleHyphensInIds() {
 		when(requestHostService.getRequestHost()).thenReturn("an-instance.squadlist.co.uk");
 
 		assertEquals("an-instance", instanceConfig.getInstance());

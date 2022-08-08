@@ -396,7 +396,7 @@ public class OutingsController {
                 addObject("outing", outingDetails);
     }
 
-    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditOutingForm(OutingDetails outingDetails, Member loggedInMember, uk.co.squadlist.model.swagger.Outing outing, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 

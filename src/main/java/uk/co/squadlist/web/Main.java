@@ -40,7 +40,7 @@ public class Main {
 
 	private static ApplicationContext ctx;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
     	ctx = SpringApplication.run(Main.class, args);     
     }
 

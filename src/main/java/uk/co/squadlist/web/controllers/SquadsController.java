@@ -177,7 +177,7 @@ public class SquadsController {
                 addObject("squadDetails", squadDetails);
     }
 
-    private ModelAndView renderEditSquadForm(Member loggedInUser, Squad squad, SquadDetails squadDetails, DefaultApi api, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderEditSquadForm(Member loggedInUser, Squad squad, SquadDetails squadDetails, DefaultApi api, Instance instance) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         final List<Member> squadMembers = api.getSquadMembers(squad.getId());
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());

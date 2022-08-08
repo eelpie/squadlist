@@ -475,7 +475,7 @@ public class MembersController {
                 addObject("memberSquads", member.getSquads());          // TODO would not be needed id member.squads would form bind
     }
 
-    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, URISyntaxException, ApiException, IOException {
+    private ModelAndView renderChangePasswordForm(Instance instance, Member loggedInUser, ChangePassword changePassword) throws SignedInMemberRequiredException, URISyntaxException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 

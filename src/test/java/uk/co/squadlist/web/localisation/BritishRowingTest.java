@@ -72,7 +72,7 @@ public class BritishRowingTest {
 	}
 
 	@Test
-	public void nullPointsImpliesUnknownStatus() throws Exception {
+	public void nullPointsImpliesUnknownStatus() {
 		assertEquals(null, britishRowing.getRowingStatus(""));
 	}
 

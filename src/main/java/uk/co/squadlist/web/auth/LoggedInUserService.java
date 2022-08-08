@@ -25,14 +25,12 @@ public class LoggedInUserService {
     private final HttpServletRequest request;
 
     @Autowired
-    public LoggedInUserService(SquadlistApiFactory squadlistApiFactory,
-                               InstanceConfig instanceConfig,
-                               HttpServletRequest request) throws IOException {
+    public LoggedInUserService(SquadlistApiFactory squadlistApiFactory, HttpServletRequest request) {
         this.squadlistApiFactory = squadlistApiFactory;
         this.request = request;
     }
 
-    public Member getLoggedInMember() throws SignedInMemberRequiredException, IOException, ApiException {
+    public Member getLoggedInMember() throws SignedInMemberRequiredException, ApiException {
         String token = getLoggedInMembersToken();
         if (token != null) {
             log.debug("Found signed in user token; need to verify: " + token);
