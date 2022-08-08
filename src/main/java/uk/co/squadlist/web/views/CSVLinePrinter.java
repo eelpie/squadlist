@@ -27,8 +27,7 @@ public class CSVLinePrinter {
 		}
 		printer.close();
 
-		final String result = new String(out.toByteArray(), "UTF8");
-		return result;
+		return new String(out.toByteArray(), "UTF8");
 	}
 
 }
