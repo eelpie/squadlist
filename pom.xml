@@ -16,10 +16,6 @@
 
     <repositories>
         <repository>
-            <id>local-dependencies</id>
-            <url>file:${basedir}/lib/repository</url>
-        </repository>
-        <repository>
             <id>artifact-registry</id>
             <url>https://europe-maven.pkg.dev/eelpie-cloud-registry/eelpie</url>
             <releases>
@@ -83,12 +79,11 @@
             <version>2.13.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>uk.co.squadlist</groupId>
-            <artifactId>squadlist-api-swagger-client</artifactId>
-            <version>2022080301</version>
-            <scope>compile</scope>
-        </dependency>
+	<dependency>
+	    <groupId>uk.co.squadlist.client.swagger</groupId>
+	    <artifactId>squadlist-api-swagger-client</artifactId>
+	    <version>2022080902</version>
+	</dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
