@@ -4,5 +4,5 @@
         $displayMember.displayName
     </a>
 #else
-    $displayMember.member.displayName
+    $displayMember.displayName
 #end
