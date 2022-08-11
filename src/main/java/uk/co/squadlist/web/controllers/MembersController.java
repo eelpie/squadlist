@@ -128,10 +128,10 @@ public class MembersController {
 
         try {
             Member newMember = new Member().
-                    firstName(memberDetails.getFirstName()).
-                    lastName(memberDetails.getLastName()).
+                    firstName(memberDetails.getFirstName().trim()).
+                    lastName(memberDetails.getLastName().trim()).
                     squads(requestedSquads).
-                    emailAddress(memberDetails.getEmailAddress()).
+                    emailAddress(memberDetails.getEmailAddress().trim()).
                     password(initialPassword).
                     role(memberDetails.getRole());
 
@@ -272,9 +272,9 @@ public class MembersController {
         }
 
         log.info("Updating member details: " + member.getId());
-        member.setFirstName(memberDetails.getFirstName());
-        member.setLastName(memberDetails.getLastName());
-        member.setKnownAs(memberDetails.getKnownAs());
+        member.setFirstName(memberDetails.getFirstName().trim());
+        member.setLastName(memberDetails.getLastName().trim());
+        member.setKnownAs(memberDetails.getKnownAs().trim());
         member.setGender(memberDetails.getGender());
 
         member.setDateOfBirth(updatedDateOfBirth);
@@ -286,14 +286,14 @@ public class MembersController {
             log.warn(iae);
         }
 
-        member.setEmailAddress(memberDetails.getEmailAddress());
-        member.setContactNumber(memberDetails.getContactNumber());
+        member.setEmailAddress(memberDetails.getEmailAddress().trim());
+        member.setContactNumber(memberDetails.getContactNumber().trim());
         member.setRowingPoints(!Strings.isNullOrEmpty(memberDetails.getRowingPoints()) ? memberDetails.getRowingPoints() : null);
         member.setSculling(memberDetails.getSculling());
         member.setScullingPoints(!Strings.isNullOrEmpty(memberDetails.getScullingPoints()) ? memberDetails.getScullingPoints() : null);
-        member.setRegistrationNumber(memberDetails.getRegistrationNumber());
-        member.setEmergencyContactName(memberDetails.getEmergencyContactName());
-        member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber());
+        member.setRegistrationNumber(memberDetails.getRegistrationNumber().trim());
+        member.setEmergencyContactName(memberDetails.getEmergencyContactName().trim());
+        member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber().trim());
         member.setSweepOarSide(memberDetails.getSweepOarSide());
 
         final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), swaggerApiClientForLoggedInUser.getMember(member.getId()));
