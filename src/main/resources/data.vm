@@ -9,37 +9,39 @@
 
 <h4>Use of personally identifiable information</h4>
 
-<p>This system is intended to assist in the facilitation of a team activity; personally identifiable information is likely to be involved.
+<p>This system is intended to assist in the facilitation of a team activity; some personally identifiable information is required.
 Personally identifiable information is requested from members for the reasons detailed below. This information 
 may be shared with other members of your club.</p>
 
-<h5>First and last name</h5>
+<h5>First and last and known as names</h5>
 <p>Used to identify members to other members of the same club.</p>
 
 <h5>Email address</h5>
 <p>Used to provide other club members, such as coaches and squad members with a means to contact this member.
-Shared within your club only. May be visible to your coaches and other club members.
+Shared within your club. May be visible to your coaches and other club members.
+Used to send password resets and other user requested communications.
 
 Squadlist will only send email to a member's email address in response to a direct request from that member (for example a member requesting a password reset email).
-Delivering an email to a member may require that member's email address to the provided to a third party email service.
+Delivering an email to a member may require that member's email address to be past to a third party email service.
 </p>
 
-<h5>Phone number</h5>
+<h5>Phone numbers</h5>
 This optional information is only shared within your club and is intended to facilitate communication between members.
 
 <h5>Date of birth, gender and weight</h5>
-<p>The rules of racing may require competitors to be classified by age, gender or weight.
-<p>This (optional) information allows members to be correctly classified as per a governing bodies rules of racing. This information
-may be visible to other members of your club (such as coaches) to facilitate this classification.</p>
+
+<p>The rules of racing for your governing body may require competitors to be classified by age, gender or weight.
+<p>This (optional) information allows members to be correctly classified as per a governing bodies rules of racing.
+This information may be made visible to other members of your club (such as coaches) to facilitate this classification.</p>
 
 <h4>Data retention</h4>
 
-<p>We try not to accumulate data which is no longer in use or relevant.</p>
+<p>We try not to accumulate data which is no longer of use or relevant.</p>
 
 <p>If a copy of the system is been inactive for more than 6 months, that copy and all of the member data contained within it is automatically deleted.
-Inactive is taked to mean no member sign ins during the last 6 months and no pending outings.</p>
+Inactive is taken to mean no member sign ins during the last 6 months and no pending outings.</p>
 
 <p>Members availability for a given outing is automatically deleted 1 month after the date of the outing.</p>
 
-<p>If deletion of a member is requested (such as by pressing the delete member link on the admin page), 
-then that member's data is immediately removed from the database.</p>
+<p>If deletion of a member is requested (such as by pressing the delete member link on the admin page) then that member's data is immediately removed from the database.</p>
+
