@@ -183,7 +183,6 @@ public class AvailabilityController {
             csvOutputRenderer.renderCsvResponse(response, headings, rows);
         }
     }
-
     private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(Squad squad, DateTime startDate, DateTime endDate) throws SignedInMemberRequiredException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final List<OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
