@@ -1,5 +1,6 @@
 package uk.co.squadlist.web.controllers;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
@@ -81,7 +82,10 @@ public class AvailabilityController {
     }
 
     @RequestMapping("/availability/{squadId}")
-    public ModelAndView squadAvailability(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month) throws Exception {
+    public ModelAndView squadAvailability(@PathVariable String squadId,
+                                          @RequestParam(value = "month", required = false) String month,
+                                          @RequestParam(value = "startDate", required = false) String startDate,
+                                          @RequestParam(value = "endDate", required = false) String endDate) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
@@ -95,19 +99,16 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            boolean current = false;
-            DateTime startDate = DateHelper.startOfCurrentOutingPeriod();
-            DateTime endDate = DateHelper.endOfCurrentOutingPeriod();
+            DateRange dateRange = new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
             if (month != null) {
                 final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
-                startDate = monthDateTime;
-                endDate = monthDateTime.plusMonths(1);
-            } else {
-                current = true;
+                dateRange = new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
+            } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
+                dateRange = new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
             }
 
-            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), startDate, endDate);
-            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, startDate, endDate);
+            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
+            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
 
             boolean showExport = permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad);
             return viewFactory.getViewFor("availability", instance).
@@ -118,7 +119,7 @@ public class AvailabilityController {
                     addObject("outings", outings).
                     addObject("squadAvailability", memberOutingAvailabilityMap).
                     addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
-                    addObject("current", current).
+                    addObject("current", dateRange.isCurrent()).
                     addObject("squad", squad).
                     addObject("month", month).
                     addObject("showExport", showExport);
