@@ -130,7 +130,11 @@ public class AvailabilityController {
     }
 
     @RequestMapping("/availability/{squadId}.csv")
-    public void squadAvailabilityCsv(@PathVariable String squadId, @RequestParam(value = "month", required = false) String month, HttpServletResponse response) throws Exception {
+    public void squadAvailabilityCsv(@PathVariable String squadId,
+                                     @RequestParam(value = "month", required = false) String month,
+                                     @RequestParam(value = "startDate", required = false) String startDate,
+                                     @RequestParam(value = "endDate", required = false) String endDate,
+                                     HttpServletResponse response) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
@@ -140,16 +144,16 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateTime startDate = DateHelper.startOfCurrentOutingPeriod();
-            DateTime endDate = DateHelper.endOfCurrentOutingPeriod();
+            DateRange dateRange = new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
             if (month != null) {
                 final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
-                startDate = monthDateTime;
-                endDate = monthDateTime.plusMonths(1);
+                dateRange = new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
+            } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
+                dateRange = new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
             }
 
-            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), startDate, endDate);
-            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, startDate, endDate);
+            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
+            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
 
             DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
 
@@ -159,7 +163,7 @@ public class AvailabilityController {
             List<String> notes = Lists.newArrayList();
             notes.add(null);
 
-            for(Outing outing: outings) {
+            for (Outing outing : outings) {
                 headings.add(dateFormatter.dayMonthYearTime(outing.getDate()));
                 notes.add(outing.getNotes());
             }
@@ -173,7 +177,7 @@ public class AvailabilityController {
                 List<String> cells = Lists.newArrayList();
                 cells.add(displayMember.getDisplayName());
 
-                for(Outing outing: outings) {
+                for (Outing outing : outings) {
                     AvailabilityOption availabilityOption = memberOutingAvailabilityMap.get(outing.getId() + "-" + member.getId());
                     cells.add(availabilityOption != null ? availabilityOption.getLabel() : "");
                 }
