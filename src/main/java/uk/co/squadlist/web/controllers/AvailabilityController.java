@@ -3,10 +3,7 @@ package uk.co.squadlist.web.controllers;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import org.joda.time.*;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -221,13 +218,16 @@ public class AvailabilityController {
         } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
             LocalDate startLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(startDate);
             LocalDate endLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(endDate);
-            return new DateRange(startLocalDate,
-                    endLocalDate,
-                    null,
-                    false);
-        } else {
-            return new DateRange(DateHelper.startOfCurrentOutingPeriod().toLocalDate(), DateHelper.endOfCurrentOutingPeriod().toLocalDate(), null, true);
+
+            Duration duration = new Duration(startLocalDate.toDateTimeAtCurrentTime(), endLocalDate.toDateTimeAtCurrentTime());
+            if (duration.getStandardDays() < 0 && duration.getStandardDays() < 50) {
+                return new DateRange(startLocalDate,
+                        endLocalDate,
+                        null,
+                        false);
+            }
         }
+        return new DateRange(DateHelper.startOfCurrentOutingPeriod().toLocalDate(), DateHelper.endOfCurrentOutingPeriod().toLocalDate(), null, true);
     }
 
 }
