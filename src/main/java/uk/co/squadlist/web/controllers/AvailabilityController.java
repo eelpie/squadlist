@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -99,7 +100,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate);
+            DateRange dateRange = getDateRange(month, startDate, endDate, instance);
 
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
             Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
@@ -138,7 +139,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate);
+            DateRange dateRange = getDateRange(month, startDate, endDate, instance);
 
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
             Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
@@ -202,12 +203,17 @@ public class AvailabilityController {
         return result;
     }
 
-    private DateRange getDateRange(String month, String startDate, String endDate) {
+    private DateRange getDateRange(String month, String startDate, String endDate, Instance instance) {
         if (month != null) {
             final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
             return new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
         } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-            return new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
+            DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
+            LocalDate startLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(startDate);
+            LocalDate endLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(endDate);
+            return new DateRange(startLocalDate.toDateTimeAtStartOfDay(dateTimeZone),
+                    endLocalDate.toDateTimeAtCurrentTime(dateTimeZone),
+                    false);
         } else {
             return new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
         }
