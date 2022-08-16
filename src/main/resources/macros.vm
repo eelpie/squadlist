@@ -5,7 +5,7 @@
 				<a href="$urlBuilder.applicationUrl('/outings/new')">$text.text('add.outing')</a>
 			#end				
 		</li>		
-		#if($outingMonths && !$outingMonths.keySet().isEmpty())		
+		#if($outingMonths && !$outingMonths.isEmpty())
 			<li>				
 				<a href="$urlBuilder.outings($squad)">
 					#if($current)
@@ -13,7 +13,7 @@
 					#end
 				$text.text('current')</a>
 			</li>
-			#foreach($outingMonth in $outingMonths.keySet())
+			#foreach($outingMonth in $outingMonths)
 				<li><a href="$urlBuilder.outings($squad, $outingMonth)">															
 					#if($outingMonth.equals($month))
 						<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>

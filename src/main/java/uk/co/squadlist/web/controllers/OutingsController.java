@@ -110,13 +110,16 @@ public class OutingsController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
+        List<String> outingMonths = Lists.newArrayList(getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser).keySet());
+        outingMonths.sort(Comparator.naturalOrder());
+
         mv.addObject("title", title).
                 addObject("navItems", navItems).
                 addObject("squad", squadToShow).
                 addObject("startDate", startDate).
                 addObject("endDate", endDate).
                 addObject("month", month).
-                addObject("outingMonths", getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser));
+                addObject("outingMonths", outingMonths);
 
         List<OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
 

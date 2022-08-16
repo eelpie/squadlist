@@ -106,8 +106,8 @@ public class AvailabilityController {
 
             boolean showExport = permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad);
 
-            List<String> outingMonthsFor = Lists.newArrayList(getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser).keySet());
-            outingMonthsFor.sort(Comparator.naturalOrder());
+            List<String> outingMonths = Lists.newArrayList(getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser).keySet());
+            outingMonths.sort(Comparator.naturalOrder());
 
             return viewFactory.getViewFor("availability", instance).
                     addObject("squads", squads).
@@ -116,7 +116,7 @@ public class AvailabilityController {
                     addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember)).
                     addObject("outings", outings).
                     addObject("squadAvailability", memberOutingAvailabilityMap).
-                    addObject("outingMonths", outingMonthsFor).
+                    addObject("outingMonths", outingMonths).
                     addObject("current", dateRange.isCurrent()).
                     addObject("squad", squad).
                     addObject("dateRange", dateRange).
