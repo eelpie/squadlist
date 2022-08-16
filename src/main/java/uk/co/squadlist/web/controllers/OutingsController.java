@@ -110,8 +110,7 @@ public class OutingsController {
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
-        List<String> outingMonths = Lists.newArrayList(getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser).keySet());
-        outingMonths.sort(Comparator.naturalOrder());
+        List<String> outingMonths = getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser);
 
         mv.addObject("title", title).
                 addObject("navItems", navItems).
@@ -416,13 +415,11 @@ public class OutingsController {
                 addObject("canAddOuting", permissionsService.hasPermission(loggedInMember, Permission.ADD_OUTING));
     }
 
-    private Map<String, Integer> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+    private List<String> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
         Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
-        Map<String, Integer> result = new HashMap<>();
-        for (String key: stringBigDecimalMap.keySet()) {
-            result.put(key, stringBigDecimalMap.get(key).intValue());   // TODO can this int format be set in the swagger API defination?
-        }
-        return result;
+        List<String> outingMonths = Lists.newArrayList(stringBigDecimalMap.keySet());
+        outingMonths.sort(Comparator.naturalOrder());
+        return outingMonths;
     }
 
     private uk.co.squadlist.model.swagger.Outing buildOutingFromOutingDetails(OutingDetails outingDetails, Instance instance, DefaultApi api) throws ApiException {

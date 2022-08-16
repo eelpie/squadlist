@@ -106,7 +106,7 @@ public class AvailabilityController {
 
             boolean showExport = permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad);
 
-            List<String> outingMonths = Lists.newArrayList(getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser).keySet());
+            List<String> outingMonths = getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser);
             outingMonths.sort(Comparator.naturalOrder());
 
             return viewFactory.getViewFor("availability", instance).
@@ -201,13 +201,11 @@ public class AvailabilityController {
     }
 
     // TODO duplication with outings controller
-    private Map<String, Integer> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
+    private List<String> getOutingMonthsFor(Instance instance, Squad squad, DefaultApi swaggerApiClientForLoggedInUser) throws ApiException {
         Map<String, BigDecimal> stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(instance.getId(), squad.getId(), DateTime.now().toDateMidnight().minusDays(1).toLocalDate(), DateTime.now().plusYears(20).toLocalDate());// TODO timezone
-        Map<String, Integer> result = new HashMap<>();
-        for (String key: stringBigDecimalMap.keySet()) {
-            result.put(key, stringBigDecimalMap.get(key).intValue());   // TODO can this int format be set in the swagger API defination?
-        }
-        return result;
+        List<String> outingMonths = Lists.newArrayList(stringBigDecimalMap.keySet());
+        outingMonths.sort(Comparator.naturalOrder());
+        return outingMonths;
     }
 
     private DateRange getDateRange(String month, String startDate, String endDate) {
