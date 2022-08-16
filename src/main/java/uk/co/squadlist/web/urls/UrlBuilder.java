@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.co.squadlist.model.swagger.*;
 import uk.co.squadlist.web.context.InstanceConfig;
+import uk.co.squadlist.web.controllers.DateRange;
 import uk.co.squadlist.web.localisation.GoverningBody;
 
 import java.net.URISyntaxException;
@@ -133,15 +134,20 @@ public class UrlBuilder {
 	public String availability(Squad squad) {
 		return applicationUrl("/availability/" + squad.getId());
 	}
-	public String availabilityCsv(Squad squad) {
-		return availability(squad) + ".csv";
-	}
 
 	public String availability(Squad squad, String month) {
 		return availability(squad) + "?month=" + month;
 	}
-	public String availabilityCsv(Squad squad, String month) {
-		return availabilityCsv(squad) + (month != null ? "?month=" + month : "");
+	public String availabilityCsv(Squad squad, DateRange dateRange) {
+		String base = availability(squad) + ".csv";
+		if (dateRange.isCurrent()) {
+			return base;
+		} else if (dateRange.getMonth() != null) {
+			return base + "?month=" + dateRange.getMonth();
+		} else if (dateRange.getStart() != null && dateRange.getEnd() != null) {
+			return base + "?startDate=" + dateRange.getStart() + "&endDate=" + dateRange.getEnd();
+		}
+		return base;
 	}
 
 	public String editInstanceSettings() {

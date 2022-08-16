@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,10 +30,7 @@ import uk.co.squadlist.web.views.model.NavItem;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class AvailabilityController {
@@ -100,12 +98,20 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate, instance);
+            DateRange dateRange = getDateRange(month, startDate, endDate);
 
-            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
-            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
+            DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
+            DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
+            DateTime endDateTime = dateRange.getEnd().toDateTimeAtStartOfDay(dateTimeZone).plusDays(1);
+
+            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), startDateTime, endDateTime);
+            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, startDateTime, endDateTime);
 
             boolean showExport = permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad);
+
+            List<String> outingMonthsFor = Lists.newArrayList(getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser).keySet());
+            outingMonthsFor.sort(Comparator.naturalOrder());
+
             return viewFactory.getViewFor("availability", instance).
                     addObject("squads", squads).
                     addObject("title", squad.getName() + " availability").
@@ -113,10 +119,10 @@ public class AvailabilityController {
                     addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember)).
                     addObject("outings", outings).
                     addObject("squadAvailability", memberOutingAvailabilityMap).
-                    addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)).
+                    addObject("outingMonths", outingMonthsFor).
                     addObject("current", dateRange.isCurrent()).
                     addObject("squad", squad).
-                    addObject("month", month).
+                    addObject("dateRange", dateRange).
                     addObject("showExport", showExport);
 
         } else {
@@ -139,10 +145,14 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate, instance);
+            DateRange dateRange = getDateRange(month, startDate, endDate);
 
-            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
-            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
+            DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
+            DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
+            DateTime endDateTime = dateRange.getEnd().toDateTimeAtStartOfDay(dateTimeZone).plusDays(1);
+
+            final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), startDateTime, endDateTime);
+            Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, startDateTime, endDateTime);
 
             DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
 
@@ -203,19 +213,20 @@ public class AvailabilityController {
         return result;
     }
 
-    private DateRange getDateRange(String month, String startDate, String endDate, Instance instance) {
+    private DateRange getDateRange(String month, String startDate, String endDate) {
         if (month != null) {
-            final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
-            return new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
+            final LocalDateTime monthDateTime = ISODateTimeFormat.yearMonth().parseLocalDateTime(month);    // TODO Can be moved to spring?
+            return new DateRange(monthDateTime.toLocalDate(), monthDateTime.plusMonths(1).minusDays(1).toLocalDate(), month, false);
+
         } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-            DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
             LocalDate startLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(startDate);
             LocalDate endLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(endDate);
-            return new DateRange(startLocalDate.toDateTimeAtStartOfDay(dateTimeZone),
-                    endLocalDate.toDateTimeAtCurrentTime(dateTimeZone),
+            return new DateRange(startLocalDate,
+                    endLocalDate,
+                    null,
                     false);
         } else {
-            return new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
+            return new DateRange(DateHelper.startOfCurrentOutingPeriod().toLocalDate(), DateHelper.endOfCurrentOutingPeriod().toLocalDate(), null, true);
         }
     }
 
