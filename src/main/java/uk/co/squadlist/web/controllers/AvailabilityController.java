@@ -99,13 +99,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
-            if (month != null) {
-                final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
-                dateRange = new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
-            } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-                dateRange = new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
-            }
+            DateRange dateRange = getDateRange(month, startDate, endDate);
 
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
             Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
@@ -144,13 +138,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
-            if (month != null) {
-                final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
-                dateRange = new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
-            } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-                dateRange = new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
-            }
+            DateRange dateRange = getDateRange(month, startDate, endDate);
 
             final List<Outing> outings = swaggerApiClientForLoggedInUser.outingsGet(instance.getId(), squad.getId(), dateRange.getStart(), dateRange.getEnd());
             Map<String, AvailabilityOption> memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(squad, dateRange.getStart(), dateRange.getEnd());
@@ -187,6 +175,7 @@ public class AvailabilityController {
             csvOutputRenderer.renderCsvResponse(response, headings, rows);
         }
     }
+
     private Map<String, AvailabilityOption> decorateOutingsWithMembersAvailability(Squad squad, DateTime startDate, DateTime endDate) throws SignedInMemberRequiredException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final List<OutingWithSquadAvailability> squadAvailability = swaggerApiClientForLoggedInUser.getSquadAvailability(squad.getId(), new DateTime(startDate), new DateTime(endDate));
@@ -211,6 +200,17 @@ public class AvailabilityController {
             result.put(key, stringBigDecimalMap.get(key).intValue());   // TODO can this int format be set in the swagger API defination?
         }
         return result;
+    }
+
+    private DateRange getDateRange(String month, String startDate, String endDate) {
+        if (month != null) {
+            final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);    // TODO Can be moved to spring?
+            return new DateRange(monthDateTime, monthDateTime.plusMonths(1), false);
+        } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
+            return new DateRange(ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), ISODateTimeFormat.yearMonthDay().parseDateTime(startDate), false);
+        } else {
+            return new DateRange(DateHelper.startOfCurrentOutingPeriod(), DateHelper.endOfCurrentOutingPeriod(), true);
+        }
     }
 
 }
