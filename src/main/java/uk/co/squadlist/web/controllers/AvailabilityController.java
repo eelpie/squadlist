@@ -218,7 +218,7 @@ public class AvailabilityController {
             LocalDate endLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(endDate);
 
             Duration duration = new Duration(startLocalDate.toDateTimeAtCurrentTime(), endLocalDate.toDateTimeAtCurrentTime());
-            if (duration.getStandardDays() < 0 && duration.getStandardDays() < 50) {
+            if (duration.getStandardDays() > 0 && duration.getStandardDays() < 50) {
                 return new DateRange(startLocalDate,
                         endLocalDate,
                         null,
