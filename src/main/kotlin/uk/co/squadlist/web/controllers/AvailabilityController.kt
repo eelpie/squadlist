@@ -85,9 +85,11 @@ class AvailabilityController @Autowired constructor(
                 val yearMonth =
                     if (month != null) YearMonth.parse(month) else null // TODO push to Spring parameter?
                 val dateRange = DateRange.from(yearMonth, startDate, endDate)
+
                 val dateTimeZone = DateTimeZone.forID(instance.timeZone)
-                val startDateTime = dateRange.start!!.toDateTimeAtStartOfDay(dateTimeZone)
-                val endDateTime = dateRange.end!!.toDateTimeAtStartOfDay(dateTimeZone).plusDays(1)
+                val (start, end) = DateRange.from(yearMonth, startDate, endDate)
+                val startDateTime = start!!.toDateTimeAtStartOfDay(dateTimeZone)
+                val endDateTime = end!!.toDateTimeAtStartOfDay(dateTimeZone).plusDays(1)
                 val outings =
                     swaggerApiClientForLoggedInUser.outingsGet(instance.id, squad.id, startDateTime, endDateTime)
                 val memberOutingAvailabilityMap = decorateOutingsWithMembersAvailability(
@@ -137,9 +139,10 @@ class AvailabilityController @Autowired constructor(
                 val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.id)
                 val activeSquadMembers = activeMemberFilter.extractActive(squadMembers)
                 val yearMonth = if (month != null) YearMonth.parse(month) else null // TODO push to Spring parameter?
-                val (start, end) = DateRange.from(yearMonth, startDate, endDate)
-                val dateTimeZone = DateTimeZone.forID(instance.timeZone)
+                val dateRange = DateRange.from(yearMonth, startDate, endDate)
 
+                val dateTimeZone = DateTimeZone.forID(instance.timeZone)
+                val (start, end) = dateRange
                 val startDateTime = start!!.toDateTimeAtStartOfDay(dateTimeZone)
                 val endDateTime = end!!.toDateTimeAtStartOfDay(dateTimeZone).plusDays(1)
                 val outings =
