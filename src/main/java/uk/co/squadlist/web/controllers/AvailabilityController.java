@@ -111,7 +111,7 @@ public class AvailabilityController {
 
             String title = squad.getName() + " availability";
             if (dateRange.getMonth() != null) {
-                title = squad.getName() + " outings - " + dateRange.getMonth().toString("MMMMM yyyy");
+                title = squad.getName() + " availability - " + dateRange.getMonth().toString("MMMMM yyyy");
             }
 
             return viewFactory.getViewFor("availability", instance).
