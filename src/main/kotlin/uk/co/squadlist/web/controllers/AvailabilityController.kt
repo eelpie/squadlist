@@ -82,12 +82,10 @@ class AvailabilityController @Autowired constructor(
             if (squad != null) {
                 val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.id)
                 val activeSquadMembers = activeMemberFilter.extractActive(squadMembers)
-                val yearMonth =
-                    if (month != null) YearMonth.parse(month) else null // TODO push to Spring parameter?
-                val dateRange = DateRange.from(yearMonth, startDate, endDate)
+                val dateRange = dateRangeFor(month, startDate, endDate)
 
                 val dateTimeZone = DateTimeZone.forID(instance.timeZone)
-                val (start, end) = DateRange.from(yearMonth, startDate, endDate)
+                val (start, end) = dateRange
                 val startDateTime = start!!.toDateTimeAtStartOfDay(dateTimeZone)
                 val endDateTime = end!!.toDateTimeAtStartOfDay(dateTimeZone).plusDays(1)
                 val outings =
@@ -138,8 +136,8 @@ class AvailabilityController @Autowired constructor(
             if (squad != null) {
                 val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.id)
                 val activeSquadMembers = activeMemberFilter.extractActive(squadMembers)
-                val yearMonth = if (month != null) YearMonth.parse(month) else null // TODO push to Spring parameter?
-                val dateRange = DateRange.from(yearMonth, startDate, endDate)
+
+                val dateRange = dateRangeFor(month, startDate, endDate)
 
                 val dateTimeZone = DateTimeZone.forID(instance.timeZone)
                 val (start, end) = dateRange
@@ -218,6 +216,11 @@ class AvailabilityController @Autowired constructor(
             DateTime.now().plusYears(20).toLocalDate()
         ) // TODO timezone
         return Lists.newArrayList(stringBigDecimalMap.keys).sorted()
+    }
+
+    private fun dateRangeFor(month: String?, startDate: LocalDate?, endDate: LocalDate?): DateRange {
+        val yearMonth = if (month != null) YearMonth.parse(month) else null // TODO push to Spring parameter?
+        return DateRange.from(yearMonth, startDate, endDate)
     }
 
 }
