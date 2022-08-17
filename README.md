@@ -18,7 +18,7 @@ To implement a different governing bodies points and ranking system, provide an 
 
 ## Running locally
 
-This is a Spring Boot application. It can be run locally using the Maven plugin.
+This is a Java/ Kotlin Spring Boot application. It can be run locally using the Maven plugin.
 
 ```
 mvn spring-boot:run
