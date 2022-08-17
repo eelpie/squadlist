@@ -1,11 +1,10 @@
 package uk.co.squadlist.web.controllers;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.*;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,8 +79,8 @@ public class AvailabilityController {
     @RequestMapping("/availability/{squadId}")
     public ModelAndView squadAvailability(@PathVariable String squadId,
                                           @RequestParam(value = "month", required = false) String month,
-                                          @RequestParam(value = "startDate", required = false) String startDate,
-                                          @RequestParam(value = "endDate", required = false) String endDate) throws Exception {
+                                          @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                          @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
         List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
@@ -95,7 +94,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate);
+            DateRange dateRange = DateRange.from(month, startDate, endDate);
 
             DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
             DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
@@ -130,8 +129,8 @@ public class AvailabilityController {
     @RequestMapping("/availability/{squadId}.csv")
     public void squadAvailabilityCsv(@PathVariable String squadId,
                                      @RequestParam(value = "month", required = false) String month,
-                                     @RequestParam(value = "startDate", required = false) String startDate,
-                                     @RequestParam(value = "endDate", required = false) String endDate,
+                                     @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                     @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                                      HttpServletResponse response) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -142,7 +141,7 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = getDateRange(month, startDate, endDate);
+            DateRange dateRange = DateRange.from(month, startDate, endDate);
 
             DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
             DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
@@ -206,26 +205,6 @@ public class AvailabilityController {
         List<String> outingMonths = Lists.newArrayList(stringBigDecimalMap.keySet());
         outingMonths.sort(Comparator.naturalOrder());
         return outingMonths;
-    }
-
-    private DateRange getDateRange(String month, String startDate, String endDate) {
-        if (month != null) {
-            final LocalDateTime monthDateTime = ISODateTimeFormat.yearMonth().parseLocalDateTime(month);    // TODO Can be moved to spring?
-            return new DateRange(monthDateTime.toLocalDate(), monthDateTime.plusMonths(1).minusDays(1).toLocalDate(), month, false);
-
-        } else if (!Strings.isNullOrEmpty(startDate) && !Strings.isNullOrEmpty(endDate)) {
-            LocalDate startLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(startDate);
-            LocalDate endLocalDate = ISODateTimeFormat.yearMonthDay().parseLocalDate(endDate);
-
-            Duration duration = new Duration(startLocalDate.toDateTimeAtCurrentTime(), endLocalDate.toDateTimeAtCurrentTime());
-            if (duration.getStandardDays() > 0 && duration.getStandardDays() < 50) {
-                return new DateRange(startLocalDate,
-                        endLocalDate,
-                        null,
-                        false);
-            }
-        }
-        return new DateRange(DateHelper.startOfCurrentOutingPeriod().toLocalDate(), DateHelper.endOfCurrentOutingPeriod().toLocalDate(), null, true);
     }
 
 }
