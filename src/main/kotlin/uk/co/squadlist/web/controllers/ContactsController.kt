@@ -18,9 +18,9 @@ import uk.co.squadlist.web.views.ViewFactory
 class ContactsController @Autowired constructor(private val preferredSquadService: PreferredSquadService,
                                                 private val viewFactory: ViewFactory,
                                                 private val contactsModelPopulator: ContactsModelPopulator,
-                                                private val loggedInUserService: LoggedInUserService,
                                                 private val navItemsBuilder: NavItemsBuilder,
-                                                private val instanceConfig: InstanceConfig) {
+                                                loggedInUserService: LoggedInUserService,
+                                                instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
     @RequestMapping("/contacts")
     fun contacts(): ModelAndView {
         val renderContactsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
@@ -44,14 +44,6 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
             mv
         }
         return withSignedInMember(renderSquadContactsPage);
-    }
-
-    // Given a func to render a page, resolve the logged in member and instance then execute that function
-    private fun withSignedInMember(page: (Instance, Member, DefaultApi) -> ModelAndView): ModelAndView {
-        val swaggerApiClientForLoggedInUser = loggedInUserService.swaggerApiClientForLoggedInUser
-        val instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.instance)
-        val loggedInMember = loggedInUserService.loggedInMember
-        return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
     }
 
 }
