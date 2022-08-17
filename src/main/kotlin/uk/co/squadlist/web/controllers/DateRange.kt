@@ -2,22 +2,21 @@ package uk.co.squadlist.web.controllers
 
 import org.joda.time.Duration
 import org.joda.time.LocalDate
-import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.YearMonth
 import uk.co.squadlist.web.views.DateHelper
 
-data class DateRange(val start: LocalDate?, val end: LocalDate?, val month: String?, val current: Boolean) {
+data class DateRange(val start: LocalDate?, val end: LocalDate?, val month: YearMonth?, val current: Boolean) {
 
     fun isCurrent(): Boolean = current
 
     companion object {
         @JvmStatic
-        fun from(month: String?, startDate: LocalDate?, endDate: LocalDate?): DateRange {
+        fun from(month: YearMonth?, startDate: LocalDate?, endDate: LocalDate?): DateRange {
             if (month != null) {
-                val monthDateTime =
-                    ISODateTimeFormat.yearMonth().parseLocalDateTime(month) // TODO Can be moved to spring?
+                val monthStartDay = month.toLocalDate(1);
                 return DateRange(
-                    monthDateTime.toLocalDate(),
-                    monthDateTime.plusMonths(1).minusDays(1).toLocalDate(),
+                    monthStartDay,
+                    monthStartDay.plusMonths(1).minusDays(1),
                     month,
                     false
                 )

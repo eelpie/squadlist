@@ -2,6 +2,7 @@ package uk.co.squadlist.web.urls;
 
 import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
+import org.joda.time.YearMonth;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.squadlist.model.swagger.Instance;
@@ -67,7 +68,7 @@ public class UrlBuilderTest {
     public void canComposeExportAvailabilityMonthUrl() {
         Squad squad = new Squad();
         squad.setId("a-squad");
-        DateRange august2022 = new DateRange(null, null, "2022-08", false);
+        DateRange august2022 = new DateRange(null, null, new YearMonth(2022, 8), false);
 
         String url = urlBuilder.availabilityCsv(squad, august2022);
 

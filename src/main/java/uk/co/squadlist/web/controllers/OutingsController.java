@@ -4,9 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
+import org.joda.time.*;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -94,39 +92,35 @@ public class OutingsController {
             return mv;
         }
 
-        Date startDate = DateHelper.startOfCurrentOutingPeriod().toDate();
-        Date endDate = DateHelper.endOfCurrentOutingPeriod().toDate();
-        DateFormatter dateFormatter = new DateFormatter(DateTimeZone.forID(instance.getTimeZone()));
+        YearMonth yearMonth = month != null ? YearMonth.parse(month): null; // TODO push to Spring parameter?
+        DateRange dateRange = DateRange.from(yearMonth, null, null);
 
         String title = squadToShow.getName() + " outings";
-        if (month != null) {
-            final DateTime monthDateTime = ISODateTimeFormat.yearMonth().parseDateTime(month);  // TODO Can be moved to spring?
-            startDate = monthDateTime.toDate();
-            endDate = monthDateTime.plusMonths(1).toDate();
-            title = squadToShow.getName() + " outings - " + dateFormatter.fullMonthYear(startDate);
-        } else {
-            mv.addObject("current", true);
+        if (dateRange.getMonth() != null) {
+            title = squadToShow.getName() + " outings - " + dateRange.getMonth().toString("MMMMM yyyy");
         }
 
         List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, "outings", swaggerApiClientForLoggedInUser, instance, squads);
 
         List<String> outingMonths = getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser);
 
+        DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
+        DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
+        DateTime endDateTime = dateRange.getEnd().toDateTimeAtStartOfDay(dateTimeZone).plusDays(1);
+
+        List<OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(),
+                new DateTime(startDateTime),
+                new DateTime(endDateTime));
+
         mv.addObject("title", title).
                 addObject("navItems", navItems).
                 addObject("squad", squadToShow).
-                addObject("startDate", startDate).
-                addObject("endDate", endDate).
-                addObject("month", month).
-                addObject("outingMonths", outingMonths);
-
-        List<OutingWithSquadAvailability> squadOutings = swaggerApiClientForLoggedInUser.getSquadAvailability(squadToShow.getId(), new DateTime(startDate), new DateTime(endDate));
-
-        mv.addObject("outings", squadOutings);
-        mv.addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings));
-        mv.addObject("squads", squads);
-
-        mv.addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
+                addObject("dateRange", dateRange).
+                addObject("outingMonths", outingMonths).
+                addObject("outings", squadOutings).
+                addObject("outingAvailabilityCounts", outingAvailabilityCountsService.buildOutingAvailabilityCounts(squadOutings)).
+                addObject("squads", squads).
+                addObject("canAddOuting", permissionsService.hasPermission(loggedInUser, Permission.ADD_OUTING));
         return mv;
     }
 

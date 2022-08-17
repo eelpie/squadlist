@@ -31,8 +31,8 @@
 						$text.text('current')</a>
 					</li>
 					#foreach($outingMonth in $outingMonths)
-						<li><a href="$urlBuilder.availability($squad, $outingMonth)">															
-							#if($outingMonth.equals($dateRange.month))
+						<li><a href="$urlBuilder.availability($squad, $outingMonth)">
+							#if($dateRange.month && $outingMonth.equals($dateRange.month.toString()))
 								<span class="glyphicon glyphicon-chevron-right" style="color: black"></span>
 							#end
 							$dateFormatter.month($outingMonth)							

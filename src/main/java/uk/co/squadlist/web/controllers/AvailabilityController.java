@@ -94,7 +94,8 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = DateRange.from(month, startDate, endDate);
+            YearMonth yearMonth = month != null ? YearMonth.parse(month): null; // TODO push to Spring parameter?
+            DateRange dateRange = DateRange.from(yearMonth, startDate, endDate);
 
             DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
             DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
@@ -108,9 +109,14 @@ public class AvailabilityController {
             List<String> outingMonths = getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser);
             outingMonths.sort(Comparator.naturalOrder());
 
+            String title = squad.getName() + " availability";
+            if (dateRange.getMonth() != null) {
+                title = squad.getName() + " outings - " + dateRange.getMonth().toString("MMMMM yyyy");
+            }
+
             return viewFactory.getViewFor("availability", instance).
                     addObject("squads", squads).
-                    addObject("title", squad.getName() + " availability").
+                    addObject("title", title).
                     addObject("navItems", navItems).addObject("squad", squad).
                     addObject("members", displayMemberFactory.toDisplayMembers(activeSquadMembers, loggedInMember)).
                     addObject("outings", outings).
@@ -141,7 +147,8 @@ public class AvailabilityController {
             List<Member> squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.getId());
             List<Member> activeSquadMembers = activeMemberFilter.extractActive(squadMembers);
 
-            DateRange dateRange = DateRange.from(month, startDate, endDate);
+            YearMonth yearMonth = month != null ? YearMonth.parse(month): null; // TODO push to Spring parameter?
+            DateRange dateRange = DateRange.from(yearMonth, startDate, endDate);
 
             DateTimeZone dateTimeZone = DateTimeZone.forID(instance.getTimeZone());
             DateTime startDateTime = dateRange.getStart().toDateTimeAtStartOfDay(dateTimeZone);
