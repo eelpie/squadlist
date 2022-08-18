@@ -43,9 +43,20 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
 
             if (permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squadToShow)) {
                 val navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, instance, squads)
-                val mv = viewFactory.getViewFor("entryDetails", instance).addObject("title", "Entry details").addObject("navItems", navItems).addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.id)).addObject("governingBody", governingBodyFactory.getGoverningBody(instance))
-                entryDetailsModelPopulator.populateModel(squadToShow, swaggerApiClientForLoggedInUser, mv, loggedInMember)
-                mv
+
+                val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squadToShow.id)
+                val activeMembers = activeMemberFilter.extractActive(squadMembers)
+                val displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember)
+
+                viewFactory.getViewFor("entryDetails", instance)
+                    .addObject("title", "Entry details")
+                    .addObject("navItems", navItems)
+                    .addObject("squads", squads)
+                    .addObject("governingBody", governingBodyFactory.getGoverningBody(instance))
+                    .addObject("squad", squadToShow)
+                    .addObject("title", squadToShow.name + " entry details")
+                    .addObject("members", displayMembers)
+
             } else {
                 throw PermissionDeniedException()
             }

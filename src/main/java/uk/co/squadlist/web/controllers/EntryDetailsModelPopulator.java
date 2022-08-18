@@ -31,14 +31,6 @@ public class EntryDetailsModelPopulator {
 		this.displayMemberFactory = displayMemberFactory;
 	}
 
-	public void populateModel(final Squad squadToShow, DefaultApi api, final ModelAndView mv, Member loggedInMember) throws ApiException {
-		List<Member> activeMembers = activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId()));
-		List<DisplayMember> displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember);
-		mv.addObject("squad", squadToShow);
-		mv.addObject("title", squadToShow.getName() + " entry details");
-		mv.addObject("members", displayMembers);
-	}
-
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody, Instance instance) throws ApiException {
 		List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
 		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody, instance);
