@@ -30,9 +30,6 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                                                     private val navItemsBuilder: NavItemsBuilder,
                                                     loggedInUserService: LoggedInUserService,
                                                     instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
-
-    private val log = LogManager.getLogger(EntryDetailsController::class.java)
-
     @RequestMapping("/entrydetails/{squadId}")
     fun entrydetails(@PathVariable squadId: String?): ModelAndView {
         val renderSquadEntryDetailsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
