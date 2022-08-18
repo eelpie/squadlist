@@ -107,15 +107,11 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
     fun editAdminsPrompt(): ModelAndView {
         val renderEditAdminsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
-            val adminMembers: MutableList<Member> = Lists.newArrayList()
-            val availableMembers: MutableList<Member> = Lists.newArrayList()
-            for (member in swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.id)) {
-                if (member.isAdmin) {
-                    adminMembers.add(member)    // TODO use a filter
-                } else {
-                    availableMembers.add(member)
-                }
-            }
+
+            val allMembers = swaggerApiClientForLoggedInUser.instancesInstanceMembersGet(instance.id)
+            val adminMembers = allMembers.filter { member -> member.isAdmin }
+            val availableMembers = allMembers.filter { member -> !member.isAdmin }
+
             val navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance, squads)
             viewFactory.getViewFor("editAdmins", instance)
                     .addObject("title", textHelper.text("edit.admins"))
