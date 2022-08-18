@@ -7,17 +7,23 @@ import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
+import org.springframework.validation.ObjectError
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.client.swagger.ApiException
 import uk.co.squadlist.client.swagger.api.DefaultApi
 import uk.co.squadlist.model.swagger.Instance
 import uk.co.squadlist.model.swagger.Member
+import uk.co.squadlist.model.swagger.Squad
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.context.InstanceConfig
+import uk.co.squadlist.web.exceptions.PermissionDeniedException
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.model.forms.InstanceDetails
+import uk.co.squadlist.web.model.forms.MemberDetails
+import uk.co.squadlist.web.services.PasswordGenerator
+import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
 import uk.co.squadlist.web.urls.UrlBuilder
@@ -36,6 +42,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
                                              private val navItemsBuilder: NavItemsBuilder,
                                              private val textHelper: TextHelper,
                                              private val displayMemberFactory: DisplayMemberFactory,
+                                             private val passwordGenerator: PasswordGenerator,
                                              loggedInUserService: LoggedInUserService,
                                              instanceConfig: InstanceConfig): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
@@ -82,7 +89,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
     }
 
     @PostMapping("/admin/instance")
-    fun instanceSubmit(@ModelAttribute("instanceDetails") instanceDetails: @Valid InstanceDetails?, result: BindingResult): ModelAndView {
+    fun instanceSubmit(@Valid @ModelAttribute("instanceDetails") instanceDetails: InstanceDetails?, result: BindingResult): ModelAndView {
         val handleEditInstancePage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             if (result.hasErrors()) {
                 renderEditInstanceDetailsForm(instanceDetails, instance, loggedInMember, swaggerApiClientForLoggedInUser)
@@ -161,6 +168,92 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
             ModelAndView()  // TODO questionable
         }
         withSignedInMemberWhoCanViewAdminScreen(renderMembersCsv)
+    }
+
+    @GetMapping("/member/new")
+    fun newMember(@ModelAttribute("memberDetails") memberDetails: MemberDetails): ModelAndView {
+        val renderNewMemberPrompt = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
+            if (permissionsService.hasPermission(loggedInMember, Permission.ADD_MEMBER)) {
+                renderNewMemberForm(loggedInMember, swaggerApiClientForLoggedInUser, instance)
+            } else {
+                throw PermissionDeniedException()
+            }
+        }
+        return withSignedInMember(renderNewMemberPrompt)
+    }
+
+    @PostMapping("/member/new")
+    fun newMemberSubmit(@Valid @ModelAttribute("memberDetails") memberDetails: MemberDetails?, result: BindingResult): ModelAndView {
+        val handleNewMemberSubmit = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
+            if (permissionsService.hasPermission(loggedInMember, Permission.ADD_MEMBER)) {
+                val requestedSquads = extractAndValidateRequestedSquads(memberDetails!!, result, swaggerApiClientForLoggedInUser)
+                if (result.hasErrors()) {
+                    log.info("New member submission has errors: " + result.allErrors)
+                    renderNewMemberForm(loggedInMember, swaggerApiClientForLoggedInUser, instance)
+
+                } else {
+                    val initialPassword = passwordGenerator.generateRandomPassword()
+                    try {
+                        val newMember = Member().firstName(
+                            memberDetails.firstName.trim { it <= ' ' })
+                            .lastName(memberDetails.lastName.trim { it <= ' ' })
+                            .squads(requestedSquads).emailAddress(
+                                memberDetails.emailAddress.trim { it <= ' ' }).password(initialPassword)
+                            .role(memberDetails.role)
+                        val createdMember =
+                            swaggerApiClientForLoggedInUser.instancesInstanceMembersPost(newMember, instance.id)
+                        val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
+                        val navItems =
+                            navItemsBuilder.navItemsFor(
+                                loggedInMember,
+                                null,
+                                swaggerApiClientForLoggedInUser,
+                                instance,
+                                squads
+                            )
+                        viewFactory.getViewFor("memberAdded", instance).addObject("title", "Member added")
+                            .addObject("navItems", navItems).addObject("member", createdMember)
+                            .addObject("initialPassword", initialPassword)
+                    } catch (e: ApiException) {
+                        log.warn("Invalid member exception: " + e.responseBody)
+                        result.addError(ObjectError("memberDetails", e.message))
+                        renderNewMemberForm(loggedInMember, swaggerApiClientForLoggedInUser, instance)
+                    }
+                }
+
+            } else {
+                throw PermissionDeniedException()
+            }
+        }
+
+        return withSignedInMember(handleNewMemberSubmit)
+    }
+
+    private fun extractAndValidateRequestedSquads(memberDetails: MemberDetails, result: BindingResult, api: DefaultApi): List<Squad> { // TODO duplication
+        val squads: MutableList<Squad> = Lists.newArrayList()
+        if (memberDetails.squads == null) {
+            return squads
+        }
+        for (requestedSquad in memberDetails.squads) {
+            log.info("Requested squad: $requestedSquad")
+            try {
+                squads.add(api.getSquad(requestedSquad.id)) // TODO Validate instance
+            } catch (e: ApiException) {
+                log.warn("Rejecting unknown squad: $requestedSquad")
+                result.addError(ObjectError("memberDetails.squad", "Unknown squad"))
+            }
+        }
+        log.info("Assigned squads: $squads")
+        return squads
+    }
+
+    private fun renderNewMemberForm(loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi, instance: Instance): ModelAndView {
+        val ROLES_OPTIONS: List<String> = Lists.newArrayList("Rower", "Rep", "Coach", "Cox", "Non rowing")  // TODO duplication
+        val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
+        val navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads)
+        return viewFactory.getViewFor("newMember", instance).addObject("squads", squads)
+            .addObject("title", "Adding a new member").addObject("navItems", navItems)
+            .addObject("rolesOptions", ROLES_OPTIONS)
     }
 
     private fun extractAdminUsersFrom(members: List<Member>): List<Member> {

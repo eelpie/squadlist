@@ -95,7 +95,7 @@ class AvailabilityOptionsController @Autowired constructor(
 
     @PostMapping("/availability-option/new")
     @Throws(URISyntaxException::class, ApiException::class)
-    fun submitNewAvailabilityOption(@ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: @Valid AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
+    fun submitNewAvailabilityOption(@Valid @ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
         val handleNewAvailability = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             if (result.hasErrors()) {
                 renderNewAvailabilityOptionForm(instance, loggedInMember, availabilityOptionDetails, swaggerApiClientForLoggedInUser)
@@ -118,7 +118,7 @@ class AvailabilityOptionsController @Autowired constructor(
 
     @PostMapping("/availability-option/{id}/edit")
     @Throws(URISyntaxException::class, ApiException::class)
-    fun editPost(@PathVariable id: String, @ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: @Valid AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
+    fun editPost(@PathVariable id: String,  @Valid @ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
         val handleEditAvailabilityOption = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.id, id)
             if (result.hasErrors()) {

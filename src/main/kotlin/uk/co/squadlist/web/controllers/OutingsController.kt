@@ -180,7 +180,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
 
     @PostMapping("/outings/new")
     fun newOutingSubmit(
-        @ModelAttribute("outing") outingDetails: @Valid OutingDetails?,
+        @Valid @ModelAttribute("outing") outingDetails: OutingDetails?,
         result: BindingResult
     ): ModelAndView {
         val handleNewOutingPost = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
@@ -306,7 +306,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
     @PostMapping("/outings/{id}/edit")
     fun editOutingSubmit(
         @PathVariable id: String,
-        @ModelAttribute("outing") outingDetails: @Valid OutingDetails?, result: BindingResult
+        @Valid @ModelAttribute("outing") outingDetails: OutingDetails?, result: BindingResult
     ): ModelAndView {
         val handleEditOuting = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val outing = swaggerApiClientForLoggedInUser.getOuting(id)

@@ -52,7 +52,7 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
 
     @PostMapping("/squad/new")
     @Throws(URISyntaxException::class, ApiException::class, IOException::class)
-    fun newSquadSubmit(@ModelAttribute("squadDetails") squadDetails: @Valid SquadDetails?, result: BindingResult): ModelAndView {
+    fun newSquadSubmit(@Valid @ModelAttribute("squadDetails") squadDetails: SquadDetails?, result: BindingResult): ModelAndView {
         val handleAddSquad = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             if (result.hasErrors()) {
                 renderNewSquadForm(squadDetails, loggedInMember, instance, swaggerApiClientForLoggedInUser)
@@ -109,7 +109,7 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
 
     @PostMapping("/squad/{id}/edit")
     @Throws(URISyntaxException::class, ApiException::class)
-    fun editSquadSubmit(@PathVariable id: String, @ModelAttribute("squadDetails") squadDetails: @Valid SquadDetails?, result: BindingResult): ModelAndView {
+    fun editSquadSubmit(@PathVariable id: String, @Valid @ModelAttribute("squadDetails") squadDetails: SquadDetails?, result: BindingResult): ModelAndView {
         val handleEditSquad = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
 
             val squad = swaggerApiClientForLoggedInUser.getSquad(id)

@@ -3,6 +3,7 @@ package uk.co.squadlist.web.model.forms;
 import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.validation.annotation.Validated;
 
 public class MemberDetails {
 
