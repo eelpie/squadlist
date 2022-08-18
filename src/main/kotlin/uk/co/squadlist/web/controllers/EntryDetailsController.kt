@@ -103,15 +103,13 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
     }
 
     @RequestMapping(value = ["/entrydetails/selected.csv"], method = [RequestMethod.GET]) // TODO Unused
-    fun entrydetailsSelectedCSV(@RequestParam members: String?, response: HttpServletResponse?) {
+    fun entrydetailsSelectedCSV(@RequestParam members: String, response: HttpServletResponse?) {
         val renderSelectedMembersEntryDetailsCsv = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
-            val selectedMembers: MutableList<Member> = Lists.newArrayList()
-            val iterator = Splitter.on(",").split(members).iterator()
-            while (iterator.hasNext()) {
-                val selectedMemberId = iterator.next()
-                log.info("Selected member id: $selectedMemberId")
-                selectedMembers.add(swaggerApiClientForLoggedInUser.getMember(selectedMemberId))    // TODO can be a map over the iterator?
-            }
+            val selectedMemberIds = Splitter.on(",").split(members).iterator()
+            val selectedMembers = selectedMemberIds.asSequence().map { memberId ->
+                swaggerApiClientForLoggedInUser.getMember(memberId)
+            }.toList()
+
             val governingBody = governingBodyFactory.getGoverningBody(instance)
             csvOutputRenderer.renderCsvResponse(response,
                     entryDetailsModelPopulator.entryDetailsHeaders,
