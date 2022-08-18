@@ -7,6 +7,7 @@ import uk.co.squadlist.model.swagger.Instance
 import uk.co.squadlist.model.swagger.Member
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
+import uk.co.squadlist.web.exceptions.PermissionDeniedException
 
 abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, private val loggedInUserService: LoggedInUserService) {
 
@@ -21,5 +22,18 @@ abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, priv
         log.info("Rending page for " + instance.id + " / " + loggedInMember.username)
         return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
     }
+
+    protected fun withSignedInAdmin(page: (Instance, Member, DefaultApi) -> ModelAndView): ModelAndView {
+        val swaggerApiClientForLoggedInUser = loggedInUserService.swaggerApiClientForLoggedInUser
+        val instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.instance)
+        val loggedInMember = loggedInUserService.loggedInMember
+        if (!loggedInMember.isAdmin) {
+            throw PermissionDeniedException()
+        }
+
+        log.info("Rending page for admin " + instance.id + " / " + loggedInMember.username)
+        return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
+    }
+
 
 }
