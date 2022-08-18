@@ -17,6 +17,7 @@ import uk.co.squadlist.web.exceptions.PermissionDeniedException
 import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.PreferredSquadService
+import uk.co.squadlist.web.services.filters.ActiveMemberFilter
 import uk.co.squadlist.web.views.CsvOutputRenderer
 import uk.co.squadlist.web.views.NavItemsBuilder
 import uk.co.squadlist.web.views.ViewFactory
@@ -31,6 +32,7 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                                                     private val navItemsBuilder: NavItemsBuilder,
                                                     private val permissionsService: PermissionsService,
                                                     private val displayMemberFactory: DisplayMemberFactory,
+                                                    private val activeMemberFilter: ActiveMemberFilter,
                                                     loggedInUserService: LoggedInUserService,
                                                     instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
     @GetMapping("/entrydetails/{squadId}")
@@ -94,13 +96,14 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
     }
 
     @GetMapping("/entrydetails/{squadId}.csv")
-    fun entrydetailsCSV(@PathVariable squadId: String?, response: HttpServletResponse?) {
+    fun entrydetailsCSV(@PathVariable squadId: String, response: HttpServletResponse?) {
         val renderEntryDetailsCsv = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance)
             if (permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squadToShow)) {
-                val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squadToShow.id)  // TODO active filter
+                val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squadToShow.id)
+                val activeMembers = activeMemberFilter.extractActive(squadMembers)
                 val governingBody = governingBodyFactory.getGoverningBody(instance)
-                val entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(squadMembers, governingBody, instance)
+                val entryDetailsRows = entryDetailsModelPopulator.getEntryDetailsRows(activeMembers, governingBody, instance)
                 csvOutputRenderer.renderCsvResponse(response, entryDetailsModelPopulator.entryDetailsHeaders, entryDetailsRows)
                 ModelAndView()  // TODO questionable
             } else {
