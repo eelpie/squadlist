@@ -47,7 +47,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
     private val navItemsBuilder: NavItemsBuilder,
     private val displayMemberFactory: DisplayMemberFactory,
     loggedInUserService: LoggedInUserService,
-    instanceConfig: InstanceConfig): WithSignedInUser(instanceConfig, loggedInUserService) {
+    instanceConfig: InstanceConfig): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
     private val log = LogManager.getLogger(OutingsController::class.java)
 

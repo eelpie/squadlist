@@ -18,6 +18,7 @@ import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.model.forms.InstanceDetails
+import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.*
@@ -31,11 +32,12 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
                                              private val activeMemberFilter: ActiveMemberFilter, private val csvOutputRenderer: CsvOutputRenderer,
                                              private val urlBuilder: UrlBuilder,
                                              private val governingBodyFactory: GoverningBodyFactory,
-                                             loggedInUserService: LoggedInUserService,
-                                             instanceConfig: InstanceConfig,
+                                             private val permissionsService: PermissionsService,
                                              private val navItemsBuilder: NavItemsBuilder,
                                              private val textHelper: TextHelper,
-                                             private val displayMemberFactory: DisplayMemberFactory): WithSignedInUser(instanceConfig, loggedInUserService) {
+                                             private val displayMemberFactory: DisplayMemberFactory,
+                                             loggedInUserService: LoggedInUserService,
+                                             instanceConfig: InstanceConfig): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
     private val log = LogManager.getLogger(AdminController::class.java)
 
@@ -65,7 +67,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
                     .addObject("boats", Lists.newArrayList<Any>())
                     .addObject("statistics", swaggerApiClientForLoggedInUser.instancesInstanceStatisticsGet(instance.id))
         }
-        return withSignedInAdmin(renderAdminPage)
+        return withSignedInMemberWhoCanViewAdminScreen(renderAdminPage)
     }
 
     @RequestMapping(value = ["/admin/instance"], method = [RequestMethod.GET])
@@ -76,7 +78,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
             instanceDetails.governingBody = instance.governingBody
             renderEditInstanceDetailsForm(instanceDetails, instance, loggedInMember, swaggerApiClientForLoggedInUser)
         }
-        return withSignedInAdmin(renderEditInstancePage)
+        return withSignedInMemberWhoCanViewAdminScreen(renderEditInstancePage)
     }
 
     @PostMapping("/admin/instance")
@@ -91,7 +93,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
             redirectToAdminScreen()
         }
 
-        return withSignedInAdmin(handleEditInstancePage)
+        return withSignedInMemberWhoCanViewAdminScreen(handleEditInstancePage)
     }
 
     @GetMapping("/admin/admins")
@@ -115,7 +117,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
                     .addObject("availableMembers", displayMemberFactory.toDisplayMembers(availableMembers, loggedInMember))
 
         }
-        return withSignedInAdmin(renderEditAdminsPage)
+        return withSignedInMemberWhoCanViewAdminScreen(renderEditAdminsPage)
     }
 
     @PostMapping("/admin/admins")
@@ -127,7 +129,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
             swaggerApiClientForLoggedInUser.setInstanceAdmins(updatedAdmins, instance.id)
             redirectToAdminScreen()
         }
-        return withSignedInAdmin(handleEditAdminsPage)
+        return withSignedInMemberWhoCanViewAdminScreen(handleEditAdminsPage)
     }
 
     @GetMapping("/admin/export/members.csv")
@@ -158,7 +160,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
                     "Weight", "Sweep oar side", "Sculling", "Registration number", "Rowing points", "Sculling points", "Role"), rows)
             ModelAndView()  // TODO questionable
         }
-        withSignedInAdmin(renderMembersCsv)
+        withSignedInMemberWhoCanViewAdminScreen(renderMembersCsv)
     }
 
     private fun extractAdminUsersFrom(members: List<Member>): List<Member> {

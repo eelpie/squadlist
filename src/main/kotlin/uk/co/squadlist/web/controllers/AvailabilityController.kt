@@ -41,7 +41,7 @@ class AvailabilityController @Autowired constructor(
     private val permissionsService: PermissionsService,
     instanceConfig: InstanceConfig,
     loggedInUserService: LoggedInUserService
-) : WithSignedInUser(instanceConfig, loggedInUserService) {
+) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
     @RequestMapping("/availability")
     fun availability(): ModelAndView {

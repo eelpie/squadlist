@@ -8,8 +8,11 @@ import uk.co.squadlist.model.swagger.Member
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.exceptions.PermissionDeniedException
+import uk.co.squadlist.web.services.Permission
+import uk.co.squadlist.web.services.PermissionsService
 
-abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, private val loggedInUserService: LoggedInUserService) {
+abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, private val loggedInUserService: LoggedInUserService,
+                                private val permissionsService: PermissionsService) {
 
     private val log = LogManager.getLogger(WithSignedInUser::class.java)
 
@@ -23,11 +26,11 @@ abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, priv
         return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
     }
 
-    protected fun withSignedInAdmin(page: (Instance, Member, DefaultApi) -> ModelAndView): ModelAndView {
+    protected fun withSignedInMemberWhoCanViewAdminScreen(page: (Instance, Member, DefaultApi) -> ModelAndView): ModelAndView {
         val swaggerApiClientForLoggedInUser = loggedInUserService.swaggerApiClientForLoggedInUser
         val instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.instance)
         val loggedInMember = loggedInUserService.loggedInMember
-        if (!loggedInMember.isAdmin) {
+        if (!permissionsService.hasPermission(loggedInMember, Permission.VIEW_ADMIN_SCREEN)) {
             throw PermissionDeniedException()
         }
 

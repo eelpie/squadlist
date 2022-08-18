@@ -24,7 +24,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
                                                 private val navItemsBuilder: NavItemsBuilder,
                                                 private val permissionsService: PermissionsService,
                                                 loggedInUserService: LoggedInUserService,
-                                                instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
+                                                instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
     @RequestMapping("/contacts")
     fun contacts(): ModelAndView {
         val renderContactsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->

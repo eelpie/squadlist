@@ -9,14 +9,16 @@ import uk.co.squadlist.model.swagger.Instance
 import uk.co.squadlist.model.swagger.Member
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
+import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.views.NavItemsBuilder
 import uk.co.squadlist.web.views.ViewFactory
 
 @Controller
 class ChangesController @Autowired constructor(private val viewFactory: ViewFactory,
                                                private val navItemsBuilder: NavItemsBuilder,
+                                               permissionsService: PermissionsService,
                                                loggedInUserService: LoggedInUserService,
-                                               instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
+                                               instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
     @RequestMapping("/changes")
     @Throws(Exception::class)
     fun changes(): ModelAndView {

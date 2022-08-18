@@ -34,7 +34,7 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                                                     private val displayMemberFactory: DisplayMemberFactory,
                                                     private val activeMemberFilter: ActiveMemberFilter,
                                                     loggedInUserService: LoggedInUserService,
-                                                    instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
+                                                    instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
     @GetMapping("/entrydetails/{squadId}")
     fun entrydetails(@PathVariable squadId: String?): ModelAndView {
         val renderSquadEntryDetailsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
