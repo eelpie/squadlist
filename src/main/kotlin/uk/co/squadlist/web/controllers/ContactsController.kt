@@ -10,6 +10,9 @@ import uk.co.squadlist.model.swagger.Instance
 import uk.co.squadlist.model.swagger.Member
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
+import uk.co.squadlist.web.exceptions.PermissionDeniedException
+import uk.co.squadlist.web.services.Permission
+import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.PreferredSquadService
 import uk.co.squadlist.web.views.NavItemsBuilder
 import uk.co.squadlist.web.views.ViewFactory
@@ -19,6 +22,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
                                                 private val viewFactory: ViewFactory,
                                                 private val contactsModelPopulator: ContactsModelPopulator,
                                                 private val navItemsBuilder: NavItemsBuilder,
+                                                private val permissionsService: PermissionsService,
                                                 loggedInUserService: LoggedInUserService,
                                                 instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService) {
     @RequestMapping("/contacts")
@@ -35,13 +39,17 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
     fun squadContacts(@PathVariable squadId: String?): ModelAndView {
         val renderSquadContactsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance)
-            val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
-            val navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance, squads)
-            val mv = viewFactory.getViewFor("contacts", instance).addObject("title", "Contacts").addObject("navItems", navItems).addObject("squads", squads)
-            if (!squads.isEmpty()) {
-                contactsModelPopulator.populateModel(squadToShow, mv, swaggerApiClientForLoggedInUser, loggedInMember)
+            if  (permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_CONTACT_DETAILS, squadToShow)) {
+                val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
+                val navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance, squads)
+                val mv = viewFactory.getViewFor("contacts", instance).addObject("title", "Contacts").addObject("navItems", navItems).addObject("squads", squads)
+                if (!squads.isEmpty()) {
+                    contactsModelPopulator.populateModel(squadToShow, mv, swaggerApiClientForLoggedInUser, loggedInMember)
+                }
+                mv
+            } else {
+                throw PermissionDeniedException()
             }
-            mv
         }
         return withSignedInMember(renderSquadContactsPage);
     }

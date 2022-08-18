@@ -12,8 +12,6 @@ import uk.co.squadlist.client.swagger.ApiException;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.Squad;
-import uk.co.squadlist.web.annotations.RequiresSquadPermission;
-import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 
 import java.util.List;
@@ -59,7 +57,6 @@ public class ContactsModelPopulator {
         this.displayMemberFactory = displayMemberFactory;
     }
 
-    @RequiresSquadPermission(permission = Permission.VIEW_SQUAD_CONTACT_DETAILS)
     public void populateModel(final Squad squad, final ModelAndView mv, DefaultApi api, Member loggedInMember) throws ApiException {
         List<Member> squadMembers = api.getSquadMembers(squad.getId());
         Ordering<Member> byRoleThenName = byRoleThenFirstName; // TODO restore instance.getMemberOrdering() != null && instance.getMemberOrdering().equals("firstName") ? byRoleThenFirstName : byRoleThenLastName;

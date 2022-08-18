@@ -10,9 +10,7 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.Squad;
-import uk.co.squadlist.web.annotations.RequiresSquadPermission;
 import uk.co.squadlist.web.localisation.GoverningBody;
-import uk.co.squadlist.web.services.Permission;
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter;
 import uk.co.squadlist.web.views.DateFormatter;
 import uk.co.squadlist.web.views.model.DisplayMember;
@@ -33,7 +31,6 @@ public class EntryDetailsModelPopulator {
 		this.displayMemberFactory = displayMemberFactory;
 	}
 
-	@RequiresSquadPermission(permission = Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public void populateModel(final Squad squadToShow, DefaultApi api, final ModelAndView mv, Member loggedInMember) throws ApiException {
 		List<Member> activeMembers = activeMemberFilter.extractActive(api.getSquadMembers(squadToShow.getId()));
 		List<DisplayMember> displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember);
@@ -42,7 +39,6 @@ public class EntryDetailsModelPopulator {
 		mv.addObject("members", displayMembers);
 	}
 
-	@RequiresSquadPermission(permission=Permission.VIEW_SQUAD_ENTRY_DETAILS)
 	public List<List<String>> getEntryDetailsRows(Squad squadToShow, DefaultApi api, GoverningBody governingBody, Instance instance) throws ApiException {
 		List<Member> squadMembers = api.getSquadMembers(squadToShow.getId());
 		return getEntryDetailsRows(activeMemberFilter.extractActive(squadMembers), governingBody, instance);
