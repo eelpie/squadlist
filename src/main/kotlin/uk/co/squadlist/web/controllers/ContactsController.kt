@@ -32,7 +32,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
             val navItems = navItemsBuilder.navItemsFor(loggedInMember, "contacts", swaggerApiClientForLoggedInUser, instance, squads)
             viewFactory.getViewFor("contacts", instance).addObject("title", "Contacts").addObject("mavItems", navItems).addObject("squads", squads) // TODO leaves squad null on view
         }
-        return withSignedInMember(renderContactsPage);
+        return withSignedInMember(renderContactsPage)
     }
 
     @RequestMapping("/contacts/{squadId}")
@@ -51,7 +51,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
                 throw PermissionDeniedException()
             }
         }
-        return withSignedInMember(renderSquadContactsPage);
+        return withSignedInMember(renderSquadContactsPage)
     }
 
 }

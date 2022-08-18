@@ -13,7 +13,7 @@ data class DateRange(val start: LocalDate?, val end: LocalDate?, val month: Year
         @JvmStatic
         fun from(month: YearMonth?, startDate: LocalDate?, endDate: LocalDate?): DateRange {
             if (month != null) {
-                val monthStartDay = month.toLocalDate(1);
+                val monthStartDay = month.toLocalDate(1)
                 return DateRange(
                     monthStartDay,
                     monthStartDay.plusMonths(1).minusDays(1),

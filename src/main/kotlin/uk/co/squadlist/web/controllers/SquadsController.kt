@@ -31,12 +31,11 @@ import javax.validation.Valid
 @Controller
 class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder,
                                               private val viewFactory: ViewFactory,
-                                              private val loggedInUserService: LoggedInUserService,
                                               private val navItemsBuilder: NavItemsBuilder,
-                                              private val instanceConfig: InstanceConfig,
                                               private val displayMemberFactory: DisplayMemberFactory,
-                                              permissionsService: PermissionsService,
-                                              ): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
+                                              instanceConfig: InstanceConfig,
+                                              loggedInUserService: LoggedInUserService,
+                                              permissionsService: PermissionsService): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
     private val log = LogManager.getLogger(SquadsController::class.java)
 

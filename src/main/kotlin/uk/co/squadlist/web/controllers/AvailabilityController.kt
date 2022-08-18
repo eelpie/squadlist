@@ -68,7 +68,7 @@ class AvailabilityController @Autowired constructor(
         @RequestParam(value = "month", required = false) month: String?,
         @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate?,
         @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate?
-    ): ModelAndView? {
+    ): ModelAndView {
         val renderAvailabilitySquadPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
             val navItems = navItemsBuilder.navItemsFor(
