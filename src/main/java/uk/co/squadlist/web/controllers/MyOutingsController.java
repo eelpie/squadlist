@@ -6,16 +6,13 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.OutingWithAvailability;
 import uk.co.squadlist.model.swagger.Squad;
-import uk.co.squadlist.web.annotations.RequiresSignedInMember;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
 import uk.co.squadlist.web.exceptions.OutingClosedException;
@@ -59,9 +56,8 @@ public class MyOutingsController {
         this.instanceConfig = instanceConfig;
     }
 
-    @RequiresSignedInMember
-    @RequestMapping("/")
-    public ModelAndView outings() throws Exception {
+    @GetMapping("/")
+    public ModelAndView myOutings() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         final Member loggedInUser = loggedInUserService.getLoggedInMember();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
@@ -82,7 +78,7 @@ public class MyOutingsController {
                 addObject("icalUrl", urlBuilder.outingsIcal(loggedInUser.getId(), instance));
     }
 
-    @RequestMapping(value = "/availability/ajax", method = RequestMethod.POST)
+    @PostMapping("/availability/ajax")
     public ModelAndView updateAvailability(
             @RequestParam(value = "outing", required = true) String outingId,
             @RequestParam(value = "availability", required = true) String availability) throws Exception {
@@ -109,8 +105,7 @@ public class MyOutingsController {
         throw new OutingClosedException();
     }
 
-    @RequiresSignedInMember
-    @RequestMapping("/myoutings/ajax")
+    @PostMapping("/myoutings/ajax")
     public ModelAndView ajax() throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
