@@ -1,10 +1,12 @@
 package uk.co.squadlist.web.controllers;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.*;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.YearMonth;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +21,6 @@ import uk.co.squadlist.web.annotations.RequiresOutingPermission;
 import uk.co.squadlist.web.annotations.RequiresPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.InstanceConfig;
-import uk.co.squadlist.web.exceptions.OutingClosedException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.model.forms.OutingDetails;
 import uk.co.squadlist.web.services.OutingAvailabilityCountsService;
@@ -36,7 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class OutingsController {
@@ -342,33 +346,6 @@ public class OutingsController {
             result.addError(new ObjectError("outing", "Unknown exception"));
             return renderEditOutingForm(outingDetails, loggedInMember, outing, instance);
         }
-    }
-
-    @RequestMapping(value = "/availability/ajax", method = RequestMethod.POST)
-    public ModelAndView updateAvailability(
-            @RequestParam(value = "outing", required = true) String outingId,
-            @RequestParam(value = "availability", required = true) String availability) throws Exception {
-        DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-
-        Member loggedInMember = loggedInUserService.getLoggedInMember();
-
-        final uk.co.squadlist.model.swagger.Outing outing = swaggerApiClientForLoggedInUser.getOuting(outingId);
-
-        if (!outing.isClosed()) {
-            uk.co.squadlist.model.swagger.AvailabilityOption availabilityOption = (!Strings.isNullOrEmpty(availability)) ? swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.getId(), availability) : null;
-
-            uk.co.squadlist.model.swagger.Availability body = new uk.co.squadlist.model.swagger.Availability().availabilityOption(availabilityOption).member(loggedInMember).outing(outing);
-
-            log.info("Setting availability for " + loggedInMember.getUsername() + " / " + outing.getId() + " to " + availabilityOption);
-            final OutingWithAvailability result = swaggerApiClientForLoggedInUser.setOutingAvailability(body, outing.getId());
-            log.info("Set availability result: " + result);
-
-            return viewFactory.getViewFor("includes/availability", instance).
-                    addObject("availability", result.getAvailabilityOption());
-        }
-
-        throw new OutingClosedException();
     }
 
     private ModelAndView redirectToOuting(final Outing updatedOuting) {
