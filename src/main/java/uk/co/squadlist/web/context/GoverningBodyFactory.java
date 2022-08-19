@@ -17,7 +17,7 @@ public class GoverningBodyFactory {
         if ("rowing-ireland".equals(id)) {
             return new RowingIreland();
         }
-        return new BritishRowing();
+        return new BritishRowing(); // TODO this is lazy
     }
 
 }
