@@ -16,7 +16,9 @@ class GoverningBodyFactory {
         return when (id) {
             "rowing-ireland" -> RowingIreland() // TODO these ids want to be on the governing bodies
             "british-rowing" -> BritishRowing()
-            else -> throw NotImplementedError()
+            else -> {
+                BritishRowing() // TODO Some instances have no governing body set!
+            }
         }
     }
 
