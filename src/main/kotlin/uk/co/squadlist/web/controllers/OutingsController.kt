@@ -339,7 +339,6 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
         return viewFactory.redirectionTo(urlBuilder.outingUrl(updatedOuting))
     }
 
-    @Throws(SignedInMemberRequiredException::class, URISyntaxException::class, ApiException::class)
     private fun renderNewOutingForm(
         outingDetails: OutingDetails?,
         loggedInMember: Member,
@@ -357,7 +356,6 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
             .addObject("outing", outingDetails)
     }
 
-    @Throws(SignedInMemberRequiredException::class, URISyntaxException::class, ApiException::class)
     private fun renderEditOutingForm(
         outingDetails: OutingDetails?,
         loggedInMember: Member,
@@ -382,7 +380,6 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
             .addObject("canAddOuting", permissionsService.hasPermission(loggedInMember, Permission.ADD_OUTING))
     }
 
-    @Throws(ApiException::class)
     private fun getOutingMonthsFor(
         instance: Instance,
         squad: Squad,
@@ -397,7 +394,6 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
         return Lists.newArrayList(stringBigDecimalMap.keys).sorted()
     }
 
-    @Throws(ApiException::class)
     private fun buildOutingFromOutingDetails(
         outingDetails: OutingDetails?,
         instance: Instance,

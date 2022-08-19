@@ -266,7 +266,6 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
         return viewFactory.redirectionTo(urlBuilder.adminUrl())
     }
 
-    @Throws(SignedInMemberRequiredException::class, URISyntaxException::class, ApiException::class)
     private fun renderEditInstanceDetailsForm(instanceDetails: InstanceDetails?, instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi): ModelAndView {
         val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
         val navItems = navItemsBuilder.navItemsFor(loggedInMember, "admin", swaggerApiClientForLoggedInUser, instance, squads)

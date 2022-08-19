@@ -20,7 +20,6 @@ class ChangesController @Autowired constructor(private val viewFactory: ViewFact
                                                loggedInUserService: LoggedInUserService,
                                                instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
     @RequestMapping("/changes")
-    @Throws(Exception::class)
     fun changes(): ModelAndView {
         val renderChangesPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)

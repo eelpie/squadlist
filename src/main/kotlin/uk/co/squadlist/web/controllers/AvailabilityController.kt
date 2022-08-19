@@ -186,7 +186,6 @@ class AvailabilityController @Autowired constructor(
         withSignedInMember(renderAvailabilitySquadCsv)
     }
 
-    @Throws(SignedInMemberRequiredException::class, ApiException::class)
     private fun decorateOutingsWithMembersAvailability(
         squad: Squad,
         startDate: DateTime,
@@ -207,7 +206,6 @@ class AvailabilityController @Autowired constructor(
     }
 
     // TODO duplication with outings controller
-    @Throws(ApiException::class)
     private fun getOutingMonthsFor(instance: Instance, squad: Squad, swaggerApiClientForLoggedInUser: DefaultApi): List<String> {
         val stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(
             instance.id,

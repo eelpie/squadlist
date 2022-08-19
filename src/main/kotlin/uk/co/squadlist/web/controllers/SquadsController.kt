@@ -50,7 +50,6 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
     }
 
     @PostMapping("/squad/new")
-    @Throws(URISyntaxException::class, ApiException::class, IOException::class)
     fun newSquadSubmit(@Valid @ModelAttribute("squadDetails") squadDetails: SquadDetails?, result: BindingResult): ModelAndView {
         val handleAddSquad = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             if (result.hasErrors()) {
@@ -69,7 +68,6 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
     }
 
     @GetMapping("/squad/{id}/delete")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun deletePrompt(@PathVariable id: String): ModelAndView {
         val renderDeleteSquadPrompt = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
@@ -84,7 +82,6 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
     }
 
     @PostMapping("/squad/{id}/delete")
-    @Throws(ApiException::class)
     fun delete(@PathVariable id: String): ModelAndView {
         val handleDeleteSquad = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squad = swaggerApiClientForLoggedInUser.getSquad(id)
@@ -95,7 +92,6 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
     }
 
     @GetMapping("/squad/{id}/edit")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun editSquad(@PathVariable id: String): ModelAndView {
         val renderDeleteSquadPrompt = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squad = swaggerApiClientForLoggedInUser.getSquad(id)
@@ -107,7 +103,6 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
     }
 
     @PostMapping("/squad/{id}/edit")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun editSquadSubmit(@PathVariable id: String, @Valid @ModelAttribute("squadDetails") squadDetails: SquadDetails?, result: BindingResult): ModelAndView {
         val handleEditSquad = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
 
@@ -131,14 +126,12 @@ class SquadsController @Autowired constructor(private val urlBuilder: UrlBuilder
         return withSignedInMemberWhoCanViewAdminScreen(handleEditSquad)
     }
 
-    @Throws(URISyntaxException::class, ApiException::class)
     private fun renderNewSquadForm(squadDetails: SquadDetails?, loggedInUser: Member, instance: Instance, swaggerApiClientForLoggedInUser: DefaultApi): ModelAndView {
         val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
         val navItems = navItemsBuilder.navItemsFor(loggedInUser, "admin", swaggerApiClientForLoggedInUser, instance, squads)
         return viewFactory.getViewFor("newSquad", instance).addObject("title", "Add new squad").addObject("navItems", navItems).addObject("squadDetails", squadDetails)
     }
 
-    @Throws(URISyntaxException::class, ApiException::class)
     private fun renderEditSquadForm(loggedInUser: Member, squad: Squad, squadDetails: SquadDetails?, instance: Instance, swaggerApiClientForLoggedInUser: DefaultApi): ModelAndView {
         val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squad.id)
         val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)

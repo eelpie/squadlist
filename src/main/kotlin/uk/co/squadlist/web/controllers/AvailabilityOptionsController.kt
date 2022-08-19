@@ -33,7 +33,6 @@ class AvailabilityOptionsController @Autowired constructor(
 
     private val log = LogManager.getLogger(AvailabilityOptionsController::class.java)
     @GetMapping("/availability-option/{id}/edit")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun editPrompt(@PathVariable id: String): ModelAndView {
         val renderEditAvailabilityOptionPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val availabilityOption =
@@ -47,7 +46,6 @@ class AvailabilityOptionsController @Autowired constructor(
     }
 
     @GetMapping("/availability-option/{id}/delete")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun deletePrompt(@PathVariable id: String): ModelAndView {
         val renderDeleteAvailabilityOptionPrompt = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.id, id)
@@ -57,7 +55,6 @@ class AvailabilityOptionsController @Autowired constructor(
     }
 
     @PostMapping("/availability-option/{id}/delete")
-    @Throws(ApiException::class)
     fun delete(@PathVariable id: String, @RequestParam(required = false) alternative: String?): ModelAndView {
         val handleDeleteAvailabilityOption = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.id, id)
@@ -83,7 +80,6 @@ class AvailabilityOptionsController @Autowired constructor(
     }
 
     @GetMapping("/availability-option/new")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun availability(): ModelAndView {
         val renderNewAvailabilityOptionPrompt = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
              val availabilityOptionDetails = AvailabilityOptionDetails()
@@ -94,7 +90,6 @@ class AvailabilityOptionsController @Autowired constructor(
     }
 
     @PostMapping("/availability-option/new")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun submitNewAvailabilityOption(@Valid @ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
         val handleNewAvailability = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             if (result.hasErrors()) {
@@ -117,7 +112,6 @@ class AvailabilityOptionsController @Autowired constructor(
     }
 
     @PostMapping("/availability-option/{id}/edit")
-    @Throws(URISyntaxException::class, ApiException::class)
     fun editPost(@PathVariable id: String,  @Valid @ModelAttribute("availabilityOptionDetails") availabilityOptionDetails: AvailabilityOptionDetails?, result: BindingResult): ModelAndView {
         val handleEditAvailabilityOption = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val availabilityOption = swaggerApiClientForLoggedInUser.instancesInstanceAvailabilityOptionsIdGet(instance.id, id)
