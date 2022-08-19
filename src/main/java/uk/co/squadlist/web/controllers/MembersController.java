@@ -20,10 +20,10 @@ import uk.co.squadlist.client.swagger.api.DefaultApi;
 import uk.co.squadlist.model.swagger.Instance;
 import uk.co.squadlist.model.swagger.Member;
 import uk.co.squadlist.model.swagger.Squad;
-import uk.co.squadlist.web.annotations.RequiresMemberPermission;
 import uk.co.squadlist.web.auth.LoggedInUserService;
 import uk.co.squadlist.web.context.GoverningBodyFactory;
 import uk.co.squadlist.web.context.InstanceConfig;
+import uk.co.squadlist.web.exceptions.PermissionDeniedException;
 import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException;
 import uk.co.squadlist.web.localisation.GoverningBody;
 import uk.co.squadlist.web.model.forms.ChangePassword;
@@ -85,23 +85,24 @@ public class MembersController {
         this.instanceConfig = instanceConfig;
     }
 
-    @RequiresMemberPermission(permission = Permission.VIEW_MEMBER_DETAILS)
     @RequestMapping("/member/{id}")
     public ModelAndView member(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance, squads);
-
-        return viewFactory.getViewFor("memberDetails", instance).
-                addObject("member", member).
-                addObject("title", member.getFirstName() + " " + member.getLastName()).
-                addObject("navItems", navItems).
-                addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+            return viewFactory.getViewFor("memberDetails", instance).
+                    addObject("member", member).
+                    addObject("title", member.getFirstName() + " " + member.getLastName()).
+                    addObject("navItems", navItems).
+                    addObject("governingBody", governingBodyFactory.getGoverningBody(instance));
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.GET)
@@ -116,273 +117,302 @@ public class MembersController {
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
     public ModelAndView changePasswordSubmit(@Valid @ModelAttribute("changePassword") ChangePassword changePassword, BindingResult result) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
 
         if (result.hasErrors()) {
-            return renderChangePasswordForm(instance, loggedInUser, changePassword);
+            return renderChangePasswordForm(instance, loggedInMember, changePassword);
         }
 
-        log.info("Requesting change password for member: " + loggedInUser.getId());
+        log.info("Requesting change password for member: " + loggedInMember.getId());
         try {
-            swaggerApiClientForLoggedInUser.changePassword(loggedInUser.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
-            return viewFactory.redirectionTo(urlBuilder.memberUrl(loggedInUser));
+            swaggerApiClientForLoggedInUser.changePassword(loggedInMember.getId(), changePassword.getCurrentPassword(), changePassword.getNewPassword());
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(loggedInMember));
 
         } catch (ApiException e) {
             result.addError(new ObjectError("changePassword", "Change password failed"));
-            return renderChangePasswordForm(instance, loggedInUser, changePassword);
+            return renderChangePasswordForm(instance, loggedInMember, changePassword);
         }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.GET)
     public ModelAndView updateMember(@PathVariable String id, @RequestParam(required = false) Boolean invalidImage) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final MemberDetails memberDetails = new MemberDetails();
-        memberDetails.setFirstName(member.getFirstName());
-        memberDetails.setLastName(member.getLastName());
-        memberDetails.setKnownAs(member.getKnownAs());
-        memberDetails.setGender(member.getGender());
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            final MemberDetails memberDetails = new MemberDetails();
+            memberDetails.setFirstName(member.getFirstName());
+            memberDetails.setLastName(member.getLastName());
+            memberDetails.setKnownAs(member.getKnownAs());
+            memberDetails.setGender(member.getGender());
 
-        memberDetails.setDateOfBirthDay(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getDayOfMonth() : null);
-        memberDetails.setDateOfBirthMonth(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getMonthOfYear() : null);
-        memberDetails.setDateOfBirthYear(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getYear() : null);
+            memberDetails.setDateOfBirthDay(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getDayOfMonth() : null);
+            memberDetails.setDateOfBirthMonth(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getMonthOfYear() : null);
+            memberDetails.setDateOfBirthYear(member.getDateOfBirth() != null ? new DateTime(member.getDateOfBirth()).getYear() : null);
 
-        memberDetails.setWeight(member.getWeight() != null ? Integer.toString(member.getWeight().intValue()) : null);
-        memberDetails.setEmailAddress(member.getEmailAddress());
-        memberDetails.setContactNumber(member.getContactNumber());
-        memberDetails.setRegistrationNumber(member.getRegistrationNumber());
-        memberDetails.setRowingPoints(member.getRowingPoints());
-        memberDetails.setSculling(member.getSculling());
-        memberDetails.setScullingPoints(member.getScullingPoints());
-        memberDetails.setSweepOarSide(member.getSweepOarSide());
+            memberDetails.setWeight(member.getWeight() != null ? Integer.toString(member.getWeight().intValue()) : null);
+            memberDetails.setEmailAddress(member.getEmailAddress());
+            memberDetails.setContactNumber(member.getContactNumber());
+            memberDetails.setRegistrationNumber(member.getRegistrationNumber());
+            memberDetails.setRowingPoints(member.getRowingPoints());
+            memberDetails.setSculling(member.getSculling());
+            memberDetails.setScullingPoints(member.getScullingPoints());
+            memberDetails.setSweepOarSide(member.getSweepOarSide());
 
-        List<MemberSquad> memberSquads = Lists.newArrayList();
-        for (Squad squad : member.getSquads()) {
-            memberSquads.add(new MemberSquad(squad.getId()));
+            List<MemberSquad> memberSquads = Lists.newArrayList();
+            for (Squad squad : member.getSquads()) {
+                memberSquads.add(new MemberSquad(squad.getId()));
+            }
+
+            memberDetails.setSquads(memberSquads);
+            memberDetails.setEmergencyContactName(member.getEmergencyContactName());
+            memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
+            memberDetails.setRole(member.getRole());
+            memberDetails.setProfileImage(member.getProfileImage());
+
+            GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
+
+            return renderEditMemberDetailsForm(instance,
+                    memberDetails,
+                    member,
+                    governingBody, swaggerApiClientForLoggedInUser).
+                    addObject("invalidImage", invalidImage);
+        } else {
+            throw new PermissionDeniedException();
         }
-
-        memberDetails.setSquads(memberSquads);
-        memberDetails.setEmergencyContactName(member.getEmergencyContactName());
-        memberDetails.setEmergencyContactNumber(member.getEmergencyContactNumber());
-        memberDetails.setRole(member.getRole());
-        memberDetails.setProfileImage(member.getProfileImage());
-
-        GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
-
-        return renderEditMemberDetailsForm(instance,
-                memberDetails,
-                member,
-                governingBody, swaggerApiClientForLoggedInUser).
-                addObject("invalidImage", invalidImage);
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit", method = RequestMethod.POST)
     public ModelAndView updateMemberSubmit(@PathVariable String id, @Valid @ModelAttribute("memberDetails") MemberDetails memberDetails, BindingResult result) throws Exception {
         log.info("Received edit member request: " + memberDetails);
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
-        final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
-            if (!governingBody.getPointsOptions().contains(memberDetails.getScullingPoints())) {
-                result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));
-            }
-        }
-        if (!Strings.isNullOrEmpty(memberDetails.getRowingPoints())) {
-            if (!governingBody.getPointsOptions().contains(memberDetails.getRowingPoints())) {
-                result.addError(new ObjectError("member.rowingPoints", "Invalid points option"));
-            }
-        }
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
 
-        DateTime updatedDateOfBirth = null;
-        if (memberDetails.getDateOfBirthDay() != null &&
-                memberDetails.getDateOfBirthMonth() != null &&
-                memberDetails.getDateOfBirthYear() != null) {
+            final List<Squad> squads = extractAndValidateRequestedSquads(memberDetails, result, swaggerApiClientForLoggedInUser);
+            final GoverningBody governingBody = governingBodyFactory.getGoverningBody(instance);
+
+            if (!Strings.isNullOrEmpty(memberDetails.getScullingPoints())) {
+                if (!governingBody.getPointsOptions().contains(memberDetails.getScullingPoints())) {
+                    result.addError(new ObjectError("member.scullingPoints", "Invalid points option"));
+                }
+            }
+            if (!Strings.isNullOrEmpty(memberDetails.getRowingPoints())) {
+                if (!governingBody.getPointsOptions().contains(memberDetails.getRowingPoints())) {
+                    result.addError(new ObjectError("member.rowingPoints", "Invalid points option"));
+                }
+            }
+
+            DateTime updatedDateOfBirth = null;
+            if (memberDetails.getDateOfBirthDay() != null &&
+                    memberDetails.getDateOfBirthMonth() != null &&
+                    memberDetails.getDateOfBirthYear() != null) {
+                try {
+                    updatedDateOfBirth = new DateTime(memberDetails.getDateOfBirthYear(),
+                            memberDetails.getDateOfBirthMonth(), memberDetails.getDateOfBirthDay(), 0, 0, 0,
+                            DateTimeZone.UTC);
+                    member.setDateOfBirth(updatedDateOfBirth);
+                } catch (IllegalFieldValueException e) {
+                    result.addError(new ObjectError("member.dateOfBirthYear", "Invalid date"));
+                }
+            }
+
+            if (result.hasErrors()) {
+                return renderEditMemberDetailsForm(instance, memberDetails,
+                        swaggerApiClientForLoggedInUser.getMember(member.getId()), governingBody, swaggerApiClientForLoggedInUser);
+            }
+
+            log.info("Updating member details: " + member.getId());
+            member.setFirstName(memberDetails.getFirstName().trim());
+            member.setLastName(memberDetails.getLastName().trim());
+            member.setKnownAs(memberDetails.getKnownAs().trim());
+            member.setGender(memberDetails.getGender());
+
+            member.setDateOfBirth(updatedDateOfBirth);
+
             try {
-                updatedDateOfBirth = new DateTime(memberDetails.getDateOfBirthYear(),
-                        memberDetails.getDateOfBirthMonth(), memberDetails.getDateOfBirthDay(), 0, 0, 0,
-                        DateTimeZone.UTC);
-                member.setDateOfBirth(updatedDateOfBirth);
-            } catch (IllegalFieldValueException e) {
-                result.addError(new ObjectError("member.dateOfBirthYear", "Invalid date"));
+                Integer asInteger = !Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null;
+                member.setWeight(asInteger != null ? new BigDecimal(asInteger) : null);  // TODO validate
+            } catch (IllegalArgumentException iae) {
+                log.warn(iae);
             }
+
+            member.setEmailAddress(memberDetails.getEmailAddress().trim());
+            member.setContactNumber(memberDetails.getContactNumber().trim());
+            member.setRowingPoints(!Strings.isNullOrEmpty(memberDetails.getRowingPoints()) ? memberDetails.getRowingPoints() : null);
+            member.setSculling(memberDetails.getSculling());
+            member.setScullingPoints(!Strings.isNullOrEmpty(memberDetails.getScullingPoints()) ? memberDetails.getScullingPoints() : null);
+            member.setRegistrationNumber(memberDetails.getRegistrationNumber().trim());
+            member.setEmergencyContactName(memberDetails.getEmergencyContactName().trim());
+            member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber().trim());
+            member.setSweepOarSide(memberDetails.getSweepOarSide());
+
+            final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), swaggerApiClientForLoggedInUser.getMember(member.getId()));
+            if (canChangeRole) {
+                member.setRole(memberDetails.getRole());
+            }
+
+            final boolean canChangeSquads = canChangeRole;  // TODO really?
+            if (canChangeSquads) {
+                member.setSquads(squads);
+            }
+
+            try {
+                swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
+            } catch (ApiException e) {
+                log.warn("Invalid member exception: " + e.getResponseBody());
+                result.addError(new ObjectError("memberDetails", e.getMessage()));
+
+                return renderEditMemberDetailsForm(instance, memberDetails,
+                        swaggerApiClientForLoggedInUser.getMember(member.getId()),
+                        governingBody, swaggerApiClientForLoggedInUser).
+                        addObject("invalidImage", false);
+            }
+
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
+        } else {
+            throw new PermissionDeniedException();
         }
-
-        if (result.hasErrors()) {
-            return renderEditMemberDetailsForm(instance, memberDetails,
-                    swaggerApiClientForLoggedInUser.getMember(member.getId()), governingBody, swaggerApiClientForLoggedInUser);
-        }
-
-        log.info("Updating member details: " + member.getId());
-        member.setFirstName(memberDetails.getFirstName().trim());
-        member.setLastName(memberDetails.getLastName().trim());
-        member.setKnownAs(memberDetails.getKnownAs().trim());
-        member.setGender(memberDetails.getGender());
-
-        member.setDateOfBirth(updatedDateOfBirth);
-
-        try {
-            Integer asInteger = !Strings.isNullOrEmpty(memberDetails.getWeight()) ? Integer.parseInt(memberDetails.getWeight()) : null;
-            member.setWeight(asInteger != null ? new BigDecimal(asInteger) : null);  // TODO validate
-        } catch (IllegalArgumentException iae) {
-            log.warn(iae);
-        }
-
-        member.setEmailAddress(memberDetails.getEmailAddress().trim());
-        member.setContactNumber(memberDetails.getContactNumber().trim());
-        member.setRowingPoints(!Strings.isNullOrEmpty(memberDetails.getRowingPoints()) ? memberDetails.getRowingPoints() : null);
-        member.setSculling(memberDetails.getSculling());
-        member.setScullingPoints(!Strings.isNullOrEmpty(memberDetails.getScullingPoints()) ? memberDetails.getScullingPoints() : null);
-        member.setRegistrationNumber(memberDetails.getRegistrationNumber().trim());
-        member.setEmergencyContactName(memberDetails.getEmergencyContactName().trim());
-        member.setEmergencyContactNumber(memberDetails.getEmergencyContactNumber().trim());
-        member.setSweepOarSide(memberDetails.getSweepOarSide());
-
-        final boolean canChangeRole = permissionsService.canChangeRoleFor(loggedInUserService.getLoggedInMember(), swaggerApiClientForLoggedInUser.getMember(member.getId()));
-        if (canChangeRole) {
-            member.setRole(memberDetails.getRole());
-        }
-
-        final boolean canChangeSquads = canChangeRole;  // TODO really?
-        if (canChangeSquads) {
-            member.setSquads(squads);
-        }
-
-        try {
-            swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
-        } catch (ApiException e) {
-            log.warn("Invalid member exception: " + e.getResponseBody());
-            result.addError(new ObjectError("memberDetails", e.getMessage()));
-
-            return renderEditMemberDetailsForm(instance, memberDetails,
-                    swaggerApiClientForLoggedInUser.getMember(member.getId()),
-                    governingBody, swaggerApiClientForLoggedInUser).
-                    addObject("invalidImage", false);
-        }
-
-        return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.GET)
     public ModelAndView makeInactivePrompt(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
-        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
-
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance, squads);
-
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        return viewFactory.getViewFor("makeMemberInactivePrompt", instance).
-                addObject("member", member).
-                addObject("title", "Make member inactive - " + member.getDisplayName()).
-                addObject("navItems", navItems);
+        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+
+            return viewFactory.getViewFor("makeMemberInactivePrompt", instance).
+                    addObject("member", member).
+                    addObject("title", "Make member inactive - " + member.getDisplayName()).
+                    addObject("navItems", navItems);
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-inactive", method = RequestMethod.POST)
     public ModelAndView makeInactive(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-
-        log.info("Making member inactive: " + id);
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        member.setInactive(true);
-        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
 
-        return redirectToAdminScreen();
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            log.info("Making member inactive: " + id);
+            member.setInactive(true);
+            swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
+            return redirectToAdminScreen();
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.GET)
     public ModelAndView deletePrompt(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        return viewFactory.getViewFor("deleteMemberPrompt", instance).
-                addObject("title", "Delete member - " + member.getDisplayName()).
-                addObject("navItems", navItems).
-                addObject("member", member);
+
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+
+            return viewFactory.getViewFor("deleteMemberPrompt", instance).
+                    addObject("title", "Delete member - " + member.getDisplayName()).
+                    addObject("navItems", navItems).
+                    addObject("member", member);
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/delete", method = RequestMethod.POST)
     public ModelAndView delete(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
+        Member loggedInMember = loggedInUserService.getLoggedInMember();
 
         Member member = swaggerApiClientForLoggedInUser.getMember(id);
-
-        swaggerApiClientForLoggedInUser.deleteMember(member.getId());
-        return redirectToAdminScreen();
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            swaggerApiClientForLoggedInUser.deleteMember(member.getId());
+            return redirectToAdminScreen();
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.GET)
     public ModelAndView makeActivePrompt(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
-        final Member loggedInUser = loggedInUserService.getLoggedInMember();
-
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInUser, null, swaggerApiClientForLoggedInUser, instance, squads);
-
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
-        return viewFactory.getViewFor("makeMemberActivePrompt", instance).
-                addObject("member", member).
-                addObject("title", "Make member active - " + member.getDisplayName()).
-                addObject("navItems", navItems);
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+            return viewFactory.getViewFor("makeMemberActivePrompt", instance).
+                    addObject("member", member).
+                    addObject("title", "Make member active - " + member.getDisplayName()).
+                    addObject("navItems", navItems);
+
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/make-active", method = RequestMethod.POST)
     public ModelAndView makeActive(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-
-        log.info("Making member active: " + id);
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
-        member.setInactive(false);
-        swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
-        return redirectToAdminScreen();
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            log.info("Making member active: " + id);
+            member.setInactive(false);
+            swaggerApiClientForLoggedInUser.updateMember(member, member.getId());
+            return redirectToAdminScreen();
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/edit/profileimage", method = RequestMethod.POST)
     public ModelAndView updateMemberProfileImageSubmit(@PathVariable String id, MultipartHttpServletRequest request) throws IOException, SignedInMemberRequiredException, ApiException {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
-
         log.info("Received update member profile image request: " + id);
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
+        final Member loggedInMember = loggedInUserService.getLoggedInMember();
 
-        final MultipartFile file = request.getFile("image");
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            final MultipartFile file = request.getFile("image");
+            log.info("Submitting updated member: " + member);
+            File imageFile = Files.createTempFile("profileimage", ".tmp").toFile();
+            file.transferTo(imageFile);
+            try {
+                swaggerApiClientForLoggedInUser.updateProfileImage(member.getId(), imageFile);
+                imageFile.delete();
 
-        log.info("Submitting updated member: " + member);
-        File imageFile = Files.createTempFile("profileimage", ".tmp").toFile();
-        file.transferTo(imageFile);
-        try {
-            swaggerApiClientForLoggedInUser.updateProfileImage(member.getId(), imageFile);
-            imageFile.delete();
+            } catch (ApiException e) {
+                log.warn("Invalid image file submitted");
+                imageFile.delete();
+                return viewFactory.redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
+            }
+            return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
 
-        } catch (ApiException e) {
-            log.warn("Invalid image file submitted");
-            imageFile.delete();
-            return viewFactory.redirectionTo(urlBuilder.editMemberUrl(member) + "?invalidImage=true");
+        } else {
+            throw new PermissionDeniedException();
         }
-        return viewFactory.redirectionTo(urlBuilder.memberUrl(member));
     }
 
     private ModelAndView renderEditMemberDetailsForm(Instance instance, MemberDetails memberDetails, Member member,
@@ -443,43 +473,46 @@ public class MembersController {
         return squads;
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.GET)
     public ModelAndView resetMemberPasswordPrompt(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
         Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
-
-        return viewFactory.getViewFor("memberPasswordResetPrompt", instance).
-                addObject("title", "Reset a member's password").
-                addObject("navItems", navItems).
-                addObject("member", member);
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+            return viewFactory.getViewFor("memberPasswordResetPrompt", instance).
+                    addObject("title", "Reset a member's password").
+                    addObject("navItems", navItems).
+                    addObject("member", member);
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
-    @RequiresMemberPermission(permission = Permission.EDIT_MEMBER_DETAILS)
     @RequestMapping(value = "/member/{id}/reset", method = RequestMethod.POST)
     public ModelAndView resetMemberPassword(@PathVariable String id) throws Exception {
         DefaultApi swaggerApiClientForLoggedInUser = loggedInUserService.getSwaggerApiClientForLoggedInUser();
         Member loggedInMember = loggedInUserService.getLoggedInMember();
-        Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
-        List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
-
         final Member member = swaggerApiClientForLoggedInUser.getMember(id);
 
-        final String newPassword = swaggerApiClientForLoggedInUser.resetMemberPassword(instance.getId(), member.getId());
+        if (permissionsService.hasMemberPermission(loggedInMember, Permission.EDIT_MEMBER_DETAILS, member)) {
+            Instance instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.getInstance());
+            List<Squad> squads = swaggerApiClientForLoggedInUser.getSquads(instance.getId());
+            List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
 
-        List<NavItem> navItems = navItemsBuilder.navItemsFor(loggedInMember, null, swaggerApiClientForLoggedInUser, instance, squads);
+            final String newPassword = swaggerApiClientForLoggedInUser.resetMemberPassword(instance.getId(), member.getId());
 
-        return viewFactory.getViewFor("memberPasswordReset", instance).
-                addObject("title", "Password reset details").
-                addObject("navItems", navItems).
-                addObject("member", member).
-                addObject("password", newPassword);
+            return viewFactory.getViewFor("memberPasswordReset", instance).
+                    addObject("title", "Password reset details").
+                    addObject("navItems", navItems).
+                    addObject("member", member).
+                    addObject("password", newPassword);
+        } else {
+            throw new PermissionDeniedException();
+        }
     }
 
     private ModelAndView redirectToAdminScreen() {
