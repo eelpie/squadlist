@@ -2,8 +2,8 @@ package uk.co.squadlist.web.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.client.swagger.api.DefaultApi
 import uk.co.squadlist.model.swagger.Instance
@@ -25,7 +25,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
                                                 private val permissionsService: PermissionsService,
                                                 loggedInUserService: LoggedInUserService,
                                                 instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
-    @RequestMapping("/contacts")
+    @GetMapping("/contacts")
     fun contacts(): ModelAndView {
         val renderContactsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
@@ -35,7 +35,7 @@ class ContactsController @Autowired constructor(private val preferredSquadServic
         return withSignedInMember(renderContactsPage)
     }
 
-    @RequestMapping("/contacts/{squadId}")
+    @GetMapping("/contacts/{squadId}")
     fun squadContacts(@PathVariable squadId: String?): ModelAndView {
         val renderSquadContactsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance)

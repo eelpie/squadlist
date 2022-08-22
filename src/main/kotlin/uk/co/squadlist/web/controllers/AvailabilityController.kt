@@ -9,16 +9,17 @@ import org.joda.time.YearMonth
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
-import uk.co.squadlist.client.swagger.ApiException
 import uk.co.squadlist.client.swagger.api.DefaultApi
-import uk.co.squadlist.model.swagger.*
+import uk.co.squadlist.model.swagger.AvailabilityOption
+import uk.co.squadlist.model.swagger.Instance
+import uk.co.squadlist.model.swagger.Member
+import uk.co.squadlist.model.swagger.Squad
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
-import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.PreferredSquadService
@@ -43,7 +44,7 @@ class AvailabilityController @Autowired constructor(
     loggedInUserService: LoggedInUserService
 ) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
-    @RequestMapping("/availability")
+    @GetMapping("/availability")
     fun availability(): ModelAndView {
         val renderAvailabilityPage =
             { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
@@ -62,7 +63,7 @@ class AvailabilityController @Autowired constructor(
         return withSignedInMember(renderAvailabilityPage)
     }
 
-    @RequestMapping("/availability/{squadId}")
+    @GetMapping("/availability/{squadId}")
     fun squadAvailability(
         @PathVariable squadId: String?,
         @RequestParam(value = "month", required = false) month: String?,
@@ -124,7 +125,7 @@ class AvailabilityController @Autowired constructor(
         return withSignedInMember(renderAvailabilitySquadPage)
     }
 
-    @RequestMapping("/availability/{squadId}.csv")
+    @GetMapping("/availability/{squadId}.csv")
     fun squadAvailabilityCsv(
         @PathVariable squadId: String?,
         @RequestParam(value = "month", required = false) month: String?,

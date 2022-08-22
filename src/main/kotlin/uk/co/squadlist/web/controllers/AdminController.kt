@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
 import org.springframework.validation.ObjectError
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.client.swagger.ApiException
 import uk.co.squadlist.client.swagger.api.DefaultApi
@@ -19,7 +22,6 @@ import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.GoverningBodyFactory
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.exceptions.PermissionDeniedException
-import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.model.forms.InstanceDetails
 import uk.co.squadlist.web.model.forms.MemberDetails
 import uk.co.squadlist.web.services.PasswordGenerator
@@ -28,7 +30,6 @@ import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.*
-import java.net.URISyntaxException
 import java.util.*
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -77,7 +78,7 @@ class AdminController @Autowired constructor(private val viewFactory: ViewFactor
         return withSignedInMemberWhoCanViewAdminScreen(renderAdminPage)
     }
 
-    @RequestMapping(value = ["/admin/instance"], method = [RequestMethod.GET])
+    @GetMapping("/admin/instance")
     fun instance(): ModelAndView {
         val renderEditInstancePage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val instanceDetails = InstanceDetails()

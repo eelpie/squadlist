@@ -15,9 +15,11 @@ import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.views.ViewFactory
 
 @Controller
-class ResetPasswordController @Autowired constructor(private val instanceConfig: InstanceConfig,
-                                                     private val viewFactory: ViewFactory,
-                                                     squadlistApiFactory: SquadlistApiFactory) {
+class ResetPasswordController @Autowired constructor(
+    private val instanceConfig: InstanceConfig,
+    private val viewFactory: ViewFactory,
+    squadlistApiFactory: SquadlistApiFactory
+) {
 
     private val log = LogManager.getLogger(ResetPasswordController::class.java)
 
@@ -37,12 +39,14 @@ class ResetPasswordController @Autowired constructor(private val instanceConfig:
         }
         log.info("Resetting password for: " + instance.id + " / " + username)
         return try {
-            squadlistApi.instancesInstanceResetPasswordPost(instance.id, username.trim { it <= ' ' }) // TODO errors
+            squadlistApi.instancesInstanceResetPasswordPost(instance.id, username.trim()) // TODO errors
             log.info("Reset password call successful for: $username")
             viewFactory.getViewFor("resetPasswordSent", instance).addObject("title", "Reset password")
+
         } catch (e: ApiException) {  // TODO more precise; use redirect pattern
             log.warn(e.code.toString() + " / " + e.responseBody)
-            viewFactory.getViewFor("resetPassword", instance).addObject("title", "Reset password").addObject("errors", true)
+            viewFactory.getViewFor("resetPassword", instance).addObject("title", "Reset password")
+                .addObject("errors", true)
         }
     }
 

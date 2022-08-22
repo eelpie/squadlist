@@ -2,7 +2,7 @@ package uk.co.squadlist.web.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.squadlist.client.swagger.api.DefaultApi
 import uk.co.squadlist.model.swagger.Instance
@@ -19,7 +19,7 @@ class ChangesController @Autowired constructor(private val viewFactory: ViewFact
                                                permissionsService: PermissionsService,
                                                loggedInUserService: LoggedInUserService,
                                                instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
-    @RequestMapping("/changes")
+    @GetMapping("/changes")
     fun changes(): ModelAndView {
         val renderChangesPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
