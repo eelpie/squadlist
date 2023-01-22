@@ -22,7 +22,7 @@ abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, priv
         val instance = swaggerApiClientForLoggedInUser.getInstance(instanceConfig.instance)
         val loggedInMember = loggedInUserService.loggedInMember
 
-        log.info("Rending page for " + instance.id + " / " + loggedInMember.username)
+        log.info("Rendering page for " + instance.id + " / " + loggedInMember.username)
         return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
     }
 
@@ -34,7 +34,7 @@ abstract class WithSignedInUser(private val instanceConfig: InstanceConfig, priv
             throw PermissionDeniedException()
         }
 
-        log.info("Rending page for admin " + instance.id + " / " + loggedInMember.username)
+        log.info("Rendering page for admin " + instance.id + " / " + loggedInMember.username)
         return page(instance, loggedInMember, swaggerApiClientForLoggedInUser)
     }
 
