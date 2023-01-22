@@ -22,18 +22,21 @@ public class SquadlistApiFactory {
     private final String clientId;
     private final String clientSecret;
 
+    private final DefaultApi clientAuthedClient;
+
     @Autowired
     public SquadlistApiFactory(@Value("${apiUrl}") String apiUrl,
                                @Value("${client.id}") String clientId,
-                               @Value("${client.secret}") String clientSecret) {
+                               @Value("${client.secret}") String clientSecret) throws IOException {
         this.apiUrl = apiUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+
+        this.clientAuthedClient = createSwaggerClient();
     }
 
-    public DefaultApi createSwaggerClient() throws IOException {
-        String clientAccessToken = requestClientAccessToken(clientId, clientSecret);
-        return createSwaggerApiClientForToken(clientAccessToken);
+    public DefaultApi getSwaggerClient() {
+        return clientAuthedClient;
     }
 
     public DefaultApi createSwaggerApiClientForToken(String accessToken) {
@@ -47,6 +50,11 @@ public class SquadlistApiFactory {
         DefaultApi clientApi = new DefaultApi();
         clientApi.getApiClient().setBasePath(apiUrl);
         return clientApi;
+    }
+
+    private DefaultApi createSwaggerClient() throws IOException {
+        String clientAccessToken = requestClientAccessToken(clientId, clientSecret);
+        return createSwaggerApiClientForToken(clientAccessToken);
     }
 
     private String requestClientAccessToken(String clientId, String clientSecret) throws IOException {

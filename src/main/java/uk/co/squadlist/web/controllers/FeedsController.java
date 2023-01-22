@@ -37,7 +37,7 @@ public class FeedsController {
         this.instanceConfig = instanceConfig;
         this.urlBuilder = urlBuilder;
         this.squadNamesHelper = squadNamesHelper;
-        this.squadlistSwaggerApi = squadlistApiFactory.createSwaggerClient();
+        this.squadlistSwaggerApi = squadlistApiFactory.getSwaggerClient();
     }
 
     @RequestMapping("/ical")

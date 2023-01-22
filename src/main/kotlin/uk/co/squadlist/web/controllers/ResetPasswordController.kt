@@ -23,7 +23,7 @@ class ResetPasswordController @Autowired constructor(
 
     private val log = LogManager.getLogger(ResetPasswordController::class.java)
 
-    private val squadlistApi: DefaultApi = squadlistApiFactory.createSwaggerClient()
+    private val squadlistApi: DefaultApi = squadlistApiFactory.getSwaggerClient()
 
     @GetMapping("/reset-password")
     fun resetPasswordPrompt(): ModelAndView {

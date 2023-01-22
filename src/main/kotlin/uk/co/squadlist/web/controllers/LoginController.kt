@@ -34,7 +34,7 @@ class LoginController @Autowired constructor(
 
     private val log = LogManager.getLogger(LoginController::class.java)
 
-    private val swaggerApi = squadlistApiFactory.createSwaggerClient()
+    private val swaggerApi = squadlistApiFactory.getSwaggerClient()
 
     @GetMapping("/login")
     fun login(request: HttpServletRequest?): ModelAndView {
