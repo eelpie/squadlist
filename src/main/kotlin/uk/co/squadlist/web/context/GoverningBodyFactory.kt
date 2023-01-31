@@ -16,7 +16,6 @@ class GoverningBodyFactory {
         return when (id) {
             "rowing-ireland" -> RowingIreland() // TODO these ids want to be on the governing bodies
             "british-rowing" -> BritishRowing()
-            "britishing-rowing" -> BritishRowing()  // TODO backfill this misspelling
             else -> {
                 throw NotImplementedError()
             }
