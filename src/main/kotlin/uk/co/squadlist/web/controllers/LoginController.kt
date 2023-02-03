@@ -54,8 +54,8 @@ class LoginController @Autowired constructor(
         // Use the OAuth password flow to swap our user's username and password for an access token
         log.info("Attempting to auth user: $username")
         val authenticatedUsersAccessToken = auth(username, password)
-        log.info("Auth got access token for: $username")
         if (authenticatedUsersAccessToken != null) {
+            log.info("Auth got access token for: $username")
             try {
                 // Call the API verify end point with the new access token to obtain the signed in user
                 log.info("Verifying access token to find signed in user")
