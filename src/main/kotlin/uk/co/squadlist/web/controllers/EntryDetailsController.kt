@@ -52,6 +52,11 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
     fun entrydetails(@PathVariable squadId: String?): ModelAndView {
         val renderSquadEntryDetailsPage = { instance: Instance, loggedInMember: Member, swaggerApiClientForLoggedInUser: DefaultApi ->
             val squads = swaggerApiClientForLoggedInUser.getSquads(instance.id)
+
+            val squadsUserCanSeeEntryDetailsFor = squads.filter { squad ->
+                permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad)
+            }
+
             val squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance)
 
             if (permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squadToShow)) {
@@ -64,7 +69,7 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                 viewFactory.getViewFor("entryDetails", instance)
                     .addObject("title", "Entry details")
                     .addObject("navItems", navItems)
-                    .addObject("squads", squads)
+                    .addObject("squads", squadsUserCanSeeEntryDetailsFor)
                     .addObject("governingBody", governingBodyFactory.getGoverningBody(instance))
                     .addObject("squad", squadToShow)
                     .addObject("title", squadToShow.name + " entry details")
