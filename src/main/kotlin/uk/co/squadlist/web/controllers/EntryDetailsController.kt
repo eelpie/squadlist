@@ -23,6 +23,7 @@ import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.PreferredSquadService
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
+import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.CsvOutputRenderer
 import uk.co.squadlist.web.views.DateFormatter
 import uk.co.squadlist.web.views.NavItemsBuilder
@@ -39,6 +40,7 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                                                     private val permissionsService: PermissionsService,
                                                     private val displayMemberFactory: DisplayMemberFactory,
                                                     private val activeMemberFilter: ActiveMemberFilter,
+                                                    private val urlBuilder: UrlBuilder,
                                                     loggedInUserService: LoggedInUserService,
                                                     instanceConfig: InstanceConfig) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
@@ -57,9 +59,11 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                 permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squad)
             }
 
-            val squadToShow = preferredSquadService.resolveSquad(squadId, swaggerApiClientForLoggedInUser, instance)
+            val squadToShow = squadsUserCanSeeEntryDetailsFor.find { squad ->
+                squad.id == squadId
+            }
 
-            if (permissionsService.hasSquadPermission(loggedInMember, Permission.VIEW_SQUAD_ENTRY_DETAILS, squadToShow)) {
+            if (squadToShow != null) {
                 val navItems = navItemsBuilder.navItemsFor(loggedInMember, "entry.details", swaggerApiClientForLoggedInUser, instance, squads)
 
                 val squadMembers = swaggerApiClientForLoggedInUser.getSquadMembers(squadToShow.id)
@@ -67,16 +71,22 @@ class EntryDetailsController @Autowired constructor(private val preferredSquadSe
                 val displayMembers = displayMemberFactory.toDisplayMembers(activeMembers, loggedInMember)
 
                 viewFactory.getViewFor("entryDetails", instance)
-                    .addObject("title", "Entry details")
-                    .addObject("navItems", navItems)
-                    .addObject("squads", squadsUserCanSeeEntryDetailsFor)
-                    .addObject("governingBody", governingBodyFactory.getGoverningBody(instance))
-                    .addObject("squad", squadToShow)
-                    .addObject("title", squadToShow.name + " entry details")
-                    .addObject("members", displayMembers)
+                        .addObject("title", "Entry details")
+                        .addObject("navItems", navItems)
+                        .addObject("squads", squadsUserCanSeeEntryDetailsFor)
+                        .addObject("governingBody", governingBodyFactory.getGoverningBody(instance))
+                        .addObject("squad", squadToShow)
+                        .addObject("title", squadToShow.name + " entry details")
+                        .addObject("members", displayMembers)
 
             } else {
-                throw PermissionDeniedException()
+                // Redirect to next best option
+                if (squadsUserCanSeeEntryDetailsFor.first() != null) {
+                    preferredSquadService.setPreferredSquad(squadsUserCanSeeEntryDetailsFor.first())
+                    viewFactory.redirectionTo(urlBuilder.entryDetailsUrl(squadsUserCanSeeEntryDetailsFor.first()))
+                } else {
+                    throw PermissionDeniedException()
+                }
             }
         }
 
