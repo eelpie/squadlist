@@ -67,9 +67,9 @@ public class RowingIrelandTest {
 
 	@Test
 	public void effectiveAgeForMastersIsTheAgeTheyWouldReachBy31DecOfTheCurrentYear() {
-		assertEquals(48, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0)));
-		assertEquals(48, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0)));
-		assertEquals(48, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0)));
+		assertEquals(49, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 13, 0, 0, 0, 0)));
+		assertEquals(49, rowingIreland.getEffectiveAge(new DateTime(1975, 1, 1, 0, 0, 0, 0)));
+		assertEquals(49, rowingIreland.getEffectiveAge(new DateTime(1975, 12, 31, 0, 0, 0, 0)));
 	}
 
 	@Test
