@@ -20,6 +20,7 @@ import uk.co.squadlist.model.swagger.Member
 import uk.co.squadlist.model.swagger.Squad
 import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
+import uk.co.squadlist.web.services.OutingMonthsService
 import uk.co.squadlist.web.services.Permission
 import uk.co.squadlist.web.services.PermissionsService
 import uk.co.squadlist.web.services.PreferredSquadService
@@ -40,6 +41,7 @@ class AvailabilityController @Autowired constructor(
     private val navItemsBuilder: NavItemsBuilder,
     private val csvOutputRenderer: CsvOutputRenderer,
     private val permissionsService: PermissionsService,
+    private val outingMonthsService: OutingMonthsService,
     instanceConfig: InstanceConfig,
     loggedInUserService: LoggedInUserService
 ) : WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
@@ -103,7 +105,7 @@ class AvailabilityController @Autowired constructor(
                         Permission.VIEW_SQUAD_ENTRY_DETAILS,
                         squad
                     )
-                val outingMonths = getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser).sorted()
+                val outingMonths = outingMonthsService.getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser)
 
                 var title = squad.name + " availability"
                 if (dateRange.month != null) {
@@ -204,17 +206,6 @@ class AvailabilityController @Autowired constructor(
             }
         }
         return allAvailability
-    }
-
-    // TODO duplication with outings controller
-    private fun getOutingMonthsFor(instance: Instance, squad: Squad, swaggerApiClientForLoggedInUser: DefaultApi): List<String> {
-        val stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(
-            instance.id,
-            squad.id,
-            DateTime.now().toDateMidnight().minusDays(1).toLocalDate(),
-            DateTime.now().plusYears(20).toLocalDate()
-        ) // TODO timezone
-        return Lists.newArrayList(stringBigDecimalMap.keys).sorted()
     }
 
     private fun dateRangeFor(month: String?, startDate: LocalDate?, endDate: LocalDate?): DateRange {

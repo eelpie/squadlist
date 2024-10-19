@@ -20,17 +20,12 @@ import uk.co.squadlist.web.auth.LoggedInUserService
 import uk.co.squadlist.web.context.InstanceConfig
 import uk.co.squadlist.web.controllers.DateRange.Companion.from
 import uk.co.squadlist.web.exceptions.PermissionDeniedException
-import uk.co.squadlist.web.exceptions.SignedInMemberRequiredException
 import uk.co.squadlist.web.model.forms.OutingDetails
-import uk.co.squadlist.web.services.OutingAvailabilityCountsService
-import uk.co.squadlist.web.services.Permission
-import uk.co.squadlist.web.services.PermissionsService
-import uk.co.squadlist.web.services.PreferredSquadService
+import uk.co.squadlist.web.services.*
 import uk.co.squadlist.web.services.filters.ActiveMemberFilter
 import uk.co.squadlist.web.urls.UrlBuilder
 import uk.co.squadlist.web.views.*
 import uk.co.squadlist.web.views.model.DisplayMember
-import java.net.URISyntaxException
 import java.util.*
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -46,6 +41,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
     private val permissionsService: PermissionsService,
     private val navItemsBuilder: NavItemsBuilder,
     private val displayMemberFactory: DisplayMemberFactory,
+    private val outingMonthsService: OutingMonthsService,
     loggedInUserService: LoggedInUserService,
     instanceConfig: InstanceConfig): WithSignedInUser(instanceConfig, loggedInUserService, permissionsService) {
 
@@ -76,7 +72,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
                         instance,
                         squads
                     )
-                val outingMonths = getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser)
+                val outingMonths = outingMonthsService.getOutingMonthsFor(instance, squadToShow, swaggerApiClientForLoggedInUser)
                 val dateTimeZone = DateTimeZone.forID(instance.timeZone)
                 val startDateTime = dateRange.start!!.toDateTimeAtStartOfDay(dateTimeZone)
                 val endDateTime = dateRange.end!!.toDateTimeAtStartOfDay(dateTimeZone).plusDays(1)
@@ -118,7 +114,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
                 .addObject("title", outing.squad.name + " - " + dateFormatter.dayMonthYearTime(outing.date))
                 .addObject("navItems", navItems).addObject("outing", outing)
                 .addObject("canEditOuting", canEditOuting)
-                .addObject("outingMonths", getOutingMonthsFor(instance, outing.squad, swaggerApiClientForLoggedInUser))
+                .addObject("outingMonths", outingMonthsService.getOutingMonthsFor(instance, outing.squad, swaggerApiClientForLoggedInUser))
                 .addObject("squad", outing.squad)
                 .addObject("squadAvailability", outingAvailability)
                 .addObject("squads", squads).addObject("members", displayMembers)
@@ -352,7 +348,7 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
         return viewFactory.getViewFor("newOuting", instance).addObject("title", "Add a new outing")
             .addObject("navItems", navItems).addObject("squads", swaggerApiClientForLoggedInUser.getSquads(instance.id))
             .addObject("squad", squad)
-            .addObject("outingMonths", getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser))
+            .addObject("outingMonths", outingMonthsService.getOutingMonthsFor(instance, squad, swaggerApiClientForLoggedInUser))
             .addObject("outing", outingDetails)
     }
 
@@ -371,27 +367,13 @@ class OutingsController @Autowired constructor(    // TODO remove open when anno
             .addObject("squad", outing.squad).addObject("outing", outingDetails).addObject("outingObject", outing)
             .addObject(
                 "outingMonths",
-                getOutingMonthsFor(
+                outingMonthsService.getOutingMonthsFor(
                     instance,
                     swaggerApiClientForLoggedInUser.getSquad(outing.squad.id),
                     swaggerApiClientForLoggedInUser
                 )
             ).addObject("month", ISODateTimeFormat.yearMonth().print(outing.date))
             .addObject("canAddOuting", permissionsService.hasPermission(loggedInMember, Permission.ADD_OUTING))
-    }
-
-    private fun getOutingMonthsFor(
-        instance: Instance,
-        squad: Squad,
-        swaggerApiClientForLoggedInUser: DefaultApi
-    ): List<String> {
-        val stringBigDecimalMap = swaggerApiClientForLoggedInUser.outingsMonthsGet(
-            instance.id,
-            squad.id,
-            DateTime.now().toDateMidnight().minusDays(1).toLocalDate(),
-            DateTime.now().plusYears(20).toLocalDate()
-        ) // TODO timezone
-        return Lists.newArrayList(stringBigDecimalMap.keys).sorted()
     }
 
     private fun buildOutingFromOutingDetails(
